@@ -261,31 +261,34 @@
 
     .sidebar-action-btn {
       width: 100%;
+      height: 42px;
       display: flex;
       align-items: center;
-      gap: 0.65rem;
-      padding: 0.65rem 1rem;
+      justify-content: space-between;
+      padding: 0 14px;
       background: var(--bg-surface);
-      color: var(--text-main);
-      border: 1px solid var(--border-subtle);
+      color: var(--primary);
+      border: 1.5px solid rgba(37, 99, 235, 0.3);
       border-radius: var(--radius-full);
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 0.86rem;
       font-weight: 700;
       box-shadow: var(--shadow-sm);
       transition: all 0.2s ease;
       font-family: inherit;
+      box-sizing: border-box;
     }
 
     .sidebar-action-btn:hover {
-      background: var(--bg-sidebar-hover);
+      background: var(--primary);
       border-color: var(--primary);
-      color: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 3px 8px rgba(37, 99, 235, 0.25);
     }
 
     .sidebar-action-btn.active {
-      background: var(--bg-sidebar-active);
-      color: var(--text-sidebar-active);
+      background: var(--primary);
+      color: #ffffff;
       border-color: var(--primary);
       box-shadow: 0 0 0 2px var(--primary-soft);
     }
@@ -1142,13 +1145,24 @@
     }
 
     /* تصغير خطوط سجل الأصناف والجرد للملاءمة وسهولة التصفح على الهواتف */
+    /* تصغير خطوط سجل الأصناف والجرد للملاءمة وسهولة التصفح على الهواتف مع منع التداخل */
     .inventory-item-name {
       font-size: 0.79rem;
       font-weight: 700;
       color: var(--text-main);
       line-height: 1.25;
       display: inline-block;
-      max-width: 250px;
+      max-width: 230px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      vertical-align: middle;
+      cursor: pointer;
+      transition: color 0.15s ease;
+    }
+    .inventory-item-name:hover {
+      color: var(--primary);
+      text-decoration: underline;
     }
 
     .inventory-item-cat {
@@ -1160,7 +1174,7 @@
     @media (max-width: 768px) {
       .inventory-item-name {
         font-size: 0.73rem;
-        max-width: 160px;
+        max-width: 135px;
         line-height: 1.2;
       }
       .inventory-item-cat {
@@ -1639,34 +1653,47 @@
       }
     }
 
-    /* زر الطلبات في القائمة الجانبية والشارة بأسلوب Gmail */
+    /* زر الطلبات في القائمة الجانبية والشارة - توحيد هندسي كامل مع زر تسليم جديد */
     .sidebar-orders-btn {
       width: 100%;
+      height: 42px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 14px;
+      padding: 0 14px;
       background: var(--bg-surface);
-      border: 1.5px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      color: var(--text-main);
+      border: 1.5px solid rgba(245, 158, 11, 0.35);
+      border-radius: var(--radius-full);
+      color: #d97706;
       font-family: inherit;
-      font-size: 0.88rem;
+      font-size: 0.86rem;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.18s ease;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
       box-sizing: border-box;
     }
     .sidebar-orders-btn:hover {
-      background: var(--bg-sidebar-hover);
-      border-color: var(--primary);
-      color: var(--primary);
+      background: #f59e0b;
+      border-color: #f59e0b;
+      color: #ffffff;
+      box-shadow: 0 3px 8px rgba(245, 158, 11, 0.25);
+    }
+    .sidebar-orders-btn:hover .order-badge {
+      background: #ffffff;
+      color: #d97706;
+      border-color: transparent;
     }
     .sidebar-orders-btn.active {
-      background: var(--primary-soft);
-      border-color: var(--primary);
-      color: var(--primary);
-      box-shadow: 0 0 0 2px var(--primary-soft);
+      background: #f59e0b;
+      border-color: #f59e0b;
+      color: #ffffff;
+      box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.3);
+    }
+    .sidebar-orders-btn.active .order-badge {
+      background: #ffffff;
+      color: #d97706;
+      border-color: transparent;
     }
     .order-badge {
       display: inline-flex;
@@ -1680,9 +1707,9 @@
       font-weight: 800;
       font-variant-numeric: tabular-nums;
       line-height: 1;
-      background: var(--bg-muted);
-      color: var(--text-muted);
-      border: 1px solid var(--border-subtle);
+      background: rgba(245, 158, 11, 0.15);
+      color: #d97706;
+      border: 1px solid rgba(245, 158, 11, 0.3);
       transition: all 0.2s ease;
     }
     .order-badge.has-orders {
@@ -1690,6 +1717,31 @@
       color: #ffffff;
       border-color: #d97706;
       box-shadow: 0 2px 6px rgba(245, 158, 11, 0.35);
+    }
+
+    /* أزرار مدمجة على سطرين للإضافة في مركز الإعدادات */
+    .btn-twoline {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.15;
+      padding: 4px 14px;
+      text-align: center;
+      white-space: nowrap;
+      min-height: 38px;
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .btn-twoline span:first-child {
+      font-size: 0.72rem;
+      opacity: 0.9;
+    }
+    .btn-twoline span:last-child {
+      font-size: 0.82rem;
+      font-weight: 800;
     }
 
     /* خيارات النطاق الزمني للوحة القيادة */
@@ -2037,13 +2089,16 @@
 
       <!-- الإجراءات السريعة: تسليم جديد وقسم الطلبات المفتوحة -->
       <div class="sidebar-action-wrap" style="display: flex; flex-direction: column; gap: 8px;">
-        <button class="sidebar-action-btn" id="sidebar-action-new-issuance" onclick="switchTab('issuance-view'); toggleSidebar(false);" title="تسليم جديد">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          <span>تسليم جديد</span>
+        <button type="button" class="sidebar-action-btn" id="sidebar-action-new-issuance" onclick="switchTab('issuance-view'); toggleSidebar(false);" title="تسليم جديد">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>تسليم جديد</span>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
 
         <button type="button" class="sidebar-orders-btn" id="sidebar-btn-orders" onclick="switchTab('orders-view'); toggleSidebar(false);" title="الطلبيات الواردة والمفتوحة">
-          <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M9 14l2 2 4-4"></path></svg>
             <span>الطلبات</span>
           </div>
@@ -2173,22 +2228,11 @@
               <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">متابعة فورية ومباشرة لحركة المخزون وإشهادات التسليم الصادرة بمحاكم الدائرة القضائية</div>
             </div>
 
-            <div style="position: relative;">
-              <!-- زر الترس لاختيار النطاق الزمني -->
-              <button type="button" class="btn btn-secondary btn-sm" id="btn-dashboard-timeframe" onclick="toggleTimeframeDropdown()" title="تخصيص النطاق الزمني للإحصائيات" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 700;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                <span>النطاق الزمني ⚙️</span>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            <div>
+              <!-- زر الترس الأيقوني فقط لتخصيص النطاق الزمني -->
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-dashboard-timeframe" onclick="openTimeframeModal()" title="تخصيص النطاق الزمني للإحصائيات" aria-label="تخصيص النطاق الزمني للإحصائيات" style="display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; padding: 0; border-radius: var(--radius-md); font-size: 1.15rem;">
+                ⚙️
               </button>
-
-              <!-- قائمة خيارات النطاق الزمني -->
-              <div id="timeframe-dropdown" style="display: none; position: absolute; top: calc(100% + 6px); left: 0; min-width: 210px; background: var(--bg-card); border: 1.5px solid var(--border-subtle); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); z-index: 1000; padding: 6px 0;">
-                <button type="button" class="timeframe-opt-btn active" id="tf-opt-all" onclick="setTimeframe('all')">كامل البيانات (افتراضي)</button>
-                <button type="button" class="timeframe-opt-btn" id="tf-opt-current-year" onclick="setTimeframe('current-year')">السنة الحالية</button>
-                <button type="button" class="timeframe-opt-btn" id="tf-opt-last-month" onclick="setTimeframe('last-month')">الشهر الماضي</button>
-                <button type="button" class="timeframe-opt-btn" id="tf-opt-last-3-months" onclick="setTimeframe('last-3-months')">آخر 3 أشهر</button>
-                <button type="button" class="timeframe-opt-btn" id="tf-opt-last-6-months" onclick="setTimeframe('last-6-months')">آخر 6 أشهر</button>
-              </div>
             </div>
           </div>
 
@@ -2324,6 +2368,14 @@
                   <h3 class="card-title">المستفيدون الأكثر استلاماً</h3>
                   <div class="card-subtitle">توزيع العمليات وفق المسؤولين والموظفين المستلمين</div>
                 </div>
+                <div class="header-actions">
+                  <button type="button" class="btn-icon active" id="btn-chart-recipients-bar" onclick="setRecipientsChartMode('bar')" title="عرض بالأشرطة الأفقية">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="16" y2="12"/><line x1="4" y1="18" x2="12" y2="18"/></svg>
+                  </button>
+                  <button type="button" class="btn-icon" id="btn-chart-recipients-donut" onclick="setRecipientsChartMode('donut')" title="عرض دائري بياني">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>
+                  </button>
+                </div>
               </div>
               <div class="chart-container-box" id="dashboard-recipients-chart-container" style="width: 100%; max-width: 100%; overflow: hidden;">
                 <!-- يملأ ديناميكياً -->
@@ -2336,6 +2388,14 @@
                 <div>
                   <h3 class="card-title">توزيع اللوازم حسب الأصناف</h3>
                   <div class="card-subtitle">النسبة المئوية لحجم الاستهلاك وفق كل فئة من المواد</div>
+                </div>
+                <div class="header-actions">
+                  <button type="button" class="btn-icon" id="btn-chart-cats-bar" onclick="setCategoriesChartMode('bar')" title="عرض بالأشرطة الأفقية">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="16" y2="12"/><line x1="4" y1="18" x2="12" y2="18"/></svg>
+                  </button>
+                  <button type="button" class="btn-icon active" id="btn-chart-cats-donut" onclick="setCategoriesChartMode('donut')" title="عرض دائري بياني">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>
+                  </button>
                 </div>
               </div>
               <div class="chart-container-box" id="dashboard-categories-chart-container" style="width: 100%; max-width: 100%; overflow: hidden;">
@@ -2678,33 +2738,38 @@
                 </div>
               </div>
 
-              <!-- اختيار المواد للطلبية -->
+              <!-- اختيار المواد للطلبية بتخطيط متناسق ومستجيب بالكامل يمنع التداخل على الهواتف -->
               <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 14px;">
-                <div style="font-weight: 700; font-size: 0.86rem; color: var(--text-main); margin-bottom: 10px;">إضافة مواد ولوازم إلى الطلبية:</div>
-                <div class="grid-2" style="grid-template-columns: 1fr 2fr 1fr auto; align-items: flex-end; gap: 8px;">
-                  <div class="form-group" style="margin-bottom: 0;">
-                    <label class="form-label" style="font-size: 0.78rem;">الصنف</label>
-                    <select id="order-item-cat-select" class="form-control" onchange="onOrderItemCatChanged()" style="font-size: 0.82rem; height: 38px;">
-                      <option value="">كافة الأصناف</option>
-                    </select>
-                  </div>
-                  <div class="form-group" style="margin-bottom: 0;">
-                    <label class="form-label" style="font-size: 0.78rem;">المادة / اللوازم</label>
-                    <select id="order-item-id-select" class="form-control" style="font-size: 0.82rem; height: 38px;">
-                      <option value="">-- اختر المادة --</option>
-                    </select>
-                  </div>
-                  <div class="form-group" style="margin-bottom: 0;">
-                    <label class="form-label" style="font-size: 0.78rem;">الكمية المطلوبة</label>
-                    <input type="number" id="order-item-qty-input" class="form-control tabular-nums text-center" value="1" min="1" max="999" style="font-size: 0.85rem; height: 38px;" />
-                  </div>
-                  <div>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="addItemToOrderCart()" style="height: 38px; white-space: nowrap;">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                      <span>إضافة</span>
-                    </button>
+                <div style="font-weight: 700; font-size: 0.86rem; color: var(--text-main); margin-bottom: 12px;">إضافة مواد ولوازم إلى الطلبية:</div>
+                
+                <div class="form-group">
+                  <label class="form-label" style="font-size: 0.78rem;">تصفية بالصنف</label>
+                  <select id="order-item-cat-select" class="form-control" onchange="onOrderItemCatChanged()">
+                    <option value="">-- كافة الأصناف --</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" style="font-size: 0.78rem;">المادة واللوازم المطلوبة</label>
+                  <select id="order-item-id-select" class="form-control">
+                    <option value="">-- اختر المادة --</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" style="font-size: 0.78rem;">الكمية المطلوبة</label>
+                  <div class="qty-stepper-wrap">
+                    <button type="button" class="stepper-btn" onclick="stepOrderQty(-1)" title="إنقاص الكمية">-</button>
+                    <input type="number" id="order-item-qty-input" class="form-control stepper-input tabular-nums" value="1" min="1" max="999" />
+                    <button type="button" class="stepper-btn" onclick="stepOrderQty(1)" title="زيادة الكمية">+</button>
                   </div>
                 </div>
+
+                <button type="button" class="btn btn-secondary w-full" onclick="addItemToOrderCart()" style="margin-top: 8px;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  <span>إضافة المادة إلى الطلبية</span>
+                </button>
+              </div>
 
                 <!-- جدول المواد المضافة للطلبية الحالية -->
                 <div style="margin-top: 12px;" id="order-items-preview-wrap">
@@ -3128,9 +3193,9 @@
 
             <!-- 2. إدارة المواد واللوازم (إضافة، تعديل، حذف) -->
             <div id="settings-pane-items" class="settings-pane" style="display: none;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; gap: 10px; flex-wrap: wrap;">
-                <input type="text" id="settings-items-search" class="form-control" style="max-width: 350px;" placeholder="بحث في المواد..." oninput="renderSettingsItemsTable()" />
-                <button class="btn btn-primary btn-sm" onclick="openNewItemModal()">+ إضافة مادة جديدة</button>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; gap: 10px; flex-wrap: wrap; width: 100%;">
+                <input type="text" id="settings-items-search" class="form-control" style="flex: 1 1 280px; width: 100%;" placeholder="بحث في المواد..." oninput="renderSettingsItemsTable()" />
+                <button class="btn btn-primary btn-sm" onclick="openNewItemModal()" style="white-space: nowrap;">+ إضافة مادة جديدة</button>
               </div>
               <div class="table-scroll-wrapper">
                 <table class="data-table">
@@ -3152,9 +3217,12 @@
 
             <!-- 3. إدارة الجهات والمستفيدين -->
             <div id="settings-pane-dests" class="settings-pane" style="display: none;">
-              <div style="margin-bottom: 16px; max-width: 500px; display: flex; gap: 10px;">
+              <div style="margin-bottom: 16px; max-width: 600px; display: flex; gap: 10px; align-items: stretch;">
                 <input type="text" id="new-dest-name-input" class="form-control" placeholder="اسم الجهة أو المصلحة الجديدة..." />
-                <button class="btn btn-primary btn-sm" onclick="addNewDestination()">+ إضافة جهة</button>
+                <button type="button" class="btn btn-primary btn-sm btn-twoline" onclick="addNewDestination()">
+                  <span>+ إضافة</span>
+                  <span>الجهة</span>
+                </button>
               </div>
               <div id="settings-destinations-accordion" style="display: flex; flex-direction: column; gap: 10px;">
                 <!-- يملأ ديناميكياً -->
@@ -3248,24 +3316,29 @@
 
                 <div class="grid-2">
                   <div class="form-group">
-                    <label class="form-label">الاسم الكامل للمسؤول <span style="color: var(--danger);">*</span></label>
+                    <label class="form-label"><span class="req-star">*</span> الاسم الكامل للمسؤول</label>
                     <input type="text" id="profile-full-name" class="form-control" placeholder="محمد أيت حمادي" required />
                   </div>
                   <div class="form-group">
-                    <label class="form-label">الصفة أو الدور الوظيفي <span style="color: var(--danger);">*</span></label>
+                    <label class="form-label"><span class="req-star">*</span> الصفة أو الدور الوظيفي</label>
                     <input type="text" id="profile-job-title" class="form-control" placeholder="المسؤول عن المستودع وتدبير المخزون" required />
                   </div>
                 </div>
 
                 <div class="grid-2">
                   <div class="form-group">
-                    <label class="form-label">مقر العمل أو جهة العمل <span style="color: var(--danger);">*</span></label>
+                    <label class="form-label"><span class="req-star">*</span> مقر العمل أو جهة العمل</label>
                     <input type="text" id="profile-workplace" class="form-control" placeholder="المديرية الإقليمية للعدل بسطات" required />
                   </div>
                   <div class="form-group">
                     <label class="form-label">المصلحة أو القسم الإداري</label>
                     <input type="text" id="profile-department" class="form-control" placeholder="مصلحة التجهيز وتدبير الممتلكات ونظم المعلومات" />
                   </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">المهام والاختصاصات المكلف بها</label>
+                  <input type="text" id="profile-duties" class="form-control" placeholder="تدبير مستودع اللوازم والمستهلكات، تسليم التجهيزات، إعداد الإشهادات، ومتابعة الجرد الدوري..." />
                 </div>
 
                 <div class="grid-2">
@@ -3307,6 +3380,66 @@
   <!-- ====================================================================
        النوافذ المنبثقة (Modals)
        ==================================================================== -->
+
+  <!-- نافذة تخصيص النطاق الزمني الذكية للوحة القيادة -->
+  <div id="timeframe-modal" class="modal-overlay" onclick="if(event.target===this) closeTimeframeModal();">
+    <div class="modal-card" style="max-width: 480px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.2rem;">⚙️</span>
+          <h3 class="modal-title">تخصيص النطاق الزمني للإحصائيات</h3>
+        </div>
+        <button type="button" class="sidebar-close-btn" onclick="closeTimeframeModal()">&times;</button>
+      </div>
+      <div class="modal-body" style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="font-size: 0.82rem; color: var(--text-muted);">
+          اختر نطاقاً زمنياً جاهزاً أو حدد تاريخي البداية والنهاية لحصر إحصائيات لوحة القيادة والمؤشرات:
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <button type="button" class="btn btn-outline btn-sm timeframe-preset-btn active" id="modal-tf-all" onclick="selectTimeframePreset('all')">
+            كامل البيانات (الكل)
+          </button>
+          <button type="button" class="btn btn-outline btn-sm timeframe-preset-btn" id="modal-tf-current-year" onclick="selectTimeframePreset('current-year')">
+            السنة الحالية (2026)
+          </button>
+          <button type="button" class="btn btn-outline btn-sm timeframe-preset-btn" id="modal-tf-last-month" onclick="selectTimeframePreset('last-month')">
+            الشهر الماضي
+          </button>
+          <button type="button" class="btn btn-outline btn-sm timeframe-preset-btn" id="modal-tf-last-3-months" onclick="selectTimeframePreset('last-3-months')">
+            آخر 3 أشهر
+          </button>
+          <button type="button" class="btn btn-outline btn-sm timeframe-preset-btn" id="modal-tf-last-6-months" onclick="selectTimeframePreset('last-6-months')">
+            آخر 6 أشهر
+          </button>
+          <button type="button" class="btn btn-outline btn-sm timeframe-preset-btn" id="modal-tf-custom" onclick="selectTimeframePreset('custom')">
+            نطاق مخصص 📅
+          </button>
+        </div>
+
+        <!-- حقول النطاق الزمني المخصص -->
+        <div id="timeframe-custom-range-wrap" style="background: var(--bg-muted); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 12px; display: none;">
+          <div style="font-weight: 700; font-size: 0.82rem; margin-bottom: 8px; color: var(--text-main);">تحديد فترة مخصصة (من / إلى):</div>
+          <div class="grid-2">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label" style="font-size: 0.78rem;">من تاريخ:</label>
+              <input type="date" id="timeframe-custom-start" class="form-control" />
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label" style="font-size: 0.78rem;">إلى تاريخ:</label>
+              <input type="date" id="timeframe-custom-end" class="form-control" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeTimeframeModal()">إلغاء</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="applyTimeframeModal()">
+          تطبيق النطاق الزمني
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- نافذة "حول البرنامج" -->
   <div id="about-app-modal" class="modal-overlay" onclick="if(event.target===this) closeAboutAppModal();">
@@ -4036,6 +4169,19 @@
       "#6366f1"  // Indigo
     ];
 
+    // دوال الحماية وضمان عدم تسرب undefined أو null مع الحفاظ على الصفر الرياضي
+    function safeText(val, fallback = 'غير محدد') {
+      if (val === undefined || val === null) return fallback;
+      const s = String(val).trim();
+      return (s === '' || s === 'undefined' || s === 'null') ? fallback : s;
+    }
+
+    function safeNum(val, fallback = 0) {
+      if (val === undefined || val === null || val === '') return fallback;
+      const n = Number(val);
+      return isNaN(n) ? fallback : n;
+    }
+
     // 3. الحالة المركزية
     let state = {
       profile: {},
@@ -4069,9 +4215,13 @@
       orderFormItems: [],
       pendingConvertedOrderId: null,
       currentTab: 'dashboard-view',
-      timeframe: 'all', // 'all' | 'current-year' | 'last-month' | 'last-3-months' | 'last-6-months'
+      timeframe: 'all', // 'all' | 'current-year' | 'last-month' | 'last-3-months' | 'last-6-months' | 'custom'
+      customStartDate: '',
+      customEndDate: '',
       destChartMode: 'bar', // 'bar' | 'donut'
       itemsChartMode: 'bar', // 'bar' | 'donut'
+      recipientsChartMode: 'bar', // 'bar' | 'donut'
+      categoriesChartMode: 'donut', // 'bar' | 'donut'
       calendarDate: new Date(2026, 8, 1), // شتنبر 2026 (تاريخ المعطيات المسجلة)
       selectedVouchersForPrint: new Set(),
       editingVoucherState: null,
@@ -4259,16 +4409,38 @@
     // 8. لوحة القيادة الإحصائية ومبياناتها التفاعلية
     function setDestChartMode(mode) {
       state.destChartMode = mode;
-      document.getElementById('btn-chart-dest-bar').classList.toggle('active', mode === 'bar');
-      document.getElementById('btn-chart-dest-donut').classList.toggle('active', mode === 'donut');
+      const bBar = document.getElementById('btn-chart-dest-bar');
+      const bDonut = document.getElementById('btn-chart-dest-donut');
+      if (bBar) bBar.classList.toggle('active', mode === 'bar');
+      if (bDonut) bDonut.classList.toggle('active', mode === 'donut');
       renderDestChart();
     }
 
     function setItemsChartMode(mode) {
       state.itemsChartMode = mode;
-      document.getElementById('btn-chart-items-bar').classList.toggle('active', mode === 'bar');
-      document.getElementById('btn-chart-items-donut').classList.toggle('active', mode === 'donut');
+      const bBar = document.getElementById('btn-chart-items-bar');
+      const bDonut = document.getElementById('btn-chart-items-donut');
+      if (bBar) bBar.classList.toggle('active', mode === 'bar');
+      if (bDonut) bDonut.classList.toggle('active', mode === 'donut');
       renderTopItemsChart();
+    }
+
+    function setRecipientsChartMode(mode) {
+      state.recipientsChartMode = mode;
+      const bBar = document.getElementById('btn-chart-recipients-bar');
+      const bDonut = document.getElementById('btn-chart-recipients-donut');
+      if (bBar) bBar.classList.toggle('active', mode === 'bar');
+      if (bDonut) bDonut.classList.toggle('active', mode === 'donut');
+      renderRecipientsChart();
+    }
+
+    function setCategoriesChartMode(mode) {
+      state.categoriesChartMode = mode;
+      const bBar = document.getElementById('btn-chart-cats-bar');
+      const bDonut = document.getElementById('btn-chart-cats-donut');
+      if (bBar) bBar.classList.toggle('active', mode === 'bar');
+      if (bDonut) bDonut.classList.toggle('active', mode === 'donut');
+      renderCategoriesChart();
     }
 
     // دوال النطاق الزمني والتصفية الذكية
@@ -4279,6 +4451,13 @@
       return txs.filter(t => {
         const iso = getTxISODate(t);
         if (!iso) return true;
+
+        if (state.timeframe === 'custom') {
+          if (state.customStartDate && iso < state.customStartDate) return false;
+          if (state.customEndDate && iso > state.customEndDate) return false;
+          return true;
+        }
+
         const parts = iso.split('-');
         if (parts.length < 3) return true;
         const y = parseInt(parts[0], 10);
@@ -4304,45 +4483,88 @@
       });
     }
 
-    function toggleTimeframeDropdown() {
-      const dd = document.getElementById('timeframe-dropdown');
-      if (!dd) return;
-      const isOpen = dd.style.display === 'block';
-      dd.style.display = isOpen ? 'none' : 'block';
+    let pendingTimeframePreset = 'all';
+
+    function openTimeframeModal() {
+      const modal = document.getElementById('timeframe-modal');
+      if (!modal) return;
+      selectTimeframePreset(state.timeframe || 'all');
+      if (state.timeframe === 'custom') {
+        const s = document.getElementById('timeframe-custom-start');
+        const e = document.getElementById('timeframe-custom-end');
+        if (s) s.value = state.customStartDate || '';
+        if (e) e.value = state.customEndDate || '';
+      }
+      modal.classList.add('open');
     }
 
-    // إغلاق قائمة النطاق الزمني عند النقر بالخارج
-    document.addEventListener('click', (e) => {
-      const dd = document.getElementById('timeframe-dropdown');
-      const btn = document.getElementById('btn-dashboard-timeframe');
-      if (dd && btn && !btn.contains(e.target) && !dd.contains(e.target)) {
-        dd.style.display = 'none';
-      }
-    });
+    function closeTimeframeModal() {
+      const modal = document.getElementById('timeframe-modal');
+      if (modal) modal.classList.remove('open');
+    }
 
-    function setTimeframe(tf) {
-      state.timeframe = tf;
+    function selectTimeframePreset(preset) {
+      pendingTimeframePreset = preset;
+      ['all', 'current-year', 'last-month', 'last-3-months', 'last-6-months', 'custom'].forEach(k => {
+        const btn = document.getElementById(`modal-tf-${k}`);
+        if (btn) {
+          if (k === preset) {
+            btn.classList.add('active');
+            btn.classList.remove('btn-outline');
+            btn.classList.add('btn-primary');
+          } else {
+            btn.classList.remove('active');
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-outline');
+          }
+        }
+      });
+
+      const wrap = document.getElementById('timeframe-custom-range-wrap');
+      if (wrap) wrap.style.display = (preset === 'custom') ? 'block' : 'none';
+    }
+
+    function applyTimeframeModal() {
+      state.timeframe = pendingTimeframePreset;
       const labels = {
         'all': 'كامل البيانات (الكل)',
         'current-year': 'السنة الحالية (2026)',
         'last-month': 'الشهر الماضي',
         'last-3-months': 'آخر 3 أشهر',
-        'last-6-months': 'آخر 6 أشهر'
+        'last-6-months': 'آخر 6 أشهر',
+        'custom': 'نطاق مخصص'
       };
 
+      if (pendingTimeframePreset === 'custom') {
+        const sVal = document.getElementById('timeframe-custom-start').value;
+        const eVal = document.getElementById('timeframe-custom-end').value;
+        if (!sVal && !eVal) {
+          showToast('يرجى تحديد تاريخ البداية أو النهاية للنطاق المخصص', 'warning');
+          return;
+        }
+        state.customStartDate = sVal;
+        state.customEndDate = eVal;
+      }
+
       const badge = document.getElementById('dashboard-period-badge');
-      if (badge) badge.textContent = labels[tf] || tf;
+      if (badge) {
+        if (state.timeframe === 'custom') {
+          const s = state.customStartDate || '...';
+          const e = state.customEndDate || '...';
+          badge.textContent = `فترة مخصصة (${s} إلى ${e})`;
+        } else {
+          badge.textContent = labels[state.timeframe] || state.timeframe;
+        }
+      }
 
-      ['all', 'current-year', 'last-month', 'last-3-months', 'last-6-months'].forEach(k => {
-        const btn = document.getElementById(`tf-opt-${k}`);
-        if (btn) btn.classList.toggle('active', k === tf);
-      });
-
-      const dd = document.getElementById('timeframe-dropdown');
-      if (dd) dd.style.display = 'none';
-
+      closeTimeframeModal();
       renderDashboard();
-      showToast(`تم تحديث مؤشرات لوحة القيادة: ${labels[tf]}`, 'info');
+      showToast(`تم تطبيق النطاق الزمني: ${badge ? badge.textContent : labels[state.timeframe]}`, 'info');
+    }
+
+    function setTimeframe(tf) {
+      pendingTimeframePreset = tf;
+      applyTimeframeModal();
     }
 
     function renderDashboard() {
@@ -4395,15 +4617,16 @@
         color: DEST_COLORS[idx % DEST_COLORS.length]
       }));
 
-      const totalOps = txs.length || 1;
+      const totalOps = txs.length || 0;
 
       if (state.destChartMode === 'donut') {
+        const effectiveTotal = totalOps || 1;
         let cumulativePercent = 0;
         const radius = 55;
         const circumference = 2 * Math.PI * radius;
 
         const circles = entries.filter(e => e.count > 0).map(e => {
-          const pct = e.count / totalOps;
+          const pct = e.count / effectiveTotal;
           const strokeLength = pct * circumference;
           const spaceLength = circumference - strokeLength;
           const offset = -(cumulativePercent * circumference);
@@ -4416,14 +4639,18 @@
           <div class="legend-item" title="${e.name}">
             <span class="legend-color-dot" style="background: ${e.color};"></span>
             <span class="legend-text">${e.name}</span>
-            <span class="legend-val tabular-nums">${e.count} (${Math.round((e.count / totalOps) * 100)}%)</span>
+            <span class="legend-val tabular-nums">${e.count} (${totalOps > 0 ? Math.round((e.count / totalOps) * 100) : 0}%)</span>
           </div>
         `).join('');
 
         container.innerHTML = `
           <div class="donut-chart-wrap">
-            <svg width="140" height="140" viewBox="0 0 140 140" style="transform: rotate(-90deg); flex-shrink: 0;">
-              ${circles || `<circle cx="70" cy="70" r="${radius}" fill="none" stroke="var(--border-subtle)" stroke-width="22"></circle>`}
+            <svg width="140" height="140" viewBox="0 0 140 140" style="flex-shrink: 0;">
+              <g transform="rotate(-90 70 70)">
+                ${circles || `<circle cx="70" cy="70" r="${radius}" fill="none" stroke="var(--border-subtle)" stroke-width="22"></circle>`}
+              </g>
+              <text x="70" y="65" text-anchor="middle" dominant-baseline="central" font-size="16" font-weight="900" fill="var(--text-main)" style="font-family: inherit;">${totalOps}</text>
+              <text x="70" y="81" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="700" fill="var(--text-muted)" style="font-family: inherit;">إشهاد</text>
             </svg>
             <div class="chart-legend-grid">
               ${legendHtml}
@@ -4431,8 +4658,9 @@
           </div>
         `;
       } else {
+        const effectiveTotal = totalOps || 1;
         container.innerHTML = entries.map(e => {
-          const pct = Math.round((e.count / totalOps) * 100);
+          const pct = totalOps > 0 ? Math.round((e.count / effectiveTotal) * 100) : 0;
           return `
             <div style="margin-bottom: 8px;">
               <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 3px;">
@@ -4470,7 +4698,7 @@
       })).sort((a, b) => b.total - a.total).slice(0, 5);
 
       const maxDistributed = sorted.length > 0 ? sorted[0].total : 1;
-      const totalAll = totalAllDistributions || 1;
+      const totalAll = totalAllDistributions;
 
       if (sorted.length === 0) {
         container.innerHTML = '<div style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 20px;">لا توجد مواد مسلمة في هذه الفترة</div>';
@@ -4478,13 +4706,14 @@
       }
 
       if (state.itemsChartMode === 'donut') {
+        const effectiveTotal = totalAll || 1;
         let cumulativePercent = 0;
         const radius = 55;
         const circumference = 2 * Math.PI * radius;
 
         const circles = sorted.map((item, idx) => {
           const color = DEST_COLORS[idx % DEST_COLORS.length];
-          const pct = item.total / totalAll;
+          const pct = item.total / effectiveTotal;
           const strokeLength = pct * circumference;
           const spaceLength = circumference - strokeLength;
           const offset = -(cumulativePercent * circumference);
@@ -4494,7 +4723,7 @@
         }).join('');
 
         const legendHtml = sorted.map((item, idx) => {
-          const realPct = Math.round((item.total / totalAll) * 100);
+          const realPct = totalAll > 0 ? Math.round((item.total / totalAll) * 100) : 0;
           return `
             <div class="legend-item" style="max-width: 100%; overflow: hidden;" title="${item.name}">
               <span class="legend-color-dot" style="background: ${DEST_COLORS[idx % DEST_COLORS.length]};"></span>
@@ -4506,8 +4735,12 @@
 
         container.innerHTML = `
           <div class="donut-chart-wrap" style="width: 100%; overflow: hidden;">
-            <svg width="140" height="140" viewBox="0 0 140 140" style="transform: rotate(-90deg); flex-shrink: 0;">
-              ${circles}
+            <svg width="140" height="140" viewBox="0 0 140 140" style="flex-shrink: 0;">
+              <g transform="rotate(-90 70 70)">
+                ${circles}
+              </g>
+              <text x="70" y="65" text-anchor="middle" dominant-baseline="central" font-size="16" font-weight="900" fill="var(--text-main)" style="font-family: inherit;">${totalAll}</text>
+              <text x="70" y="81" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="700" fill="var(--text-muted)" style="font-family: inherit;">قطعة</text>
             </svg>
             <div class="chart-legend-grid" style="width: 100%; max-width: 260px; overflow: hidden;">
               ${legendHtml}
@@ -4517,8 +4750,7 @@
       } else {
         container.innerHTML = sorted.map((item, idx) => {
           const color = DEST_COLORS[idx % DEST_COLORS.length];
-          // النسبة الحقيقية الدقيقة من إجمالي التوزيعات دون افتراض 100%
-          const realPct = Math.round((item.total / totalAll) * 100);
+          const realPct = totalAll > 0 ? Math.round((item.total / totalAll) * 100) : 0;
           const barWidth = Math.min(100, Math.max(10, Math.round((item.total / maxDistributed) * 100)));
           return `
             <div style="margin-bottom: 10px; width: 100%; overflow: hidden;">
@@ -4566,22 +4798,66 @@
         return;
       }
 
-      container.innerHTML = sorted.map((rec, idx) => {
-        const color = DEST_COLORS[idx % DEST_COLORS.length];
-        const pct = Math.round((rec.total / (totalPieces || 1)) * 100);
-        const barWidth = Math.min(100, Math.max(12, Math.round((rec.total / maxPieces) * 100)));
-        return `
-          <div style="margin-bottom: 8px;">
-            <div style="display: flex; justify-content: space-between; align-items: baseline; font-size: 0.81rem; margin-bottom: 3px;">
-              <span style="font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 65%;" title="${rec.name}">${rec.name}</span>
-              <span class="tabular-nums" style="color: var(--text-muted); font-size: 0.74rem; font-weight: 700;">${rec.total} قطعة (${pct}%)</span>
+      if (state.recipientsChartMode === 'donut') {
+        const effectiveTotal = totalPieces || 1;
+        let cumulativePercent = 0;
+        const radius = 55;
+        const circumference = 2 * Math.PI * radius;
+
+        const circles = sorted.map((rec, idx) => {
+          const color = DEST_COLORS[idx % DEST_COLORS.length];
+          const pct = rec.total / effectiveTotal;
+          const strokeLength = pct * circumference;
+          const spaceLength = circumference - strokeLength;
+          const offset = -(cumulativePercent * circumference);
+          cumulativePercent += pct;
+
+          return `<circle cx="70" cy="70" r="${radius}" fill="none" stroke="${color}" stroke-width="22" stroke-dasharray="${strokeLength} ${spaceLength}" stroke-dashoffset="${offset}"></circle>`;
+        }).join('');
+
+        const legendHtml = sorted.map((rec, idx) => {
+          const realPct = totalPieces > 0 ? Math.round((rec.total / totalPieces) * 100) : 0;
+          return `
+            <div class="legend-item" style="max-width: 100%; overflow: hidden;" title="${rec.name}">
+              <span class="legend-color-dot" style="background: ${DEST_COLORS[idx % DEST_COLORS.length]};"></span>
+              <span class="legend-text" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${rec.name}</span>
+              <span class="legend-val tabular-nums" style="flex-shrink: 0;">${rec.total} (${realPct}%)</span>
             </div>
-            <div style="height: 7px; background: var(--bg-muted); border-radius: 4px; overflow: hidden; border: 1px solid var(--border-subtle);">
-              <div style="height: 100%; width: ${barWidth}%; background: ${color}; border-radius: 4px; transition: width 0.3s ease;"></div>
+          `;
+        }).join('');
+
+        container.innerHTML = `
+          <div class="donut-chart-wrap" style="width: 100%; overflow: hidden;">
+            <svg width="140" height="140" viewBox="0 0 140 140" style="flex-shrink: 0;">
+              <g transform="rotate(-90 70 70)">
+                ${circles}
+              </g>
+              <text x="70" y="65" text-anchor="middle" dominant-baseline="central" font-size="16" font-weight="900" fill="var(--text-main)" style="font-family: inherit;">${totalPieces}</text>
+              <text x="70" y="81" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="700" fill="var(--text-muted)" style="font-family: inherit;">قطعة</text>
+            </svg>
+            <div class="chart-legend-grid" style="width: 100%; max-width: 260px; overflow: hidden;">
+              ${legendHtml}
             </div>
           </div>
         `;
-      }).join('');
+      } else {
+        container.innerHTML = sorted.map((rec, idx) => {
+          const color = DEST_COLORS[idx % DEST_COLORS.length];
+          const pct = totalPieces > 0 ? Math.round((rec.total / totalPieces) * 100) : 0;
+          const barWidth = Math.min(100, Math.max(12, Math.round((rec.total / maxPieces) * 100)));
+          return `
+            <div style="margin-bottom: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; font-size: 0.81rem; margin-bottom: 3px;">
+                <span style="font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 65%;" title="${rec.name}">${rec.name}</span>
+                <span class="tabular-nums" style="color: var(--text-muted); font-size: 0.74rem; font-weight: 700;">${rec.total} قطعة (${pct}%)</span>
+              </div>
+              <div style="height: 7px; background: var(--bg-muted); border-radius: 4px; overflow: hidden; border: 1px solid var(--border-subtle);">
+                <div style="height: 100%; width: ${barWidth}%; background: ${color}; border-radius: 4px; transition: width 0.3s ease;"></div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
     }
 
     // مبيان توزيع اللوازم حسب الأصناف
@@ -4613,38 +4889,62 @@
         return;
       }
 
-      let cumulativePercent = 0;
-      const radius = 55;
-      const circumference = 2 * Math.PI * radius;
+      if (state.categoriesChartMode === 'donut') {
+        const effectiveTotal = totalAll || 1;
+        let cumulativePercent = 0;
+        const radius = 55;
+        const circumference = 2 * Math.PI * radius;
 
-      const circles = entries.map(e => {
-        const pct = e.count / (totalAll || 1);
-        const strokeLength = pct * circumference;
-        const spaceLength = circumference - strokeLength;
-        const offset = -(cumulativePercent * circumference);
-        cumulativePercent += pct;
+        const circles = entries.map(e => {
+          const pct = e.count / effectiveTotal;
+          const strokeLength = pct * circumference;
+          const spaceLength = circumference - strokeLength;
+          const offset = -(cumulativePercent * circumference);
+          cumulativePercent += pct;
 
-        return `<circle cx="70" cy="70" r="${radius}" fill="none" stroke="${e.color}" stroke-width="22" stroke-dasharray="${strokeLength} ${spaceLength}" stroke-dashoffset="${offset}"></circle>`;
-      }).join('');
+          return `<circle cx="70" cy="70" r="${radius}" fill="none" stroke="${e.color}" stroke-width="22" stroke-dasharray="${strokeLength} ${spaceLength}" stroke-dashoffset="${offset}"></circle>`;
+        }).join('');
 
-      const legendHtml = entries.map(e => `
-        <div class="legend-item" title="${e.name}">
-          <span class="legend-color-dot" style="background: ${e.color};"></span>
-          <span class="legend-text">${e.name}</span>
-          <span class="legend-val tabular-nums">${e.count} (${Math.round((e.count / (totalAll || 1)) * 100)}%)</span>
-        </div>
-      `).join('');
-
-      container.innerHTML = `
-        <div class="donut-chart-wrap">
-          <svg width="140" height="140" viewBox="0 0 140 140" style="transform: rotate(-90deg); flex-shrink: 0;">
-            ${circles}
-          </svg>
-          <div class="chart-legend-grid">
-            ${legendHtml}
+        const legendHtml = entries.map(e => `
+          <div class="legend-item" title="${e.name}">
+            <span class="legend-color-dot" style="background: ${e.color};"></span>
+            <span class="legend-text">${e.name}</span>
+            <span class="legend-val tabular-nums">${e.count} (${totalAll > 0 ? Math.round((e.count / totalAll) * 100) : 0}%)</span>
           </div>
-        </div>
-      `;
+        `).join('');
+
+        container.innerHTML = `
+          <div class="donut-chart-wrap">
+            <svg width="140" height="140" viewBox="0 0 140 140" style="flex-shrink: 0;">
+              <g transform="rotate(-90 70 70)">
+                ${circles}
+              </g>
+              <text x="70" y="65" text-anchor="middle" dominant-baseline="central" font-size="16" font-weight="900" fill="var(--text-main)" style="font-family: inherit;">${totalAll}</text>
+              <text x="70" y="81" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="700" fill="var(--text-muted)" style="font-family: inherit;">قطعة</text>
+            </svg>
+            <div class="chart-legend-grid">
+              ${legendHtml}
+            </div>
+          </div>
+        `;
+      } else {
+        const maxCat = entries[0]?.count || 1;
+        container.innerHTML = entries.map(e => {
+          const pct = totalAll > 0 ? Math.round((e.count / totalAll) * 100) : 0;
+          const barWidth = Math.min(100, Math.max(10, Math.round((e.count / maxCat) * 100)));
+          return `
+            <div style="margin-bottom: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; font-size: 0.81rem; margin-bottom: 3px;">
+                <span style="font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 65%;" title="${e.name}">${e.name}</span>
+                <span class="tabular-nums" style="color: var(--text-muted); font-size: 0.74rem; font-weight: 700;">${e.count} قطعة (${pct}%)</span>
+              </div>
+              <div style="height: 7px; background: var(--bg-muted); border-radius: 4px; overflow: hidden; border: 1px solid var(--border-subtle);">
+                <div style="height: 100%; width: ${barWidth}%; background: ${e.color}; border-radius: 4px; transition: width 0.3s ease;"></div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
     }
 
     function renderRecentTransactions(txsList) {
@@ -5888,7 +6188,7 @@ ${itemsText}
           html += `
             <tr>
               <td style="text-align: center; font-size: 0.75rem;" class="tabular-nums">${rowIdx++}</td>
-              <td><strong class="inventory-item-name">${item.name}</strong></td>
+              <td><strong class="inventory-item-name" onclick="openEditItemModal('${item.id}')" title="${item.name} (اضغط للتعديل وعرض التفاصيل الكاملة)">${item.name}</strong></td>
               <td><span class="inventory-item-cat">${item.category}</span></td>
               <td style="text-align: center;"><strong class="tabular-nums font-bold" style="font-size: 0.84rem;">${item.stock}</strong></td>
               <td style="text-align: center;">
@@ -5999,6 +6299,14 @@ ${itemsText}
 
       itemSelect.innerHTML = '<option value="">-- اختر المادة --</option>' +
         filtered.map(i => `<option value="${i.id}">${i.name} (المتوفر بالمستودع: ${i.stock})</option>`).join('');
+    }
+
+    function stepOrderQty(delta) {
+      const input = document.getElementById('order-item-qty-input');
+      if (!input) return;
+      let val = parseInt(input.value, 10) || 1;
+      val = Math.max(1, Math.min(999, val + delta));
+      input.value = val;
     }
 
     function addItemToOrderCart() {
@@ -6350,7 +6658,7 @@ ${itemsText}
       tbody.innerHTML = filtered.map((it, idx) => `
         <tr>
           <td style="text-align: center; font-size: 0.75rem;" class="tabular-nums">${idx + 1}</td>
-          <td><strong class="inventory-item-name">${it.name}</strong></td>
+          <td><strong class="inventory-item-name" onclick="openEditItemModal('${it.id}')" title="${it.name} (اضغط للتعديل وعرض التفاصيل الكاملة)">${it.name}</strong></td>
           <td><span class="inventory-item-cat">${it.category}</span></td>
           <td style="text-align: center;"><strong class="tabular-nums font-bold" style="font-size: 0.84rem;">${it.stock}</strong></td>
           <td style="text-align: center;">
@@ -6469,9 +6777,12 @@ ${itemsText}
               </button>
             </div>
             <div style="padding: 12px; background: var(--bg-card); border-top: 1px solid var(--border-subtle);">
-              <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+              <div style="display: flex; gap: 8px; margin-bottom: 8px; align-items: stretch;">
                 <input type="text" id="add-recip-${destName}" class="form-control" style="font-size: 0.82rem; padding: 6px 10px;" placeholder="اسم مستفيد جديد تابع لهذه الجهة..." />
-                <button class="btn btn-secondary btn-sm" onclick="addRecipientToDest('${destName}')">+ إضافة مستفيد</button>
+                <button type="button" class="btn btn-secondary btn-sm btn-twoline" onclick="addRecipientToDest('${destName}')">
+                  <span>+ إضافة</span>
+                  <span>المستفيد</span>
+                </button>
               </div>
               <div style="display: flex; flex-wrap: wrap; gap: 6px;">
                 ${persons.map((p, pIdx) => `
@@ -6584,6 +6895,7 @@ ${itemsText}
       const u = state.profile.userProfile;
       const fnInput = document.getElementById('profile-full-name');
       const jtInput = document.getElementById('profile-job-title');
+      const dtInput = document.getElementById('profile-duties');
       const wpInput = document.getElementById('profile-workplace');
       const dpInput = document.getElementById('profile-department');
       const phInput = document.getElementById('profile-phone');
@@ -6592,6 +6904,7 @@ ${itemsText}
 
       if (fnInput) fnInput.value = u.fullName || '';
       if (jtInput) jtInput.value = u.jobTitle || '';
+      if (dtInput) dtInput.value = u.duties || '';
       if (wpInput) wpInput.value = u.workplace || '';
       if (dpInput) dpInput.value = u.department || '';
       if (phInput) phInput.value = u.phone || '';
@@ -6602,6 +6915,7 @@ ${itemsText}
     function saveUserProfileSettings() {
       const fnInput = document.getElementById('profile-full-name');
       const jtInput = document.getElementById('profile-job-title');
+      const dtInput = document.getElementById('profile-duties');
       const wpInput = document.getElementById('profile-workplace');
       const dpInput = document.getElementById('profile-department');
       const phInput = document.getElementById('profile-phone');
@@ -6620,6 +6934,7 @@ ${itemsText}
       state.profile.userProfile = {
         fullName: fullName,
         jobTitle: jobTitle || 'المسؤول عن المستودع وتدبير المخزون',
+        duties: dtInput?.value.trim() || '',
         workplace: workplace || 'المديرية الإقليمية للعدل بسطات',
         department: dpInput?.value.trim() || '',
         phone: phInput?.value.trim() || '',
