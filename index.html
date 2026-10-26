@@ -2075,7 +2075,7 @@
             </svg>
           </div>
           <div class="brand-titles">
-            <h1>تدبير المخزون واللوازم</h1>
+            <h1>تدبير المخزون والمواد</h1>
             <span>المديرية الإقليمية بسطات</span>
           </div>
         </div>
@@ -2218,19 +2218,17 @@
              ==================================================================== -->
         <section id="dashboard-view" class="view-panel">
           
-          <!-- شريط ترويسة لوحة القيادة مع زر الترس لتخصيص النطاق الزمني -->
-          <div class="dashboard-header-bar" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
-            <div>
-              <h2 style="font-size: 1.22rem; font-weight: 800; color: var(--text-main); margin: 0; display: flex; align-items: center; gap: 8px;">
-                <span>لوحة المؤشرات والقيادة المركزية</span>
-                <span id="dashboard-period-badge" class="badge" style="background: var(--primary-soft); color: var(--primary); font-size: 0.74rem; font-weight: 700; padding: 3px 8px; border-radius: var(--radius-full);">كامل البيانات (الكل)</span>
-              </h2>
-              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">متابعة فورية ومباشرة لحركة المخزون وإشهادات التسليم الصادرة بمحاكم الدائرة القضائية</div>
-            </div>
+          <!-- شريط ترويسة لوحة القيادة مع زر الترس لتخصيص النطاق الزمني على نفس السطر -->
+          <div class="dashboard-header-bar" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; gap: 12px;">
+            <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin: 0; line-height: 1.2;">
+              لوحة المؤشرات والقيادة
+            </h2>
 
-            <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <!-- تسمية النطاق الزمني تظهر على الشاشات الكبيرة وتختفي على الهاتف -->
+              <span class="dashboard-period-label-desktop" id="dashboard-period-badge" style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">كامل البيانات</span>
               <!-- زر الترس الأيقوني فقط لتخصيص النطاق الزمني -->
-              <button type="button" class="btn btn-secondary btn-sm" id="btn-dashboard-timeframe" onclick="openTimeframeModal()" title="تخصيص النطاق الزمني للإحصائيات" aria-label="تخصيص النطاق الزمني للإحصائيات" style="display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; padding: 0; border-radius: var(--radius-md); font-size: 1.15rem;">
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-dashboard-timeframe" onclick="openTimeframeModal()" title="تخصيص النطاق الزمني للإحصائيات" aria-label="تخصيص النطاق الزمني للإحصائيات" style="display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; padding: 0; border-radius: var(--radius-md); font-size: 1.15rem; flex-shrink: 0;">
                 ⚙️
               </button>
             </div>
@@ -2259,7 +2257,7 @@
               </div>
               <div class="kpi-number" id="kpi-total-distributed">0</div>
               <div class="kpi-footer-box">
-                <div class="kpi-title-sub">مجموع القطع واللوازم المسلمة لكافة الجهات</div>
+                <div class="kpi-title-sub">مجموع القطع والمواد المسلمة لكافة الجهات</div>
               </div>
             </div>
 
@@ -2307,7 +2305,7 @@
               </div>
               <div class="kpi-number" id="kpi-total-categories">11</div>
               <div class="kpi-footer-box">
-                <div class="kpi-title-sub">تصنيفات اللوازم والمستهلكات الإدارية المعتمدة</div>
+                <div class="kpi-title-sub">تصنيفات المواد والمستهلكات الإدارية المعتمدة</div>
               </div>
             </div>
 
@@ -2365,8 +2363,8 @@
             <div class="card" style="width: 100%; max-width: 100%; box-sizing: border-box; overflow: hidden;">
               <div class="card-header">
                 <div>
-                  <h3 class="card-title">المستفيدون الأكثر استلاماً</h3>
-                  <div class="card-subtitle">توزيع العمليات وفق المسؤولين والموظفين المستلمين</div>
+                  <h3 class="card-title">الأكثر تسلماً للمواد</h3>
+                  <div class="card-subtitle">توزيع كميات المواد المستلمة حسب المستفيدين</div>
                 </div>
                 <div class="header-actions">
                   <button type="button" class="btn-icon active" id="btn-chart-recipients-bar" onclick="setRecipientsChartMode('bar')" title="عرض بالأشرطة الأفقية">
@@ -2382,11 +2380,11 @@
               </div>
             </div>
 
-            <!-- توزيع اللوازم حسب الأصناف (Category Breakdown) -->
+            <!-- توزيع المواد حسب الأصناف (Category Breakdown) -->
             <div class="card" style="width: 100%; max-width: 100%; box-sizing: border-box; overflow: hidden;">
               <div class="card-header">
                 <div>
-                  <h3 class="card-title">توزيع اللوازم حسب الأصناف</h3>
+                  <h3 class="card-title">توزيع المواد حسب الأصناف</h3>
                   <div class="card-subtitle">النسبة المئوية لحجم الاستهلاك وفق كل فئة من المواد</div>
                 </div>
                 <div class="header-actions">
@@ -2430,7 +2428,7 @@
             <div class="card-header">
               <div>
                 <h2 class="card-title">تسليم جديد</h2>
-                <div class="card-subtitle">إصدار إشهاد تسليم مواد ولوازم رسمية وخصمها من المخزون وتوليد الوثيقة الرسمية</div>
+                <div class="card-subtitle">إصدار إشهاد تسليم مواد رسمية وخصمها من المخزون وتوليد الوثيقة الرسمية</div>
               </div>
             </div>
 
@@ -2558,13 +2556,8 @@
                 <div class="form-group">
                   <label class="form-label">ملاحظات سريعة</label>
                   <input type="text" id="cart-item-notes" class="form-control" placeholder="اكتب ملاحظة أو اختر من الكبسولات..." />
-                  <div class="preset-chips-wrap">
-                    <button type="button" class="chip-btn" onclick="setQuickNote('حسب الطلب')">حسب الطلب</button>
-                    <button type="button" class="chip-btn" onclick="setQuickNote('تعويض عطب')">تعويض عطب</button>
-                    <button type="button" class="chip-btn" onclick="setQuickNote('تجهيز أولي')">تجهيز أولي</button>
-                    <button type="button" class="chip-btn" onclick="setQuickNote('عاجل')">عاجل</button>
-                    <button type="button" class="chip-btn" onclick="setQuickNote('دورية روتينية')">دورية روتينية</button>
-                    <button type="button" class="chip-btn" onclick="setQuickNote('حصة إضافية')">حصة إضافية</button>
+                  <div class="preset-chips-wrap" id="preset-chips-container">
+                    <!-- يملأ ديناميكياً بأبرز 3 إلى 5 ملاحظات نشطة وبألوان باستيل ناعمة -->
                   </div>
                 </div>
 
@@ -2611,9 +2604,7 @@
               <div class="issuance-square-actions-row" role="group" aria-label="أزرار إجراءات إشهاد التسليم">
                 <!-- 1. حفظ العملية -->
                 <button type="button" class="btn-square-action btn-sq-save" onclick="submitIssuance(false)" 
-                        title="حفظ العملية" aria-label="حفظ العملية"
-                        onmouseenter="setActionHint('حفظ العملية: تسجيل الإشهاد في الأرشيف وخصم المواد من المخزون')" onmouseleave="clearActionHint()"
-                        onfocus="setActionHint('حفظ العملية: تسجيل الإشهاد في الأرشيف وخصم المواد من المخزون')" onblur="clearActionHint()">
+                        title="حفظ العملية: تسجيل الإشهاد في الأرشيف وخصم المواد من المخزون" aria-label="حفظ العملية">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
                     <polyline points="17 21 17 13 7 13 7 21"></polyline>
@@ -2623,9 +2614,7 @@
 
                 <!-- 2. تصفير النموذج -->
                 <button type="button" class="btn-square-action btn-sq-reset" onclick="resetIssuanceForm()" 
-                        title="تصفير النموذج" aria-label="تصفير النموذج"
-                        onmouseenter="setActionHint('تصفير النموذج: تفريغ السلة والحقول وإعادة تعيين النموذج')" onmouseleave="clearActionHint()"
-                        onfocus="setActionHint('تصفير النموذج: تفريغ السلة والحقول وإعادة تعيين النموذج')" onblur="clearActionHint()">
+                        title="تصفير النموذج: تفريغ السلة والحقول وإعادة تعيين النموذج" aria-label="تصفير النموذج">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
                     <path d="M3 3v5h5"></path>
@@ -2634,9 +2623,7 @@
 
                 <!-- 3. القوالب والمفضلة -->
                 <button type="button" class="btn-square-action btn-sq-template" onclick="openFavoritesModal()" 
-                        title="القوالب والمفضلة" aria-label="القوالب والمفضلة"
-                        onmouseenter="setActionHint('القوالب والمفضلة: إدارة التشكيلات المحفوظة واسترجاعها بسرعة')" onmouseleave="clearActionHint()"
-                        onfocus="setActionHint('القوالب والمفضلة: إدارة التشكيلات المحفوظة واسترجاعها بسرعة')" onblur="clearActionHint()">
+                        title="القوالب والمفضلة: إدارة التشكيلات المحفوظة واسترجاعها بسرعة" aria-label="القوالب والمفضلة">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                   </svg>
@@ -2644,9 +2631,7 @@
 
                 <!-- 4. نسخ العملية -->
                 <button type="button" class="btn-square-action btn-sq-copy" onclick="copyCurrentIssuanceSummary()" 
-                        title="نسخ العملية" aria-label="نسخ العملية"
-                        onmouseenter="setActionHint('نسخ العملية: نسخ ملخص الإشهاد للحافظة كبيانات نصية')" onmouseleave="clearActionHint()"
-                        onfocus="setActionHint('نسخ العملية: نسخ ملخص الإشهاد للحافظة كبيانات نصية')" onblur="clearActionHint()">
+                        title="نسخ العملية: نسخ ملخص الإشهاد للحافظة كبيانات نصية" aria-label="نسخ العملية">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -2655,9 +2640,7 @@
 
                 <!-- 5. المعاينة السريعة -->
                 <button type="button" class="btn-square-action btn-sq-preview" onclick="previewCurrentIssuance()" 
-                        title="المعاينة السريعة" aria-label="المعاينة السريعة"
-                        onmouseenter="setActionHint('المعاينة السريعة: معاينة وثيقة الإشهاد الرسمية بصيغة A4')" onmouseleave="clearActionHint()"
-                        onfocus="setActionHint('المعاينة السريعة: معاينة وثيقة الإشهاد الرسمية بصيغة A4')" onblur="clearActionHint()">
+                        title="المعاينة السريعة: معاينة وثيقة الإشهاد الرسمية بصيغة A4" aria-label="المعاينة السريعة">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                     <circle cx="12" cy="12" r="3"></circle>
@@ -2666,22 +2649,13 @@
 
                 <!-- 6. الطباعة -->
                 <button type="button" class="btn-square-action btn-sq-print" onclick="submitIssuance(true)" 
-                        title="طباعة الإشهاد" aria-label="طباعة الإشهاد"
-                        onmouseenter="setActionHint('الطباعة: حفظ الإشهاد وطباعة الوثيقة الرسمية فوراً')" onmouseleave="clearActionHint()"
-                        onfocus="setActionHint('الطباعة: حفظ الإشهاد وطباعة الوثيقة الرسمية فوراً')" onblur="clearActionHint()">
+                        title="الطباعة: حفظ الإشهاد وطباعة الوثيقة الرسمية فوراً" aria-label="طباعة الإشهاد">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="6 9 6 2 18 2 18 9"></polyline>
                     <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
                     <rect x="6" y="14" width="12" height="8"></rect>
                   </svg>
                 </button>
-              </div>
-
-              <!-- النص الإرشادي أسفل الأزرار في مساحة مخصصة ثابتة تمنع أي تحريك للأزرار -->
-              <div id="action-hint-container" style="min-height: 24px; display: flex; align-items: center; justify-content: center; width: 100%; margin-top: 6px;">
-                <div id="action-hint-label" style="font-size: 0.78rem; color: var(--text-muted); text-align: center; line-height: 1.4; transition: color 0.15s ease;">
-                  مرر فوق الأيقونة أو انقر عليها لتنفيذ الإجراء المباشر
-                </div>
               </div>
             </div>
 
@@ -2717,7 +2691,7 @@
               <div class="grid-2" style="margin-bottom: 14px;">
                 <div class="form-group">
                   <label class="form-label"><span class="req-star">*</span> تاريخ الطلب</label>
-                  <input type="date" id="order-form-date" class="form-control" />
+                  <input type="date" id="order-form-date" class="form-control" style="width: 100% !important; max-width: 100% !important; box-sizing: border-box !important;" />
                 </div>
                 <div class="form-group">
                   <label class="form-label"><span class="req-star">*</span> الجهة الطالبة</label>
@@ -2740,7 +2714,7 @@
 
               <!-- اختيار المواد للطلبية بتخطيط متناسق ومستجيب بالكامل يمنع التداخل على الهواتف -->
               <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 14px;">
-                <div style="font-weight: 700; font-size: 0.86rem; color: var(--text-main); margin-bottom: 12px;">إضافة مواد ولوازم إلى الطلبية:</div>
+                <div style="font-weight: 700; font-size: 0.86rem; color: var(--text-main); margin-bottom: 12px;">إضافة مواد إلى الطلبية:</div>
                 
                 <div class="form-group">
                   <label class="form-label" style="font-size: 0.78rem;">تصفية بالصنف</label>
@@ -2750,7 +2724,7 @@
                 </div>
 
                 <div class="form-group">
-                  <label class="form-label" style="font-size: 0.78rem;">المادة واللوازم المطلوبة</label>
+                  <label class="form-label" style="font-size: 0.78rem;">المادة المطلوبة</label>
                   <select id="order-item-id-select" class="form-control">
                     <option value="">-- اختر المادة --</option>
                   </select>
@@ -2771,32 +2745,32 @@
                 </button>
               </div>
 
-                <!-- جدول المواد المضافة للطلبية الحالية -->
-                <div style="margin-top: 12px;" id="order-items-preview-wrap">
-                  <table class="data-table" style="font-size: 0.8rem;">
-                    <thead>
-                      <tr>
-                        <th>المادة المطلوبة</th>
-                        <th>الصنف</th>
-                        <th style="text-align: center; width: 90px;">الكمية</th>
-                        <th style="text-align: center; width: 60px;">حذف</th>
-                      </tr>
-                    </thead>
-                    <tbody id="order-items-preview-body">
-                      <tr>
-                        <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 12px;">لم تتم إضافة مواد للطلبية بعد</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+              <!-- جدول المواد المضافة للطلبية الحالية -->
+              <div style="margin-top: 12px; margin-bottom: 14px;" id="order-items-preview-wrap">
+                <table class="data-table" style="font-size: 0.8rem;">
+                  <thead>
+                    <tr>
+                      <th>المادة المطلوبة</th>
+                      <th>الصنف</th>
+                      <th style="text-align: center; width: 90px;">الكمية</th>
+                      <th style="text-align: center; width: 60px;">حذف</th>
+                    </tr>
+                  </thead>
+                  <tbody id="order-items-preview-body">
+                    <tr>
+                      <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 12px;">لم تتم إضافة مواد للطلبية بعد</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
 
-              <!-- أزرار حفظ وإلغاء الطلبية -->
+              <!-- أزرار حفظ وإلغاء الطلبية داخل اللوحة حصرياً (أيقونات فقط) -->
               <div style="display: flex; align-items: center; justify-content: flex-end; gap: 8px;">
-                <button type="button" class="btn btn-secondary btn-sm" onclick="toggleNewOrderPanel(false)">إلغاء</button>
-                <button type="button" class="btn btn-success btn-sm" onclick="saveNewOrder()">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline></svg>
-                  <span>تسجيل الطلبية (حفظ دون خصم)</span>
+                <button type="button" class="btn btn-secondary btn-sm btn-icon" onclick="toggleNewOrderPanel(false)" title="إلغاء الطلبية" aria-label="إلغاء الطلبية">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+                <button type="button" class="btn btn-success btn-sm btn-icon" onclick="saveNewOrder()" title="تسجيل الطلبية (حفظ دون خصم)" aria-label="تسجيل الطلبية">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline></svg>
                 </button>
               </div>
             </div>
@@ -2831,7 +2805,7 @@
                     <th style="width: 100px;">تاريخ الطلب</th>
                     <th>الجهة الطالبة</th>
                     <th>صاحب الطلب</th>
-                    <th>المواد واللوازم المطلوبة</th>
+                    <th>المواد المطلوبة</th>
                     <th style="text-align: center; width: 90px;">مجموع القطع</th>
                     <th style="text-align: center; width: 120px;">الحالة</th>
                     <th style="text-align: center; width: 140px;">الإجراءات</th>
@@ -2855,7 +2829,7 @@
             <div class="card-header">
               <div>
                 <h2 class="card-title">التقويم الإداري لتتبع عمليات التسليم</h2>
-                <div class="card-subtitle">عرض شهري تفاعلي لعمليات تسليم اللوازم وفق تواريخها بالدائرة القضائية</div>
+                <div class="card-subtitle">عرض شهري تفاعلي لعمليات تسليم المواد وفق تواريخها بالدائرة القضائية</div>
               </div>
             </div>
 
@@ -2906,7 +2880,7 @@
             <div class="card-header">
               <div>
                 <h2 class="card-title">سجل العمليات والأرشيف الشامل</h2>
-                <div class="card-subtitle">تتبع العمليات واللوازم المسلمة مع إمكانية التعديل الكامل والطباعة</div>
+                <div class="card-subtitle">تتبع العمليات والمواد المسلمة مع إمكانية التعديل الكامل والطباعة</div>
               </div>
               <div class="header-actions">
                 <button class="btn btn-outline btn-sm" onclick="exportDataCSV()" title="تصدير سجل العمليات بصيغة CSV مدعوم بالعربية">
@@ -2938,19 +2912,20 @@
             </div>
 
             <!-- فلاتر البحث المستجيبة بكامل العرض على الهاتف -->
-            <div style="background: var(--bg-muted); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); margin-bottom: 14px;">
-              <div class="history-filters-grid">
-                <div class="form-group" style="margin-bottom: 0;">
-                  <input type="text" id="history-search-input" class="form-control" placeholder="ابحث باسم المستفيد، الجهة، أو المادة المسلمة..." oninput="onHistoryFilterChanged()" />
+            <!-- فلاتر البحث في الأرشيف مرتبة عمودياً: 1. البحث بالاسم، 2. اختيار الجهة، 3. اختيار السنة -->
+            <div style="background: var(--bg-muted); padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); margin-bottom: 14px;">
+              <div class="history-filters-vertical" style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+                <div class="form-group" style="margin-bottom: 0; width: 100%;">
+                  <input type="text" id="history-search-input" class="form-control" style="width: 100% !important; box-sizing: border-box !important;" placeholder="1. البحث باسم المستفيد، الجهة، أو المادة المسلمة..." oninput="onHistoryFilterChanged()" />
                 </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                  <select id="history-dest-filter" class="form-control" onchange="onHistoryFilterChanged()">
-                    <option value="">كافة الجهات</option>
+                <div class="form-group" style="margin-bottom: 0; width: 100%;">
+                  <select id="history-dest-filter" class="form-control" style="width: 100% !important; box-sizing: border-box !important;" onchange="onHistoryFilterChanged()">
+                    <option value="">2. اختيار الجهة (كافة الجهات)</option>
                   </select>
                 </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                  <select id="history-year-filter" class="form-control" onchange="onHistoryFilterChanged()">
-                    <option value="">كافة السنوات</option>
+                <div class="form-group" style="margin-bottom: 0; width: 100%;">
+                  <select id="history-year-filter" class="form-control" style="width: 100% !important; box-sizing: border-box !important;" onchange="onHistoryFilterChanged()">
+                    <option value="">3. اختيار السنة (كافة السنوات)</option>
                     <option value="2026" selected>2026</option>
                     <option value="2025">2025</option>
                   </select>
@@ -2999,16 +2974,23 @@
             <div class="card-header">
               <div>
                 <h2 class="card-title">الجرد الدوري للمخزون ومقارنة الأرصدة</h2>
-                <div class="card-subtitle">مقارنة الرصيد النظري الفعلي مع جرد المستودع ورصد الفروقات مجمعة حسب الأصناف</div>
+                <div class="card-subtitle">سجل أرصدة المخزون المحسوبة وإدارة الدورات الجردية الميدانية المستقلة</div>
               </div>
               <div class="header-actions">
-                <button class="btn btn-primary btn-sm icon-only-mobile" onclick="openNewItemModal()" title="إضافة مادة جديدة">
+                <button type="button" class="btn btn-primary btn-sm" onclick="openNewAuditModal()" title="إجراء دورة جرد جديدة للمخزون">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                  <span class="btn-text">مادة جديدة</span>
+                  <span class="btn-text">إضافة جرد جديد</span>
                 </button>
-                <button class="btn btn-secondary btn-sm icon-only-mobile" onclick="printInventorySheet()" title="طباعة محضر الجرد الرسمي A4">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="openAuditHistoryModal()" title="استعراض الدورات والسجلات الجردية السابقة">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                  <span class="btn-text">أرشيف الجرودات</span>
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="printInventorySheet()" title="طباعة محضر الجرد الرسمي A4">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
                   <span class="btn-text">طباعة محضر الجرد A4</span>
+                </button>
+                <button type="button" class="btn btn-primary btn-sm btn-icon" onclick="openNewItemModal()" title="إضافة مادة جديدة" aria-label="إضافة مادة جديدة">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 </button>
               </div>
             </div>
@@ -3051,7 +3033,7 @@
               </div>
             </div>
 
-            <!-- جدول الجرد الفعلي المجمع بالأصناف -->
+            <!-- جدول الجرد الدوري للمخزون (قراءة فقط للأرصدة المحسوبة في الوضع العادي) -->
             <div class="table-scroll-wrapper">
               <table class="data-table">
                 <thead>
@@ -3059,10 +3041,8 @@
                     <th style="width: 40px; text-align: center;">#</th>
                     <th>بيان المادة والمواصفات</th>
                     <th>الصنف</th>
-                    <th style="text-align: center; width: 100px;">الرصيد بالنظام</th>
-                    <th style="text-align: center; width: 120px;">الكمية الفعلية بالجرد</th>
-                    <th style="text-align: center; width: 90px;">الفارق</th>
-                    <th style="text-align: center; width: 130px;">مستوى التوفر</th>
+                    <th style="text-align: center; width: 130px;">الرصيد بالنظام</th>
+                    <th style="text-align: center; width: 140px;">مستوى التوفر</th>
                     <th style="text-align: center; width: 90px;">إجراء</th>
                   </tr>
                 </thead>
@@ -3105,18 +3085,18 @@
                   </span>
                   <div class="settings-nav-info">
                     <div class="settings-nav-title">1. إدارة الأسماء والأصناف</div>
-                    <div class="settings-nav-desc">تصنيفات اللوازم والأسماء المعتمدة</div>
+                    <div class="settings-nav-desc">تصنيفات المواد والأسماء المعتمدة</div>
                   </div>
                 </button>
 
-                <!-- 2. إدارة الموارد واللوازم -->
+                <!-- 2. إدارة المواد والأصناف -->
                 <button type="button" class="settings-nav-card" id="settings-sub-tab-items" onclick="switchSettingsSubTab('items')">
                   <span class="settings-nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
                   </span>
                   <div class="settings-nav-info">
-                    <div class="settings-nav-title">2. إدارة الموارد واللوازم</div>
-                    <div class="settings-nav-desc">قائمة المواد والأرصدة الأولية</div>
+                    <div class="settings-nav-title">2. إدارة المواد والأصناف</div>
+                    <div class="settings-nav-desc">قائمة المواد والأرصدة بالمستودع</div>
                   </div>
                 </button>
 
@@ -3163,6 +3143,17 @@
                     <div class="settings-nav-desc">بيانات المسؤول، الصفة، ومقر العمل</div>
                   </div>
                 </button>
+
+                <!-- 7. الملاحظات السريعة -->
+                <button type="button" class="settings-nav-card" id="settings-sub-tab-notes" onclick="switchSettingsSubTab('notes')">
+                  <span class="settings-nav-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                  </span>
+                  <div class="settings-nav-info">
+                    <div class="settings-nav-title">7. الملاحظات السريعة</div>
+                    <div class="settings-nav-desc">إدارة الكبسولات السريعة المعتمدة</div>
+                  </div>
+                </button>
               </div>
 
               <!-- مساحة محتوى الأقسام (تظهر بجانب القائمة أو تحتها على الهاتف) -->
@@ -3170,9 +3161,11 @@
 
             <!-- 1. إدارة الأصناف -->
             <div id="settings-pane-cats" class="settings-pane">
-              <div style="display: flex; gap: 10px; margin-bottom: 14px; max-width: 500px;">
-                <input type="text" id="new-category-name-input" class="form-control" placeholder="اكتب اسم الصنف الجديد..." />
-                <button class="btn btn-primary btn-sm" onclick="addNewCategory()">+ إضافة صنف</button>
+              <div style="display: flex; gap: 10px; margin-bottom: 14px; max-width: 500px; align-items: center;">
+                <input type="text" id="new-category-name-input" class="form-control" style="flex: 1 1 0%; min-width: 0;" placeholder="اكتب اسم الصنف الجديد..." />
+                <button type="button" class="btn btn-primary btn-sm btn-icon" onclick="addNewCategory()" title="إضافة صنف" aria-label="إضافة صنف">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
               </div>
               <div class="table-scroll-wrapper">
                 <table class="data-table">
@@ -3191,11 +3184,13 @@
               </div>
             </div>
 
-            <!-- 2. إدارة المواد واللوازم (إضافة، تعديل، حذف) -->
+            <!-- 2. إدارة المواد والأصناف (إضافة، تعديل، حذف) -->
             <div id="settings-pane-items" class="settings-pane" style="display: none;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; gap: 10px; flex-wrap: wrap; width: 100%;">
-                <input type="text" id="settings-items-search" class="form-control" style="flex: 1 1 280px; width: 100%;" placeholder="بحث في المواد..." oninput="renderSettingsItemsTable()" />
-                <button class="btn btn-primary btn-sm" onclick="openNewItemModal()" style="white-space: nowrap;">+ إضافة مادة جديدة</button>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; gap: 10px; width: 100%;">
+                <input type="text" id="settings-items-search" class="form-control" style="flex: 1 1 0%; min-width: 0; width: 100% !important; box-sizing: border-box !important;" placeholder="بحث في المواد..." oninput="renderSettingsItemsTable()" />
+                <button type="button" class="btn btn-primary btn-sm btn-icon" onclick="openNewItemModal()" title="إضافة مادة جديدة" aria-label="إضافة مادة جديدة">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
               </div>
               <div class="table-scroll-wrapper">
                 <table class="data-table">
@@ -3217,11 +3212,10 @@
 
             <!-- 3. إدارة الجهات والمستفيدين -->
             <div id="settings-pane-dests" class="settings-pane" style="display: none;">
-              <div style="margin-bottom: 16px; max-width: 600px; display: flex; gap: 10px; align-items: stretch;">
-                <input type="text" id="new-dest-name-input" class="form-control" placeholder="اسم الجهة أو المصلحة الجديدة..." />
-                <button type="button" class="btn btn-primary btn-sm btn-twoline" onclick="addNewDestination()">
-                  <span>+ إضافة</span>
-                  <span>الجهة</span>
+              <div style="margin-bottom: 16px; max-width: 600px; display: flex; gap: 10px; align-items: center;">
+                <input type="text" id="new-dest-name-input" class="form-control" style="flex: 1 1 0%; min-width: 0;" placeholder="اسم الجهة أو المصلحة الجديدة..." />
+                <button type="button" class="btn btn-primary btn-sm btn-icon" onclick="addNewDestination()" title="إضافة جهة جديدة" aria-label="إضافة جهة جديدة">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 </button>
               </div>
               <div id="settings-destinations-accordion" style="display: flex; flex-direction: column; gap: 10px;">
@@ -3338,7 +3332,7 @@
 
                 <div class="form-group">
                   <label class="form-label">المهام والاختصاصات المكلف بها</label>
-                  <input type="text" id="profile-duties" class="form-control" placeholder="تدبير مستودع اللوازم والمستهلكات، تسليم التجهيزات، إعداد الإشهادات، ومتابعة الجرد الدوري..." />
+                  <input type="text" id="profile-duties" class="form-control" placeholder="تدبير مستودع المواد والمستهلكات، تسليم التجهيزات، إعداد الإشهادات، ومتابعة الجرد الدوري..." />
                 </div>
 
                 <div class="grid-2">
@@ -3354,7 +3348,7 @@
 
                 <div class="form-group">
                   <label class="form-label">ملاحظات وبيانات إدارية إضافية</label>
-                  <textarea id="profile-notes" class="form-control" rows="2" placeholder="المسؤول المعتمد لتأشير وصولات استلام اللوازم بالمديرية الإقليمية بسطات..."></textarea>
+                  <textarea id="profile-notes" class="form-control" rows="2" placeholder="المسؤول المعتمد لتأشير وصولات استلام المواد بالمديرية الإقليمية بسطات..."></textarea>
                 </div>
 
                 <div style="display: flex; gap: 10px; align-items: center; margin-top: 14px; flex-wrap: wrap;">
@@ -3363,6 +3357,38 @@
                     حفظ بيانات الملف الشخصي
                   </button>
                   <span style="font-size: 0.8rem; color: var(--text-muted);">* تنعكس هذه البيانات فوراً على واجهة البرنامج ووثائق الإشهادات الرسمية</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 7. إدارة الملاحظات السريعة -->
+            <div id="settings-pane-notes" class="settings-pane" style="display: none;">
+              <div class="card" style="margin-bottom: 0;">
+                <h3 class="card-title">إدارة كبسولات الملاحظات السريعة</h3>
+                <div class="card-subtitle" style="margin-bottom: 14px;">إضافة وتعديل وحذف العبارات المعتمدة في كبسولات الملاحظات السريعة عند تسليم المواد</div>
+                
+                <div style="display: flex; gap: 10px; margin-bottom: 14px; max-width: 500px; align-items: center;">
+                  <input type="text" id="new-quick-note-input" class="form-control" style="flex: 1 1 0%; min-width: 0;" placeholder="اكتب ملاحظة جديدة..." />
+                  <button type="button" class="btn btn-primary btn-sm btn-icon" onclick="addNewQuickNote()" title="إضافة ملاحظة سريعة" aria-label="إضافة ملاحظة سريعة">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  </button>
+                </div>
+
+                <div class="table-scroll-wrapper">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th style="width: 40px; text-align: center;">#</th>
+                        <th>نص الملاحظة</th>
+                        <th style="text-align: center; width: 140px;">عدد مرات الاستخدام</th>
+                        <th style="text-align: center; width: 130px;">آخر استخدام</th>
+                        <th style="text-align: center; width: 100px;">الإجراءات</th>
+                      </tr>
+                    </thead>
+                    <tbody id="settings-quick-notes-table-body">
+                      <!-- يملأ ديناميكياً -->
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
@@ -3466,7 +3492,7 @@
         <div style="background: var(--bg-muted); padding: 12px; border-radius: var(--radius-md); margin-bottom: 12px;">
           <strong style="font-size: 0.85rem; color: var(--text-main);">الهدف من البرنامج:</strong>
           <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px;" id="modal-about-goal">
-            تحديث وتدبير المخزون وتتبع حركية اللوازم والمعدات وإصدار إشهادات التسليم الرسمية إلكترونياً بدقة وموثوقية عالية.
+            تحديث وتدبير المخزون وتتبع حركية المواد والمعدات وإصدار إشهادات التسليم الرسمية إلكترونياً بدقة وموثوقية عالية.
           </p>
         </div>
 
@@ -3508,7 +3534,7 @@
   <div id="new-item-modal" class="modal-overlay" onclick="if(event.target===this) closeNewItemModal();">
     <div class="modal-card">
       <div class="modal-header">
-        <h3 class="modal-title">تسجيل مادة ولوازم جديدة بالمخزون</h3>
+        <h3 class="modal-title">تسجيل مادة جديدة بالمخزون</h3>
         <button type="button" class="sidebar-close-btn" onclick="closeNewItemModal()">&times;</button>
       </div>
       <div class="modal-body">
@@ -3666,6 +3692,127 @@
     </div>
   </div>
 
+  <!-- نافذة إجراء دورة جرد جديدة وتدقيق الأرصدة الميدانية -->
+  <div id="new-audit-modal" class="modal-overlay" onclick="if(event.target===this) closeNewAuditModal();">
+    <div class="modal-card" style="max-width: 900px; width: 95%; max-height: 90vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">دورة جرد جديدة وتدقيق الأرصدة الميدانية</h3>
+          <div style="font-size: 0.8rem; color: var(--text-muted);">إدخال الكميات الفعلية بالمستودع ومقارنتها بالرصيد المحسوب واعتماد سجل جرد مرجعي رسمي</div>
+        </div>
+        <button type="button" class="sidebar-close-btn" onclick="closeNewAuditModal()">&times;</button>
+      </div>
+      <div class="modal-body" style="overflow-y: auto; flex: 1 1 auto; padding: 16px;">
+        <div class="grid-3" style="gap: 12px; margin-bottom: 14px;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label"><span class="req-star">*</span> تاريخ دورة الجرد</label>
+            <input type="date" id="audit-form-date" class="form-control" />
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label"><span class="req-star">*</span> لجنة أو مسؤول الجرد</label>
+            <input type="text" id="audit-form-auditor" class="form-control" placeholder="اسم المسؤول أو أعضاء اللجنة..." />
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">ملاحظات أو قرار التكليف</label>
+            <input type="text" id="audit-form-notes" class="form-control" placeholder="مثال: جرد دوري معتمد، إرسالية تكليف..." />
+          </div>
+        </div>
+
+        <div style="background: var(--bg-muted); padding: 8px 12px; border-radius: var(--radius-sm); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; flex-wrap: wrap; gap: 8px;">
+          <span>إجمالي بنود الجرد: <strong id="audit-items-count">0</strong></span>
+          <span style="color: var(--success); font-weight: 600;">مطابق: <strong id="audit-matched-count">0</strong></span>
+          <span style="color: var(--warning); font-weight: 600;">فائض (+): <strong id="audit-surplus-count">0</strong></span>
+          <span style="color: var(--danger); font-weight: 600;">عجز (-): <strong id="audit-deficit-count">0</strong></span>
+        </div>
+
+        <div class="table-scroll-wrapper" style="max-height: 420px;">
+          <table class="data-table" style="font-size: 0.82rem;">
+            <thead>
+              <tr>
+                <th style="width: 36px; text-align: center;">#</th>
+                <th>بيان المادة والمواصفات</th>
+                <th>الصنف</th>
+                <th style="text-align: center; width: 100px;">الرصيد بالنظام</th>
+                <th style="text-align: center; width: 130px;">الرصيد الميداني الفعلي</th>
+                <th style="text-align: center; width: 90px;">الفارق</th>
+              </tr>
+            </thead>
+            <tbody id="audit-items-tbody">
+              <!-- يملأ ديناميكياً بجميع المواد -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+        <button type="button" class="btn btn-secondary" onclick="closeNewAuditModal()">إلغاء</button>
+        <button type="button" class="btn btn-primary" onclick="confirmAndSaveAudit()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          اعتماد وحفظ دورة الجرد رسمياً
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة أرشيف الجرودات التاريخية المستقلة -->
+  <div id="audit-history-modal" class="modal-overlay" onclick="if(event.target===this) closeAuditHistoryModal();">
+    <div class="modal-card" style="max-width: 860px; width: 95%;">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">أرشيف سجلات الجرد التاريخية</h3>
+          <div style="font-size: 0.8rem; color: var(--text-muted);">سجلات الجرد المرجعية المعتمدة السابقة بالقراءة والطباعة فقط دون تعديل</div>
+        </div>
+        <button type="button" class="sidebar-close-btn" onclick="closeAuditHistoryModal()">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 16px;">
+        <div class="table-scroll-wrapper" style="max-height: 400px;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 110px; text-align: center;">رقم الجرد</th>
+                <th style="width: 110px;">تاريخ الجرد</th>
+                <th>المسؤول / اللجنة</th>
+                <th style="text-align: center; width: 100px;">عدد المواد</th>
+                <th style="text-align: center; width: 140px;">حالة الفروقات</th>
+                <th style="text-align: center; width: 140px;">الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="audit-history-tbody">
+              <!-- يملأ ديناميكياً -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeAuditHistoryModal()">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة معاينة جرد تاريخي (قراءة فقط) -->
+  <div id="view-audit-modal" class="modal-overlay" onclick="if(event.target===this) closeViewAuditModal();">
+    <div class="modal-card" style="max-width: 880px; width: 95%; max-height: 90vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title" id="view-audit-title">تفاصيل سجل الجرد المعتمد</h3>
+          <div style="font-size: 0.8rem; color: var(--text-muted);" id="view-audit-subtitle">سجل مرجعي تاريخي غير قابل للتعديل المباشر</div>
+        </div>
+        <button type="button" class="sidebar-close-btn" onclick="closeViewAuditModal()">&times;</button>
+      </div>
+      <div class="modal-body" style="overflow-y: auto; flex: 1 1 auto; padding: 16px;">
+        <div id="view-audit-content">
+          <!-- يملأ ديناميكياً بالمعلومات وجدول المواد للقراءة فقط -->
+        </div>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: space-between;">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeViewAuditModal()">إغلاق</button>
+        <button type="button" class="btn btn-secondary btn-sm" id="view-audit-print-btn" onclick="printCurrentViewedAudit()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          طباعة هذا الجرد A4
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- نافذة لوحة الأوامر السريعة (Ctrl + K) -->
   <div id="command-palette-modal" class="modal-overlay" onclick="if(event.target===this) closeCommandPalette();">
     <div class="modal-card" style="max-width: 500px;">
@@ -3755,7 +3902,7 @@
         appName: "المنظومة الرقمية لتدبير المخزون وإصدار إشهادات التسليم",
         entity: "المديرية الإقليمية للعدل بسطات",
         owner: "محمد أيت حمادي",
-        goal: "تحديث وتدبير المخزون وتتبع حركية اللوازم والمعدات وإصدار إشهادات التسليم الرسمية إلكترونياً بدقة وموثوقية عالية.",
+        goal: "تحديث وتدبير المخزون وتتبع حركية المواد والمعدات وإصدار إشهادات التسليم الرسمية إلكترونياً بدقة وموثوقية عالية.",
         description: "نظام إداري رقمي متكامل يوفر رقابة صارمة على حركات المخزون بالدائرة القضائية، مع الجرد الدوري وإصدار إشهادات التسليم الرسمية متوافقة مع معايير وزارة العدل بالمملكة المغربية.",
         version: "2.5 Enterprise"
       }
@@ -4153,6 +4300,32 @@
             { id: "48017201", name: "SAMSUNG MLT- D205S - Imprimante SAMSUNG ML-3710ND - Noir", category: "طونير طابعات", qty: 4, notes: "" }
           ]
         }
+      ],
+      auditHistory: [
+        {
+          id: "AUDIT-2026-001",
+          date: "2026-06-30",
+          timestamp: "2026-06-30T16:00:00.000Z",
+          auditor: "محمد أيت حمادي — لجنة تدبير المخزون",
+          notes: "محضر الجرد النصفي السنوي الرسمي لمستودع المواد والتجهيزات بسطات",
+          summary: { total: 10, matched: 8, surplus: 1, deficit: 1 },
+          items: [
+            { id: "09aafef4", name: "CANON 052H (2200C002) - Imprimante CANON LBP 214DW - Noir", category: "طونير طابعات", systemStock: 120, physicalStock: 120, diff: 0 },
+            { id: "9499210e", name: "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn", category: "طونير طابعات", systemStock: 85, physicalStock: 85, diff: 0 },
+            { id: "127c2855", name: "RICOH / GESTETNER 842135 - Photocopieur RICOH / GESTETNER MP2014H - Noir", category: "طونير آلات النسخ", systemStock: 45, physicalStock: 45, diff: 0 },
+            { id: "48017201", name: "SAMSUNG MLT- D205S - Imprimante SAMSUNG ML-3710ND - Noir", category: "طونير طابعات", systemStock: 30, physicalStock: 30, diff: 0 },
+            { id: "8b30d3cd", name: "Clé USB 64 Go - 64go", category: "أدوات التخزين", systemStock: 150, physicalStock: 152, diff: 2 },
+            { id: "20e7faa7", name: "Clavier USB MultiMedia - Bilingue Ar/Fr", category: "أدوات معلوماتية", systemStock: 60, physicalStock: 59, diff: -1 }
+          ]
+        }
+      ],
+      quickNotes: [
+        { text: "حسب الطلب", count: 24, lastUsed: "2026-10-25" },
+        { text: "تعويض عطب", count: 18, lastUsed: "2026-10-24" },
+        { text: "تجهيز أولي", count: 14, lastUsed: "2026-10-22" },
+        { text: "عاجل", count: 10, lastUsed: "2026-10-20" },
+        { text: "دورية روتينية", count: 7, lastUsed: "2026-10-18" },
+        { text: "حصة إضافية", count: 5, lastUsed: "2026-10-15" }
       ]
     };
 
@@ -4182,6 +4355,16 @@
       return isNaN(n) ? fallback : n;
     }
 
+    function escapeHtml(str) {
+      if (str === undefined || str === null) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
     // 3. الحالة المركزية
     let state = {
       profile: {},
@@ -4190,7 +4373,9 @@
         destinations: {},
         items: [],
         transactions: [],
-        orders: []
+        orders: [],
+        auditHistory: [],
+        quickNotes: []
       },
       templates: [
         {
@@ -4203,7 +4388,7 @@
         },
         {
           id: 'tpl-2',
-          name: 'لوازم معلوماتية وكابلات',
+          name: 'مواد معلوماتية وكابلات',
           items: [
             { id: "20e7faa7", name: "Clavier USB MultiMedia - Bilingue Ar/Fr", category: "أدوات معلوماتية", qty: 2, notes: "تجهيز مكتب" },
             { id: "d82117fd", name: "Souris USB optique - Filaire", category: "أدوات معلوماتية", qty: 2, notes: "تجهيز مكتب" },
@@ -4247,7 +4432,7 @@
             department: 'مصلحة التجهيز وتدبير الممتلكات ونظم المعلومات',
             phone: '05 23 40 XX XX',
             email: 'mohamed105@gmail.com',
-            notes: 'المسؤول المعتمد لتأشير وصولات استلام اللوازم بالمديرية الإقليمية بسطات'
+            notes: 'المسؤول المعتمد لتأشير وصولات استلام المواد بالمديرية الإقليمية بسطات'
           };
         }
 
@@ -4293,6 +4478,16 @@
               state.data.categories.push(cat);
             }
           });
+
+          // استرجاع سجلات الجرد التاريخية المستقلة
+          if (!state.data.auditHistory || !Array.isArray(state.data.auditHistory) || state.data.auditHistory.length === 0) {
+            state.data.auditHistory = JSON.parse(JSON.stringify(DEFAULT_DATA.auditHistory || []));
+          }
+
+          // استرجاع الملاحظات السريعة
+          if (!state.data.quickNotes || !Array.isArray(state.data.quickNotes) || state.data.quickNotes.length === 0) {
+            state.data.quickNotes = JSON.parse(JSON.stringify(DEFAULT_DATA.quickNotes || []));
+          }
         } else {
           state.data = JSON.parse(JSON.stringify(DEFAULT_DATA));
         }
@@ -4860,7 +5055,7 @@
       }
     }
 
-    // مبيان توزيع اللوازم حسب الأصناف
+    // مبيان توزيع المواد حسب الأصناف
     function renderCategoriesChart(txsList) {
       const container = document.getElementById('dashboard-categories-chart-container');
       if (!container) return;
@@ -5018,6 +5213,7 @@
       onDestinationChanged();
       onCategoryFilterChanged();
       renderCartTable();
+      renderQuickNoteChips();
     }
 
     function onDestinationChanged() {
@@ -5156,6 +5352,22 @@
       }
     }
 
+    function renderQuickNoteChips() {
+      const container = document.getElementById('preset-chips-container');
+      if (!container) return;
+      state.data.quickNotes = state.data.quickNotes || [];
+      const topNotes = state.data.quickNotes.slice().sort((a, b) => (b.count || 0) - (a.count || 0)).slice(0, 5);
+      if (topNotes.length === 0) {
+        container.innerHTML = '<span style="font-size: 0.74rem; color: var(--text-muted);">لا توجد ملاحظات سريعة</span>';
+        return;
+      }
+      container.innerHTML = topNotes.map(n => `
+        <button type="button" class="chip-btn" onclick="setQuickNote('${escapeHtml(n.text)}')" title="تكرار الاستخدام: ${n.count || 1} مرة">
+          ${escapeHtml(n.text)}
+        </button>
+      `).join('');
+    }
+
     function setQuickNote(presetText) {
       const notesInput = document.getElementById('cart-item-notes');
       if (!notesInput) return;
@@ -5164,6 +5376,25 @@
       } else {
         notesInput.value = presetText;
       }
+    }
+
+    function registerQuickNoteUsage(rawText) {
+      if (!rawText) return;
+      const clean = rawText.replace(/\s+/g, ' ').trim();
+      if (!clean || clean.length < 2 || clean === '—') return;
+      if (!state.data.quickNotes) state.data.quickNotes = [];
+      const existing = state.data.quickNotes.find(q => q.text.toLowerCase() === clean.toLowerCase());
+      if (existing) {
+        existing.count = (existing.count || 1) + 1;
+        existing.lastUsed = new Date().toISOString().split('T')[0];
+      } else {
+        state.data.quickNotes.push({
+          text: clean,
+          count: 1,
+          lastUsed: new Date().toISOString().split('T')[0]
+        });
+      }
+      renderQuickNoteChips();
     }
 
     // 10. إضافة مادة للسلة مع إشعار تأكيد في وسط الشاشة
@@ -5368,6 +5599,13 @@
 
       state.data.transactions.unshift(newVoucher);
 
+      // تسجيل وتحديث تكرار الملاحظات السريعة تلقائياً
+      (state.cart || []).forEach(cartItem => {
+        if (cartItem.notes && typeof cartItem.notes === 'string') {
+          cartItem.notes.split('-').forEach(p => registerQuickNoteUsage(p.trim()));
+        }
+      });
+
       // تحديث حالة الطلبية إذا كانت العملية ناتجة عن تحويل طلبية مفتوحة
       if (state.pendingConvertedOrderId && state.data.orders) {
         const ord = state.data.orders.find(o => o.id === state.pendingConvertedOrderId);
@@ -5441,12 +5679,12 @@
       const totalUnits = state.cart.reduce((s, i) => s + i.qty, 0);
 
       const summaryText = `*المنظومة الرقمية لتدبير المخزون — المديرية الإقليمية للعدل بسطات*
-إشهاد تسليم مواد ولوازم إدارية
+إشهاد تسليم مواد إدارية
 التاريخ: ${dateVal}
 الجهة المستفيدة: ${destVal}
 المستلم: ${recipVal}
 مجموع المواد: ${totalUnits} قطعة (${state.cart.length} أصناف/مواد)
-المواد واللوازم:
+المواد المسلمة:
 ${itemsText}
 حالة التسليم: سليم ومعتمد`;
 
@@ -6146,7 +6384,7 @@ ${itemsText}
       if (countEl) countEl.textContent = `إجمالي المواد المعروضة: ${filtered.length} من أصل ${state.data.items.length}`;
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 30px; color: var(--text-muted);">لا توجد مواد مطابقة للفلاتر</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 30px; color: var(--text-muted);">لا توجد مواد مطابقة للفلاتر</td></tr>`;
         return;
       }
 
@@ -6163,10 +6401,10 @@ ${itemsText}
         const itemsInGroup = grouped[catName];
         html += `
           <tr class="inventory-group-header">
-            <td colspan="8">
+            <td colspan="6">
               <div class="group-header-inner">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-                <strong style="font-size: 0.95rem;">الصنف: ${catName}</strong>
+                <strong style="font-size: 0.95rem;">الصنف: ${escapeHtml(catName)}</strong>
                 <span class="badge badge-subtle">(${itemsInGroup.length} مادة)</span>
               </div>
             </td>
@@ -6174,27 +6412,20 @@ ${itemsText}
         `;
 
         itemsInGroup.forEach(item => {
-          const physical = item.physicalStock !== undefined ? item.physicalStock : item.stock;
-          const diff = physical - item.stock;
-          let diffHtml = '<span class="tabular-nums" style="color: var(--text-muted);">0</span>';
-          if (diff > 0) diffHtml = `<span class="tabular-nums" style="color: var(--success); font-weight: bold;">+${diff}</span>`;
-          if (diff < 0) diffHtml = `<span class="tabular-nums" style="color: var(--danger); font-weight: bold;">${diff}</span>`;
-
           let statusBadge = '<span class="badge badge-success">متوفر بالمخزون</span>';
           if (item.stock <= 0) statusBadge = '<span class="badge badge-danger">نفد من المخزون</span>';
           else if (item.stock <= critThresh) statusBadge = '<span class="badge badge-danger">رصيد حرج</span>';
           else if (item.stock <= limThresh) statusBadge = '<span class="badge badge-warning">رصيد محدود</span>';
 
+          const fullNameEsc = escapeHtml(item.name);
+          const shortNameEsc = item.name.length > 32 ? escapeHtml(item.name.substring(0, 30)) + '…' : fullNameEsc;
+
           html += `
             <tr>
               <td style="text-align: center; font-size: 0.75rem;" class="tabular-nums">${rowIdx++}</td>
-              <td><strong class="inventory-item-name" onclick="openEditItemModal('${item.id}')" title="${item.name} (اضغط للتعديل وعرض التفاصيل الكاملة)">${item.name}</strong></td>
-              <td><span class="inventory-item-cat">${item.category}</span></td>
-              <td style="text-align: center;"><strong class="tabular-nums font-bold" style="font-size: 0.84rem;">${item.stock}</strong></td>
-              <td style="text-align: center;">
-                <input type="number" class="form-control tabular-nums text-center" style="width: 68px; height: 30px; padding: 2px 4px; font-size: 0.8rem; display: inline-block;" value="${physical}" min="0" onchange="updatePhysicalStock('${item.id}', this.value)" />
-              </td>
-              <td style="text-align: center;">${diffHtml}</td>
+              <td><strong class="inventory-item-name" onclick="openEditItemModal('${item.id}')" title="${fullNameEsc} (انقر لعرض التفاصيل وتعديل المادة)">${shortNameEsc}</strong></td>
+              <td><span class="inventory-item-cat">${escapeHtml(item.category)}</span></td>
+              <td style="text-align: center;"><strong class="tabular-nums font-bold" style="font-size: 0.88rem;">${item.stock}</strong></td>
               <td style="text-align: center;">${statusBadge}</td>
               <td style="text-align: center;">
                 <button class="btn-icon" style="width: 30px; height: 30px;" onclick="openEditItemModal('${item.id}')" title="تعديل المادة">
@@ -6209,14 +6440,412 @@ ${itemsText}
       tbody.innerHTML = html;
     }
 
-    function updatePhysicalStock(itemId, val) {
-      const item = state.data.items.find(i => i.id === itemId);
-      if (!item) return;
-      const num = parseInt(val, 10);
-      item.physicalStock = isNaN(num) ? item.stock : num;
+    // 14.1 دورات الجرد الميدانية المستقلة وسجل الجرودات التاريخية (Audits System)
+    function openNewAuditModal() {
+      const dateEl = document.getElementById('audit-form-date');
+      const auditorEl = document.getElementById('audit-form-auditor');
+      const notesEl = document.getElementById('audit-form-notes');
+      const tbody = document.getElementById('audit-items-tbody');
+
+      if (dateEl) dateEl.value = new Date().toISOString().split('T')[0];
+      if (auditorEl) auditorEl.value = state.profile.userProfile?.fullName || state.profile.projectMeta?.ownerName || 'محمد أيت حمادي';
+      if (notesEl) notesEl.value = 'دورة جرد دوري معتمدة ومطابقة مادية للمستودع';
+
+      if (tbody) {
+        let html = '';
+        state.data.items.forEach((item, idx) => {
+          const sysStock = Number(item.stock) || 0;
+          const fullNameEsc = escapeHtml(item.name);
+          const shortNameEsc = item.name.length > 32 ? escapeHtml(item.name.substring(0, 30)) + '…' : fullNameEsc;
+          html += `
+            <tr id="audit-row-${item.id}">
+              <td style="text-align: center;" class="tabular-nums">${idx + 1}</td>
+              <td><strong title="${fullNameEsc}">${shortNameEsc}</strong></td>
+              <td><span class="inventory-item-cat">${escapeHtml(item.category)}</span></td>
+              <td style="text-align: center;"><strong class="tabular-nums">${sysStock}</strong></td>
+              <td style="text-align: center;">
+                <input type="number" class="form-control tabular-nums text-center audit-physical-input" id="audit-input-${item.id}" data-item-id="${item.id}" data-sys-stock="${sysStock}" value="${sysStock}" min="0" oninput="updateAuditRowDiff('${item.id}', this.value)" style="width: 78px; height: 30px; padding: 2px 4px; font-size: 0.84rem; display: inline-block;" />
+              </td>
+              <td style="text-align: center;">
+                <span id="audit-diff-${item.id}" class="tabular-nums font-bold" style="color: var(--text-muted);">0</span>
+              </td>
+            </tr>
+          `;
+        });
+        tbody.innerHTML = html;
+      }
+
+      recalculateAuditSummary();
+      const modal = document.getElementById('new-audit-modal');
+      if (modal) modal.classList.add('open');
+    }
+
+    function closeNewAuditModal() {
+      const modal = document.getElementById('new-audit-modal');
+      if (modal) modal.classList.remove('open');
+    }
+
+    function updateAuditRowDiff(itemId, val) {
+      const diffEl = document.getElementById(`audit-diff-${itemId}`);
+      const inputEl = document.getElementById(`audit-input-${itemId}`);
+      if (!diffEl || !inputEl) return;
+      const sysStock = parseInt(inputEl.getAttribute('data-sys-stock'), 10) || 0;
+      const physical = parseInt(val, 10);
+      const safePhysical = isNaN(physical) ? sysStock : physical;
+      const diff = safePhysical - sysStock;
+
+      if (diff > 0) {
+        diffEl.textContent = `+${diff}`;
+        diffEl.style.color = 'var(--success)';
+      } else if (diff < 0) {
+        diffEl.textContent = `${diff}`;
+        diffEl.style.color = 'var(--danger)';
+      } else {
+        diffEl.textContent = '0';
+        diffEl.style.color = 'var(--text-muted)';
+      }
+
+      recalculateAuditSummary();
+    }
+
+    function recalculateAuditSummary() {
+      const inputs = document.querySelectorAll('.audit-physical-input');
+      let total = 0;
+      let matched = 0;
+      let surplus = 0;
+      let deficit = 0;
+
+      inputs.forEach(input => {
+        total++;
+        const sysStock = parseInt(input.getAttribute('data-sys-stock'), 10) || 0;
+        const val = parseInt(input.value, 10);
+        const physical = isNaN(val) ? sysStock : val;
+        const diff = physical - sysStock;
+        if (diff > 0) surplus++;
+        else if (diff < 0) deficit++;
+        else matched++;
+      });
+
+      const countEl = document.getElementById('audit-items-count');
+      const matchedEl = document.getElementById('audit-matched-count');
+      const surplusEl = document.getElementById('audit-surplus-count');
+      const deficitEl = document.getElementById('audit-deficit-count');
+
+      if (countEl) countEl.textContent = total;
+      if (matchedEl) matchedEl.textContent = matched;
+      if (surplusEl) surplusEl.textContent = surplus;
+      if (deficitEl) deficitEl.textContent = deficit;
+    }
+
+    function confirmAndSaveAudit() {
+      if (!confirm('هل أنت متأكد من اعتماد دورة الجرد الميداني وتثبيت السجل التاريخي الجديد؟\nسيتم تحديث الأرصدة المرجعية بالمستودع وفق الأرقام الفعلية المعتمدة.')) {
+        return;
+      }
+
+      const dateVal = document.getElementById('audit-form-date')?.value || new Date().toISOString().split('T')[0];
+      const auditorVal = document.getElementById('audit-form-auditor')?.value.trim() || 'المسؤول عن المخزون';
+      const notesVal = document.getElementById('audit-form-notes')?.value.trim() || 'دورة جرد معتمدة';
+
+      const auditItems = [];
+      let totalMatched = 0;
+      let totalSurplus = 0;
+      let totalDeficit = 0;
+
+      const inputs = document.querySelectorAll('.audit-physical-input');
+      inputs.forEach(input => {
+        const itemId = input.getAttribute('data-item-id');
+        const sysStock = parseInt(input.getAttribute('data-sys-stock'), 10) || 0;
+        const val = parseInt(input.value, 10);
+        const physicalStock = isNaN(val) ? sysStock : Math.max(0, val);
+        const diff = physicalStock - sysStock;
+
+        if (diff > 0) totalSurplus++;
+        else if (diff < 0) totalDeficit++;
+        else totalMatched++;
+
+        const originalItem = state.data.items.find(i => i.id === itemId);
+        if (originalItem) {
+          auditItems.push({
+            id: itemId,
+            name: originalItem.name,
+            category: originalItem.category,
+            systemStock: sysStock,
+            physicalStock: physicalStock,
+            diff: diff
+          });
+          // Update item baseline stock in system
+          originalItem.stock = physicalStock;
+          delete originalItem.physicalStock;
+        }
+      });
+
+      const auditRecord = {
+        id: 'GRD-' + String(Date.now()).slice(-6),
+        date: dateVal,
+        timestamp: new Date().toISOString(),
+        auditor: auditorVal,
+        notes: notesVal,
+        itemsCount: auditItems.length,
+        matchedCount: totalMatched,
+        surplusCount: totalSurplus,
+        deficitCount: totalDeficit,
+        items: auditItems
+      };
+
+      if (!state.data.auditHistory) state.data.auditHistory = [];
+      state.data.auditHistory.unshift(auditRecord);
+
       persistAll();
+      closeNewAuditModal();
       renderInventoryTable();
-      showToast(`تم تحديث جرد المادة "${item.name}"`, 'info');
+      renderSettingsItems();
+      refreshAllBadges();
+      showToast(`تم حفظ واعتماد دورة الجرد (${auditRecord.id}) بنجاح في الأرشيف المرجعي 📋`, 'success');
+    }
+
+    function openAuditHistoryModal() {
+      const tbody = document.getElementById('audit-history-tbody');
+      const audits = state.data.auditHistory || [];
+
+      if (tbody) {
+        if (audits.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 25px; color: var(--text-muted);">لا توجد دورات جرد معتمدة مسبقاً في الأرشيف</td></tr>`;
+        } else {
+          tbody.innerHTML = audits.map(a => {
+            let diffStatus = '<span class="badge badge-success">مطابق كلياً</span>';
+            if (a.surplusCount > 0 || a.deficitCount > 0) {
+              diffStatus = `<span class="badge badge-warning" title="فائض: ${a.surplusCount} | عجز: ${a.deficitCount}">فروقات (+${a.surplusCount} / -${a.deficitCount})</span>`;
+            }
+            return `
+              <tr>
+                <td style="text-align: center; font-weight: 700;" class="tabular-nums">${escapeHtml(a.id)}</td>
+                <td class="tabular-nums">${escapeHtml(a.date)}</td>
+                <td><strong>${escapeHtml(a.auditor || 'لجنة الجرد')}</strong></td>
+                <td style="text-align: center;" class="tabular-nums">${a.itemsCount || a.items?.length || 0}</td>
+                <td style="text-align: center;">${diffStatus}</td>
+                <td style="text-align: center;">
+                  <button type="button" class="btn btn-outline btn-sm" onclick="viewPastAudit('${a.id}')" style="padding: 3px 8px; font-size: 0.76rem;">معاينة</button>
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="printPastAuditA4('${a.id}')" style="padding: 3px 8px; font-size: 0.76rem;" title="طباعة A4">🖨️</button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+        }
+      }
+
+      const modal = document.getElementById('audit-history-modal');
+      if (modal) modal.classList.add('open');
+    }
+
+    function closeAuditHistoryModal() {
+      const modal = document.getElementById('audit-history-modal');
+      if (modal) modal.classList.remove('open');
+    }
+
+    function viewPastAudit(auditId) {
+      const audit = (state.data.auditHistory || []).find(a => a.id === auditId);
+      if (!audit) {
+        showToast('لم يتم العثور على سجل الجرد المحدد', 'error');
+        return;
+      }
+
+      state.currentViewedAuditId = auditId;
+      const titleEl = document.getElementById('view-audit-title');
+      const subtitleEl = document.getElementById('view-audit-subtitle');
+      const contentEl = document.getElementById('view-audit-content');
+
+      if (titleEl) titleEl.textContent = `تفاصيل دورة الجرد المعتمدة — ${audit.id}`;
+      if (subtitleEl) subtitleEl.textContent = `تاريخ الاعتماد: ${audit.date} | المشرف: ${audit.auditor || 'لجنة الجرد'}`;
+
+      if (contentEl) {
+        const rows = (audit.items || []).map((it, idx) => {
+          let diffHtml = '<span class="tabular-nums" style="color: var(--text-muted);">0</span>';
+          if (it.diff > 0) diffHtml = `<span class="tabular-nums" style="color: var(--success); font-weight: bold;">+${it.diff}</span>`;
+          if (it.diff < 0) diffHtml = `<span class="tabular-nums" style="color: var(--danger); font-weight: bold;">${it.diff}</span>`;
+
+          return `
+            <tr>
+              <td style="text-align: center;" class="tabular-nums">${idx + 1}</td>
+              <td><strong>${escapeHtml(it.name)}</strong></td>
+              <td>${escapeHtml(it.category || '—')}</td>
+              <td style="text-align: center;" class="tabular-nums">${it.systemStock}</td>
+              <td style="text-align: center;" class="tabular-nums font-bold">${it.physicalStock}</td>
+              <td style="text-align: center;">${diffHtml}</td>
+            </tr>
+          `;
+        }).join('');
+
+        contentEl.innerHTML = `
+          <div style="background: var(--bg-muted); padding: 12px; border-radius: var(--radius-md); margin-bottom: 12px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 0.85rem;">
+            <div><strong>رقم الجرد:</strong> <span class="tabular-nums">${escapeHtml(audit.id)}</span></div>
+            <div><strong>التاريخ:</strong> <span class="tabular-nums">${escapeHtml(audit.date)}</span></div>
+            <div><strong>المسؤول / اللجنة:</strong> <span>${escapeHtml(audit.auditor)}</span></div>
+            <div><strong>الملاحظات:</strong> <span>${escapeHtml(audit.notes || '—')}</span></div>
+          </div>
+          <div class="table-scroll-wrapper" style="max-height: 420px;">
+            <table class="data-table" style="font-size: 0.82rem;">
+              <thead>
+                <tr>
+                  <th style="width: 36px; text-align: center;">#</th>
+                  <th>بيان المادة والمواصفات</th>
+                  <th>الصنف</th>
+                  <th style="text-align: center; width: 100px;">الرصيد بالنظام</th>
+                  <th style="text-align: center; width: 110px;">الرصيد الفعلي</th>
+                  <th style="text-align: center; width: 80px;">الفارق</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      closeAuditHistoryModal();
+      const modal = document.getElementById('view-audit-modal');
+      if (modal) modal.classList.add('open');
+    }
+
+    function closeViewAuditModal() {
+      const modal = document.getElementById('view-audit-modal');
+      if (modal) modal.classList.remove('open');
+    }
+
+    function printCurrentViewedAudit() {
+      if (state.currentViewedAuditId) {
+        printPastAuditA4(state.currentViewedAuditId);
+      }
+    }
+
+    function generateAuditA4Html(audit) {
+      const itemsRows = (audit.items || []).map((it, idx) => {
+        let diffStr = 'مطابق';
+        if (it.diff > 0) diffStr = `+${it.diff} (فائض)`;
+        if (it.diff < 0) diffStr = `${it.diff} (عجز)`;
+
+        return `
+          <tr>
+            <td style="text-align: center; font-weight: bold;">${idx + 1}</td>
+            <td style="font-weight: 700; text-align: start; direction: ltr;">${escapeHtml(it.name)}</td>
+            <td style="color: #475569; font-size: 8.5pt; text-align: center;">${escapeHtml(it.category || '—')}</td>
+            <td style="text-align: center; font-weight: bold;" class="tabular-nums">${it.systemStock}</td>
+            <td style="text-align: center; font-weight: 900; font-size: 10.5pt;" class="tabular-nums">${it.physicalStock}</td>
+            <td style="text-align: center; font-size: 8.5pt;" class="tabular-nums">${diffStr}</td>
+            <td style="font-size: 8.5pt; text-align: center;">سجل معتمد</td>
+          </tr>
+        `;
+      }).join('');
+
+      const totalPhysicalUnits = (audit.items || []).reduce((s, i) => s + (i.physicalStock || 0), 0);
+
+      return `
+        <div class="official-doc-page">
+          <!-- الترويسة الإدارية الرسمية -->
+          <table style="width: 100%; border-collapse: collapse; border-bottom: 2.5px solid #1e40af; margin-bottom: 12px;">
+            <tr>
+              <td style="width: 35%; text-align: right; vertical-align: middle; border: none; padding: 0 0 6px 0; line-height: 1.4; font-size: 9pt;">
+                <strong>المملكة المغربية</strong><br>
+                <strong>وزارة العدل</strong><br>
+                <strong>محكمة الاستئناف بسطات</strong><br>
+                <strong style="color: #1e40af;">المديرية الإقليمية للعدل بسطات</strong><br>
+                <span style="font-size: 8.5pt;">مصلحة التجهيز وتدبير المخزون</span>
+              </td>
+              <td style="width: 30%; text-align: center; vertical-align: middle; border: none; padding: 0 0 6px 0;">
+                ${getOfficialEmblemSvg()}
+              </td>
+              <td style="width: 35%; text-align: left; vertical-align: middle; border: none; padding: 0 0 6px 0; line-height: 1.4; direction: ltr; font-size: 8.5pt;">
+                <strong>ROYAUME DU MAROC</strong><br>
+                <strong>MINISTÈRE DE LA JUSTICE</strong><br>
+                <strong style="font-family: 'Noto Sans Tifinagh', sans-serif;">ⵜⴰⴳⵍⴷⵉⵜ ⵏ ⵍⵎⵖⵔⵉⴱ</strong><br>
+                <span>Direction Régionale de la Justice de Settat</span><br>
+                <span style="font-size: 8pt; color: #475569;">Service de l'équipement et de la gestion du stock</span>
+              </td>
+            </tr>
+          </table>
+
+          <div style="text-align: center; background: #f8fafc; border: 1.5px solid #1e40af; border-radius: 4px; padding: 8px 12px; margin-bottom: 12px;">
+            <h2 style="font-size: 13.5pt; font-weight: 900; margin: 0; color: #0f172a;">محضر دورة الجرد الدوري والرقابة المادية للمخزون</h2>
+            <div style="font-size: 9pt; font-weight: 700; margin-top: 3px; color: #334155;">
+              رقم المحضر: <span style="font-family: monospace;">${escapeHtml(audit.id)}</span> | التاريخ المرجعي: <span class="tabular-nums">${escapeHtml(audit.date)}</span> | المشرف: ${escapeHtml(audit.auditor)}
+            </div>
+          </div>
+
+          <table style="width: 100%; border-collapse: collapse; border: 1px solid #cbd5e1; margin-bottom: 12px; font-size: 9pt; background: #fff;">
+            <tr>
+              <td style="padding: 6px 10px; border: 1px solid #e2e8f0; width: 33.3%;"><strong>إجمالي المواد:</strong> <span>${audit.items?.length || 0} مادة</span></td>
+              <td style="padding: 6px 10px; border: 1px solid #e2e8f0; width: 33.3%;"><strong>مجموع القطع المحصورة:</strong> <span class="tabular-nums" style="font-weight: bold;">${totalPhysicalUnits}</span></td>
+              <td style="padding: 6px 10px; border: 1px solid #e2e8f0; width: 33.3%;"><strong>ملاحظات الجرد:</strong> <span>${escapeHtml(audit.notes || 'جرد دوري معتمد')}</span></td>
+            </tr>
+          </table>
+
+          <table class="print-table">
+            <thead>
+              <tr>
+                <th style="width: 32px; text-align: center;">#</th>
+                <th style="text-align: start;">بيان المادة والمواصفات</th>
+                <th style="width: 110px; text-align: center;">الصنف</th>
+                <th style="width: 75px; text-align: center;">الرصيد بالنظام</th>
+                <th style="width: 75px; text-align: center;">الجرد الفعلي</th>
+                <th style="width: 90px; text-align: center;">الفارق</th>
+                <th style="width: 90px; text-align: center;">الملاحظات</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsRows}
+              <tr style="font-weight: 900; background: #f8fafc;">
+                <td colspan="4" style="text-align: left; padding-left: 15px;">المجموع الإجمالي للقطع المادية المعتمدة:</td>
+                <td style="text-align: center; font-size: 11pt;" class="tabular-nums">${totalPhysicalUnits}</td>
+                <td colspan="2" style="text-align: center; font-size: 8.5pt;">سجل مرجعي تاريخي دائم</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="font-size: 8.5pt; color: #334155; margin: 10px 0 14px 0; line-height: 1.4;">
+            * يُشهد بصحة مطابقة المعاينة الميدانية للمخزون الفعلي وفق الأرصدة والبيانات المحصورة بمحضر الجرد هذا بالمديرية الإقليمية للعدل بسطات، وتُعتمد كأساس مرجعي للحركات اللاحقة.
+          </div>
+
+          <table style="width: 100%; border-collapse: collapse; margin-top: 14px; border-top: 1px dashed #64748b; padding-top: 10px;">
+            <tr>
+              <td style="width: 33.33%; padding: 4px; border: none; vertical-align: top;">
+                <div style="border: 1.5px solid #000; border-radius: 4px; height: 110px; padding: 8px; text-align: center; font-size: 9pt; display: flex; flex-direction: column; justify-content: space-between; background: #fff;">
+                  <div style="font-weight: 800; text-decoration: underline;">لجنة الجرد والمطابقة</div>
+                  <div style="font-size: 8pt; color: #475569;">(معاينة مادية صحيحة ومطابقة)</div>
+                  <div style="font-size: 8pt; color: #64748b; margin-top: auto;">التوقيع: ............................</div>
+                </div>
+              </td>
+              <td style="width: 33.33%; padding: 4px; border: none; vertical-align: top;">
+                <div style="border: 1.5px solid #000; border-radius: 4px; height: 110px; padding: 8px; text-align: center; font-size: 9pt; display: flex; flex-direction: column; justify-content: space-between; background: #fff;">
+                  <div style="font-weight: 800; text-decoration: underline;">المسؤول عن المخزون</div>
+                  <div style="font-size: 8.5pt; font-weight: 700; color: #1e40af;">${escapeHtml(audit.auditor || state.profile.userProfile?.fullName || 'محمد أيت حمادي')}</div>
+                  <div style="font-size: 8pt; color: #64748b; margin-top: auto;">التأشيرة والخاتم الرسمي</div>
+                </div>
+              </td>
+              <td style="width: 33.33%; padding: 4px; border: none; vertical-align: top;">
+                <div style="border: 1.5px solid #000; border-radius: 4px; height: 110px; padding: 8px; text-align: center; font-size: 9pt; display: flex; flex-direction: column; justify-content: space-between; background: #fff;">
+                  <div style="font-weight: 800; text-decoration: underline;">تأشيرة السيد المدير الإقليمي</div>
+                  <div style="font-size: 8.5pt; font-weight: 700;">المديرية الإقليمية للعدل بسطات</div>
+                  <div style="font-size: 8pt; color: #64748b; margin-top: auto;">خاتم وتأشيرة الإدارة</div>
+                </div>
+              </td>
+            </tr>
+          </table>
+
+          <div style="margin-top: 14px; border-top: 1px solid #cbd5e1; padding-top: 6px; text-align: center; font-size: 7.5pt; color: #64748b; line-height: 1.4;">
+            المديرية الإقليمية للعدل بسطات، مجمع المحاكم، شارع الحسن الثاني، سطات | هاتف: 05 23 40 25 15 | فاكس: 05 23 40 25 16 | البريد: dr.settat@justice.gov.ma<br>
+            Direction Régionale de la Justice de Settat — Complexe judiciaire, Bd Hassan II, Settat
+          </div>
+        </div>
+      `;
+    }
+
+    function printPastAuditA4(auditId) {
+      const audit = (state.data.auditHistory || []).find(a => a.id === auditId);
+      if (!audit) {
+        showToast('سجل الجرد غير موجود', 'error');
+        return;
+      }
+      openDocPreviewModal(`محضر دورة الجرد المعتمد — ${audit.id}`, generateAuditA4Html(audit));
     }
 
     function refreshAllBadges() {
@@ -6574,7 +7203,7 @@ ${itemsText}
 
     // 16. مركز الإعدادات والتهيئة الشاملة (Settings CRUD)
     function switchSettingsSubTab(tab) {
-      ['cats', 'items', 'dests', 'about', 'backup', 'profile'].forEach(t => {
+      ['cats', 'items', 'dests', 'about', 'backup', 'profile', 'notes'].forEach(t => {
         const pane = document.getElementById(`settings-pane-${t}`);
         const btn = document.getElementById(`settings-sub-tab-${t}`);
         if (pane) pane.style.display = t === tab ? 'block' : 'none';
@@ -6588,6 +7217,65 @@ ${itemsText}
       else if (tab === 'dests') renderSettingsDests();
       else if (tab === 'about') populateAboutAppSettings();
       else if (tab === 'profile') populateUserProfileSettings();
+      else if (tab === 'notes') renderSettingsQuickNotesTable();
+    }
+
+    function renderSettingsQuickNotesTable() {
+      const tbody = document.getElementById('settings-quick-notes-table-body');
+      if (!tbody) return;
+      state.data.quickNotes = state.data.quickNotes || [];
+      if (state.data.quickNotes.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 18px;">لا توجد ملاحظات سريعة مسجلة بعد</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = state.data.quickNotes.map((n, idx) => `
+        <tr>
+          <td style="text-align: center;">${idx + 1}</td>
+          <td><strong>${escapeHtml(n.text)}</strong></td>
+          <td style="text-align: center;"><span class="badge badge-subtle">${n.count || 1} مرة</span></td>
+          <td style="text-align: center;" class="tabular-nums">${n.lastUsed || '—'}</td>
+          <td style="text-align: center;">
+            <button type="button" class="btn-icon danger" onclick="deleteQuickNote(${idx})" title="حذف الملاحظة">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function addNewQuickNote() {
+      const input = document.getElementById('new-quick-note-input');
+      const val = (input?.value || '').replace(/\s+/g, ' ').trim();
+      if (!val) {
+        showToast('يرجى كتابة نص الملاحظة السريعة أولاً', 'warning');
+        return;
+      }
+      state.data.quickNotes = state.data.quickNotes || [];
+      if (state.data.quickNotes.some(q => q.text.toLowerCase() === val.toLowerCase())) {
+        showToast('هذه الملاحظة مسجلة مسبقاً!', 'warning');
+        return;
+      }
+      state.data.quickNotes.push({
+        text: val,
+        count: 1,
+        lastUsed: new Date().toISOString().split('T')[0]
+      });
+      persistAll();
+      input.value = '';
+      renderSettingsQuickNotesTable();
+      renderQuickNoteChips();
+      showToast('تمت إضافة الملاحظة السريعة بنجاح', 'success');
+    }
+
+    function deleteQuickNote(idx) {
+      if (!state.data.quickNotes || !state.data.quickNotes[idx]) return;
+      const item = state.data.quickNotes[idx];
+      if (!confirm(`هل أنت متأكد من حذف الملاحظة "${item.text}" من قائمة الكبسولات السريعة؟`)) return;
+      state.data.quickNotes.splice(idx, 1);
+      persistAll();
+      renderSettingsQuickNotesTable();
+      renderQuickNoteChips();
+      showToast('تم حذف الملاحظة بنجاح دون المساس بالإشهادات السابقة', 'info');
     }
 
     function renderSettings() {
@@ -6777,11 +7465,10 @@ ${itemsText}
               </button>
             </div>
             <div style="padding: 12px; background: var(--bg-card); border-top: 1px solid var(--border-subtle);">
-              <div style="display: flex; gap: 8px; margin-bottom: 8px; align-items: stretch;">
-                <input type="text" id="add-recip-${destName}" class="form-control" style="font-size: 0.82rem; padding: 6px 10px;" placeholder="اسم مستفيد جديد تابع لهذه الجهة..." />
-                <button type="button" class="btn btn-secondary btn-sm btn-twoline" onclick="addRecipientToDest('${destName}')">
-                  <span>+ إضافة</span>
-                  <span>المستفيد</span>
+              <div style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center;">
+                <input type="text" id="add-recip-${destName}" class="form-control" style="font-size: 0.82rem; padding: 6px 10px; flex: 1 1 0%; min-width: 0;" placeholder="اسم مستفيد جديد تابع لهذه الجهة..." />
+                <button type="button" class="btn btn-primary btn-sm btn-icon" onclick="addRecipientToDest('${destName}')" title="إضافة مستفيد" aria-label="إضافة مستفيد">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 </button>
               </div>
               <div style="display: flex; flex-wrap: wrap; gap: 6px;">
@@ -6889,7 +7576,7 @@ ${itemsText}
           department: 'مصلحة التجهيز وتدبير الممتلكات ونظم المعلومات',
           phone: '05 23 40 XX XX',
           email: 'mohamed105@gmail.com',
-          notes: 'المسؤول المعتمد لتأشير وصولات استلام اللوازم بالمديرية الإقليمية بسطات'
+          notes: 'المسؤول المعتمد لتأشير وصولات استلام المواد بالمديرية الإقليمية بسطات'
         };
       }
       const u = state.profile.userProfile;
@@ -7007,7 +7694,7 @@ ${itemsText}
       tableHtml += '<style>body { font-family: Arial, sans-serif; direction: rtl; } table { border-collapse: collapse; direction: rtl; width: 100%; } th { background-color: #0f4c81; color: #ffffff; font-weight: bold; border: 1px solid #000; padding: 6px; } td { border: 1px solid #ccc; padding: 6px; }</style>';
       tableHtml += '</head><body>';
       tableHtml += '<table>';
-      tableHtml += '<tr><td colspan="7" style="font-size: 16pt; font-weight: bold; text-align: center; background-color: #f1f5f9; height: 40px;">سجل إشهادات التسليم وتوزيع اللوازم — المديرية الإقليمية للعدل بسطات</td></tr>';
+      tableHtml += '<tr><td colspan="7" style="font-size: 16pt; font-weight: bold; text-align: center; background-color: #f1f5f9; height: 40px;">سجل إشهادات التسليم وتوزيع المواد — المديرية الإقليمية للعدل بسطات</td></tr>';
       tableHtml += '<tr><th>رقم الإشهاد</th><th>التاريخ</th><th>المستلم</th><th>الجهة</th><th>قناة التوصل</th><th>حالة الاستجابة</th><th>المواد المسلمة</th></tr>';
 
       txs.forEach(t => {
@@ -7093,14 +7780,21 @@ ${itemsText}
       `;
     }
 
+    function safeDocText(val, fallback = 'غير محدد') {
+      if (val === undefined || val === null) return fallback;
+      const s = String(val).trim();
+      if (!s || s === 'undefined' || s === 'null') return fallback;
+      return escapeHtml(s);
+    }
+
     function generateVoucherA4Html(voucher) {
       const itemsRows = (voucher.items || []).map((item, idx) => `
         <tr>
           <td style="text-align: center; font-weight: bold;">${idx + 1}</td>
-          <td style="font-weight: 700; text-align: start; direction: ltr;">${item.name}</td>
-          <td style="color: #475569; font-size: 8.5pt;">${item.category || '—'}</td>
+          <td style="font-weight: 700; text-align: start; direction: ltr;">${escapeHtml(item.name || '—')}</td>
+          <td style="color: #475569; font-size: 8.5pt; text-align: center;">${escapeHtml(item.category || '—')}</td>
           <td style="text-align: center; font-weight: 900; font-size: 11pt;" class="tabular-nums">${item.qty || 1}</td>
-          <td style="font-size: 8.5pt;">${item.notes || 'تسليم رسمي سليم'}</td>
+          <td style="font-size: 8.5pt; text-align: center;">${escapeHtml(item.notes || 'تسليم رسمي معتمد')}</td>
         </tr>
       `).join('');
 
@@ -7110,13 +7804,14 @@ ${itemsText}
 
       return `
         <div class="official-doc-page">
-          <!-- الترويسة الرسمية في جدول منتظم لمنع التداخل أو انقلاب الحروف -->
-          <table style="width: 100%; border-collapse: collapse; border-bottom: 2px solid #000; margin-bottom: 12px;">
+          <!-- الترويسة الرسمية في جدول متوازن مع خط فاصل أزرق رسمي -->
+          <table style="width: 100%; border-collapse: collapse; border-bottom: 2.5px solid #1e40af; margin-bottom: 12px;">
             <tr>
-              <td style="width: 35%; text-align: right; vertical-align: middle; border: none; padding: 0 0 6px 0; line-height: 1.4; font-size: 9.5pt;">
-                <strong>${ministry}</strong><br>
+              <td style="width: 35%; text-align: right; vertical-align: middle; border: none; padding: 0 0 6px 0; line-height: 1.4; font-size: 9pt;">
+                <strong>المملكة المغربية</strong><br>
+                <strong>وزارة العدل</strong><br>
                 <strong>محكمة الاستئناف بسطات</strong><br>
-                <strong style="color: #0f4c81;">${directorate}</strong><br>
+                <strong style="color: #1e40af;">${escapeHtml(directorate)}</strong><br>
                 <span style="font-size: 8.5pt;">مصلحة التجهيز وتدبير المخزون</span>
               </td>
               <td style="width: 30%; text-align: center; vertical-align: middle; border: none; padding: 0 0 6px 0;">
@@ -7126,33 +7821,37 @@ ${itemsText}
                 <strong>ROYAUME DU MAROC</strong><br>
                 <strong>MINISTÈRE DE LA JUSTICE</strong><br>
                 <strong style="font-family: 'Noto Sans Tifinagh', sans-serif;">ⵜⴰⴳⵍⴷⵉⵜ ⵏ ⵍⵎⵖⵔⵉⴱ</strong><br>
-                <span style="font-size: 8pt; color: #475569;">Direction Régionale - Settat</span>
+                <span>Direction Régionale de la Justice de Settat</span><br>
+                <span style="font-size: 8pt; color: #475569;">Service de l'équipement et de la gestion du stock</span>
               </td>
             </tr>
           </table>
 
-          <!-- عنوان الوثيقة الرسمية -->
-          <div style="text-align: center; background: #f1f5f9; border: 1.5px solid #000; border-radius: 4px; padding: 6px 12px; margin-bottom: 12px;">
-            <h2 style="font-size: 14pt; font-weight: 900; margin: 0; color: #000;">إشـهـاد تسليم مواد ولوازم إدارية</h2>
-            <div style="font-size: 9.5pt; font-weight: 700; margin-top: 2px; font-family: monospace;">رقم الإشهاد: ${voucher.id}</div>
+          <!-- عنوان الوثيقة الرسمية ورقم الإشهاد -->
+          <div style="text-align: center; background: #f8fafc; border: 1.5px solid #1e40af; border-radius: 4px; padding: 8px 12px; margin-bottom: 12px;">
+            <h2 style="font-size: 14pt; font-weight: 900; margin: 0; color: #0f172a;">إشهاد تسليم مواد إدارية</h2>
+            <div style="font-size: 9.5pt; font-weight: 700; margin-top: 3px; font-family: monospace; color: #1e40af;">
+              رقم الإشهاد: ${escapeHtml(voucher.id)}
+            </div>
           </div>
 
-          <!-- بيانات المستفيد والطلب في جدول متوازن -->
-          <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; margin-bottom: 12px; font-size: 9.5pt; background: #fff;">
+          <!-- جدول المعلومات الوصفية المتوازن دون قيم undefined -->
+          <table style="width: 100%; border-collapse: collapse; border: 1px solid #cbd5e1; margin-bottom: 12px; font-size: 9pt; background: #fff;">
             <tr>
-              <td style="padding: 6px 10px; border: 1px solid #e2e8f0; width: 50%;"><strong>الجهة المستفيدة:</strong> <span>${voucher.destination}</span></td>
-              <td style="padding: 6px 10px; border: 1px solid #e2e8f0; width: 50%;"><strong>تاريخ التسليم:</strong> <span class="tabular-nums" style="font-weight: bold;">${voucher.isoDate || voucher.date}</span></td>
+              <td style="padding: 6px 10px; border: 1px solid #e2e8f0; width: 50%;"><strong>الجهة المستفيدة:</strong> <span>${safeDocText(voucher.destination)}</span></td>
+              <td style="padding: 6px 10px; border: 1px solid #e2e8f0; width: 50%;"><strong>تاريخ التسليم:</strong> <span class="tabular-nums" style="font-weight: bold;">${safeDocText(voucher.isoDate || voucher.date)}</span></td>
             </tr>
             <tr>
-              <td style="padding: 6px 10px; border: 1px solid #e2e8f0;"><strong>المستلم:</strong> <strong style="font-size: 10pt;">${voucher.recipient}</strong></td>
-              <td style="padding: 6px 10px; border: 1px solid #e2e8f0;"><strong>سبب التوزيع:</strong> <span>${voucher.reason || 'بناءً على طلب'}</span></td>
+              <td style="padding: 6px 10px; border: 1px solid #e2e8f0;"><strong>المستلم:</strong> <strong style="font-size: 9.5pt;">${safeDocText(voucher.recipient)}</strong></td>
+              <td style="padding: 6px 10px; border: 1px solid #e2e8f0;"><strong>سبب التوزيع:</strong> <span>${safeDocText(voucher.reason, 'بناءً على طلب')}</span></td>
             </tr>
             <tr>
-              <td style="padding: 6px 10px; border: 1px solid #e2e8f0;"><strong>قناة التوصل:</strong> <span>${voucher.channel || 'كتاب'}</span></td>
-              <td style="padding: 6px 10px; border: 1px solid #e2e8f0;"><strong>حالة الاستجابة:</strong> <strong style="color: #065f46;">${voucher.status || 'استجابة كلية'}</strong></td>
+              <td style="padding: 6px 10px; border: 1px solid #e2e8f0;"><strong>قناة التوصل:</strong> <span>${safeDocText(voucher.channel, 'كتاب')}</span></td>
+              <td style="padding: 6px 10px; border: 1px solid #e2e8f0;"><strong>حالة الاستجابة:</strong> <strong style="color: #065f46;">${safeDocText(voucher.status, 'استجابة كلية')}</strong></td>
             </tr>
           </table>
 
+          <!-- جدول المواد المفصل -->
           <table class="print-table">
             <thead>
               <tr>
@@ -7166,43 +7865,50 @@ ${itemsText}
             <tbody>
               ${itemsRows}
               <tr style="font-weight: 900; background: #f8fafc;">
-                <td colspan="3" style="text-align: left; padding-left: 20px;">المجموع الإجمالي للقطع المسلمة:</td>
+                <td colspan="3" style="text-align: left; padding-left: 20px;">المجموع الإجمالي للقطع المسلّمة:</td>
                 <td style="text-align: center; font-size: 11.5pt;" class="tabular-nums">${totalQty}</td>
-                <td>-</td>
+                <td style="text-align: center;">—</td>
               </tr>
             </tbody>
           </table>
 
+          <!-- العبارة القانونية الإلزامية -->
           <div style="font-size: 8.5pt; color: #334155; margin: 10px 0 14px 0; line-height: 1.4;">
-            * يُشهد بصحة تسليم المواد المبينة أعلاه للمصلحة المعنية وفق الكميات والمواصفات المحددة، وتُدرج ضمن السجلات الرقابية للمديرية الإقليمية للعدل بسطات.
+            شهد بصحة تسليم المواد المبينة أعلاه للمصلحة المعنية وفق الكميات والمواصفات المحددة، وتُدرج ضمن السجلات الرقابية للمديرية الإقليمية للعدل بسطات.
           </div>
 
-          <!-- مربعات التوقيع والأختام الرسمية في جدول منتظم (3 أعمدة بمساحات كافية للأختام) -->
+          <!-- مربعات التوقيع الثلاثة والتأشيرة الإدارية -->
           <table style="width: 100%; border-collapse: collapse; margin-top: 14px; border-top: 1px dashed #64748b; padding-top: 10px;">
             <tr>
               <td style="width: 33.33%; padding: 4px; border: none; vertical-align: top;">
                 <div style="border: 1.5px solid #000; border-radius: 4px; height: 115px; padding: 8px; text-align: center; font-size: 9pt; display: flex; flex-direction: column; justify-content: space-between; background: #fff;">
                   <div style="font-weight: 800; text-decoration: underline;">توقيع وتأشيرة المستلم</div>
-                  <div style="font-size: 8pt; color: #475569;">(تسلّم اللوازم كاملة وبحالة جيدة)</div>
+                  <div style="font-size: 8pt; color: #475569;">(تسلم المواد كاملة وبحالة جيدة)</div>
                   <div style="font-size: 8pt; color: #64748b; margin-top: auto;">التاريخ: .... / .... / 2026</div>
                 </div>
               </td>
               <td style="width: 33.33%; padding: 4px; border: none; vertical-align: top;">
                 <div style="border: 1.5px solid #000; border-radius: 4px; height: 115px; padding: 8px; text-align: center; font-size: 9pt; display: flex; flex-direction: column; justify-content: space-between; background: #fff;">
                   <div style="font-weight: 800; text-decoration: underline;">المسؤول عن المخزون</div>
-                  <div style="font-size: 8.5pt; font-weight: 700; color: #0f4c81;">${state.profile.userProfile?.fullName || state.profile.projectMeta?.ownerName || 'محمد أيت حمادي'}</div>
+                  <div style="font-size: 8.5pt; font-weight: 700; color: #1e40af;">${escapeHtml(state.profile.userProfile?.fullName || state.profile.projectMeta?.ownerName || 'محمد أيت حمادي')}</div>
                   <div style="font-size: 8pt; color: #64748b; margin-top: auto;">التأشيرة والخاتم الرسمي</div>
                 </div>
               </td>
               <td style="width: 33.33%; padding: 4px; border: none; vertical-align: top;">
                 <div style="border: 1.5px solid #000; border-radius: 4px; height: 115px; padding: 8px; text-align: center; font-size: 9pt; display: flex; flex-direction: column; justify-content: space-between; background: #fff;">
-                  <div style="font-weight: 800; text-decoration: underline;">تأشيرة رئيس المصلحة</div>
+                  <div style="font-weight: 800; text-decoration: underline;">تأشيرة رئيس المصلحة / المديرية الإقليمية بسطات</div>
                   <div style="font-size: 8.5pt; font-weight: 700;">المديرية الإقليمية بسطات</div>
                   <div style="font-size: 8pt; color: #64748b; margin-top: auto;">خاتم وتأشيرة الإدارة</div>
                 </div>
               </td>
             </tr>
           </table>
+
+          <!-- التذييل الإداري الرسمي -->
+          <div style="margin-top: 14px; border-top: 1px solid #cbd5e1; padding-top: 6px; text-align: center; font-size: 7.5pt; color: #64748b; line-height: 1.4;">
+            المديرية الإقليمية للعدل بسطات، مجمع المحاكم، شارع الحسن الثاني، سطات | هاتف: 05 23 40 25 15 | فاكس: 05 23 40 25 16 | البريد: dr.settat@justice.gov.ma<br>
+            Direction Régionale de la Justice de Settat — Complexe judiciaire, Bd Hassan II, Settat
+          </div>
         </div>
       `;
     }
@@ -7210,7 +7916,7 @@ ${itemsText}
     function printSingleVoucherA4(id) {
       const voucher = state.data.transactions.find(t => t.id === id);
       if (!voucher) return;
-      openDocPreviewModal(`إشهاد تسليم مواد ولوازم — ${voucher.id}`, generateVoucherA4Html(voucher));
+      openDocPreviewModal(`إشهاد تسليم مواد إدارية — ${voucher.id}`, generateVoucherA4Html(voucher));
     }
 
     function printSelectedVouchersBatch() {
@@ -7221,9 +7927,9 @@ ${itemsText}
       const htmls = Array.from(state.selectedVouchersForPrint).map(id => {
         const v = state.data.transactions.find(t => t.id === id);
         return v ? generateVoucherA4Html(v) : '';
-      }).join('<div style="page-break-after: always;"></div>');
+      }).filter(h => !!h).join('<div style="page-break-after: always;"></div>');
 
-      openDocPreviewModal(`طباعة مجمعة لـ (${state.selectedVouchersForPrint.size}) إشهادات تسليم`, htmls);
+      openDocPreviewModal(`طباعة مجمعة لـ (${state.selectedVouchersForPrint.size}) إشهادات تسليم مواد إدارية`, htmls);
     }
 
     function printInventorySheet() {
