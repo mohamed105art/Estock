@@ -4169,45 +4169,133 @@
     /* =========================================================================
        PHASE 11: BULK DISTRIBUTION RUN (عملية التوزيع المركزي)
        ========================================================================= */
-    .bulk-dist-hero {
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #0f2942 100%);
-      border-radius: 16px;
-      padding: 18px 22px;
+    /* قاعدة عامة: أزرار الحفظ والإلغاء الموحدة مع تكبير الأيقونات للضعف وتوسيطها مع 6px padding */
+    .btn-action-save,
+    .btn-action-cancel {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: 44px !important;
+      height: 44px !important;
+      min-width: 44px !important;
+      min-height: 44px !important;
+      padding: 6px !important;
+      box-sizing: border-box !important;
+      border-radius: var(--radius-md, 8px) !important;
+      cursor: pointer !important;
+      transition: all 0.2s ease !important;
+      border: 1.5px solid transparent !important;
+      outline: none !important;
+    }
+
+    .btn-action-save {
+      background: #10b981 !important;
+      color: #ffffff !important;
+      border-color: #059669 !important;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25) !important;
+    }
+    .btn-action-save:hover {
+      background: #059669 !important;
+      transform: translateY(-1px) !important;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4) !important;
+    }
+    .btn-action-save svg {
+      width: 26px !important;
+      height: 26px !important;
+      stroke: #ffffff !important;
+      stroke-width: 2.3 !important;
+      flex-shrink: 0 !important;
+    }
+
+    .btn-action-cancel {
+      background: #ef4444 !important;
+      color: #ffffff !important;
+      border-color: #dc2626 !important;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25) !important;
+    }
+    .btn-action-cancel:hover {
+      background: #dc2626 !important;
+      transform: translateY(-1px) !important;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4) !important;
+    }
+    .btn-action-cancel svg {
+      width: 26px !important;
+      height: 26px !important;
+      stroke: #ffffff !important;
+      stroke-width: 2.3 !important;
+      flex-shrink: 0 !important;
+    }
+
+    /* أيقونة وشارة الطلبات المعلقة في واجهة تسليم جديد */
+    .btn-pending-orders-bell {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: var(--radius-full, 999px);
+      background: var(--bg-muted);
+      border: 1.5px solid var(--border-subtle);
+      color: var(--text-main);
+      font-weight: 800;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-pending-orders-bell:hover {
+      background: var(--primary-soft);
+      border-color: var(--primary);
+      color: var(--primary);
+      transform: translateY(-1px);
+    }
+    .btn-pending-orders-bell .pending-orders-badge {
+      background: #ef4444;
       color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 900;
+      padding: 2px 7px;
+      border-radius: 999px;
+      min-width: 18px;
+      text-align: center;
+      line-height: 1.2;
+    }
+    .pending-order-modal-card:hover {
+      border-color: var(--primary) !important;
+      background: var(--primary-soft) !important;
+      transform: translateY(-1px);
+    }
+
+    /* البانر العلوي لعملية التوزيع: خلفية موحدة بنفس بطاقات التطبيق بدون انعكاسات ضوئية */
+    .bulk-dist-hero {
+      background: var(--bg-card);
+      border-radius: 14px;
+      padding: 16px 20px;
+      color: var(--text-main);
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 16px;
-      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16);
-      border: 1px solid rgba(212, 175, 55, 0.35);
+      gap: 14px;
+      box-shadow: var(--shadow-sm);
+      border: 1.5px solid var(--border-subtle);
       margin-bottom: 14px;
       position: relative;
-      overflow: hidden;
     }
     .bulk-dist-hero::before {
-      content: '';
-      position: absolute;
-      top: -40px;
-      left: -40px;
-      width: 180px;
-      height: 180px;
-      background: radial-gradient(circle, rgba(212, 175, 55, 0.18), transparent 70%);
-      pointer-events: none;
+      display: none !important;
     }
     .bulk-batch-pill {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: rgba(212, 175, 55, 0.16);
-      border: 1px solid rgba(212, 175, 55, 0.55);
-      color: #fde68a;
-      padding: 5px 14px;
+      background: var(--primary-soft);
+      border: 1px solid var(--border-strong);
+      color: var(--primary);
+      padding: 4px 12px;
       border-radius: 999px;
       font-family: 'Inter', monospace;
       font-weight: 800;
       font-size: 0.84rem;
-      letter-spacing: 0.5px;
     }
     .bulk-live-bar {
       position: sticky;
@@ -4223,16 +4311,13 @@
     }
     .bulk-live-bar.status-ready {
       border-color: #10b981;
-      background: linear-gradient(90deg, rgba(16, 185, 129, 0.09), var(--bg-card, #ffffff));
       box-shadow: 0 8px 26px rgba(16, 185, 129, 0.18);
     }
     .bulk-live-bar.status-pending {
       border-color: #f59e0b;
-      background: linear-gradient(90deg, rgba(245, 158, 11, 0.09), var(--bg-card, #ffffff));
     }
     .bulk-live-bar.status-over {
       border-color: #ef4444;
-      background: linear-gradient(90deg, rgba(239, 68, 68, 0.09), var(--bg-card, #ffffff));
     }
     .bulk-live-metrics {
       display: grid;
@@ -4249,26 +4334,25 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 12px;
+      padding: 10px 14px;
       border-radius: 10px;
       background: var(--bg-muted, #f8fafc);
-      border: 1px solid var(--border-subtle, #e2e8f0);
+      border: 1.5px solid var(--border-subtle, #e2e8f0);
     }
     .bulk-metric-box .lbl {
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: var(--text-muted, #475569);
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--text-main);
     }
     .bulk-metric-box .val {
-      font-size: 1.22rem;
+      font-size: 1.35rem;
       font-weight: 900;
     }
     .bulk-progress-track {
-      height: 8px;
+      height: 9px;
       border-radius: 999px;
       background: var(--bg-muted, #e2e8f0);
       overflow: hidden;
-      margin-top: 10px;
     }
     .bulk-progress-fill {
       height: 100%;
@@ -4278,11 +4362,11 @@
       border-radius: 999px;
     }
     .bulk-progress-fill.zero-reached {
-      background: linear-gradient(90deg, #059669, #10b981);
+      background: #10b981 !important;
     }
     .bulk-stepper-tabs {
       display: flex;
-      gap: 8px;
+      gap: 10px;
       margin-bottom: 14px;
       flex-wrap: wrap;
     }
@@ -4291,83 +4375,103 @@
       min-width: 210px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
       padding: 12px 18px;
-      border-radius: 12px;
-      background: var(--bg-card, #ffffff);
-      border: 1.5px solid var(--border-subtle, #e2e8f0);
+      border-radius: 14px;
       cursor: pointer;
       transition: all 0.2s ease;
       text-align: right;
-      color: var(--text-main, #0f172a);
+      color: var(--text-main);
+      box-sizing: border-box;
     }
-    .bulk-step-tab .step-title {
-      font-weight: 900;
-      font-size: 1.02rem;
-      line-height: 1.25;
-      color: var(--text-main, #0f172a);
-      transition: color 0.2s ease;
-    }
-    .bulk-step-tab .step-desc {
-      font-size: 0.74rem;
-      color: var(--text-muted, #64748b);
-      margin-top: 3px;
-    }
-    .bulk-step-tab .step-num {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--bg-muted, #e2e8f0);
-      color: var(--text-main, #1e293b);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 900;
-      font-size: 0.95rem;
-      flex-shrink: 0;
-      transition: all 0.2s ease;
-    }
-
-    /* الخطوة 1 نشطة: برتقالي ذهبي (#f59e0b) */
-    .bulk-step-tab.step-tab-1.active {
-      border-color: #f59e0b;
+    /* أزرار الخطوات الثلاث: تدرجات خفيفة ومتناسقة */
+    .bulk-step-tab.step-tab-1 {
       background: rgba(245, 158, 11, 0.08);
-      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.16);
+      border: 1.5px solid rgba(245, 158, 11, 0.3);
+    }
+    .bulk-step-tab.step-tab-1 .step-num {
+      background: rgba(245, 158, 11, 0.16);
+      color: #d97706;
+    }
+    .bulk-step-tab.step-tab-1.active {
+      background: rgba(245, 158, 11, 0.18);
+      border-color: #f59e0b;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.22);
     }
     .bulk-step-tab.step-tab-1.active .step-num {
       background: #f59e0b;
       color: #ffffff;
     }
-    .bulk-step-tab.step-tab-1.active .step-title {
+    .bulk-step-tab.step-tab-1 .step-title {
       color: #d97706;
     }
 
-    /* الخطوة 2 نشطة: أزرق ملكي (#2563eb) */
-    .bulk-step-tab.step-tab-2.active {
-      border-color: #2563eb;
+    .bulk-step-tab.step-tab-2 {
       background: rgba(37, 99, 235, 0.08);
-      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.16);
+      border: 1.5px solid rgba(37, 99, 235, 0.3);
+    }
+    .bulk-step-tab.step-tab-2 .step-num {
+      background: rgba(37, 99, 235, 0.16);
+      color: #2563eb;
+    }
+    .bulk-step-tab.step-tab-2.active {
+      background: rgba(37, 99, 235, 0.18);
+      border-color: #2563eb;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.22);
     }
     .bulk-step-tab.step-tab-2.active .step-num {
       background: #2563eb;
       color: #ffffff;
     }
-    .bulk-step-tab.step-tab-2.active .step-title {
+    .bulk-step-tab.step-tab-2 .step-title {
       color: #2563eb;
     }
 
-    /* الخطوة 3 نشطة: أخضر زمردي (#10b981) */
-    .bulk-step-tab.step-tab-3.active {
-      border-color: #10b981;
+    .bulk-step-tab.step-tab-3 {
       background: rgba(16, 185, 129, 0.08);
-      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.16);
+      border: 1.5px solid rgba(16, 185, 129, 0.3);
+    }
+    .bulk-step-tab.step-tab-3 .step-num {
+      background: rgba(16, 185, 129, 0.16);
+      color: #059669;
+    }
+    .bulk-step-tab.step-tab-3.active {
+      background: rgba(16, 185, 129, 0.18);
+      border-color: #10b981;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.22);
     }
     .bulk-step-tab.step-tab-3.active .step-num {
       background: #10b981;
       color: #ffffff;
     }
-    .bulk-step-tab.step-tab-3.active .step-title {
+    .bulk-step-tab.step-tab-3 .step-title {
       color: #059669;
+    }
+
+    /* تكبير أرقام الخطوات (+100% لتصل 56px) وتكبير العناوين 10% */
+    .bulk-step-tab .step-num {
+      width: 56px !important;
+      height: 56px !important;
+      min-width: 56px !important;
+      border-radius: 50% !important;
+      font-size: 1.85rem !important;
+      font-weight: 900 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      flex-shrink: 0 !important;
+      transition: all 0.2s ease !important;
+    }
+    .bulk-step-tab .step-title {
+      font-weight: 900 !important;
+      font-size: 1.15rem !important;
+      line-height: 1.25 !important;
+      transition: color 0.2s ease !important;
+    }
+    .bulk-step-tab .step-desc {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      margin-top: 3px;
     }
     .bulk-matrix-wrap {
       overflow-x: auto;
@@ -4450,6 +4554,52 @@
       background: #fee2e2;
       color: #991b1b;
       border: 1px solid #ef4444;
+    }
+    #bulk-precommit-review-card {
+      background: var(--bg-card) !important;
+      border: 1.5px solid var(--border-subtle) !important;
+      color: var(--text-main) !important;
+    }
+    #bulk-precommit-review-card table thead th {
+      background: var(--bg-muted) !important;
+      color: var(--text-main) !important;
+      border-color: var(--border-subtle) !important;
+    }
+    #bulk-precommit-review-card table tbody td {
+      background: var(--bg-card) !important;
+      color: var(--text-main) !important;
+      border-color: var(--border-subtle) !important;
+    }
+    .bulk-dest-recipients-box {
+      background: var(--bg-muted);
+      border: 1.5px solid var(--border-subtle);
+      border-radius: var(--radius-md, 10px);
+      padding: 14px 16px;
+      margin-bottom: 14px;
+    }
+    .recipient-toggle-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: var(--radius-full, 999px);
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-subtle);
+      color: var(--text-main);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+    .recipient-toggle-chip:hover {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+    }
+    .recipient-toggle-chip.active {
+      background: rgba(37, 99, 235, 0.14);
+      border-color: #2563eb;
+      color: #2563eb;
     }
     .sidebar-bulk-btn {
       width: 100%;
@@ -5093,11 +5243,19 @@
         <section id="issuance-view" class="view-panel" style="display: none;">
           <div class="card">
             
-            <div class="card-header">
+            <div class="card-header" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
               <div>
                 <h2 class="card-title">تسليم جديد</h2>
-                <div class="card-subtitle">إصدار إشهاد تسليم مواد رسمية وخصمها من المخزون وتوليد الوثيقة الرسمية</div>
+                <div class="card-subtitle">إصدار إشهاد تسليم وخصم المخزون</div>
               </div>
+              <button type="button" id="btn-pending-orders-bell" class="btn-pending-orders-bell" onclick="openPendingOrdersModal()" title="الطلبات المعلقة">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span>الطلبات المعلقة</span>
+                <span id="issuance-pending-orders-badge" class="pending-orders-badge" style="display: none;">0</span>
+              </button>
             </div>
 
             <!-- حاوية الحقول الموحدة عمودياً بعرض متناسق -->
@@ -5338,6 +5496,28 @@
             </div>
 
           </div>
+
+          <!-- Modal: الطلبات المعلقة في واجهة تسليم جديد (Modal مركزي بخلفية ضبابية وسكرول) -->
+          <div id="pending-orders-modal" class="modal-overlay" style="display: none;" onclick="if(event.target === this) closePendingOrdersModal()">
+            <div class="modal-card" style="max-width: 620px; width: 92%;" onclick="event.stopPropagation()">
+              <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                  <h3 class="modal-title" style="margin: 0; font-size: 1.05rem; font-weight: 900;">الطلبات المعلقة</h3>
+                  <span id="modal-pending-orders-count-badge" class="badge badge-primary tabular-nums">0</span>
+                </div>
+                <button type="button" class="sidebar-close-btn" onclick="closePendingOrdersModal()" aria-label="إغلاق">&times;</button>
+              </div>
+              <div class="modal-body" style="padding: 14px 16px;">
+                <div id="pending-orders-modal-list" style="max-height: 380px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+                  <!-- يملأ ديناميكياً بقائمة الطلبات المعلقة مرتبة من الأحدث للأقدم -->
+                </div>
+              </div>
+              <div class="modal-footer" style="display: flex; justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="closePendingOrdersModal()">إغلاق</button>
+              </div>
+            </div>
+          </div>
         </section>
 
         <!-- ====================================================================
@@ -5452,13 +5632,20 @@
                 </table>
               </div>
 
-              <!-- أزرار حفظ وإلغاء الطلبية داخل اللوحة حصرياً (أيقونات فقط) -->
-              <div style="display: flex; align-items: center; justify-content: flex-end; gap: 8px;">
-                <button type="button" class="btn btn-secondary btn-sm btn-icon" onclick="toggleNewOrderPanel(false)" title="إلغاء الطلبية" aria-label="إلغاء الطلبية">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              <!-- أزرار حفظ وإلغاء الطلبية داخل اللوحة حصرياً (أيقونات موحدة ومكبرة للضعف مع 6px padding) -->
+              <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="btn-action-cancel" onclick="toggleNewOrderPanel(false)" title="إلغاء الطلبية" aria-label="إلغاء الطلبية">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
                 </button>
-                <button type="button" class="btn btn-success btn-sm btn-icon" onclick="saveNewOrder()" title="تسجيل الطلبية (حفظ دون خصم)" aria-label="تسجيل الطلبية">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline></svg>
+                <button type="button" class="btn-action-save" onclick="saveNewOrder()" title="تسجيل الطلبية (حفظ دون خصم)" aria-label="تسجيل الطلبية">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                  </svg>
                 </button>
               </div>
             </div>
@@ -6465,82 +6652,51 @@
              VIEW 9: عملية التوزيع (Bulk Distribution Run)
              ==================================================================== -->
         <section id="bulk-distribution-view" class="view-panel" style="display: none;">
-          <!-- Hero Header -->
+          <!-- Hero Header: موحد ومتوافق مع النمط الليلي دون شارات أو عناوين مكررة -->
           <div class="bulk-dist-hero">
-            <div>
-              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
-                <span class="bulk-batch-pill" id="bulk-batch-id-badge" title="المعرف الفريد لدفعة التوزيع المركزي">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="7" height="7" rx="1.5"/><rect x="15" y="3" width="7" height="7" rx="1.5"/><rect x="8.5" y="14" width="7" height="7" rx="1.5"/><path d="M5.5 10v2a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-2"/></svg>
-                  <span>رقم الدفعة:</span>
-                  <span id="bulk-current-batch-code">DIST-2026-1028-01</span>
-                </span>
-                <span style="background:rgba(16,185,129,0.18);border:1px solid rgba(16,185,129,0.45);color:#6ee7b7;padding:4px 12px;border-radius:999px;font-size:0.76rem;font-weight:800;display:inline-flex;align-items:center;gap:6px;">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                  <span>قاعدة الباقي صفر مفعّلة</span>
-                </span>
-              </div>
-              <h2 style="margin:0;font-size:1.3rem;font-weight:900;color:#ffffff;">
-                عملية التوزيع
-              </h2>
-              <p style="margin:4px 0 0;font-size:0.83rem;color:#cbd5e1;">
-                تحديد سلة المواد الإجمالية (رصيد العملية المجمع) وتوزيعها على المحاكم والمراكز القضائية مع توليد الإشهادات الرسمية المتعددة بضغطة واحدة
-              </p>
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+              <span class="bulk-batch-pill" id="bulk-batch-id-badge" title="المعرف الفريد لعملية التوزيع">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="7" height="7" rx="1.5"/><rect x="15" y="3" width="7" height="7" rx="1.5"/><rect x="8.5" y="14" width="7" height="7" rx="1.5"/><path d="M5.5 10v2a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-2"/></svg>
+                <span>رقم العملية:</span>
+                <span id="bulk-current-batch-code">DIST-2026-1028-01</span>
+              </span>
+              <span style="font-size: 0.86rem; color: var(--text-muted); font-weight: 700;">
+                توزيع سلة المواد المجمعة على مختلف الوجهات
+              </span>
             </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-              <input type="date" id="bulk-run-date" class="form-control" style="width:150px;background:rgba(255,255,255,0.12);color:#fff;border-color:rgba(255,255,255,0.28);font-weight:700;" title="تاريخ عملية التوزيع">
-              <button type="button" class="btn btn-outline btn-sm" style="background:rgba(239,68,68,0.18);color:#fecaca;border-color:rgba(239,68,68,0.4);display:inline-flex;align-items:center;gap:6px;" onclick="resetBulkDistributionRun()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                <span>تفريغ السلة وتصفير التوزيع</span>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+              <input type="date" id="bulk-run-date" class="form-control" style="width: 150px; font-weight: 700;" title="تاريخ عملية التوزيع">
+              <button type="button" class="btn btn-outline btn-sm" style="background: rgba(239,68,68,0.12); color: #ef4444; border-color: rgba(239,68,68,0.4); display: inline-flex; align-items: center; gap: 6px; font-weight: 700;" onclick="resetBulkDistributionRun()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                <span>تفريغ السلة</span>
               </button>
             </div>
           </div>
 
-          <!-- Step 3 Sticky Live Monitor Bar (عداد المراقبة الحية وقاعدة الباقي صفر) -->
+          <!-- شريط العدادات والمؤشرات الأربعة مع شريط التقدم التفاعلي أعلاها مباشرة -->
           <div id="bulk-live-monitor-bar" class="bulk-live-bar">
-            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
-              <div style="display:flex;align-items:center;gap:8px;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                <strong style="font-size:0.9rem;">عداد المراقبة الحية لرصيد العملية المجمع</strong>
-              </div>
-              <div id="bulk-zero-rule-badge" style="font-size:0.8rem;font-weight:800;padding:4px 12px;border-radius:999px;background:#f1f5f9;color:#475569;">
-                أضف مواد إلى سلة التوزيع للبدء
-              </div>
-            </div>
-
-            <!-- Dynamic Progress Bar positioned above metrics -->
-            <div class="bulk-progress-track" style="margin-bottom:12px;">
+            <!-- شريط التقدم التفاعلي يعلو البطاقات مباشرة -->
+            <div class="bulk-progress-track" style="margin-bottom: 12px;">
               <div id="bulk-live-progress-fill" class="bulk-progress-fill"></div>
             </div>
 
-            <!-- 4 Metric Boxes -->
+            <!-- البطاقات الأربع البسيطة والمنسجمة دون أي إضافات أو نصوص فرعية -->
             <div class="bulk-live-metrics">
               <div class="bulk-metric-box">
-                <div>
-                  <div class="lbl">المواد بالسلة</div>
-                  <div style="font-size:0.7rem;color:var(--text-muted);">مواد مختارة للتوزيع</div>
-                </div>
-                <div class="val tabular-nums" id="bulk-metric-items-count" style="color:#2563eb;">0</div>
+                <div class="lbl">المواد بالسلة</div>
+                <div class="val tabular-nums" id="bulk-metric-items-count" style="color: #2563eb;">0</div>
               </div>
               <div class="bulk-metric-box">
-                <div>
-                  <div class="lbl">الكمية الإجمالية</div>
-                  <div style="font-size:0.7rem;color:var(--text-muted);">إجمالي رصيد السلة</div>
-                </div>
-                <div class="val tabular-nums" id="bulk-metric-total-pool" style="color:var(--text-main);">0</div>
+                <div class="lbl">الكمية الإجمالية</div>
+                <div class="val tabular-nums" id="bulk-metric-total-pool" style="color: var(--text-main);">0</div>
               </div>
               <div class="bulk-metric-box">
-                <div>
-                  <div class="lbl">الموزع على المحاكم</div>
-                  <div style="font-size:0.7rem;color:var(--text-muted);">مجموع الحصص الموزعة</div>
-                </div>
-                <div class="val tabular-nums" id="bulk-metric-total-allocated" style="color:#3b82f6;">0</div>
+                <div class="lbl">الموزع على المحاكم</div>
+                <div class="val tabular-nums" id="bulk-metric-total-allocated" style="color: #3b82f6;">0</div>
               </div>
               <div class="bulk-metric-box" id="bulk-metric-remainder-box">
-                <div>
-                  <div class="lbl">الباقي للتوزيع</div>
-                  <div style="font-size:0.7rem;color:var(--text-muted);">الشرط الإلزامي: الباقي = 0</div>
-                </div>
-                <div class="val tabular-nums" id="bulk-metric-total-remainder" style="color:#f59e0b;">0</div>
+                <div class="lbl">الباقي للتوزيع</div>
+                <div class="val tabular-nums" id="bulk-metric-total-remainder" style="color: #f59e0b;">0</div>
               </div>
             </div>
 
@@ -6548,27 +6704,27 @@
             <div id="bulk-per-item-counters-strip" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;"></div>
           </div>
 
-          <!-- Stepper Navigation Tabs (Simplified 3 Steps) -->
+          <!-- بطاقات الخطوات الثلاث مع خلفيات ملونة وأرقام مكبرة 56px (+100%) وعناوين مكبرة 10% -->
           <div class="bulk-stepper-tabs">
-            <button type="button" class="bulk-step-tab active" id="bulk-tab-btn-1" onclick="setBulkStep(1)">
+            <button type="button" class="bulk-step-tab step-tab-1 active" id="bulk-tab-btn-1" onclick="setBulkStep(1)">
               <span class="step-num">1</span>
               <div>
-                <div style="font-weight:900;font-size:1.02rem;">سلة المواد</div>
-                <div style="font-size:0.72rem;color:var(--text-muted);">تحديد المواد والكميات الإجمالية المسحوبة</div>
+                <div class="step-title">سلة المواد</div>
+                <div class="step-desc">تحديد المواد والكميات الإجمالية المسحوبة</div>
               </div>
             </button>
-            <button type="button" class="bulk-step-tab" id="bulk-tab-btn-2" onclick="setBulkStep(2)">
+            <button type="button" class="bulk-step-tab step-tab-2" id="bulk-tab-btn-2" onclick="setBulkStep(2)">
               <span class="step-num">2</span>
               <div>
-                <div style="font-weight:900;font-size:1.02rem;">التوزيع</div>
-                <div style="font-size:0.72rem;color:var(--text-muted);">مصفوفة توزيع الحصص على المحاكم والمراكز</div>
+                <div class="step-title">التوزيع</div>
+                <div class="step-desc">مصفوفة توزيع الحصص على المحاكم والمراكز</div>
               </div>
             </button>
-            <button type="button" class="bulk-step-tab" id="bulk-tab-btn-3" onclick="setBulkStep(3)">
+            <button type="button" class="bulk-step-tab step-tab-3" id="bulk-tab-btn-3" onclick="setBulkStep(3)">
               <span class="step-num">3</span>
               <div>
-                <div style="font-weight:900;font-size:1.02rem;">الإشهادات</div>
-                <div style="font-size:0.72rem;color:var(--text-muted);">الإشهادات الرسمية المستقلة وسجل الدفعات</div>
+                <div class="step-title">الإشهادات</div>
+                <div class="step-desc">الإشهادات الرسمية المستقلة وسجل العمليات</div>
               </div>
             </button>
           </div>
@@ -6729,13 +6885,33 @@
             </div>
 
             <!-- Single Clean Notes Input -->
-            <div style="margin-bottom:15px;">
+            <div style="margin-bottom:12px;">
               <div class="form-group" style="margin:0;">
                 <label class="form-label" style="font-weight:800;font-size:0.82rem;display:flex;align-items:center;gap:6px;margin-bottom:6px;">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                  <span>ملاحظة تدرج في خانة الملاحظات بالإشهادات الرسمية المولدة (اختياري)</span>
+                  <span>ملاحظة إشهاد التسليم (اختياري)</span>
                 </label>
                 <input type="text" id="bulk-run-notes" class="form-control" placeholder="مثال: حصة التوزيع الدوري — سليم ومعتمد">
+              </div>
+            </div>
+
+            <!-- أداة تحديد وتخصيص المستفيدين للوجهة (تعدد المستفيدين في نفس المحكمة) -->
+            <div class="bulk-dest-recipients-box">
+              <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  <strong style="font-size: 0.9rem; color: var(--text-main);">تعدد المستفيدين في الوجهة:</strong>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; flex: 1; max-width: 380px;">
+                  <select id="bulk-multiselect-dest" class="form-control" style="height: 36px; font-weight: 800;" onchange="renderDestRecipientsChecklist()">
+                  </select>
+                </div>
+              </div>
+              <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px;">
+                حدد المسؤولين المستفيدين في هذه الوجهة لإدراج سطر مخصص لكل مستلم في مصفوفة التوزيع:
+              </div>
+              <div id="bulk-dest-recipients-checklist" style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+                <!-- تُملأ كبسولات الاختيار المتعدد ديناميكياً -->
               </div>
             </div>
 
@@ -6748,8 +6924,8 @@
               </table>
             </div>
 
-            <!-- Pre-Commit Review & Edit Table Card (جدول المراجعة والتدقيق المباشر قبل الاعتماد) -->
-            <div id="bulk-precommit-review-card" style="margin-top:20px;background:var(--card-bg,#ffffff);border:1.5px solid var(--border-subtle,#e2e8f0);border-radius:12px;padding:16px;">
+            <!-- Pre-Commit Review & Edit Table Card (جدول المراجعة والتدقيق المباشر قبل الاعتماد مع تناسق الوضع الليلي) -->
+            <div id="bulk-precommit-review-card" style="margin-top:20px;background:var(--bg-card);border:1.5px solid var(--border-subtle);border-radius:12px;padding:16px;color:var(--text-main);">
               <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;border-bottom:1px solid var(--border-subtle);padding-bottom:10px;">
                 <div>
                   <h4 style="margin:0;font-size:0.98rem;font-weight:900;display:flex;align-items:center;gap:8px;color:var(--text-main);">
@@ -6757,7 +6933,7 @@
                     <span>جدول المراجعة والتدقيق قبل الاعتماد النهائي</span>
                   </h4>
                   <p style="margin:3px 0 0;font-size:0.78rem;color:var(--text-muted);">
-                    معاينة مركزية للحصص الموزعة لكل محكمة ومستفيد مع إمكانية التعديل السريع (+ / -) أو حذف الحصة قبل خصم المخزون وتوليد الإشهادات
+                    مراجعة وتعديل الحصص الموزعة لكل محكمة ومستفيد قبل توليد الإشهادات
                   </p>
                 </div>
                 <div id="bulk-precommit-summary-badge" class="badge badge-subtle" style="font-size:0.8rem;font-weight:800;">
