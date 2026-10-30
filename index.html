@@ -4701,7 +4701,7 @@
       --color-danger: #ef4444;
     }
 
-    /* --- DASHBOARD METRICS GRID & 6 CARDS --- */
+    /* --- DASHBOARD METRICS GRID & 6 CARDS (3-Phase Responsive, No-Border, No-Lift) --- */
     #dashboard-view .dashboard-container {
       display: flex;
       flex-direction: column;
@@ -4711,10 +4711,10 @@
       box-sizing: border-box;
       min-width: 0;
       overflow-x: hidden;
+      padding: 0 12px 12px 12px;
     }
     #dashboard-view .metrics-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
       gap: 12px;
       margin-bottom: 0;
       width: 100%;
@@ -4722,15 +4722,33 @@
       box-sizing: border-box;
       min-width: 0;
     }
+    /* 1. الشاشات الواسعة (حاسوب): صف واحد أفقي من 6 بطاقات */
+    @media (min-width: 1100px) {
+      #dashboard-view .metrics-grid {
+        grid-template-columns: repeat(6, 1fr) !important;
+      }
+    }
+    /* 2. الشاشات المتوسطة (تابلت): صفين كل صف به 3 بطاقات */
+    @media (min-width: 641px) and (max-width: 1099px) {
+      #dashboard-view .metrics-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+      }
+    }
+    /* 3. الشاشات الضيقة (هاتف): تصطف رأسياً واحدة تحت الأخرى */
+    @media (max-width: 640px) {
+      #dashboard-view .metrics-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
     #dashboard-view .metric-card {
       border-radius: 18px;
       padding: 16px 18px 0 18px;
       position: relative;
       overflow: hidden;
       cursor: pointer;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      border: none !important; /* إزالة أي إطار محيط بالحاوية */
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
@@ -4738,10 +4756,12 @@
       min-height: 145px;
       color: #ffffff;
       min-width: 0;
+      transform: none !important; /* الحاوية تبقى ثابتة في مكانها تماماً */
+      transition: box-shadow 0.25s ease;
     }
     #dashboard-view .metric-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+      transform: none !important; /* إلغاء حركة الارتفاع للأعلى نهائياً */
+      box-shadow: 0 6px 22px rgba(0, 0, 0, 0.22);
     }
     #dashboard-view .metric-card::before {
       content: '';
@@ -4815,7 +4835,7 @@
       background: rgba(0, 0, 0, 0.28) !important;
     }
     #dashboard-view .card-header {
-      margin-bottom: 4px;
+      margin-bottom: 2px;
       padding: 0;
       background: transparent;
       border: none;
@@ -4824,14 +4844,15 @@
     #dashboard-view .card-title {
       font-size: 0.94rem;
       color: rgba(255, 255, 255, 0.95) !important;
-      font-weight: 700;
+      font-weight: 800;
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      text-align: right;
     }
     #dashboard-view .card-value {
-      font-size: 2.25rem !important;
+      font-size: 2.2rem !important;
       font-weight: 900;
       color: #ffffff !important;
-      margin: 4px 0 10px 0;
+      margin: 2px 0 8px 0;
       position: relative;
       z-index: 1;
       line-height: 1.1;
@@ -4842,15 +4863,15 @@
       color: #ffffff !important;
     }
 
-    /* Watermark rotated icon positioned on the left */
+    /* Watermark rotated icon positioned on the left - slightly smaller, scales on hover */
     #dashboard-view .card-icon {
       position: absolute !important;
       top: 50% !important;
       left: 14px !important;
       right: auto !important;
-      transform: translateY(-50%) rotate(-12deg) !important;
-      font-size: 78px !important;
-      opacity: 0.17 !important;
+      transform: translateY(-50%) rotate(-10deg) !important;
+      font-size: 64px !important; /* أصغر حجماً قليلاً */
+      opacity: 0.16 !important;
       color: #ffffff !important;
       pointer-events: none;
       transition: transform 0.3s ease, opacity 0.3s ease;
@@ -4859,11 +4880,11 @@
     }
     [data-theme="dark"] #dashboard-view .card-icon {
       color: #ffffff !important;
-      opacity: 0.17 !important;
+      opacity: 0.16 !important;
     }
     #dashboard-view .metric-card:hover .card-icon {
       transform: translateY(-50%) rotate(-6deg) scale(1.08) !important;
-      opacity: 0.26 !important;
+      opacity: 0.25 !important;
     }
 
     /* Dark bottom footer bar */
@@ -4872,12 +4893,12 @@
       align-items: center;
       justify-content: flex-start;
       gap: 7px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 700;
       color: rgba(255, 255, 255, 0.92) !important;
       padding: 8px 18px;
       background: rgba(0, 0, 0, 0.24) !important;
-      margin: 10px -18px 0 -18px;
+      margin: 8px -18px 0 -18px;
       border-top: none !important;
       direction: rtl;
       border-radius: 0 0 16px 16px;
@@ -4908,13 +4929,9 @@
         grid-template-columns: 1fr !important;
         gap: 12px !important;
       }
-      #dashboard-view .metrics-grid {
-        grid-template-columns: 1fr !important;
-        gap: 12px !important;
-      }
       #dashboard-view .dashboard-container {
         gap: 12px !important;
-        padding: 0 !important;
+        padding: 0 8px 12px 8px !important;
       }
       #dashboard-view .glass-box {
         max-width: 100% !important;
@@ -4926,12 +4943,38 @@
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
       border-radius: 16px;
-      padding: 16px !important; /* تقليص الحشو الداخلي إلى 16px */
+      padding: 16px !important;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
       min-height: auto;
+      max-width: 100%;
+      min-width: 0;
+    }
+    #dashboard-view .donut-bottom-detail-bar {
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: var(--bg-muted);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-sizing: border-box;
+      transition: all 0.2s ease;
+      font-size: 0.8rem;
+    }
+    [data-theme="dark"] #dashboard-view .donut-bottom-detail-bar {
+      background: rgba(5, 26, 45, 0.6);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+    #dashboard-view .donut-detail-placeholder {
+      color: var(--text-muted);
+      font-size: 0.76rem;
+      display: flex;
+      align-items: center;
     }
     [data-theme="dark"] #dashboard-view .glass-box {
       background: rgba(11, 36, 59, 0.7);
@@ -10197,38 +10240,24 @@
       renderRecentTransactions(filteredTxs);
     }
 
-    function showDonutChartTooltip(evt, el) {
-      let tip = document.getElementById('chart-floating-tooltip');
-      if (!tip) {
-        tip = document.createElement('div');
-        tip.id = 'chart-floating-tooltip';
-        tip.className = 'chart-floating-tooltip';
-        document.body.appendChild(tip);
+    function setDonutChartBottomLabel(containerId, name, count, unit, pct, color) {
+      const bar = document.getElementById(`donut-bottom-detail-${containerId}`);
+      if (!bar) return;
+      if (!name) {
+        bar.innerHTML = `<span class="donut-detail-placeholder"><i class="fa-solid fa-hand-pointer" style="margin-left: 5px; opacity: 0.6;"></i>مرر المؤشر فوق أي قطاع دائري لعرض التفاصيل الكاملة</span>`;
+      } else {
+        bar.innerHTML = `
+          <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 7px; min-width: 0; overflow: hidden;">
+              <span style="width: 10px; height: 10px; border-radius: 50%; background-color: ${color}; box-shadow: 0 0 6px ${color}88; flex-shrink: 0;"></span>
+              <strong style="color: var(--text-main); font-size: 0.86rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(name)}">${escapeHtml(name)}</strong>
+            </div>
+            <div style="font-size: 0.84rem; font-weight: 800; color: ${color}; flex-shrink: 0; white-space: nowrap;">
+              ${count} ${escapeHtml(unit)} <span style="opacity: 0.85; font-size: 0.78rem;">(${pct}%)</span>
+            </div>
+          </div>
+        `;
       }
-      const name = el.getAttribute('data-name') || '';
-      const count = el.getAttribute('data-count') || '0';
-      const pct = el.getAttribute('data-pct') || '0';
-      const unit = el.getAttribute('data-unit') || '';
-      tip.innerHTML = `
-        <div style="font-weight:800;color:#fde68a;margin-bottom:2px;">${escapeHtml(name)}</div>
-        <div style="font-size:0.75rem;color:#ffffff;">الكمية: <strong style="color:#60a5fa;">${count}</strong> ${escapeHtml(unit)} <span style="color:#34d399;">(${pct}%)</span></div>
-      `;
-      tip.style.display = 'block';
-      moveDonutChartTooltip(evt);
-    }
-
-    function moveDonutChartTooltip(evt) {
-      const tip = document.getElementById('chart-floating-tooltip');
-      if (!tip) return;
-      const x = evt.clientX || (evt.touches && evt.touches[0] ? evt.touches[0].clientX : 0);
-      const y = evt.clientY || (evt.touches && evt.touches[0] ? evt.touches[0].clientY : 0);
-      tip.style.left = `${x}px`;
-      tip.style.top = `${y}px`;
-    }
-
-    function hideDonutChartTooltip() {
-      const tip = document.getElementById('chart-floating-tooltip');
-      if (tip) tip.style.display = 'none';
     }
 
     function highlightChartLegendItem(sliceId, isHighlight) {
@@ -10253,6 +10282,8 @@
     }
 
     function renderSplitDonutChart(container, total, unit, entries) {
+      const containerId = container.id || ('chart-box-' + Math.random().toString(36).substr(2, 6));
+      container.id = containerId;
       const effectiveTotal = total || 1;
       let acc = 0;
       const r = 15.915494309;
@@ -10273,18 +10304,17 @@
           <circle cx="21" cy="21" r="${r}" fill="transparent" stroke="${e.color}" stroke-width="6"
             stroke-dasharray="${pctVal} ${100 - pctVal}" stroke-dashoffset="${offset}"
             class="donut-slice" data-slice-id="${sliceId}" data-name="${escapeHtml(e.name)}" data-count="${e.count}" data-pct="${pctDisplay}" data-unit="${escapeHtml(unit)}"
-            style="cursor: pointer; transition: all 0.2s ease; outline: none;"
-            onmouseenter="showDonutChartTooltip(event, this); highlightChartLegendItem('${sliceId}', true);"
-            onmousemove="moveDonutChartTooltip(event)"
-            onmouseleave="hideDonutChartTooltip(); highlightChartLegendItem('${sliceId}', false);"
-            ontouchstart="showDonutChartTooltip(event, this)">
+            style="cursor: pointer; transition: stroke-width 0.2s ease, filter 0.2s ease; outline: none;"
+            onmouseenter="setDonutChartBottomLabel('${containerId}', '${escapeHtml(e.name)}', '${e.count}', '${escapeHtml(unit)}', '${pctDisplay}', '${e.color}'); highlightChartLegendItem('${sliceId}', true);"
+            onmouseleave="setDonutChartBottomLabel('${containerId}'); highlightChartLegendItem('${sliceId}', false);"
+            ontouchstart="setDonutChartBottomLabel('${containerId}', '${escapeHtml(e.name)}', '${e.count}', '${escapeHtml(unit)}', '${pctDisplay}', '${e.color}'); highlightChartLegendItem('${sliceId}', true);">
           </circle>
         `;
 
         legendHtml += `
           <div class="legend-item" data-legend-id="${sliceId}"
-            onmouseenter="highlightChartSlice('${sliceId}', true)"
-            onmouseleave="highlightChartSlice('${sliceId}', false)">
+            onmouseenter="setDonutChartBottomLabel('${containerId}', '${escapeHtml(e.name)}', '${e.count}', '${escapeHtml(unit)}', '${pctDisplay}', '${e.color}'); highlightChartSlice('${sliceId}', true);"
+            onmouseleave="setDonutChartBottomLabel('${containerId}'); highlightChartSlice('${sliceId}', false);">
             <span class="legend-color-dot" style="background-color: ${e.color}; box-shadow: 0 0 6px ${e.color}66;"></span>
             <span class="legend-label" title="${escapeHtml(e.name)}">${escapeHtml(e.name)}</span>
             <span class="legend-val tabular-nums">${e.count} ${escapeHtml(unit)} (${pctDisplay}%)</span>
@@ -10306,6 +10336,9 @@
               <div class="donut-center-label">${escapeHtml(unit)}</div>
             </div>
           </div>
+        </div>
+        <div class="donut-bottom-detail-bar" id="donut-bottom-detail-${containerId}">
+          <span class="donut-detail-placeholder"><i class="fa-solid fa-hand-pointer" style="margin-left: 5px; opacity: 0.6;"></i>مرر المؤشر فوق أي قطاع دائري لعرض التفاصيل الكاملة</span>
         </div>
       `;
     }
@@ -10814,9 +10847,10 @@
       filtered.forEach(it => {
         const opt = document.createElement('option');
         opt.value = it.id;
-        opt.textContent = `${formatItemDisplayText(it.name)} (المتوفر: ${it.stock})`;
+        const curStock = sanitize(it.stock);
+        opt.textContent = `${formatItemDisplayText(it.name)} (المتوفر: ${curStock})`;
         opt.title = it.name;
-        if (it.stock <= 0) opt.disabled = true;
+        // لا يتم تعطيل المواد الصفرية أبداً - مسموح باختيارها واعتمادها
         itemSelect.appendChild(opt);
       });
 
@@ -10833,12 +10867,18 @@
       const found = state.data.items.find(i => i.id === selId);
 
       if (found) {
-        hint.textContent = `المتوفر: ${found.stock} قطعة`;
-        hint.className = found.stock <= 30 ? 'stock-badge critical' : 'stock-badge available';
+        const curStock = sanitize(found.stock);
+        if (curStock <= 0) {
+          hint.textContent = `المتوفر: 0 (رصيد نافد — مسموح بالإشهاد)`;
+          hint.className = 'stock-badge critical';
+        } else {
+          hint.textContent = `المتوفر: ${curStock} قطعة`;
+          hint.className = curStock <= 30 ? 'stock-badge critical' : 'stock-badge available';
+        }
         if (qtyInput) {
-          qtyInput.max = found.stock;
-          const curVal = parseInt(qtyInput.value, 10) || 1;
-          if (curVal > found.stock) qtyInput.value = found.stock > 0 ? 1 : 0;
+          qtyInput.max = 9999;
+          const curVal = parseInt(qtyInput.value, 10);
+          if (isNaN(curVal) || curVal < 1) qtyInput.value = 1;
         }
       } else {
         hint.textContent = 'المتوفر: —';
@@ -10851,14 +10891,9 @@
       const itemSelect = document.getElementById('cart-item-select');
       if (!qtyInput || !itemSelect) return;
 
-      const selId = itemSelect.value;
-      const found = state.data.items.find(i => i.id === selId);
-      const maxStock = found ? found.stock : 9999;
-
       let val = parseInt(qtyInput.value, 10) || 1;
       val += delta;
       if (val < 1) val = 1;
-      if (val > maxStock) val = maxStock;
       qtyInput.value = val;
     }
 
@@ -10869,14 +10904,14 @@
 
       const selId = itemSelect.value;
       const found = state.data.items.find(i => i.id === selId);
-      const maxStock = found ? found.stock : 9999;
 
       let val = parseInt(qtyInput.value, 10);
       if (isNaN(val) || val < 1) {
         qtyInput.value = 1;
-      } else if (val > maxStock) {
-        qtyInput.value = maxStock;
-        showToast(`الكمية لا يمكن أن تتجاوز الرصيد المتوفر بالمخزون (${maxStock})`, 'warning');
+      }
+      const curStock = found ? sanitize(found.stock) : 9999;
+      if (curStock <= 0 || val > curStock) {
+        showToast(`تنبيه: الكمية المحددة (${qtyInput.value}) تتجاوز رصيد المخزن الحالي (${curStock})`, 'warning');
       }
     }
 
@@ -18469,9 +18504,17 @@ ${itemsText}
                       <td style="text-align:center;"><span class="badge badge-success tabular-nums">${totalUnits}</span></td>
                       <td class="tabular-nums" style="font-size:0.75rem;color:var(--text-muted);">${escapeHtml(v.secretCode || '')}</td>
                       <td style="text-align:center;">
-                        <button type="button" class="btn btn-primary btn-sm" onclick="printCertificate('${v.id}', false)">
-                          🖨️ معاينة وطباعة الإشهاد
-                        </button>
+                        <div style="display:flex;gap:6px;justify-content:center;align-items:center;">
+                          <button type="button" class="btn btn-primary btn-sm" onclick="printCertificate('${escapeHtml(v.id)}', false)">
+                            🖨️ معاينة وطباعة
+                          </button>
+                          <button type="button" class="btn-icon danger" onclick="deleteVoucher('${escapeHtml(v.id)}')" title="حذف الإشهاد واسترجاع الرصيد" style="width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:6px;background:rgba(239,68,68,0.08);cursor:pointer;">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <polyline points="3 6 5 6 21 6"></polyline>
+                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   `;
@@ -18503,17 +18546,60 @@ ${itemsText}
           <td style="text-align:center;"><span class="badge badge-success tabular-nums">${b.certificatesCount || 0} إشهادات</span></td>
           <td>${escapeHtml(b.deliverer || '—')}</td>
           <td style="text-align:center;">
-            <div style="display:flex;gap:6px;justify-content:center;">
-              <button type="button" class="btn btn-outline btn-sm" onclick="inspectBulkBatch('${b.batchId}')">
+            <div style="display:flex;gap:6px;justify-content:center;align-items:center;">
+              <button type="button" class="btn btn-outline btn-sm" onclick="inspectBulkBatch('${escapeHtml(b.batchId)}')" title="عرض إشهادات هذه الدفعة">
                 👁️ عرض الإشهادات
               </button>
-              <button type="button" class="btn btn-primary btn-sm" onclick="printBulkBatchCertificates('${b.batchId}')">
+              <button type="button" class="btn btn-primary btn-sm" onclick="printBulkBatchCertificates('${escapeHtml(b.batchId)}')" title="طباعة جميع إشهادات الدفعة">
                 🖨️ طباعة الكل (${b.certificatesCount || 0})
+              </button>
+              <button type="button" class="btn-icon danger" onclick="deleteBulkBatch('${escapeHtml(b.batchId)}')" title="حذف دفعة التوزيع من الأرشيف" style="width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:6px;background:rgba(239,68,68,0.08);cursor:pointer;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
               </button>
             </div>
           </td>
         </tr>
       `).join('');
+    }
+
+    function deleteBulkBatch(batchId) {
+      try {
+        const batches = Array.isArray(state.data.bulkBatches) ? state.data.bulkBatches : [];
+        const batch = batches.find(b => b.batchId === batchId);
+        if (!batch) {
+          showToast('لم يتم العثور على دفعة التوزيع المحددة', 'error');
+          return;
+        }
+
+        openAppConfirmModal(
+          'حذف دفعة التوزيع المركزي من الأرشيف',
+          `هل أنت متأكد من حذف دفعة التوزيع (${escapeHtml(batch.batchId)}) المؤرخة في ${escapeHtml(batch.date || '')}؟\nتنبيه: سيتم حذف سجل الدفعة من أرشيف التوزيع المركزي (${batch.certificatesCount || 0} إشهادات). الإشهادات الفردية المحفوظة في الأرشيف العام ستظل محفوظة لحين حذفها يدوياً إذا رغبت.`,
+          () => {
+            try {
+              state.data.bulkBatches = (state.data.bulkBatches || []).filter(b => b.batchId !== batchId);
+              if (bulkDistState && bulkDistState.lastCommittedBatchId === batchId) {
+                bulkDistState.lastCommittedBatchId = null;
+                const container = document.getElementById('last-committed-batch-view');
+                if (container) container.innerHTML = '';
+              }
+              persistAll();
+              renderBulkBatchesHistory();
+              refreshBulkBadgesCount();
+              showToast(`تم حذف دفعة التوزيع (${batchId}) من الأرشيف بنجاح`, 'info');
+            } catch (innerErr) {
+              console.error('Error deleting bulk batch:', innerErr);
+              showToast('حدث خطأ أثناء حذف الدفعة', 'error');
+            }
+          },
+          'حذف دفعة التوزيع',
+          true
+        );
+      } catch (err) {
+        console.error('deleteBulkBatch error:', err);
+      }
     }
 
     function inspectBulkBatch(batchId) {
