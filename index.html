@@ -6654,12 +6654,12 @@
               <p class="widget-subtitle">عرض شهري تفاعلي لعمليات تسليم المواد وفق تواريخها بالدائرة القضائية</p>
             </div>
             <div class="cal-nav">
-              <button type="button" class="nav-btn" onclick="changeCalendarMonth(1)" title="الشهر التالي">
-                <i class="fa-solid fa-chevron-right"></i>
+              <button type="button" class="nav-btn" onclick="changeCalendarMonth(-1)" title="الشهر السابق">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
               </button>
               <div class="cal-month" id="calendar-current-month-year">شتنبر 2026</div>
-              <button type="button" class="nav-btn" onclick="changeCalendarMonth(-1)" title="الشهر السابق">
-                <i class="fa-solid fa-chevron-left"></i>
+              <button type="button" class="nav-btn" onclick="changeCalendarMonth(1)" title="الشهر التالي">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
               </button>
             </div>
             <div class="cal-grid">
@@ -6709,6 +6709,15 @@
                     <rect x="6" y="14" width="12" height="8"></rect>
                   </svg>
                   <span class="btn-text">طباعة محددة</span>
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="deleteSelectedVouchersBatch()" title="حذف الإشهادات المحددة واسترجاع رصيدها" style="border-color: #ef4444; color: #ef4444;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                  </svg>
+                  <span class="btn-text">حذف المحدد</span>
                 </button>
               </div>
             </div>
@@ -11307,14 +11316,9 @@
           }
         });
 
-        // تحديث حالة الطلبية ونقلها فوراً إلى الأرشيف المعتمد
+        // حذف الطلبية فوراً من قائمة الطلبات المفتوحة عند تحويلها وحفظ الإشهاد
         if (state.pendingConvertedOrderId && state.data.orders) {
-          const ord = state.data.orders.find(o => o.id === state.pendingConvertedOrderId);
-          if (ord) {
-            ord.status = 'converted';
-            ord.convertedVoucherId = voucherId;
-            ord.convertedDate = new Date().toLocaleString('ar-MA');
-          }
+          state.data.orders = state.data.orders.filter(o => o.id !== state.pendingConvertedOrderId);
           state.pendingConvertedOrderId = null;
         }
 
@@ -11574,7 +11578,14 @@ ${itemsText}
         }
       });
 
-      const CALENDAR_COLORS = ['#10BBC3', '#FEA24F', '#068187', '#A60E35', '#6A1B9A', '#108AB1'];
+      function getCalendarCountColor(count) {
+        if (count === 1) return '#ef4444'; // أحمر (1)
+        if (count === 2) return '#f59e0b'; // أصفر (2)
+        if (count === 3) return '#3b82f6'; // أزرق (3)
+        if (count === 4) return '#10b981'; // أخضر (4)
+        if (count === 5) return '#8b5cf6'; // بنفسجي (5)
+        return '#1e40af'; // أزرق غامق / كحلي (> 5)
+      }
       let html = '';
 
       // Previous month inactive days
@@ -11592,7 +11603,7 @@ ${itemsText}
         const hasOps = ops.length > 0;
         
         if (hasOps) {
-          const color = CALENDAR_COLORS[(d - 1) % CALENDAR_COLORS.length];
+          const color = getCalendarCountColor(ops.length);
           const opCountText = ops.length === 1 ? '1 عملية تسليم' : (ops.length === 2 ? '2 عمليتان تسليم' : `${ops.length} عمليات تسليم`);
           html += `
             <div class="cal-day has-event" style="--event-color: ${color};" onclick="onCalendarDayClicked('${dStr}')" title="${opCountText}">
@@ -11849,6 +11860,41 @@ ${itemsText}
       } else {
         state.selectedVouchersForPrint.clear();
       }
+    }
+
+    function deleteSelectedVouchersBatch() {
+      const ids = Array.from(state.selectedVouchersForPrint || []);
+      if (ids.length === 0) {
+        showToast('يرجى تحديد إشهاد واحد على الأقل للحذف من القائمة', 'warning');
+        return;
+      }
+      openAppConfirmModal(
+        'حذف الإشهادات المحددة',
+        `هل أنت متأكد من حذف ${ids.length} إشهاد محدد واسترجاع كمياتها المسلمة إلى رصيد المخزون؟`,
+        () => {
+          ids.forEach(id => {
+            const voucher = state.data.transactions.find(t => t.id === id);
+            if (voucher) {
+              (voucher.items || []).forEach(it => {
+                const stockItem = state.data.items.find(i => i.id === it.id);
+                if (stockItem) stockItem.stock = sanitize(stockItem.stock) + Math.max(1, sanitize(it.qty));
+              });
+            }
+          });
+          state.data.transactions = state.data.transactions.filter(t => !ids.includes(t.id));
+          state.selectedVouchersForPrint.clear();
+          const checkAll = document.getElementById('check-all-vouchers');
+          if (checkAll) checkAll.checked = false;
+          persistAll();
+          renderHistoryTable();
+          renderRecentTransactions();
+          updateDashboardDualCardsMetrics();
+          refreshAllBadges();
+          showToast(`✓ تم حذف ${ids.length} إشهاد واسترجاع كمياتها إلى المخزون بنجاح`, 'info');
+        },
+        'حذف المحدد',
+        true
+      );
     }
 
     function deleteVoucher(id) {
@@ -13195,7 +13241,7 @@ ${itemsText}
       }
 
       if (reasonSelect) reasonSelect.value = 'بناءً على طلب';
-      if (orderRefInput) orderRefInput.value = order.id;
+      if (orderRefInput) orderRefInput.value = '';
 
       state.cart = [];
       order.items.forEach(it => {
@@ -13205,7 +13251,7 @@ ${itemsText}
           name: it.name,
           category: it.category,
           qty: reqQty,
-          notes: (it.notes && it.notes.trim()) ? it.notes.trim() : ''
+          notes: ''
         });
       });
 
