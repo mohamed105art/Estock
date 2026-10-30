@@ -1,0 +1,1852 @@
+أنت كبير مهندسي البرمجيات (Lead Software Architect) وخبير دمج الأنظمة وتطوير الواجهات (Senior UI/UX Integration Expert). 
+
+🚨 **السياق والمهمة المعمارية:**
+لدي تطبيق ويب متكامل ومستقر يعتمد على (HTML, CSS, JS, LocalStorage) لإدارة المخزون والتوزيع والإشهادات. المنطق البرمجي، دوال الحفظ، وتدفق البيانات تعمل بكفاءة 100%.
+في نفس الوقت، قمت أنا بتصميم **3 قوالب واجهات جديدة (UI Templates)** فائقة الجمال (تحتوي على Animations, Hover Effects, Layouts احترافية) لثلاث صفحات:
+1. لوحة القيادة (Dashboard).
+2. عملية التوزيع (Bulk Distribution).
+3. التقويم الزمني (Timeline/Calendar).
+
+**المطلوب منك:** 
+القيام بعملية **"دمج عميق وذكي" (Deep Smart Integration)**. أريدك أن تأخذ "الروح، التصميم، والأنيميشن" من هذه القوالب الثلاثة، وتُلبِسها للتطبيق الأصلي، مع حقن البيانات الحقيقية والدوال الأصلية داخل هذه القوالب الجديدة لتصبح تفاعلية بالكامل دون كسر أي وظيفة سابقة.
+
+---
+
+### 🛡️ بروتوكول الدمج الصارم (Strict Integration Rules):
+
+#### 1. الفصل بين الواجهة والبيانات (Separation of Concerns):
+- **لا تمسح دوال المنطق الأصلية:** أي دالة تتعلق بحفظ البيانات، أو خصم المخزون، أو توليد الـ PDF، أو التخزين في الـ LocalStorage يجب أن تبقى كما هي.
+- **تجاهل البيانات الوهمية (Dummy Data) في القوالب:** القوالب التي سأعطيها لك تحتوي على نصوص وأرقام وهمية. مهمتك هي حذف هذه الأرقام الوهمية وتعويضها بمتغيرات الجافاسكريبت التي تجلب البيانات الحقيقية من التطبيق.
+
+#### 2. هندسة لوحة القيادة الجديدة (Dashboard Integration):
+- **الأنيميشن والمؤشرات:** حافظ على نفس التفاعلات، حركات الكيرسور، وظهور الألوان الموجودة في القالب الجديد. اربط المؤشرات الستة (العدد الإجمالي، الرصيد، الطلبات... الخ) بالدوال الحسابية الحقيقية للتطبيق.
+- **المبيانات (Charts):** حافظ على الأنيميشن الجميل والانتقال بين أنواع المبيانات. قم بتغذية هذه المبيانات بالمصفوفات الحقيقية (Real Arrays) الخاصة بالاستهلاك والجهات والأصناف من الـ LocalStorage.
+
+#### 3. هندسة عملية التوزيع (Distribution Flow):
+- استخدم التصميم الجديد والأزرار وطريقة عرض البطاقات من القالب الجديد.
+- **المنطق الحرج:** تأكد أن دالة "اختيار الصنف -> ظهور مواده" تعمل داخل القالب الجديد. تأكد أن نظام السلة (إضافة/حذف) يعمل. تأكد أن شريط التقدم (إن وُجد في القالب) مرتبط بنسبة الكميات الموزعة فعلياً.
+
+#### 4. هندسة التقويم الزمني (Calendar/Timeline):
+- استخدم الحجم، الشكل، والألوان الخاصة بأرقام الأيام وعدد التدخلات كما هي في القالب الجديد.
+- **ربط البيانات (Data Binding):** قم بتطوير "دالة وسيطة" (Bridge Function) تقرأ سجل العمليات والإشهادات من التطبيق، وتقوم بتوزيعها على الأيام في تصميم التقويم الجديد ليعرض البيانات الحقيقية.
+
+#### 5. الحماية من التعارض (Conflict Resolution):
+- تجنب تكرار الـ `id` أو الـ `class` الذي قد يكسر الـ CSS. 
+- ادمج أكواد الـ CSS الجديدة بعناية مع الـ CSS الأصلي.
+- استخدم ذكاءك الخارق لاكتشاف أين يجب وضع `innerHTML` وأين يجب وضع `addEventListener` لكي تنبض القوالب الجديدة بالحياة عبر البيانات الحقيقية.
+
+---
+**كيفية التنفيذ:**
+سأقوم الآن بتزويدك بالأكواد الثلاثة (القوالب الجديدة). قم بتحليلها بعمق، ثم أعد كتابة ملف `index.html` (وخاصة أجزاء الـ JS والـ CSS المرتبطة بهذه الواجهات الثلاث) بحيث يصبح التطبيق واحداً متكاملاً، جميلاً، ومستقراً.
+
+إليك أكواد القوالب الجديدة :
+
+=== [قالب لوحة القيادة] ===
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة القيادة الشاملة</title>
+    <!-- خطوط جوجل: تجوال -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <!-- مكتبة الأيقونات FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #051A2D;
+            --border-radius: 16px;
+            /* ألوان البطاقات */
+            --color-card-1: #10BBC3;
+            --color-card-2: #FEA24F;
+            --color-card-3: #068187;
+            --color-card-4: #A60E35;
+            --color-card-5: #6A1B9A;
+            --color-card-6: #108AB1;
+            /* لون الخلفية الزجاجية الفاتح */
+            --glass-bg: rgba(255, 255, 255, 0.06);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background-color: var(--bg-color); 
+            color: #ffffff; 
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* -------------------------------------------
+           1. قسم المؤشرات العلوية (الشبكة)
+           ------------------------------------------- */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .metric-card {
+            position: relative;
+            border-radius: var(--border-radius);
+            /* تم تقليص الارتفاع بـ 15% عبر تقليل الـ padding */
+            padding: 12px 16px 38px; 
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            z-index: 1;
+        }
+
+        .metric-card:hover { transform: translateY(-4px); }
+
+        /* الشريط السفلي الداكن */
+        .metric-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 28%; /* تم تعديله ليتناسب مع الارتفاع الجديد */
+            background: rgba(0, 0, 0, 0.25);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* لمعة زجاجية متحركة (Shine Effect) */
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-25deg);
+            z-index: 10;
+            pointer-events: none;
+        }
+        .metric-card:hover::before { animation: shine 0.7s ease-out forwards; }
+        @keyframes shine { 100% { left: 200%; } }
+
+        /* خلفيات متدرجة */
+        .card-1 { background: linear-gradient(270deg, var(--color-card-1) 0%, rgba(16, 187, 195, 0.3) 65%, rgba(5, 26, 45, 0.6) 100%); }
+        .card-2 { background: linear-gradient(270deg, var(--color-card-2) 0%, rgba(254, 162, 79, 0.3) 65%, rgba(5, 26, 45, 0.6) 100%); }
+        .card-3 { background: linear-gradient(270deg, var(--color-card-3) 0%, rgba(6, 129, 135, 0.3) 65%, rgba(5, 26, 45, 0.6) 100%); }
+        .card-4 { background: linear-gradient(270deg, var(--color-card-4) 0%, rgba(166, 14, 53, 0.3) 65%, rgba(5, 26, 45, 0.6) 100%); }
+        .card-5 { background: linear-gradient(270deg, var(--color-card-5) 0%, rgba(106, 27, 154, 0.3) 65%, rgba(5, 26, 45, 0.6) 100%); }
+        .card-6 { background: linear-gradient(270deg, var(--color-card-6) 0%, rgba(16, 138, 177, 0.3) 65%, rgba(5, 26, 45, 0.6) 100%); }
+
+        .card-header { display: flex; justify-content: flex-start; align-items: center; position: relative; z-index: 2;}
+        .card-title { font-size: 0.9rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); }
+        .card-value { font-size: 2.2rem; font-weight: 800; line-height: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-top: 2px; position: relative; z-index: 2;}
+        
+        /* مؤشرات النسب الدائرية - تم توحيدها لتكون سوداء شفافة */
+        .trend-badge { 
+            position: absolute; top: 12px; left: 16px; font-size: 0.65rem; font-weight: 700; 
+            width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            padding-top: 3px; z-index: 5;
+            background: rgba(0, 0, 0, 0.25) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+        /* تلوين النص فقط للدلالة على الحالة */
+        .trend-up { color: #4CAF50; }
+        .trend-down { color: #E53935; }
+        .trend-neutral { color: #9E9E9E; }
+
+        /* الأيقونات المائية العميقة والتفاعلية */
+        .card-icon { 
+            position: absolute; 
+            left: 15px; 
+            bottom: 6px; 
+            font-size: 3.2rem; /* تقليص طفيف ليلائم الارتفاع الجديد */
+            opacity: 0.15; 
+            transform: rotate(-12deg); 
+            color: #ffffff; 
+            z-index: 3; 
+            pointer-events: none; 
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+        }
+        .metric-card:hover .card-icon { transform: translateY(-6px) rotate(-4deg) scale(1.15); opacity: 0.35; }
+        .metric-card:active .card-icon { transform: translateY(-2px) rotate(-10deg) scale(1.05); transition-duration: 0.1s; }
+
+        .card-footer { 
+            position: absolute; bottom: 8px; right: 16px; left: 16px;
+            display: flex; align-items: center; gap: 6px;
+            font-size: 0.7rem; font-weight: 400; color: rgba(255, 255, 255, 0.85); z-index: 4; 
+        }
+        .trend-up { background: linear-gradient(135deg, rgba(76,175,80,0.3), rgba(76,175,80,0.45)); color: #a5f3fc; border: 1px solid rgba(76,175,80,0.3); }
+        .trend-down { background: linear-gradient(135deg, rgba(229,57,53,0.3), rgba(229,57,53,0.45)); color: #ffebee; border: 1px solid rgba(229,57,53,0.3); }
+        .trend-neutral { background: linear-gradient(135deg, rgba(158,158,158,0.2), rgba(158,158,158,0.35)); color: #f5f5f5; border: 1px solid rgba(158,158,158,0.2); }
+
+        /* الأيقونات المائية العميقة والتفاعلية */
+        .card-icon { 
+            position: absolute; 
+            left: 15px; 
+            bottom: 10px; /* تم رفعها بـ 15 بكسل كما أمرت */
+            font-size: 3.5rem; 
+            opacity: 0.15; 
+            transform: rotate(-12deg); 
+            color: #ffffff; 
+            z-index: 3; 
+            pointer-events: none; 
+            /* الترانزيشن يضمن عودة الأيقونة لمكانها عند إفلات الماوس */
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+        }
+        .metric-card:hover .card-icon { transform: translateY(-8px) rotate(-4deg) scale(1.15); opacity: 0.35; }
+        .metric-card:active .card-icon { transform: translateY(-2px) rotate(-10deg) scale(1.05); transition-duration: 0.1s; }
+
+        .card-footer { 
+            position: absolute; bottom: 12px; right: 20px; left: 20px;
+            display: flex; align-items: center; gap: 6px;
+            font-size: 0.75rem; font-weight: 400; color: rgba(255, 255, 255, 0.85); z-index: 4; 
+        }
+
+        /* -------------------------------------------
+           2. قسم الإحصائيات (الزجاجي المميز)
+           ------------------------------------------- */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; }
+
+        .glass-box {
+            /* تدرج لوني فاتح وباهت لتمييز الإحصائيات */
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.01) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-top: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-radius: var(--border-radius); padding: 24px;
+            display: flex; flex-direction: column; gap: 20px; transition: all 0.3s ease;
+        }
+        .glass-box:hover {
+            border-color: rgba(255, 255, 255, 0.25);
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%);
+        }
+
+        .box-header { 
+            display: flex; 
+            flex-direction: row-reverse; /* وضع الأزرار يساراً والعنوان يميناً */
+            justify-content: space-between; 
+            align-items: flex-start; 
+            gap: 16px; 
+        }
+        .box-title-wrapper { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 4px; 
+            flex: 1; 
+            min-width: 0; 
+            align-items: flex-start; 
+        }
+        .box-title { 
+            font-size: 1.1rem; 
+            font-weight: 700; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            max-width: 100%;
+        }
+        .box-subtitle { 
+            font-size: 0.75rem; 
+            color: rgba(255, 255, 255, 0.5); 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            max-width: 100%;
+        }
+
+        .control-btns { display: flex; gap: 8px; flex-shrink: 0; }
+        .ctrl-btn {
+            width: 32px; height: 32px; border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7); display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.2s;
+        }
+        .ctrl-btn:hover { background: rgba(255, 255, 255, 0.15); color: #fff; }
+        .ctrl-btn.active { background: rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.5); color: #60a5fa; }
+
+        /* أشرطة التقدم */
+        .progress-list { display: flex; flex-direction: column; gap: 16px; }
+        .progress-item { display: flex; flex-direction: column; gap: 8px; position: relative; }
+        .progress-item:hover .prog-val { color: #fff; transform: translateX(-4px); }
+        .prog-info { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 500; transition: 0.3s; }
+        .prog-label-wrapper { display: flex; align-items: center; gap: 8px; }
+        .prog-val { color: rgba(255, 255, 255, 0.7); transition: 0.3s; }
+        .prog-track { height: 8px; background: rgba(255, 255, 255, 0.05); border-radius: 6px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.3); }
+        .prog-fill { height: 100%; border-radius: 6px; position: relative; width: 0; animation: fillBar 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; overflow: hidden; }
+        .prog-fill::after {
+            content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0;
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+            animation: shimmerProg 2.5s infinite;
+        }
+        @keyframes fillBar { to { width: var(--target-width); } }
+        @keyframes shimmerProg { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        /* المبيان الدائري (Donut Chart) المطابق للتصميم المطلوب */
+        .circular-view {
+            display: none; align-items: center; gap: 30px; opacity: 0; transform: scale(0.95);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); padding: 10px 0;
+        }
+        .circular-view.show { opacity: 1; transform: scale(1); }
+        
+        .donut-chart-wrapper {
+            position: relative; width: 160px; height: 160px; flex-shrink: 0; border-radius: 50%;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2); display: flex; justify-content: center; align-items: center;
+        }
+        .donut-chart { width: 100%; height: 100%; border-radius: 50%; animation: rotateIn 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+        
+        /* منتصف الدائرة ويحتوي على المجموع الإجمالي */
+        .donut-inner {
+            position: absolute; width: 68%; height: 68%; background-color: var(--bg-color);
+            border-radius: 50%; box-shadow: inset 0 4px 10px rgba(0,0,0,0.5);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background-image: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%);
+        }
+        .donut-total { font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1.1; margin-top: 5px; }
+        .donut-unit { font-size: 0.75rem; color: rgba(255,255,255,0.6); font-weight: 500; }
+
+        /* تصميم مفاتيح الدائرة */
+        .circle-legend { display: flex; flex-direction: column; gap: 14px; flex-grow: 1; width: 100%; overflow: hidden; }
+        .legend-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; width: 100%; }
+        
+        /* الجانب الأيمن (النقطة الملونة + النص) */
+        .legend-right { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; overflow: hidden; }
+        .legend-color { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+        .legend-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.85rem; color: #fff; font-weight: 500; }
+        
+        /* الجانب الأيسر (الرقم + النسبة) */
+        .legend-left { display: flex; align-items: center; gap: 6px; flex-shrink: 0; padding-right: 10px; white-space: nowrap; }
+        .legend-num { font-weight: 700; color: #fff; font-size: 0.9rem; }
+        .legend-perc { font-size: 0.75rem; color: rgba(255,255,255,0.6); }
+
+        @keyframes rotateIn {
+            from { transform: rotate(-90deg) scale(0.5); opacity: 0; filter: blur(4px); }
+            to { transform: rotate(0deg) scale(1); opacity: 1; filter: blur(0); }
+        }
+
+        /* -------------------------------------------
+           3. قسم آخر العمليات (السفلي)
+           ------------------------------------------- */
+        .operations-box {
+            background: var(--glass-bg); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: var(--border-radius); padding: 24px;
+        }
+        .op-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        
+        /* جعل زر العرض مربعاً وموسّطاً تماماً */
+        .view-all-btn {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #fff;
+            width: 36px; height: 36px; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0;
+        }
+        .view-all-btn:hover { background: rgba(255, 255, 255, 0.15); }
+        
+        .op-list { display: flex; flex-direction: column; gap: 8px; } /* تصغير المسافة بين العمليات */
+        
+        /* نظام الشبكة الدقيق لكل عملية لجعلها شديدة الضغط */
+        .op-item {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            grid-template-rows: auto auto;
+            column-gap: 12px;
+            row-gap: 4px;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.02); transition: background 0.2s;
+            align-items: center;
+        }
+        .op-item:hover { background: rgba(255, 255, 255, 0.06); }
+        
+        /* العنوان: يمين علوي، يتلاشى بـ ... */
+        .op-title { 
+            grid-column: 1 / 2; grid-row: 1 / 2;
+            font-size: 0.85rem; /* تصغير الخط ليطابق خط الإحصائيات */
+            font-weight: 700; color: #fff; 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+        }
+        /* الوجهة: يمين سفلي، يتلاشى بـ ... */
+        .op-subtitle { 
+            grid-column: 1 / 2; grid-row: 2 / 3;
+            font-size: 0.75rem; /* تصغير الخط الفرعي */
+            font-weight: 500; color: #60a5fa; 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+        }
+        /* زر الطباعة: يسار علوي، مربع تماماً */
+        .op-icon-btn {
+            grid-column: 2 / 3; grid-row: 1 / 2;
+            width: 28px; height: 28px; border-radius: 6px; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center;
+            color: rgba(255, 255, 255, 0.7); font-size: 0.85rem; cursor: pointer; transition: 0.2s; padding: 0; outline: none;
+            justify-self: left; /* إجبار الزر على الالتصاق بالحافة اليسرى تماماً */
+        }
+        .op-icon-btn:hover { background: rgba(255, 255, 255, 0.15); color: #fff; }
+        /* التاريخ: يسار سفلي */
+        .op-date { 
+            grid-column: 2 / 3; grid-row: 2 / 3;
+            font-size: 0.75rem; color: rgba(255, 255, 255, 0.5); text-align: left; 
+            justify-self: left; /* إجبار التاريخ على الالتصاق بالحافة اليسرى */
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .circular-view { flex-direction: column; text-align: center; }
+            .legend-item { padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        
+        <!-- قسم المؤشرات الستة -->
+        <div class="metrics-grid">
+            <div class="metric-card card-1">
+                <div class="trend-badge trend-up"><span>+12%</span></div>
+                <div class="card-header"><span class="card-title">التسليمات المكتملة</span></div>
+                <div class="card-value">142</div>
+                <i class="fa-regular fa-file-lines card-icon"></i>
+                <div class="card-footer"><i class="fa-solid fa-check"></i><span>إشهاد تسليم معتمد</span></div>
+            </div>
+
+            <div class="metric-card card-2">
+                <div class="trend-badge trend-down"><span>-2%</span></div>
+                <div class="card-header"><span class="card-title">الطلبات قيد المعالجة</span></div>
+                <div class="card-value">3</div>
+                <i class="fa-solid fa-hourglass-half card-icon"></i>
+                <div class="card-footer"><i class="fa-regular fa-clock"></i><span>طلبية مفتوحة</span></div>
+            </div>
+
+            <div class="metric-card card-3">
+                <div class="trend-badge trend-up"><span>+5%</span></div>
+                <div class="card-header"><span class="card-title">معدل الاستهلاك</span></div>
+                <div class="card-value">810</div>
+                <i class="fa-solid fa-arrow-up-right-dots card-icon"></i>
+                <div class="card-footer"><i class="fa-solid fa-arrow-trend-up"></i><span>قطعة / سنة</span></div>
+            </div>
+
+            <div class="metric-card card-4">
+                <div class="trend-badge trend-up"><span>+8%</span></div>
+                <div class="card-header"><span class="card-title">المواد الحرجة أو النافدة</span></div>
+                <div class="card-value">86</div>
+                <i class="fa-solid fa-circle-exclamation card-icon"></i>
+                <div class="card-footer"><i class="fa-solid fa-triangle-exclamation"></i><span>بلغت الحد الأدنى</span></div>
+            </div>
+
+            <div class="metric-card card-5">
+                <div class="trend-badge trend-neutral"><span>0%</span></div>
+                <div class="card-header"><span class="card-title">المواد المتوفرة فعلياً</span></div>
+                <div class="card-value">0</div>
+                <i class="fa-solid fa-box-archive card-icon"></i>
+                <div class="card-footer"><i class="fa-solid fa-boxes-stacked"></i><span>مادة بوفرة</span></div>
+            </div>
+
+            <div class="metric-card card-6">
+                <div class="trend-badge trend-up"><span>+15%</span></div>
+                <div class="card-header"><span class="card-title">عدد الجهات المستفيدة</span></div>
+                <div class="card-value">6</div>
+                <i class="fa-solid fa-building card-icon"></i>
+                <div class="card-footer"><i class="fa-solid fa-network-wired"></i><span>الأصناف: 12 | المواد: 86</span></div>
+            </div>
+        </div>
+
+        <!-- قسم الإحصائيات (الزجاجي) -->
+        <div class="stats-grid">
+            
+            <!-- التوزيع حسب الجهات -->
+            <div class="glass-box">
+                <div class="box-header">
+                    <div class="control-btns">
+                        <button class="ctrl-btn active"><i class="fa-solid fa-bars-staggered"></i></button>
+                        <button class="ctrl-btn"><i class="fa-regular fa-circle-dot"></i></button>
+                    </div>
+                    <div class="box-title-wrapper">
+                        <h2 class="box-title">التوزيع حسب الجهات</h2>
+                    </div>
+                </div>
+                <div class="progress-list">
+                    <div class="progress-item">
+                        <div class="prog-info">
+                            <span class="prog-label-wrapper"><i class="fa-solid fa-map-location-dot" style="color: var(--color-card-1);"></i> المديرية الإقليمية للعدل بسطات</span>
+                            <span class="prog-val">34 إشهاد (24%)</span>
+                        </div>
+                        <div class="prog-track"><div class="prog-fill" style="--target-width: 24%; background-color: var(--color-card-1); box-shadow: 0 0 8px var(--color-card-1);"></div></div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="prog-info">
+                            <span class="prog-label-wrapper"><i class="fa-solid fa-map-location-dot" style="color: var(--color-card-2);"></i> محكمة الاستئناف بسطات</span>
+                            <span class="prog-val">38 إشهاد (27%)</span>
+                        </div>
+                        <div class="prog-track"><div class="prog-fill" style="--target-width: 27%; background-color: var(--color-card-2); box-shadow: 0 0 8px var(--color-card-2);"></div></div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="prog-info">
+                            <span class="prog-label-wrapper"><i class="fa-solid fa-map-location-dot" style="color: var(--color-card-3);"></i> المحكمة الابتدائية بسطات</span>
+                            <span class="prog-val">36 إشهاد (25%)</span>
+                        </div>
+                        <div class="prog-track"><div class="prog-fill" style="--target-width: 25%; background-color: var(--color-card-3); box-shadow: 0 0 8px var(--color-card-3);"></div></div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="prog-info">
+                            <span class="prog-label-wrapper"><i class="fa-solid fa-map-location-dot" style="color: var(--color-card-4);"></i> المحكمة الابتدائية ببرشيد</span>
+                            <span class="prog-val">20 إشهاد (14%)</span>
+                        </div>
+                        <div class="prog-track"><div class="prog-fill" style="--target-width: 14%; background-color: var(--color-card-4); box-shadow: 0 0 8px var(--color-card-4);"></div></div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="prog-info">
+                            <span class="prog-label-wrapper"><i class="fa-solid fa-map-location-dot" style="color: var(--color-card-5);"></i> المحكمة الابتدائية بابن احمد</span>
+                            <span class="prog-val">11 إشهاد (8%)</span>
+                        </div>
+                        <div class="prog-track"><div class="prog-fill" style="--target-width: 8%; background-color: var(--color-card-5); box-shadow: 0 0 8px var(--color-card-5);"></div></div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="prog-info">
+                            <span class="prog-label-wrapper"><i class="fa-solid fa-map-location-dot" style="color: var(--color-card-6);"></i> المركز القضائي بالبروج</span>
+                            <span class="prog-val">3 إشهاد (2%)</span>
+                        </div>
+                        <div class="prog-track"><div class="prog-fill" style="--target-width: 2%; background-color: var(--color-card-6); box-shadow: 0 0 8px var(--color-card-6);"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- المواد الأكثر توزيعاً -->
+            <div class="glass-box">
+                <div class="box-header">
+                    <div class="control-btns">
+                        <button class="ctrl-btn active"><i class="fa-solid fa-bars-staggered"></i></button>
+                        <button class="ctrl-btn"><i class="fa-regular fa-circle-dot"></i></button>
+                    </div>
+                    <div class="box-title-wrapper">
+                        <h2 class="box-title">المواد الأكثر توزيعاً</h2>
+                    </div>
+                </div>
+                <div class="progress-list">
+                    <div class="progress-item">
+                        <div class="prog-info">
+                            <span class="prog-label-wrapper"><i class="fa-solid fa-box" style="color: var(--color-card-1);"></i> Clé USB 64 Go - 64go</span>
+                            <span class="prog-val">393 قطعة (24%)</span>
+                        </div>
+                        <div class="prog-track"><div class="prog-fill" style="--target-width: 24%; background-color: var(--color-card-1); box-shadow: 0 0 8px var(--color-card-1);"></div></div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="prog-info">
+                            <span class="prog-label-wrapper" dir="ltr"><i class="fa-solid fa-box" style="color: var(--color-card-2); margin-left:8px;"></i> ...rimante SAMSUNG M3820ND</span>
+                            <span class="prog-val">290 قطعة (18%)</span>
+                        </div>
+                        <div class="prog-track"><div class="prog-fill" style="--target-width: 18%; background-color: var(--color-card-2); box-shadow: 0 0 8px var(--color-card-2);"></div></div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="prog-info">
+                            <span class="prog-label-wrapper" dir="ltr"><i class="fa-solid fa-box" style="color: var(--color-card-3); margin-left:8px;"></i> ...primante CANON LBP 226DW</span>
+                            <span class="prog-val">136 قطعة (8%)</span>
+                        </div>
+                        <div class="prog-track"><div class="prog-fill" style="--target-width: 8%; background-color: var(--color-card-3); box-shadow: 0 0 8px var(--color-card-3);"></div></div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="prog-info">
+                            <span class="prog-label-wrapper" dir="ltr"><i class="fa-solid fa-box" style="color: var(--color-card-4); margin-left:8px;"></i> ...Imprimante HP LaserJet Pro</span>
+                            <span class="prog-val">88 قطعة (5%)</span>
+                        </div>
+                        <div class="prog-track"><div class="prog-fill" style="--target-width: 5%; background-color: var(--color-card-4); box-shadow: 0 0 8px var(--color-card-4);"></div></div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="prog-info">
+                            <span class="prog-label-wrapper" dir="ltr"><i class="fa-solid fa-box" style="color: var(--color-card-5); margin-left:8px;"></i> ...primante CANON LBP 214DW</span>
+                            <span class="prog-val">87 قطعة (5%)</span>
+                        </div>
+                        <div class="prog-track"><div class="prog-fill" style="--target-width: 5%; background-color: var(--color-card-5); box-shadow: 0 0 8px var(--color-card-5);"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الأكثر تسلماً للمواد -->
+            <div class="glass-box">
+                <div class="box-header">
+                    <div class="control-btns">
+                        <button class="ctrl-btn active"><i class="fa-solid fa-bars-staggered"></i></button>
+                        <button class="ctrl-btn"><i class="fa-regular fa-circle-dot"></i></button>
+                    </div>
+                    <div class="box-title-wrapper">
+                        <h2 class="box-title">الأكثر تسلماً للمواد</h2>
+                    </div>
+                </div>
+                <div class="progress-list">
+                    <div class="progress-item">
+                        <div class="prog-info">
+                            <span class="prog-label-wrapper"><i class="fa-solid fa-user-tie" style="color: var(--color-card-1);"></i> رئيس كتابة الضبط بمحكمة الاستئناف بسطات</span>
+                            <span class="prog-val">362 قطعة (22%)</span>
+                        </div>
+                        <div class="prog-track"><div class="prog-fill" style="--target-width: 22%; background-color: var(--color-card-1); box-shadow: 0 0 8px var(--color-card-1);"></div></div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="prog-info">
+                            <span class="prog-label-wrapper"><i class="fa-solid fa-user-tie" style="color: var(--color-card-2);"></i> رئيس كتابة الضبط بالمحكمة الابتدائية بسطات</span>
+                            <span class="prog-val">276 قطعة (17%)</span>
+                        </div>
+                        <div class="prog-track"><div class="prog-fill" style="--target-width: 17%; background-color: var(--color-card-2); box-shadow: 0 0 8px var(--color-card-2);"></div></div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="prog-info">
+                            <span class="prog-label-wrapper"><i class="fa-solid fa-user-tie" style="color: var(--color-card-3);"></i> رئيس كتابة الضبط بالمحكمة الابتدائية ببرشيد</span>
+                            <span class="prog-val">251 قطعة (16%)</span>
+                        </div>
+                        <div class="prog-track"><div class="prog-fill" style="--target-width: 16%; background-color: var(--color-card-3); box-shadow: 0 0 8px var(--color-card-3);"></div></div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="prog-info">
+                            <span class="prog-label-wrapper"><i class="fa-solid fa-user-tie" style="color: var(--color-card-4);"></i> رئيس كتابة النيابة العامة لدى محكمة...</span>
+                            <span class="prog-val">187 قطعة (12%)</span>
+                        </div>
+                        <div class="prog-track"><div class="prog-fill" style="--target-width: 12%; background-color: var(--color-card-4); box-shadow: 0 0 8px var(--color-card-4);"></div></div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="prog-info">
+                            <span class="prog-label-wrapper"><i class="fa-solid fa-user-tie" style="color: var(--color-card-5);"></i> رئيس كتابة النيابة العامة لدى المحكمة...</span>
+                            <span class="prog-val">128 قطعة (8%)</span>
+                        </div>
+                        <div class="prog-track"><div class="prog-fill" style="--target-width: 8%; background-color: var(--color-card-5); box-shadow: 0 0 8px var(--color-card-5);"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- توزيع المواد حسب الأصناف -->
+            <div class="glass-box">
+                <div class="box-header">
+                    <div class="control-btns">
+                        <button class="ctrl-btn active"><i class="fa-solid fa-bars-staggered"></i></button>
+                        <button class="ctrl-btn"><i class="fa-regular fa-circle-dot"></i></button>
+                    </div>
+                    <div class="box-title-wrapper">
+                        <h2 class="box-title">توزيع المواد حسب الأصناف</h2>
+                    </div>
+                </div>
+                <div class="progress-list">
+                    <div class="progress-item">
+                        <div class="prog-info">
+                            <span class="prog-label-wrapper"><i class="fa-solid fa-tags" style="color: var(--color-card-1);"></i> طونير طابعات</span>
+                            <span class="prog-val">746 قطعة (46%)</span>
+                        </div>
+                        <div class="prog-track"><div class="prog-fill" style="--target-width: 46%; background-color: var(--color-card-1); box-shadow: 0 0 8px var(--color-card-1);"></div></div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="prog-info">
+                            <span class="prog-label-wrapper"><i class="fa-solid fa-tags" style="color: var(--color-card-2);"></i> أدوات التخزين</span>
+                            <span class="prog-val">393 قطعة (24%)</span>
+                        </div>
+                        <div class="prog-track"><div class="prog-fill" style="--target-width: 24%; background-color: var(--color-card-2); box-shadow: 0 0 8px var(--color-card-2);"></div></div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="prog-info">
+                            <span class="prog-label-wrapper"><i class="fa-solid fa-tags" style="color: var(--color-card-3);"></i> طونير آلات النسخ</span>
+                            <span class="prog-val">153 قطعة (9%)</span>
+                        </div>
+                        <div class="prog-track"><div class="prog-fill" style="--target-width: 9%; background-color: var(--color-card-3); box-shadow: 0 0 8px var(--color-card-3);"></div></div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="prog-info">
+                            <span class="prog-label-wrapper"><i class="fa-solid fa-tags" style="color: var(--color-card-4);"></i> طونير طابعات بالألوان</span>
+                            <span class="prog-val">111 قطعة (7%)</span>
+                        </div>
+                        <div class="prog-track"><div class="prog-fill" style="--target-width: 7%; background-color: var(--color-card-4); box-shadow: 0 0 8px var(--color-card-4);"></div></div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="prog-info">
+                            <span class="prog-label-wrapper"><i class="fa-solid fa-tags" style="color: var(--color-card-5);"></i> كابلات</span>
+                            <span class="prog-val">68 قطعة (4%)</span>
+                        </div>
+                        <div class="prog-track"><div class="prog-fill" style="--target-width: 4%; background-color: var(--color-card-5); box-shadow: 0 0 8px var(--color-card-5);"></div></div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="prog-info">
+                            <span class="prog-label-wrapper" dir="ltr"><i class="fa-solid fa-tags" style="color: var(--color-card-6); margin-left:8px;"></i> Banderole</span>
+                            <span class="prog-val">56 قطعة (3%)</span>
+                        </div>
+                        <div class="prog-track"><div class="prog-fill" style="--target-width: 3%; background-color: var(--color-card-6); box-shadow: 0 0 8px var(--color-card-6);"></div></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 3. قسم آخر العمليات المنجزة (قائمة سفلية) -->
+        <div class="operations-box">
+            <div class="op-header">
+                <div class="box-title-wrapper">
+                    <h2 class="box-title">آخر العمليات المنجزة</h2>
+                </div>
+                <!-- الزر أصبح مربعاً وموسّطاً -->
+                <button class="view-all-btn" title="عرض سجل العمليات كاملاً"><i class="fa-solid fa-table-cells-large"></i></button>
+            </div>
+            
+            <div class="op-list">
+                <div class="op-item">
+                    <div class="op-title">رئيس المركز القضائي بالبروج</div>
+                    <button class="op-icon-btn" title="طباعة الإشهاد"><i class="fa-solid fa-print"></i></button>
+                    <div class="op-subtitle">المركز القضائي بالبروج</div>
+                    <div class="op-date">2026-10-28</div>
+                </div>
+                <div class="op-item">
+                    <div class="op-title">رئيس كتابة الضبط بالمحكمة الابتدائية بابن احمد</div>
+                    <button class="op-icon-btn" title="طباعة الإشهاد"><i class="fa-solid fa-print"></i></button>
+                    <div class="op-subtitle">المحكمة الابتدائية بابن احمد</div>
+                    <div class="op-date">2026-10-27</div>
+                </div>
+                <div class="op-item">
+                    <div class="op-title">رئيس كتابة الضبط بالمحكمة الابتدائية بسطات</div>
+                    <button class="op-icon-btn" title="طباعة الإشهاد"><i class="fa-solid fa-print"></i></button>
+                    <div class="op-subtitle">المحكمة الابتدائية بسطات</div>
+                    <div class="op-date">2026-10-23</div>
+                </div>
+                <div class="op-item">
+                    <div class="op-title">رئيس كتابة الضبط بمحكمة الاستئناف بسطات</div>
+                    <button class="op-icon-btn" title="طباعة الإشهاد"><i class="fa-solid fa-print"></i></button>
+                    <div class="op-subtitle">محكمة الاستئناف بسطات</div>
+                    <div class="op-date">2026-10-23</div>
+                </div>
+                <div class="op-item">
+                    <div class="op-title">رئيس مصلحة الموارد البشرية والشؤون المالية بالمديرية الإقليمية</div>
+                    <button class="op-icon-btn" title="طباعة الإشهاد"><i class="fa-solid fa-print"></i></button>
+                    <div class="op-subtitle">المديرية الإقليمية للعدل بسطات</div>
+                    <div class="op-date">2026-10-22</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- الجافاسكريبت المسؤول عن المبيان الدائري التفاعلي -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const boxes = document.querySelectorAll('.glass-box');
+            boxes.forEach(box => {
+                const barBtn = box.querySelector('.fa-bars-staggered').parentElement;
+                const circleBtn = box.querySelector('.fa-circle-dot').parentElement;
+                
+                barBtn.addEventListener('click', () => switchView(barBtn, 'bars'));
+                circleBtn.addEventListener('click', () => switchView(circleBtn, 'circle'));
+            });
+        });
+
+        function switchView(btn, viewType) {
+            const box = btn.closest('.glass-box');
+            const progList = box.querySelector('.progress-list');
+            if (!progList) return;
+
+            box.querySelectorAll('.ctrl-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            if (viewType === 'circle') {
+                progList.style.display = 'none';
+                let circleView = box.querySelector('.circular-view');
+                
+                if (!circleView) {
+                    circleView = document.createElement('div');
+                    circleView.className = 'circular-view';
+                    
+                    const items = box.querySelectorAll('.progress-item');
+                    let stops = [];
+                    let svgSlices = '';
+                    let acc = 0;
+                    let totalSum = 0;
+                    let unitName = 'قطعة'; 
+                    let legendHtml = '<div class="circle-legend">';
+                    
+                    items.forEach(item => {
+                        const fill = item.querySelector('.prog-fill');
+                        const widthVal = fill.style.getPropertyValue('--target-width').trim().replace('%', '');
+                        const percent = parseFloat(widthVal) || 0;
+                        const color = fill.style.backgroundColor;
+                        
+                        let labelText = item.querySelector('.prog-label-wrapper').innerText.trim();
+                        let valText = item.querySelector('.prog-val').innerText.trim();
+                        
+                        const numMatch = valText.match(/(\d+)/);
+                        const rawNum = numMatch ? parseInt(numMatch[1]) : 0;
+                        totalSum += rawNum;
+                        
+                        if(valText.includes('إشهاد')) unitName = 'إشهاد';
+                        
+                        const percentMatch = valText.match(/\((.*?)\)/);
+                        const percentVal = percentMatch ? percentMatch[1] : (percent + '%');
+                        
+                        // إضافة معرف فريد لكل شريحة لربطها بالمفتاح الخاص بها
+                        const sliceId = 'slice-' + Math.random().toString(36).substr(2, 9);
+                        
+                        // بناء دوائر SVG التفاعلية لكل جزء
+                        const r = 15.915494309; 
+                        const offset = 100 - acc;
+                        svgSlices += `<circle cx="21" cy="21" r="${r}" fill="transparent" stroke="${color}" stroke-width="6" stroke-dasharray="${percent} ${100 - percent}" stroke-dashoffset="${offset}" class="donut-slice" data-slice-id="${sliceId}" data-name="${labelText}" data-perc="${percentVal}" style="cursor: pointer; transition: all 0.2s ease; outline: none;"></circle>`;
+                        
+                        acc += percent;
+                        
+                        // تصميم المفتاح مع ربطه بالشريحة لمعرفة أي عنصر يجب إظهاره
+                        legendHtml += `
+                            <div class="legend-item" data-legend-id="${sliceId}">
+                                <div class="legend-right">
+                                    <div class="legend-color" style="background-color: ${color};"></div>
+                                    <div class="legend-label" title="${labelText}">${labelText}</div>
+                                </div>
+                                <div class="legend-left">
+                                    <span class="legend-num">${rawNum}</span> 
+                                    <span class="legend-perc" dir="ltr">(${percentVal})</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    if (acc < 100) { 
+                        // ملء الفراغ المتبقي إن وجد
+                        svgSlices += `<circle cx="21" cy="21" r="15.915494309" fill="transparent" stroke="rgba(255,255,255,0.03)" stroke-width="6" stroke-dasharray="${100 - acc} ${acc}" stroke-dashoffset="${100 - acc}" style="pointer-events: none;"></circle>`;
+                    }
+                    legendHtml += '</div>';
+
+                    // تجميع الـ SVG
+                    const svgChart = `
+                        <svg viewBox="0 0 42 42" class="donut-chart-svg" style="width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; animation: rotateIn 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;">
+                            ${svgSlices}
+                        </svg>
+                    `;
+                    
+                    circleView.innerHTML = `
+                        <div class="donut-chart-wrapper" style="background: rgba(0,0,0,0.1);">
+                            ${svgChart}
+                            <div class="donut-inner">
+                                <span class="donut-total">${totalSum}</span>
+                                <span class="donut-unit">${unitName}</span>
+                            </div>
+                        </div>
+                        ${legendHtml}
+                    `;
+                    box.appendChild(circleView);
+
+                    // تفعيل تأثيرات اللمس والمرور بالماوس على المبيان الدائري
+                    const inner = circleView.querySelector('.donut-inner');
+                    const defaultTotalHtml = inner.innerHTML;
+                    const slices = circleView.querySelectorAll('.donut-slice');
+                    let activeSliceId = null; // لتخزين الشريحة النشطة حالياً عند الضغط
+
+                    slices.forEach(slice => {
+                        const sid = slice.getAttribute('data-slice-id');
+                        
+                        const updateCenterText = (targetSlice) => {
+                            inner.innerHTML = `
+                                <span class="donut-total" style="font-size: 1.3rem; color: ${targetSlice.getAttribute('stroke')}">${targetSlice.getAttribute('data-perc')}</span>
+                                <span class="donut-unit" style="font-size: 0.65rem; text-align: center; padding: 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; line-height: 1.3;">${targetSlice.getAttribute('data-name')}</span>
+                            `;
+                        };
+
+                        const handleHover = (e) => {
+                            if(e && e.type !== 'mouseleave') e.preventDefault();
+                            slices.forEach(s => s.style.opacity = '0.3');
+                            slice.style.opacity = '1';
+                            slice.style.strokeWidth = '8'; 
+                            updateCenterText(slice);
+                        };
+                        
+                        const handleLeave = () => {
+                            if (activeSliceId) {
+                                // إذا كان هناك لون مضغوط عليه، نعود لإظهار معلوماته عند إبعاد الماوس
+                                const activeEl = circleView.querySelector(`.donut-slice[data-slice-id="${activeSliceId}"]`);
+                                if(activeEl) {
+                                    slices.forEach(s => s.style.opacity = '0.3');
+                                    activeEl.style.opacity = '1';
+                                    activeEl.style.strokeWidth = '8';
+                                    updateCenterText(activeEl);
+                                }
+                            } else {
+                                // وإلا نعود للوضع العادي (إظهار المجموع)
+                                slices.forEach(s => { s.style.opacity = '1'; s.style.strokeWidth = '6'; });
+                                inner.innerHTML = defaultTotalHtml; 
+                            }
+                        };
+
+                        const handleClick = (e) => {
+                            if(e) e.preventDefault();
+                            const allLegends = circleView.querySelectorAll('.legend-item');
+                            
+                            if (activeSliceId === sid) {
+                                // إلغاء التحديد عند الضغط مرة أخرى وإظهار جميع المفاتيح
+                                activeSliceId = null;
+                                allLegends.forEach(l => l.style.display = 'flex');
+                                handleLeave();
+                            } else {
+                                // تحديد الشريحة وإخفاء الباقي
+                                activeSliceId = sid;
+                                allLegends.forEach(l => {
+                                    if(l.getAttribute('data-legend-id') === sid) {
+                                        l.style.display = 'flex';
+                                    } else {
+                                        l.style.display = 'none';
+                                    }
+                                });
+                                handleHover();
+                            }
+                        };
+                        
+                        slice.addEventListener('mouseenter', handleHover);
+                        slice.addEventListener('mouseleave', handleLeave);
+                        slice.addEventListener('click', handleClick);
+                        slice.addEventListener('touchstart', handleClick, {passive: false});
+                    });
+                }
+                
+                circleView.style.display = 'flex';
+                setTimeout(() => circleView.classList.add('show'), 20);
+                
+            } else {
+                const circleView = box.querySelector('.circular-view');
+                if (circleView) {
+                    circleView.classList.remove('show');
+                    setTimeout(() => {
+                        circleView.style.display = 'none';
+                        progList.style.display = 'flex';
+                    }, 300);
+                } else {
+                    progList.style.display = 'flex';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+=== [قالب عملية التوزيع] ===
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عملية التوزيع - لوحة القيادة</title>
+    <!-- خطوط جوجل: تجوال -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <!-- مكتبة الأيقونات FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #051A2D;
+            --border-radius: 16px;
+            
+            /* ألوان مراحل التوزيع مطابقة للوحة القيادة */
+            --color-phase-1: #FEA24F; /* برتقالي دافئ */
+            --color-phase-2: #108AB1; /* أزرق داكن */
+            --color-phase-3: #6A1B9A; /* بنفسجي ملكي */
+            
+            --color-danger: #ef4444;  /* أحمر للتفريغ/الحذف */
+            
+            /* خلفية زجاجية */
+            --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-hover: rgba(255, 255, 255, 0.08);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Tajawal', sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+        
+        body { 
+            background-color: var(--bg-color); 
+            color: #ffffff; 
+            padding: 24px;
+            min-height: 100vh;
+            /* خلفية جمالية خفيفة */
+            background-image: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
+        }
+
+        .dashboard-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* حاويات الزجاج العامة */
+        .glass-panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: var(--border-radius);
+            padding: 20px;
+        }
+
+        /* 1. الترويسة العلوية (رقم العملية والتاريخ) */
+        .top-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            text-align: center;
+        }
+        .header-badges {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .badge-pill {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 16px 6px 16px; /* ضبط التوسيط البصري للخط */
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1; /* إلغاء ارتفاع السطر الإضافي */
+            gap: 8px;
+        }
+        .badge-pill.primary { color: #60a5fa; border-color: rgba(96, 165, 250, 0.3); background: rgba(96, 165, 250, 0.1); }
+        .badge-pill.secondary { color: #e2e8f0; }
+        
+        .empty-basket-btn {
+            background: transparent;
+            border: 1px solid var(--color-danger);
+            color: var(--color-danger);
+            padding: 8px 16px 6px 16px; /* ضبط التوسيط البصري للخط */
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1; /* إلغاء ارتفاع السطر الإضافي */
+            gap: 8px;
+            transition: 0.3s;
+        }
+        .empty-basket-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        /* 2. شبكة الإحصائيات المصغرة (Mini Stats) */
+        .mini-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        .mini-stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.3s;
+        }
+        .mini-stat-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+        .stat-value.c-phase-1 { color: var(--color-phase-1); }
+        .stat-value.c-phase-2 { color: var(--color-phase-2); }
+
+        /* 3. التبويبات (Steps Navigation) */
+        .steps-nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-top: 10px;
+        }
+        .step-tab {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0.6;
+        }
+        .step-tab:hover { opacity: 0.8; transform: translateY(-2px); }
+        
+        .step-tab.active {
+            opacity: 1;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        
+        .step-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            align-items: flex-start;
+        }
+        .step-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+        .step-desc {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            white-space: nowrap;
+        }
+        
+        .step-number {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #fff;
+            flex-shrink: 0;
+            line-height: 0; /* إجبار المركز على التجاهل التام لارتفاع الخط */
+            padding-top: 6px; /* دفع الرقم للأسفل ليتطابق مركزه مع مركز الدائرة */
+        }
+
+        /* ألوان التبويبات المخصصة (بدون توهج) */
+        .tab-1.active { border-color: var(--color-phase-1); background: linear-gradient(135deg, rgba(254, 162, 79, 0.1), rgba(255,255,255,0.02)); }
+        .tab-1 .step-title { color: var(--color-phase-1); }
+        .tab-1 .step-number { background-color: var(--color-phase-1); }
+
+        .tab-2.active { border-color: var(--color-phase-2); background: linear-gradient(135deg, rgba(16, 138, 177, 0.1), rgba(255,255,255,0.02)); }
+        .tab-2 .step-title { color: var(--color-phase-2); }
+        .tab-2 .step-number { background-color: var(--color-phase-2); }
+
+        .tab-3.active { border-color: var(--color-phase-3); background: linear-gradient(135deg, rgba(6, 129, 135, 0.1), rgba(255,255,255,0.02)); }
+        .tab-3 .step-title { color: var(--color-phase-3); }
+        .tab-3 .step-number { background-color: var(--color-phase-3); }
+
+
+        /* 4. محتوى المراحل (Dynamic Content) */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* العناوين داخل الأقسام */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 12px;
+        }
+        .section-header i { font-size: 1.2rem; }
+        .section-header h3 { font-size: 1.1rem; font-weight: 800; color: #fff; }
+        .section-desc { font-size: 0.8rem; color: rgba(255, 255, 255, 0.6); margin-top: 4px; display: block;}
+
+        /* النماذج وحقول الإدخال (Forms) */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .form-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .form-control {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: #fff;
+            font-size: 0.95rem;
+            font-family: 'Tajawal', sans-serif;
+            outline: none;
+            transition: 0.3s;
+        }
+        .form-control:focus {
+            border-color: var(--color-phase-2);
+            background: rgba(0, 0, 0, 0.3);
+        }
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: left 12px center;
+            background-size: 16px;
+            padding-left: 40px;
+        }
+        select.form-control option { background: var(--bg-color); color: #fff; }
+
+        /* الأزرار الرئيسية */
+        .btn-primary {
+            background: var(--color-phase-2);
+            color: #fff;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
+        
+        .btn-success { background: var(--color-phase-3); }
+        .btn-success:hover { box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
+
+        /* الجداول (Tables) */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+        }
+        th, td {
+            padding: 14px 16px;
+            font-size: 0.85rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            white-space: nowrap;
+        }
+        th {
+            font-weight: 800;
+            color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        tr:last-child td { border-bottom: none; }
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: rgba(255, 255, 255, 0.4);
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        
+        <!-- الترويسة العليا -->
+        <div class="glass-panel top-header">
+            <div class="header-badges">
+                <div class="badge-pill primary">
+                    <i class="fa-solid fa-layer-group"></i> رقم العملية : DIST-2026-1028-02
+                </div>
+                <div class="badge-pill secondary">
+                    oct. 2026 28
+                </div>
+            </div>
+            <p class="section-desc">توزيع سلة المواد المجمعة على مختلف الوجهات</p>
+            <button class="empty-basket-btn">
+                <i class="fa-regular fa-trash-can"></i> تفريغ السلة
+            </button>
+        </div>
+
+        <!-- إحصائيات مصغرة -->
+        <div class="glass-panel mini-stats-grid">
+            <div class="mini-stat-card">
+                <span class="stat-label">المواد بالسلة</span>
+                <span class="stat-value c-phase-1">0</span>
+            </div>
+            <div class="mini-stat-card">
+                <span class="stat-label">الكمية الإجمالية</span>
+                <span class="stat-value c-phase-1">0</span>
+            </div>
+            <div class="mini-stat-card">
+                <span class="stat-label">الموزع على المحاكم</span>
+                <span class="stat-value c-phase-2">0</span>
+            </div>
+            <div class="mini-stat-card">
+                <span class="stat-label">الباقي للتوزيع</span>
+                <span class="stat-value c-phase-1">0</span>
+            </div>
+        </div>
+
+        <!-- التبويبات (مراحل التوزيع) -->
+        <div class="steps-nav">
+            <div class="step-tab tab-1 active" onclick="openTab('phase-1')">
+                <div class="step-info">
+                    <span class="step-title">سلة المواد</span>
+                    <span class="step-desc">تحديد المواد والكميات المسحوبة</span>
+                </div>
+                <div class="step-number">1</div>
+            </div>
+            
+            <div class="step-tab tab-2" onclick="openTab('phase-2')">
+                <div class="step-info">
+                    <span class="step-title">التوزيع</span>
+                    <span class="step-desc">مصفوفة توزيع الحصص</span>
+                </div>
+                <div class="step-number">2</div>
+            </div>
+            
+            <div class="step-tab tab-3" onclick="openTab('phase-3')">
+                <div class="step-info">
+                    <span class="step-title">الإشهادات</span>
+                    <span class="step-desc">الإشهادات وسجل العمليات</span>
+                </div>
+                <div class="step-number">3</div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- محتوى المرحلة 1: سلة المواد -->
+        <!-- ========================================== -->
+        <div id="phase-1" class="tab-content active">
+            <div class="glass-panel">
+                <div class="section-header">
+                    <i class="fa-solid fa-box-open" style="color: var(--color-phase-1);"></i>
+                    <div>
+                        <h3>تحديد سلة المواد الإجمالية المسحوبة</h3>
+                        <span class="section-desc">اختر الصنف والمادة والكمية الإجمالية لإضافتها للسلة</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-layer-group"></i> 1. اختر الصنف (الفئة)</label>
+                    <select class="form-control">
+                        <option>-- جميع الأصناف (12) --</option>
+                        <option>طونير طابعات</option>
+                        <option>أدوات التخزين</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-tags"></i> 2. اختر المادة التابعة للصنف</label>
+                    <select class="form-control">
+                        <option>-- اختر المادة (86 مادة) --</option>
+                        <option>Clé USB 64 Go</option>
+                        <option>Toner HP LaserJet</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-cubes"></i> 3. الكمية الإجمالية للسحب (رصيد العملية)</label>
+                    <input type="number" class="form-control" placeholder="مثال: 10" value="10">
+                </div>
+
+                <button class="btn-primary" style="background-color: var(--color-phase-1);"><i class="fa-solid fa-plus"></i> إضافة إلى سلة المواد</button>
+            </div>
+
+            <div class="glass-panel">
+                <div class="section-header">
+                    <i class="fa-solid fa-list-check" style="color: var(--color-phase-1);"></i>
+                    <h3>سلة المواد الإجمالية (رصيد العملية المجمع)</h3>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>بيان المادة</th>
+                                <th>الصنف</th>
+                                <th>المتوفر بالمخزن</th>
+                                <th>الكمية المسحوبة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="5" class="empty-state">السلة فارغة حالياً — اختر الصنف والمادة أعلاه</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- محتوى المرحلة 2: التوزيع -->
+        <!-- ========================================== -->
+        <div id="phase-2" class="tab-content">
+            <div class="glass-panel">
+                <div class="section-header">
+                    <i class="fa-solid fa-sitemap" style="color: var(--color-phase-2);"></i>
+                    <div>
+                        <h3>مصفوفة التوزيع على الوجهات والمستفيدين</h3>
+                        <span class="section-desc">تحديد حصة كل جهة بدقة وفق قاعدة الباقي صفر</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-pen-to-square"></i> ملاحظة إشهاد التسليم (اختياري)</label>
+                    <input type="text" class="form-control" placeholder="مثال: حصة التوزيع الدوري — سليم ومعتمد">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-users"></i> تعدد المستفيدين في الوجهة:</label>
+                    <input type="number" class="form-control" placeholder="عدد المستفيدين" value="1">
+                </div>
+                
+                <div class="table-responsive" style="margin-top: 16px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>الجهة / الوجهة المستفيدة</th>
+                                <th>المسؤول المستفيد</th>
+                                <th>الحصة الموزعة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="4" class="empty-state">يرجى إضافة مادة واحدة على الأقل في الخطوة السابقة</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- محتوى المرحلة 3: الإشهادات -->
+        <!-- ========================================== -->
+        <div id="phase-3" class="tab-content">
+            <div class="glass-panel">
+                <div class="section-header">
+                    <i class="fa-solid fa-stamp" style="color: var(--color-phase-3);"></i>
+                    <div>
+                        <h3>اعتماد الدفعة، الخصم الفوري، وتوليد الإشهادات</h3>
+                        <span class="section-desc">يجب أن يكون "الباقي للتوزيع = 0" لتفعيل أزرار الاعتماد النهائي</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+                    <button class="btn-primary"><i class="fa-solid fa-check-double"></i> اعتماد التوزيع وتوليد الإشهادات</button>
+                    <button class="btn-primary btn-success"><i class="fa-solid fa-print"></i> اعتماد ومعاينة طباعة كافة الإشهادات</button>
+                </div>
+            </div>
+
+            <div class="glass-panel">
+                <div class="section-header">
+                    <i class="fa-solid fa-folder-open" style="color: var(--color-phase-3);"></i>
+                    <div>
+                        <h3>أرشيف دفعات التوزيع المعتمدة</h3>
+                        <span class="section-desc">سجل الدفعات (Distribution Batches) المنجزة</span>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>رقم الدفعة (Batch ID)</th>
+                                <th>التاريخ</th>
+                                <th>عدد المواد</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="color: var(--color-phase-2); font-weight: 700;">DIST-2026-1028-01</td>
+                                <td>2026-10-28</td>
+                                <td>
+                                    <span style="background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 6px;">1 مواد</span>
+                                </td>
+                                <td>
+                                    <button style="background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 6px 12px; border-radius: 6px; cursor: pointer;"><i class="fa-solid fa-print"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- السكربت الخاص بالتنقل بين التبويبات -->
+    <script>
+        function openTab(tabId) {
+            // إخفاء جميع المحتويات
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // إزالة التفعيل من جميع التبويبات
+            document.querySelectorAll('.step-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // إظهار المحتوى المطلوب
+            document.getElementById(tabId).classList.add('active');
+
+            // تفعيل التبويب المطابق
+            if(tabId === 'phase-1') document.querySelector('.tab-1').classList.add('active');
+            if(tabId === 'phase-2') document.querySelector('.tab-2').classList.add('active');
+            if(tabId === 'phase-3') document.querySelector('.tab-3').classList.add('active');
+        }
+    </script>
+</body>
+</html>
+=== [قالب التقويم الزمني] ===
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التقويم الإداري - لوحة القيادة</title>
+    <!-- خطوط جوجل: تجوال -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <!-- مكتبة الأيقونات FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #051A2D;
+            /* باليت الألوان الحيوية */
+            --color-1: #10BBC3;
+            --color-2: #FEA24F;
+            --color-3: #068187;
+            --color-4: #A60E35;
+            --color-5: #6A1B9A;
+            --color-6: #108AB1;
+            /* خلفية زجاجية */
+            --glass-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+            --glass-border: rgba(255, 255, 255, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            /* خلفية جمالية خفيفة جداً لتعزيز الزجاجية */
+            background-image: radial-gradient(circle at 50% 0%, rgba(16, 187, 195, 0.1) 0%, transparent 50%);
+        }
+
+        /* حاوية التقويم الزجاجية */
+        .calendar-widget {
+            width: 100%;
+            max-width: 480px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-top: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(255,255,255,0.02);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 24px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* ترويسة التقويم (العنوان) */
+        .widget-header {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .widget-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+        .widget-subtitle {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 500;
+        }
+
+        /* شريط التنقل بين الأشهر */
+        .cal-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 8px 16px;
+        }
+        .cal-month {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.05);
+        }
+
+        /* شبكة أيام الأسبوع */
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px; /* تم تقليص الفراغ لتصغير الأيام ومنع التجاوز */
+            text-align: center;
+        }
+        .weekday {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 8px;
+        }
+
+        /* تصميم أزرار الأيام */
+        .cal-day {
+            aspect-ratio: 1; /* مربع مثالي */
+            border-radius: 12px; /* حواف دائرية جميلة */
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* التمركز الأفقي */
+            justify-content: flex-start; /* دفع رقم اليوم للأعلى */
+            padding-top: 6px; /* مسافة قريبة من السقف العُلوي */
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        /* الأيام من الأشهر الأخرى */
+        .cal-day.inactive {
+            color: rgba(255, 255, 255, 0.2);
+            background: transparent;
+            border-color: transparent;
+        }
+
+        /* تأثير المرور العادي */
+        .cal-day:not(.inactive):hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-3px);
+        } /* تم إصلاح إغلاق القوس هنا - هذا ما تسبب في الأزمة! */
+
+        /* تأثير المرور المبهج للأيام ذات العمليات */
+        .cal-day.has-event:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--event-color);
+            transform: translateY(-5px) scale(1.05);
+            color: #fff;
+        }
+
+        /* الشارة العائمة الدائرية (البادج) للتدخلات */
+        .event-badge {
+            position: absolute;
+            bottom: -1px; /* متلاصقة تماماً مع الحافة السفلية وتتجاوزها ببيكسل */
+            right: -1px; /* متلاصقة تماماً مع الحافة اليمنى وتتجاوزها ببيكسل */
+            width: 18px; 
+            height: 18px;
+            border-radius: 50%;
+            background-color: var(--event-color);
+            color: #fff;
+            font-size: 0.6rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1; /* معادلة ارتفاع السطر */
+            padding-top: 2px; /* ضبط المركز البصري للرقم ليكون في السنتر تماماً */
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 2;
+        }
+
+        /* قفزة الشارة عند التفاعل */
+        .cal-day.has-event:hover .event-badge {
+            transform: translateY(-2px) scale(1.1); /* إزالة التوسيط الأفقي السابق */
+        }
+
+        /* تمييز أيام العطلة (السبت والأحد) بلون غامق قليلاً */
+        .cal-grid:last-child .cal-day:nth-child(7n+1), 
+        .cal-grid:last-child .cal-day:nth-child(7n) { /* السبت (العمود الأخير) */
+            background: rgba(0, 0, 0, 0.18);
+            border-color: rgba(255, 255, 255, 0.02);
+            color: rgba(255, 255, 255, 0.4);
+        }
+        .cal-grid:last-child .cal-day.has-event:nth-child(7n+1),
+        .cal-grid:last-child .cal-day.has-event:nth-child(7n) {
+            background: rgba(0, 0, 0, 0.25);
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        @media (max-width: 400px) {
+            .cal-day { font-size: 0.9rem; }
+            .event-badge { width: 15px; height: 15px; font-size: 0.55rem; bottom: -1px; right: -1px; top: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calendar-widget">
+        
+        <!-- العناوين -->
+        <div class="widget-header">
+            <h2 class="widget-title">التقويم الإداري لتتبع عمليات التسليم</h2>
+            <p class="widget-subtitle">عرض شهري تفاعلي لعمليات تسليم المواد وفق تواريخها</p>
+        </div>
+
+        <!-- التنقل -->
+        <div class="cal-nav">
+            <button class="nav-btn"><i class="fa-solid fa-chevron-right"></i></button>
+            <div class="cal-month">شتنبر 2026</div>
+            <button class="nav-btn"><i class="fa-solid fa-chevron-left"></i></button>
+        </div>
+
+        <!-- أيام الأسبوع -->
+        <div class="cal-grid">
+            <div class="weekday">الأحد</div>
+            <div class="weekday">الإثنين</div>
+            <div class="weekday">الثلاثاء</div>
+            <div class="weekday">الأربعاء</div>
+            <div class="weekday">الخميس</div>
+            <div class="weekday">الجمعة</div>
+            <div class="weekday">السبت</div>
+        </div>
+
+        <!-- الأيام -->
+        <div class="cal-grid">
+            <!-- الأيام المتبقية من الشهر السابق -->
+            <div class="cal-day inactive">30</div>
+            <div class="cal-day inactive">31</div>
+            
+            <!-- أيام شهر شتنبر -->
+            <div class="cal-day">1</div>
+            <div class="cal-day">2</div>
+            
+            <div class="cal-day has-event" style="--event-color: var(--color-1);" title="1 عملية تسليم">
+                3
+                <div class="event-badge">1</div>
+            </div>
+            
+            <div class="cal-day">4</div>
+            <div class="cal-day">5</div>
+            
+            <div class="cal-day">6</div>
+            <div class="cal-day">7</div>
+            <div class="cal-day">8</div>
+            <div class="cal-day">9</div>
+            
+            <div class="cal-day has-event" style="--event-color: var(--color-2);" title="1 عملية تسليم">
+                10
+                <div class="event-badge">1</div>
+            </div>
+            
+            <div class="cal-day has-event" style="--event-color: var(--color-3);" title="1 عملية تسليم">
+                11
+                <div class="event-badge">1</div>
+            </div>
+            
+            <div class="cal-day">12</div>
+            
+            <div class="cal-day">13</div>
+            <div class="cal-day">14</div>
+            
+            <div class="cal-day has-event" style="--event-color: var(--color-4);" title="5 عمليات تسليم">
+                15
+                <div class="event-badge">5</div>
+            </div>
+            
+            <div class="cal-day has-event" style="--event-color: var(--color-6);" title="10 عمليات تسليم">
+                16
+                <div class="event-badge">10</div>
+            </div>
+            
+            <div class="cal-day">17</div>
+            <div class="cal-day">18</div>
+            <div class="cal-day">19</div>
+            
+            <div class="cal-day">20</div>
+            
+            <div class="cal-day has-event" style="--event-color: var(--color-5);" title="12 عملية تسليم">
+                21
+                <div class="event-badge">12</div>
+            </div>
+            
+            <div class="cal-day">22</div>
+            <div class="cal-day">23</div>
+            <div class="cal-day">24</div>
+            
+            <div class="cal-day has-event" style="--event-color: var(--color-1);" title="2 عمليتان تسليم">
+                25
+                <div class="event-badge">2</div>
+            </div>
+            
+            <div class="cal-day">26</div>
+            
+            <div class="cal-day">27</div>
+            <div class="cal-day">28</div>
+            <div class="cal-day">29</div>
+            
+            <div class="cal-day has-event" style="--event-color: var(--color-2);" title="1 عملية تسليم">
+                30
+                <div class="event-badge">1</div>
+            </div>
+            
+            <!-- الأيام من الشهر القادم -->
+            <div class="cal-day inactive">1</div>
+            <div class="cal-day inactive">2</div>
+            <div class="cal-day inactive">3</div>
+        </div>
+
+    </div>
+
+</body>
+</html>
+ابدأ العمل، وقدم لي الكود المدمج والنهائي!
+
+
