@@ -4705,53 +4705,59 @@
     #dashboard-view .dashboard-container {
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 12px;
       width: 100%;
+      max-width: 100%;
       box-sizing: border-box;
+      min-width: 0;
+      overflow-x: hidden;
     }
     #dashboard-view .metrics-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      gap: 15px;
-      margin-bottom: 5px;
+      gap: 12px;
+      margin-bottom: 0;
       width: 100%;
+      max-width: 100%;
       box-sizing: border-box;
+      min-width: 0;
     }
     #dashboard-view .metric-card {
-      background: var(--bg-card);
-      border-radius: 16px;
-      padding: 16px;
+      border-radius: 18px;
+      padding: 16px 18px 0 18px;
       position: relative;
       overflow: hidden;
       cursor: pointer;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      border: 1px solid var(--border-subtle);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      min-height: 140px;
-    }
-    [data-theme="dark"] #dashboard-view .metric-card {
-      background: #0B243B;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+      min-height: 145px;
+      color: #ffffff;
+      min-width: 0;
     }
     #dashboard-view .metric-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
     }
     #dashboard-view .metric-card::before {
       content: '';
       position: absolute;
       top: 0;
-      right: 0;
-      width: 65px;
-      height: 65px;
-      background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
-      border-radius: 0 0 0 100%;
+      right: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.22) 50%, rgba(255, 255, 255, 0) 100%);
+      transform: skewX(-25deg);
+      transition: right 0.75s ease;
       pointer-events: none;
+      z-index: 3;
+    }
+    #dashboard-view .metric-card:hover::before {
+      right: 160%;
     }
     #dashboard-view .metric-card::after {
       content: '';
@@ -4759,118 +4765,161 @@
       bottom: 0;
       right: 0;
       left: 0;
-      height: 3.5px;
-      background: #051A2D;
+      height: 4px;
+      background: rgba(0, 0, 0, 0.35);
+      z-index: 4;
     }
-    #dashboard-view .metric-card.card-1 { border-top: 3.5px solid var(--color-card-1); }
-    #dashboard-view .metric-card.card-2 { border-top: 3.5px solid var(--color-card-2); }
-    #dashboard-view .metric-card.card-3 { border-top: 3.5px solid var(--color-card-3); }
-    #dashboard-view .metric-card.card-4 { border-top: 3.5px solid var(--color-card-4); }
-    #dashboard-view .metric-card.card-5 { border-top: 3.5px solid var(--color-card-5); }
-    #dashboard-view .metric-card.card-6 { border-top: 3.5px solid var(--color-card-6); }
+    #dashboard-view .metric-card.card-1 {
+      background: linear-gradient(135deg, #0d7082 0%, #10BBC3 100%) !important;
+    }
+    #dashboard-view .metric-card.card-2 {
+      background: linear-gradient(135deg, #9e5b22 0%, #FEA24F 100%) !important;
+    }
+    #dashboard-view .metric-card.card-3 {
+      background: linear-gradient(135deg, #044b4e 0%, #068187 100%) !important;
+    }
+    #dashboard-view .metric-card.card-4 {
+      background: linear-gradient(135deg, #5c071d 0%, #A60E35 100%) !important;
+    }
+    #dashboard-view .metric-card.card-5 {
+      background: linear-gradient(135deg, #3d0f59 0%, #6A1B9A 100%) !important;
+    }
+    #dashboard-view .metric-card.card-6 {
+      background: linear-gradient(135deg, #094f66 0%, #108AB1 100%) !important;
+    }
 
     #dashboard-view .trend-badge {
       position: absolute;
-      top: 10px;
-      right: 12px;
-      font-size: 0.72rem;
+      top: 14px;
+      left: 14px;
+      right: auto;
+      font-size: 0.76rem;
       font-weight: 800;
-      padding: 2px 7px;
-      border-radius: 6px;
-      display: flex;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      display: inline-flex;
       align-items: center;
       gap: 3px;
       line-height: 1;
       z-index: 2;
+      background: rgba(0, 0, 0, 0.28) !important;
+      color: #ffffff !important;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
     }
-    #dashboard-view .trend-up {
-      color: #10B981;
-      background: rgba(16, 185, 129, 0.12);
-    }
-    #dashboard-view .trend-down {
-      color: #EF4444;
-      background: rgba(239, 68, 68, 0.12);
-    }
+    #dashboard-view .trend-up,
+    #dashboard-view .trend-down,
     #dashboard-view .trend-neutral {
-      color: #9CA3AF;
-      background: rgba(156, 163, 175, 0.12);
+      color: #ffffff !important;
+      background: rgba(0, 0, 0, 0.28) !important;
     }
     #dashboard-view .card-header {
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       padding: 0;
       background: transparent;
       border: none;
+      text-align: right;
     }
     #dashboard-view .card-title {
-      font-size: 0.86rem;
-      color: var(--text-muted);
+      font-size: 0.94rem;
+      color: rgba(255, 255, 255, 0.95) !important;
       font-weight: 700;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     }
     #dashboard-view .card-value {
-      font-size: 1.85rem;
+      font-size: 2.25rem !important;
       font-weight: 900;
-      color: var(--text-main);
-      margin: 4px 0 8px 0;
+      color: #ffffff !important;
+      margin: 4px 0 10px 0;
       position: relative;
       z-index: 1;
       line-height: 1.1;
+      text-align: right;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
     }
     [data-theme="dark"] #dashboard-view .card-value {
-      color: #ffffff;
+      color: #ffffff !important;
     }
 
-    /* 4. تأكيد تعديلات المؤشرات العلوية الستة (Top Metric Cards) */
+    /* Watermark rotated icon positioned on the left */
     #dashboard-view .card-icon {
-      position: absolute;
-      top: 5px !important;
-      left: 5px !important;
-      font-size: 97px !important; /* +10% من 88px */
-      opacity: 0.08;
-      color: var(--text-main);
+      position: absolute !important;
+      top: 50% !important;
+      left: 14px !important;
+      right: auto !important;
+      transform: translateY(-50%) rotate(-12deg) !important;
+      font-size: 78px !important;
+      opacity: 0.17 !important;
+      color: #ffffff !important;
       pointer-events: none;
       transition: transform 0.3s ease, opacity 0.3s ease;
       line-height: 1;
-      transform: none !important;
+      z-index: 1;
     }
     [data-theme="dark"] #dashboard-view .card-icon {
-      color: #ffffff;
-      opacity: 0.06;
+      color: #ffffff !important;
+      opacity: 0.17 !important;
     }
     #dashboard-view .metric-card:hover .card-icon {
-      transform: scale(1.05) !important;
-      opacity: 0.12;
+      transform: translateY(-50%) rotate(-6deg) scale(1.08) !important;
+      opacity: 0.26 !important;
     }
+
+    /* Dark bottom footer bar */
     #dashboard-view .card-footer {
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 0.74rem;
-      color: var(--text-muted);
-      padding-top: 8px;
-      border-top: 1px solid var(--border-subtle);
-      margin-top: auto;
+      justify-content: flex-start;
+      gap: 7px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.92) !important;
+      padding: 8px 18px;
+      background: rgba(0, 0, 0, 0.24) !important;
+      margin: 10px -18px 0 -18px;
+      border-top: none !important;
+      direction: rtl;
+      border-radius: 0 0 16px 16px;
+      position: relative;
+      z-index: 2;
     }
-    [data-theme="dark"] #dashboard-view .card-footer {
-      border-top-color: rgba(255, 255, 255, 0.06);
+    #dashboard-view .card-footer i,
+    #dashboard-view .card-footer span {
+      color: #ffffff !important;
+      opacity: 0.92;
     }
-    #dashboard-view .card-1 .card-footer i { color: var(--color-card-1); }
-    #dashboard-view .card-2 .card-footer i { color: var(--color-card-2); }
-    #dashboard-view .card-3 .card-footer i { color: var(--color-card-3); }
-    #dashboard-view .card-4 .card-footer i { color: var(--color-card-4); }
-    #dashboard-view .card-5 .card-footer i { color: var(--color-card-5); }
-    #dashboard-view .card-6 .card-footer i { color: var(--color-card-6); }
+    #dashboard-view .card-footer i {
+      font-size: 0.86rem;
+    }
 
     /* 1. إصلاح تخطيط شبكة الإحصائيات (Stats Grid Layout) */
     #dashboard-view .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
-      gap: 15px;
+      gap: 12px !important;
       width: 100%;
+      max-width: 100%;
       box-sizing: border-box;
+      min-width: 0;
     }
     @media (max-width: 768px) {
       #dashboard-view .stats-grid {
         grid-template-columns: 1fr !important;
+        gap: 12px !important;
+      }
+      #dashboard-view .metrics-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+      }
+      #dashboard-view .dashboard-container {
+        gap: 12px !important;
+        padding: 0 !important;
+      }
+      #dashboard-view .glass-box {
+        max-width: 100% !important;
+        min-width: 0 !important;
+        overflow-x: hidden !important;
       }
     }
     #dashboard-view .glass-box {
@@ -5910,10 +5959,10 @@
               </div>
             </div>
 
-            <!-- قسم المؤشرات الستة (The 6 Gradient Metric Cards) -->
+            <!-- قسم المؤشرات الستة (The 6 Gradient Metric Cards - Model IMG_0386) -->
             <div class="metrics-grid">
               <div class="metric-card card-1" onclick="switchTab('history-view')" title="النقر للانتقال إلى سجل العمليات والأرشيف">
-                <div class="trend-badge trend-up"><span>+12%</span></div>
+                <div class="trend-badge"><span>12%+</span></div>
                 <div class="card-header"><span class="card-title">التسليمات المكتملة</span></div>
                 <div class="card-value tabular-nums" id="kpi-total-vouchers">142</div>
                 <i class="fa-regular fa-file-lines card-icon"></i>
@@ -5922,7 +5971,7 @@
               </div>
 
               <div class="metric-card card-2" onclick="switchTab('orders-view')" title="النقر للانتقال إلى صفحة الطلبات">
-                <div class="trend-badge trend-down"><span>-2%</span></div>
+                <div class="trend-badge"><span>2%-</span></div>
                 <div class="card-header"><span class="card-title">الطلبات قيد المعالجة</span></div>
                 <div class="card-value tabular-nums" id="kpi-pending-orders-dash">3</div>
                 <i class="fa-solid fa-hourglass-half card-icon"></i>
@@ -5930,7 +5979,7 @@
               </div>
 
               <div class="metric-card card-3" onclick="rotateConsumptionMetric(event)" title="انقر للتبديل بين: متوسط سنوي | متوسط شهري | مقارنة سنوية">
-                <div class="trend-badge trend-up"><span>+5%</span></div>
+                <div class="trend-badge"><span>5%+</span></div>
                 <div class="card-header"><span class="card-title" id="kpi-consumption-title">معدل الاستهلاك</span></div>
                 <div class="card-value tabular-nums" id="kpi-consumption-rate">810</div>
                 <i class="fa-solid fa-arrow-up-right-dots card-icon"></i>
@@ -5939,7 +5988,7 @@
               </div>
 
               <div class="metric-card card-4" onclick="openInventoryFilteredByStatus('critical')" title="انقر لعرض لائحة المواد الحرجة في الجرد">
-                <div class="trend-badge trend-up"><span>+8%</span></div>
+                <div class="trend-badge"><span>8%+</span></div>
                 <div class="card-header"><span class="card-title">المواد الحرجة أو النافدة</span></div>
                 <div class="card-value tabular-nums" id="kpi-low-stock">86</div>
                 <i class="fa-solid fa-circle-exclamation card-icon"></i>
@@ -5947,7 +5996,7 @@
               </div>
 
               <div class="metric-card card-5" onclick="openInventoryFilteredByStatus('good')" title="انقر لعرض لائحة المواد المتوفرة بوفرة في الجرد">
-                <div class="trend-badge trend-neutral"><span>0%</span></div>
+                <div class="trend-badge"><span>0%</span></div>
                 <div class="card-header"><span class="card-title">المواد المتوفرة فعلياً</span></div>
                 <div class="card-value tabular-nums" id="kpi-total-stock">0</div>
                 <i class="fa-solid fa-box-archive card-icon"></i>
@@ -5955,7 +6004,7 @@
               </div>
 
               <div class="metric-card card-6" onclick="rotateEntitiesMetric(event)" title="انقر للتبديل بين: عدد الجهات المستفيدة | عدد الأصناف المعتمدة">
-                <div class="trend-badge trend-up"><span>+15%</span></div>
+                <div class="trend-badge"><span>15%+</span></div>
                 <div class="card-header"><span class="card-title" id="kpi-entities-title">عدد الجهات المستفيدة</span></div>
                 <div class="card-value tabular-nums" id="kpi-total-destinations">6</div>
                 <i class="fa-solid fa-building card-icon"></i>
@@ -6461,8 +6510,23 @@
               </div>
             </div>
 
-            <!-- فلاتر جدول الطلبيات -->
-            <div style="background: var(--bg-muted); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); margin-bottom: 14px;">
+            <!-- تبويبات وفلاتر جدول الطلبيات مع أرشيف الطلبات -->
+            <div style="background: var(--bg-muted); padding: 12px; border-radius: var(--radius-md); border: 1.5px solid var(--border-subtle); margin-bottom: 14px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                <div class="orders-tab-toggle" style="display: inline-flex; background: var(--bg-surface); padding: 3px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+                  <button type="button" id="tab-orders-active" class="btn btn-sm btn-primary" onclick="setOrdersViewMode('active')" style="font-weight: 800; font-size: 0.82rem; padding: 6px 14px; border-radius: var(--radius-sm); display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-inbox"></i>
+                    <span>الطلبيات النشطة (المعلقة)</span>
+                    <span id="badge-orders-active-count" class="badge" style="background: rgba(255,255,255,0.25); color: #fff; font-size: 0.72rem; padding: 2px 7px;">0</span>
+                  </button>
+                  <button type="button" id="tab-orders-archive" class="btn btn-sm btn-outline" onclick="setOrdersViewMode('archive')" style="font-weight: 800; font-size: 0.82rem; padding: 6px 14px; border-radius: var(--radius-sm); display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-box-archive"></i>
+                    <span>أرشيف الطلبات المعتمدة</span>
+                    <span id="badge-orders-archive-count" class="badge badge-subtle" style="font-size: 0.72rem; padding: 2px 7px;">0</span>
+                  </button>
+                </div>
+              </div>
+
               <div class="history-filters-grid">
                 <div class="form-group" style="margin-bottom: 0;">
                   <input type="text" id="orders-search-input" class="form-control" placeholder="ابحث برقم الطلبية، الجهة، أو صاحب الطلب..." oninput="renderOrdersList()" />
@@ -6472,7 +6536,7 @@
                     <option value="">كافة الجهات</option>
                   </select>
                 </div>
-                <div class="form-group" style="margin-bottom: 0;">
+                <div class="form-group" style="margin-bottom: 0; display: none;">
                   <select id="orders-status-filter" class="form-control" onchange="renderOrdersList()">
                     <option value="">كافة الحالات</option>
                     <option value="pending" selected>قيد الانتظار (مفتوحة)</option>
@@ -10883,9 +10947,9 @@
 
       const existingInCart = state.cart.find(c => c.id === item.id);
       const alreadyInCart = existingInCart ? existingInCart.qty : 0;
-      if (alreadyInCart + qty > item.stock) {
-        showToast(`الرصيد المتاح بالمخزون (${item.stock}) غير كافٍ للكمية المطلوبة`, 'error');
-        return;
+      const currentStock = sanitize(item.stock);
+      if (alreadyInCart + qty > currentStock) {
+        showToast(`تنبيه: الكمية المطلوبة تتجاوز رصيد المخزن الحالي (${currentStock})، وتمت الإضافة بنجاح للمتابعة والإشهاد`, 'warning');
       }
 
       if (existingInCart) {
@@ -11056,22 +11120,27 @@
         }
       }
 
-      // التحقق من كفاية المخزون
+      // فحص المخزون الإرشادي دون حظر أو منع الإشهاد نهائياً (Zero-Stock Unblocking)
+      let hasZeroOrDeficitStock = false;
       for (const cartItem of state.cart) {
         const stockItem = state.data.items.find(i => i.id === cartItem.id);
         const reqQty = Math.max(1, sanitize(cartItem.qty));
         if (!stockItem || sanitize(stockItem.stock) < reqQty) {
-          showToast(`خطأ: الرصيد غير كافٍ للمادة "${cartItem.name}"`, 'error');
-          return;
+          hasZeroOrDeficitStock = true;
         }
+      }
+      if (hasZeroOrDeficitStock) {
+        showToast('تنبيه: تم اعتماد الإشهاد مع وجود مواد برصيد غير كافٍ أو صفري بالمخزن', 'warning');
       }
 
       _isSubmittingIssuance = true;
       try {
-        // تطبيق الخصم مرة واحدة فقط بشكل ذري
+        // تطبيق الخصم الذري دون رمي خطأ عند الرصيد الصفري
         state.cart.forEach(cartItem => {
           const stockItem = state.data.items.find(i => i.id === cartItem.id);
-          if (stockItem) stockItem.stock = Math.max(0, sanitize(stockItem.stock) - Math.max(1, sanitize(cartItem.qty)));
+          if (stockItem) {
+            stockItem.stock = Math.max(0, sanitize(stockItem.stock) - Math.max(1, sanitize(cartItem.qty)));
+          }
         });
 
         let voucherId = document.getElementById('voucher-num-input').value || generateNextVoucherNumber();
@@ -11107,12 +11176,13 @@
           }
         });
 
-        // تحديث حالة الطلبية إذا كانت العملية ناتجة عن تحويل طلبية مفتوحة
+        // تحديث حالة الطلبية ونقلها فوراً إلى الأرشيف المعتمد
         if (state.pendingConvertedOrderId && state.data.orders) {
           const ord = state.data.orders.find(o => o.id === state.pendingConvertedOrderId);
           if (ord) {
             ord.status = 'converted';
             ord.convertedVoucherId = voucherId;
+            ord.convertedDate = new Date().toLocaleString('ar-MA');
           }
           state.pendingConvertedOrderId = null;
         }
@@ -11130,6 +11200,10 @@
         }
         persistAll();
         showToast('تم حفظ إشهاد التسليم وخصم المواد من المخزون بنجاح', 'success');
+
+        if (typeof renderOrdersList === 'function') renderOrdersList();
+        if (typeof renderHistoryTable === 'function') renderHistoryTable();
+        if (typeof updateDashboardDualCardsMetrics === 'function') updateDashboardDualCardsMetrics();
 
         if (andPrint) {
           printCertificate(voucherId);
@@ -11841,33 +11915,28 @@ ${itemsText}
         return;
       }
 
-      // معادلة المخزون الرياضية الصارمة:
+      // معادلة المخزون الرياضية مع عدم حظر الرصيد الصفري
       (origVoucher.items || []).forEach(origIt => {
         const stockItem = state.data.items.find(i => i.id === origIt.id);
         if (stockItem) stockItem.stock += (origIt.qty || 1);
       });
 
-      let hasError = false;
+      let hasShortage = false;
       for (const newIt of state.editingVoucherState.items) {
         const stockItem = state.data.items.find(i => i.id === newIt.id);
         if (!stockItem || stockItem.stock < newIt.qty) {
-          showToast(`خطأ: الرصيد غير كافٍ للمادة "${newIt.name}"`, 'error');
-          hasError = true;
-          break;
+          hasShortage = true;
         }
       }
-
-      if (hasError) {
-        (origVoucher.items || []).forEach(origIt => {
-          const stockItem = state.data.items.find(i => i.id === origIt.id);
-          if (stockItem) stockItem.stock -= (origIt.qty || 1);
-        });
-        return;
+      if (hasShortage) {
+        showToast('تنبيه: تم حفظ تعديل الإشهاد مع وجود مواد برصيد غير كافٍ أو صفري بالمخزن', 'warning');
       }
 
       state.editingVoucherState.items.forEach(newIt => {
         const stockItem = state.data.items.find(i => i.id === newIt.id);
-        if (stockItem) stockItem.stock -= newIt.qty;
+        if (stockItem) {
+          stockItem.stock = Math.max(0, sanitize(stockItem.stock) - Math.max(1, sanitize(newIt.qty)));
+        }
       });
 
       origVoucher.isoDate = document.getElementById('edit-voucher-date').value;
@@ -12816,24 +12885,58 @@ ${itemsText}
       }
     }
 
+    function setOrdersViewMode(mode) {
+      state.ordersViewMode = mode || 'active';
+      const btnActive = document.getElementById('tab-orders-active');
+      const btnArchive = document.getElementById('tab-orders-archive');
+      if (btnActive && btnArchive) {
+        if (state.ordersViewMode === 'active') {
+          btnActive.className = 'btn btn-sm btn-primary';
+          btnArchive.className = 'btn btn-sm btn-outline';
+        } else {
+          btnActive.className = 'btn btn-sm btn-outline';
+          btnArchive.className = 'btn btn-sm btn-primary';
+        }
+      }
+      renderOrdersList();
+    }
+
     function renderOrdersList() {
       const tbody = document.getElementById('orders-table-body');
       if (!tbody) return;
 
+      state.ordersViewMode = state.ordersViewMode || 'active';
+      const isArchiveMode = state.ordersViewMode === 'archive';
+
       const search = (document.getElementById('orders-search-input')?.value || '').trim().toLowerCase();
       const dest = document.getElementById('orders-dest-filter')?.value || '';
-      const status = document.getElementById('orders-status-filter')?.value || '';
+      const statusFilter = document.getElementById('orders-status-filter')?.value || '';
 
       const orders = state.data.orders || [];
+      const pendingOrders = orders.filter(o => !o.status || o.status === 'pending');
+      const convertedOrders = orders.filter(o => o.status === 'converted');
+
+      // Update badge counts on tabs
+      const badgeActive = document.getElementById('badge-orders-active-count');
+      if (badgeActive) badgeActive.textContent = pendingOrders.length;
+      const badgeArchive = document.getElementById('badge-orders-archive-count');
+      if (badgeArchive) badgeArchive.textContent = convertedOrders.length;
+
       const filtered = orders.filter(o => {
+        if (isArchiveMode) {
+          if (o.status !== 'converted') return false;
+        } else {
+          if (o.status === 'converted') return false;
+        }
         if (dest && o.destination !== dest) return false;
-        if (status && o.status !== status) return false;
+        if (statusFilter && o.status !== statusFilter) return false;
         if (search) {
           const matchId = (o.id || '').toLowerCase().includes(search);
           const matchDest = (o.destination || '').toLowerCase().includes(search);
           const matchReq = (o.requester || '').toLowerCase().includes(search);
           const matchItems = (o.items || []).some(i => (i.name || '').toLowerCase().includes(search));
-          if (!matchId && !matchDest && !matchReq && !matchItems) return false;
+          const matchVoucher = (o.convertedVoucherId || '').toLowerCase().includes(search);
+          if (!matchId && !matchDest && !matchReq && !matchItems && !matchVoucher) return false;
         }
         return true;
       });
@@ -12842,7 +12945,7 @@ ${itemsText}
         tbody.innerHTML = `
           <tr>
             <td colspan="8" style="text-align: center; padding: 28px; color: var(--text-muted);">
-              لا توجد طلبيات مطابقة للبحث أو الفلترة المحددة
+              ${isArchiveMode ? 'أرشيف الطلبيات المنجزة فارغ حالياً' : 'لا توجد طلبيات نشطة معلقة حالياً'}
             </td>
           </tr>
         `;
@@ -12853,18 +12956,41 @@ ${itemsText}
         const totalItemsCount = (o.items || []).reduce((s, it) => s + (it.qty || 1), 0);
         const itemsSummary = (o.items || []).map(it => `${it.name} (${it.qty})`).join('، ');
 
-        const statusBadge = o.status === 'pending'
-          ? `<span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #d97706; border: 1px solid #f59e0b; font-weight: 700;">قيد الانتظار (مفتوحة)</span>`
-          : `<span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #059669; border: 1px solid #10b981; font-weight: 700;">تم التحويل لإشهاد</span>`;
+        const statusBadge = o.status === 'converted'
+          ? `<span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #059669; border: 1px solid #10b981; font-weight: 700;">محول للإشهاد (#${o.convertedVoucherId || ''})</span>`
+          : `<span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #d97706; border: 1px solid #f59e0b; font-weight: 700;">قيد الانتظار (مفتوحة)</span>`;
 
-        const convertBtn = o.status === 'pending' ? `
-          <button type="button" class="btn btn-primary btn-sm" onclick="convertOrderToIssuance('${o.id}')" title="تحويل هذه الطلبية إلى إشهاد تسليم وتعبئة السلة تلقائياً" style="padding: 4px 8px; font-size: 0.75rem;">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-            <span>تحويل لإشهاد</span>
-          </button>
-        ` : `
-          <span style="font-size: 0.74rem; color: var(--text-muted); font-weight: 600;">تم اعتمادها</span>
-        `;
+        let actionHtml = '';
+        if (o.status === 'converted') {
+          actionHtml = `
+            <div style="display: inline-flex; align-items: center; gap: 4px;">
+              ${o.convertedVoucherId ? `
+                <button type="button" class="btn btn-outline btn-sm" onclick="previewVoucher('${o.convertedVoucherId}')" title="معاينة إشهاد التسليم" style="padding: 4px 8px; font-size: 0.72rem;">
+                  <i class="fa-regular fa-file-lines"></i>
+                  <span>معاينة</span>
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="printCertificate('${o.convertedVoucherId}')" title="طباعة الإشهاد" style="padding: 4px 8px; font-size: 0.72rem;">
+                  <i class="fa-solid fa-print"></i>
+                </button>
+              ` : '<span style="font-size:0.75rem;color:var(--text-muted);">معتمد</span>'}
+              <button type="button" class="btn-icon danger" style="width: 26px; height: 26px;" onclick="deleteOrder('${o.id}')" title="حذف من الأرشيف">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+            </div>
+          `;
+        } else {
+          actionHtml = `
+            <div style="display: inline-flex; align-items: center; gap: 6px;">
+              <button type="button" class="btn btn-primary btn-sm" onclick="convertOrderToIssuance('${o.id}')" title="تحويل هذه الطلبية إلى إشهاد تسليم وتعبئة السلة تلقائياً" style="padding: 4px 8px; font-size: 0.75rem;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+                <span>تحويل للإشهاد</span>
+              </button>
+              <button type="button" class="btn-icon danger" style="width: 28px; height: 28px;" onclick="deleteOrder('${o.id}')" title="حذف الطلبية">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+            </div>
+          `;
+        }
 
         return `
           <tr>
@@ -12880,14 +13006,7 @@ ${itemsText}
             </td>
             <td style="text-align: center;"><strong class="tabular-nums font-bold" style="font-size: 0.85rem;">${totalItemsCount}</strong></td>
             <td style="text-align: center;">${statusBadge}</td>
-            <td style="text-align: center;">
-              <div style="display: inline-flex; align-items: center; gap: 6px;">
-                ${convertBtn}
-                <button type="button" class="btn-icon danger" style="width: 28px; height: 28px;" onclick="deleteOrder('${o.id}')" title="حذف الطلبية">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                </button>
-              </div>
-            </td>
+            <td style="text-align: center;">${actionHtml}</td>
           </tr>
         `;
       }).join('');
@@ -12942,18 +13061,17 @@ ${itemsText}
       }
 
       if (reasonSelect) reasonSelect.value = 'بناءً على طلب';
-      if (orderRefInput) orderRefInput.value = `الطلبية رقم ${order.id}${order.notes ? ' — ' + order.notes : ''}`;
+      if (orderRefInput) orderRefInput.value = order.id;
 
       state.cart = [];
       order.items.forEach(it => {
-        const stockItem = state.data.items.find(i => i.id === it.id);
-        const currentStock = stockItem ? stockItem.stock : 999;
+        const reqQty = Math.max(1, parseInt(it.qty, 10) || 1);
         state.cart.push({
           id: it.id,
           name: it.name,
           category: it.category,
-          qty: Math.min(it.qty, currentStock > 0 ? it.qty : 1),
-          notes: `محول من الطلبية ${order.id}`
+          qty: reqQty,
+          notes: (it.notes && it.notes.trim()) ? it.notes.trim() : ''
         });
       });
 
@@ -17550,8 +17668,7 @@ ${itemsText}
       const maxStock = sanitize(item.stock);
       const isDraft = maxStock <= 0;
       if (!isDraft && qty > maxStock) {
-        showToast(`الكمية المطلوبة (${qty}) تتجاوز الرصيد المتوفر بالمخزن (${maxStock}) للمادة "${item.name}"`, 'error');
-        return;
+        showToast(`تنبيه: الكمية المطلوبة (${qty}) تتجاوز رصيد المخزن المتوفر (${maxStock}) للمادة "${item.name}"`, 'warning');
       }
       const existing = bulkDistState.pool.find(p => p.itemId === itemId);
       if (existing) {
@@ -17580,8 +17697,7 @@ ${itemsText}
       let qty = parseInt(rawQty, 10);
       if (isNaN(qty) || qty < 1) qty = 1;
       if (maxStock > 0 && qty > maxStock) {
-        qty = maxStock;
-        showToast(`تم ضبط الكمية على الحد الأقصى المتوفر بالمخزن (${maxStock})`, 'warning');
+        showToast(`تنبيه: الكمية المحددة (${qty}) تتجاوز الرصيد المتوفر بالمخزن (${maxStock})`, 'warning');
       }
       entry.qty = qty;
       renderBulkPoolBasket();
@@ -18158,8 +18274,7 @@ ${itemsText}
         }
         const maxStock = sanitize(item.stock);
         if (p.qty > maxStock) {
-          showToast(`الرصيد المتاح بالمخزن (${maxStock}) غير كافٍ للمادة "${item.name}"`, 'error');
-          return;
+          showToast(`تنبيه: الكمية المسحوبة (${p.qty}) تتجاوز رصيد المخزن (${maxStock}) للمادة "${item.name}"، وسيتم الخصم حتى استنفاذ الرصيد`, 'warning');
         }
         const alloc = getBulkItemAllocatedSum(p.itemId);
         if (alloc !== p.qty) {
