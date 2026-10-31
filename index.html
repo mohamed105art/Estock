@@ -4813,19 +4813,18 @@
     }
 
     #dashboard-view .trend-badge {
-      position: absolute;
-      top: 14px;
-      left: 14px;
-      right: auto;
-      font-size: 0.76rem;
+      position: static !important;
+      align-self: flex-start !important;
+      margin: 0 0 6px 0 !important;
+      font-size: 0.74rem;
       font-weight: 800;
-      padding: 3px 10px;
+      padding: 2px 8px;
       border-radius: 9999px;
       display: inline-flex;
       align-items: center;
-      gap: 3px;
-      line-height: 1;
-      z-index: 2;
+      gap: 4px;
+      line-height: 1.2;
+      z-index: 1;
       background: rgba(0, 0, 0, 0.28) !important;
       color: #ffffff !important;
       border: 1px solid rgba(255, 255, 255, 0.22);
@@ -4844,19 +4843,22 @@
       background: transparent;
       border: none;
       text-align: right;
+      z-index: 1;
+      position: relative;
     }
     #dashboard-view .card-title {
-      font-size: 0.94rem;
+      font-size: 0.92rem;
       color: rgba(255, 255, 255, 0.95) !important;
       font-weight: 800;
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
       text-align: right;
+      display: block;
     }
     #dashboard-view .card-value {
-      font-size: 2.2rem !important;
+      font-size: 2.1rem !important;
       font-weight: 900;
       color: #ffffff !important;
-      margin: 2px 0 8px 0;
+      margin: 2px 0 4px 0;
       position: relative;
       z-index: 1;
       line-height: 1.1;
@@ -4867,30 +4869,29 @@
       color: #ffffff !important;
     }
 
-    /* Watermark rotated icon positioned on the left - slightly smaller, scales on hover */
+    /* Watermark rotated icon positioned on the left - subtle 44px, no overlap with text */
     #dashboard-view .card-icon {
       position: absolute !important;
-      top: 50% !important;
-      left: 14px !important;
+      top: 14px !important;
+      left: 12px !important;
       right: auto !important;
-      transform: translateY(-50%) rotate(-10deg) !important;
-      font-size: 64px !important; /* أصغر حجماً قليلاً */
-      width: 68px !important;
-      height: 68px !important;
-      opacity: 0.16 !important;
+      transform: none !important;
+      width: 44px !important;
+      height: 44px !important;
+      opacity: 0.14 !important;
       color: #ffffff !important;
       pointer-events: none;
       transition: transform 0.3s ease, opacity 0.3s ease;
       line-height: 1;
-      z-index: 1;
+      z-index: 0;
     }
     [data-theme="dark"] #dashboard-view .card-icon {
       color: #ffffff !important;
-      opacity: 0.16 !important;
+      opacity: 0.14 !important;
     }
     #dashboard-view .metric-card:hover .card-icon {
-      transform: translateY(-50%) rotate(-6deg) scale(1.08) !important;
-      opacity: 0.25 !important;
+      transform: scale(1.08) !important;
+      opacity: 0.22 !important;
     }
 
     /* Dark bottom footer bar */
@@ -4902,14 +4903,14 @@
       font-size: 0.78rem;
       font-weight: 700;
       color: rgba(255, 255, 255, 0.92) !important;
-      padding: 8px 18px;
+      padding: 7px 16px;
       background: rgba(0, 0, 0, 0.24) !important;
-      margin: 8px -18px 0 -18px;
+      margin: auto -18px 0 -18px;
       border-top: none !important;
       direction: rtl;
       border-radius: 0 0 16px 16px;
       position: relative;
-      z-index: 2;
+      z-index: 1;
     }
     #dashboard-view .card-footer i,
     #dashboard-view .card-footer svg,
@@ -4977,6 +4978,132 @@
       box-sizing: border-box;
       transition: all 0.2s ease;
       font-size: 0.8rem;
+    }
+
+    /* Universal safety rule: prevent SVGs with card-icon or similar from ever growing uncontrolled */
+    svg.card-icon, .card-icon svg {
+      max-width: 48px !important;
+      max-height: 48px !important;
+      object-fit: contain;
+    }
+
+    /* AI Insights Glass KPI Cards (Replaced giant unstyled SVGs with crisp elegant glass cards) */
+    .ai-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .ai-glass-kpi-card {
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 125px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-card);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-sizing: border-box;
+    }
+    .ai-glass-kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+    .ai-glass-kpi-card.ai-card-teal {
+      background: linear-gradient(135deg, rgba(13, 112, 130, 0.12) 0%, rgba(16, 187, 195, 0.06) 100%);
+      border-color: rgba(16, 187, 195, 0.35);
+    }
+    .ai-glass-kpi-card.ai-card-rose {
+      background: linear-gradient(135deg, rgba(166, 14, 53, 0.12) 0%, rgba(244, 63, 94, 0.06) 100%);
+      border-color: rgba(244, 63, 94, 0.35);
+    }
+    .ai-glass-kpi-card.ai-card-amber {
+      background: linear-gradient(135deg, rgba(158, 91, 34, 0.12) 0%, rgba(254, 162, 79, 0.06) 100%);
+      border-color: rgba(254, 162, 79, 0.35);
+    }
+    .ai-glass-kpi-card.ai-card-purple {
+      background: linear-gradient(135deg, rgba(61, 15, 89, 0.12) 0%, rgba(147, 51, 234, 0.06) 100%);
+      border-color: rgba(147, 51, 234, 0.35);
+    }
+    .ai-glass-kpi-card .ai-kpi-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .ai-glass-kpi-card .ai-kpi-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ai-glass-kpi-card .ai-kpi-value {
+      font-size: 1.85rem;
+      font-weight: 900;
+      color: var(--text-main);
+      margin: 4px 0 6px 0;
+      line-height: 1.1;
+    }
+    .ai-glass-kpi-card .ai-kpi-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    /* Vertical Bar Chart styling for Item Consumption Analytics */
+    .vertical-chart-bar-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      min-width: 58px;
+      flex-shrink: 0;
+      height: 100%;
+      position: relative;
+    }
+    .vertical-chart-bar-item .bar-qty {
+      font-size: 0.84rem;
+      font-weight: 800;
+      color: #38bdf8;
+      margin-bottom: 6px;
+      font-family: monospace;
+    }
+    .vertical-chart-bar-item .bar-pillar {
+      width: 34px;
+      background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+      border-radius: 6px 6px 0 0;
+      transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);
+      cursor: pointer;
+    }
+    .vertical-chart-bar-item .bar-pillar:hover {
+      filter: brightness(1.15);
+    }
+    .vertical-chart-bar-item.is-official .bar-pillar {
+      background: linear-gradient(180deg, #818cf8 0%, #4f46e5 100%);
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
+    }
+    .vertical-chart-bar-item.is-aggregated-staff .bar-pillar {
+      background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
+    }
+    .vertical-chart-bar-item .bar-label {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-top: 8px;
+      text-align: center;
+      max-width: 90px;
+      word-break: break-word;
+      line-height: 1.25;
     }
     [data-theme="dark"] #dashboard-view .donut-bottom-detail-bar {
       background: rgba(5, 26, 45, 0.6);
@@ -6043,52 +6170,52 @@
             <!-- قسم المؤشرات الستة (The 6 Gradient Metric Cards - Model IMG_0386) -->
             <div class="metrics-grid">
               <div class="metric-card card-1" onclick="switchTab('history-view')" title="النقر للانتقال إلى سجل العمليات والأرشيف">
-                <div class="trend-badge" id="kpi-trend-vouchers"><span>—</span></div>
+                <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>
                 <div class="card-header"><span class="card-title">التسليمات المكتملة</span></div>
                 <div class="card-value tabular-nums" id="kpi-total-vouchers">0</div>
-                <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>
+                <div class="trend-badge" id="kpi-trend-vouchers"><span>—</span></div>
                 <div class="card-footer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg><span>إشهاد تسليم معتمد</span></div>
                 <strong id="kpi-total-distributed" style="display: none;">0</strong>
               </div>
 
               <div class="metric-card card-2" onclick="switchTab('orders-view')" title="النقر للانتقال إلى صفحة الطلبات">
-                <div class="trend-badge" id="kpi-trend-orders"><span>—</span></div>
+                <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"></path><path d="M5 2h14"></path><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"></path><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"></path></svg>
                 <div class="card-header"><span class="card-title">الطلبات قيد المعالجة</span></div>
                 <div class="card-value tabular-nums" id="kpi-pending-orders-dash">0</div>
-                <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"></path><path d="M5 2h14"></path><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"></path><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"></path></svg>
+                <div class="trend-badge" id="kpi-trend-orders"><span>—</span></div>
                 <div class="card-footer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span>طلبية مفتوحة</span></div>
               </div>
 
               <div class="metric-card card-3" onclick="rotateConsumptionMetric(event)" title="انقر للتبديل بين: متوسط سنوي | متوسط شهري | مقارنة سنوية">
-                <div class="trend-badge" id="kpi-trend-consumption"><span>—</span></div>
+                <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
                 <div class="card-header"><span class="card-title" id="kpi-consumption-title">معدل الاستهلاك</span></div>
                 <div class="card-value tabular-nums" id="kpi-consumption-rate">0</div>
-                <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                <div class="trend-badge" id="kpi-trend-consumption"><span>—</span></div>
                 <div class="card-footer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg><span id="kpi-consumption-sub">قطعة / سنة</span></div>
                 <span id="consumption-period-label" style="display: none;">متوسط سنوي</span>
               </div>
 
               <div class="metric-card card-4" onclick="openInventoryFilteredByStatus('critical')" title="انقر لعرض لائحة المواد الحرجة في الجرد">
-                <div class="trend-badge" id="kpi-trend-lowstock"><span>—</span></div>
+                <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                 <div class="card-header"><span class="card-title">المواد الحرجة أو النافدة</span></div>
                 <div class="card-value tabular-nums" id="kpi-low-stock">0</div>
-                <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                <div class="trend-badge" id="kpi-trend-lowstock"><span>—</span></div>
                 <div class="card-footer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg><span id="kpi-low-stock-sub">بلغت الحد الأدنى</span></div>
               </div>
 
               <div class="metric-card card-5" onclick="openInventoryFilteredByStatus('good')" title="انقر لعرض لائحة المواد المتوفرة بوفرة في الجرد">
-                <div class="trend-badge" id="kpi-trend-stock"><span>—</span></div>
+                <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
                 <div class="card-header"><span class="card-title">المواد المتوفرة فعلياً</span></div>
                 <div class="card-value tabular-nums" id="kpi-total-stock">0</div>
-                <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                <div class="trend-badge" id="kpi-trend-stock"><span>—</span></div>
                 <div class="card-footer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg><span id="kpi-total-stock-sub">مادة بوفرة</span></div>
               </div>
 
               <div class="metric-card card-6" onclick="rotateEntitiesMetric(event)" title="انقر للتبديل بين: عدد الجهات المستفيدة | عدد الأصناف المعتمدة">
-                <div class="trend-badge" id="kpi-trend-destinations"><span>—</span></div>
+                <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="18"></line><line x1="15" y1="22" x2="15" y2="18"></line><line x1="9" y1="18" x2="15" y2="18"></line><line x1="8" y1="6" x2="10" y2="6"></line><line x1="14" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="10" y2="10"></line><line x1="14" y1="10" x2="16" y2="10"></line><line x1="8" y1="14" x2="10" y2="14"></line><line x1="14" y1="14" x2="16" y2="14"></line></svg>
                 <div class="card-header"><span class="card-title" id="kpi-entities-title">عدد الجهات المستفيدة</span></div>
                 <div class="card-value tabular-nums" id="kpi-total-destinations">0</div>
-                <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="18"></line><line x1="15" y1="22" x2="15" y2="18"></line><line x1="9" y1="18" x2="15" y2="18"></line><line x1="8" y1="6" x2="10" y2="6"></line><line x1="14" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="10" y2="10"></line><line x1="14" y1="10" x2="16" y2="10"></line><line x1="8" y1="14" x2="10" y2="14"></line><line x1="14" y1="14" x2="16" y2="14"></line></svg>
+                <div class="trend-badge" id="kpi-trend-destinations"><span>—</span></div>
                 <div class="card-footer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="4" rx="1"></rect><rect x="3" y="17" width="6" height="4" rx="1"></rect><rect x="15" y="17" width="6" height="4" rx="1"></rect><path d="M12 7v5"></path><path d="M6 17v-3a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3"></path></svg><span id="kpi-entities-sub">الأصناف: 0 | المواد: 0</span></div>
                 <strong id="kpi-total-categories" class="tabular-nums" style="display: none;">0</strong>
               </div>
@@ -6165,6 +6292,73 @@
                 </div>
                 <div class="chart-content" id="dashboard-categories-chart-container">
                   <!-- يملأ ديناميكياً بالأشرطة أو بالدونات -->
+                </div>
+              </div>
+            </div>
+
+            <!-- حاوية تحليل استهلاك المواد المتقدمة (Strictly Vertical Bar Chart with Settat Aggregation Rule) -->
+            <div class="glass-box" id="box-item-consumption-analytics" style="margin-bottom: 24px; width: 100%; box-sizing: border-box;">
+              <div class="box-header" style="flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+                <div class="box-title-wrapper" style="display: flex; align-items: center; gap: 8px;">
+                  <span style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="18" y1="20" x2="18" y2="10"></line>
+                      <line x1="12" y1="20" x2="12" y2="4"></line>
+                      <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                  </span>
+                  <div>
+                    <h2 class="box-title" style="margin: 0; font-size: 1.05rem;">تحليل استهلاك المواد</h2>
+                    <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">توزيع سحب المادة المختارة وفق مخطط أشرطة عمودية صارم</div>
+                  </div>
+                </div>
+
+                <!-- لوحة التحكم التفاعلية بالحاوية -->
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                  <!-- محدد المادة -->
+                  <div style="min-width: 220px; max-width: 280px; flex: 1;">
+                    <select id="item-consumption-select" class="form-control" style="height: 34px; font-size: 0.82rem; padding: 4px 8px;" onchange="renderItemConsumptionChart()">
+                      <!-- يملأ ديناميكياً من كافة المواد -->
+                    </select>
+                  </div>
+
+                  <!-- مفتاح التبديل: حسب الجهات / حسب المستفيدين -->
+                  <div class="control-btns" style="display: inline-flex; background: var(--bg-muted); padding: 3px; border-radius: 8px; border: 1px solid var(--border-subtle); gap: 2px;">
+                    <button type="button" class="btn btn-sm btn-primary" id="btn-item-mode-entities" onclick="setItemAnalyticsMode('entities')" style="padding: 4px 10px; font-size: 0.78rem;">
+                      حسب الجهات
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline" id="btn-item-mode-beneficiaries" onclick="setItemAnalyticsMode('beneficiaries')" style="padding: 4px 10px; font-size: 0.78rem;">
+                      حسب المستفيدين
+                    </button>
+                  </div>
+
+                  <!-- زر وخيارات تصفية الجهات -->
+                  <div style="position: relative; display: inline-block;">
+                    <button type="button" class="btn btn-outline btn-sm" id="btn-item-entities-filter" onclick="toggleItemEntitiesFilterDropdown(event)" style="height: 34px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 6px;">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                      <span id="item-filter-entities-summary">تصفية الجهات (الكل)</span>
+                      <span style="font-size: 0.7rem;">▼</span>
+                    </button>
+
+                    <!-- القائمة المنسدلة للجهات -->
+                    <div id="item-entities-filter-dropdown" style="display: none; position: absolute; top: calc(100% + 4px); right: 0; min-width: 260px; max-height: 300px; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); z-index: 100; padding: 10px; overflow-y: auto;">
+                      <div style="display: flex; gap: 6px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle);">
+                        <button type="button" class="btn btn-outline btn-sm" style="flex: 1; padding: 3px 6px; font-size: 0.75rem;" onclick="selectAllItemEntities(true)">تحديد الكل</button>
+                        <button type="button" class="btn btn-outline btn-sm" style="flex: 1; padding: 3px 6px; font-size: 0.75rem;" onclick="selectAllItemEntities(false)">إلغاء</button>
+                        <button type="button" class="btn btn-outline btn-sm" style="flex: 1; padding: 3px 6px; font-size: 0.75rem;" onclick="resetItemEntitiesFilter()">إعادة ضبط</button>
+                      </div>
+                      <div id="item-entities-checkboxes-list" style="display: flex; flex-direction: column; gap: 6px;">
+                        <!-- تملأ ديناميكياً -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- مساحة المخطط البياني بالأعمدة العمودية الحصرية -->
+              <div class="vertical-chart-scroll-wrap" id="item-consumption-chart-wrapper" style="overflow-x: auto; padding: 18px 10px 8px 10px; min-height: 290px; width: 100%; box-sizing: border-box;">
+                <div id="item-consumption-chart-container" style="display: flex; align-items: flex-end; justify-content: flex-start; gap: 20px; min-height: 250px; min-width: 100%; padding-bottom: 10px;">
+                  <!-- تملأ بالأعمدة العمودية من محرك جافاسكريبت -->
                 </div>
               </div>
             </div>
@@ -6976,42 +7170,58 @@
             </div>
           </div>
 
-          <!-- بطاقات المؤشرات الذكية الأربعة (AI KPI Cards) -->
-          <div class="metrics-grid" style="margin-bottom: 16px;">
+          <!-- بطاقات المؤشرات الذكية الأربعة (AI Glass KPI Cards) -->
+          <div class="ai-kpi-grid">
             <!-- بطاقة 1: سرعة الاستهلاك الدوري -->
-            <div class="metric-card card-3">
-              <div class="trend-badge" id="ai-kpi-velocity-trend"><span>—</span></div>
-              <div class="card-header"><span class="card-title">معدل الاستهلاك الدوري</span></div>
-              <div class="card-value tabular-nums" id="ai-kpi-velocity-val">0</div>
-              <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
-              <div class="card-footer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg><span id="ai-kpi-velocity-sub">قطعة / شهر في المتوسط</span></div>
+            <div class="ai-glass-kpi-card ai-card-teal">
+              <div class="ai-kpi-header">
+                <div class="ai-kpi-title">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                  <span>معدل الاستهلاك الدوري</span>
+                </div>
+                <div class="badge badge-subtle" id="ai-kpi-velocity-trend" style="font-size: 0.72rem;">—</div>
+              </div>
+              <div class="ai-kpi-value tabular-nums" id="ai-kpi-velocity-val">0</div>
+              <div class="ai-kpi-sub" id="ai-kpi-velocity-sub">قطعة / شهر في المتوسط</div>
             </div>
 
             <!-- بطاقة 2: مؤشر خطر النفاد -->
-            <div class="metric-card card-4">
-              <div class="trend-badge" id="ai-kpi-risk-badge" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border-color: rgba(239, 68, 68, 0.4);"><span>حرج</span></div>
-              <div class="card-header"><span class="card-title">مواد معرضة للنفاد &lt; 30 يوم</span></div>
-              <div class="card-value tabular-nums" id="ai-kpi-risk-val">0</div>
-              <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-              <div class="card-footer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path></svg><span id="ai-kpi-risk-sub">تتطلب تزويداً عاجلاً</span></div>
+            <div class="ai-glass-kpi-card ai-card-rose">
+              <div class="ai-kpi-header">
+                <div class="ai-kpi-title">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                  <span>مواد معرضة للنفاد (&lt; 30 يوم)</span>
+                </div>
+                <div class="badge badge-danger" id="ai-kpi-risk-badge" style="font-size: 0.72rem;">حرج</div>
+              </div>
+              <div class="ai-kpi-value tabular-nums" id="ai-kpi-risk-val" style="color: #ef4444;">0</div>
+              <div class="ai-kpi-sub" id="ai-kpi-risk-sub">تتطلب تزويداً عاجلاً</div>
             </div>
 
             <!-- بطاقة 3: الوجهة الأكثر استهلاكاً -->
-            <div class="metric-card card-1">
-              <div class="trend-badge" id="ai-kpi-top-dest-pct"><span>—</span></div>
-              <div class="card-header"><span class="card-title">الجهة الأكثر استهلاكاً</span></div>
-              <div class="card-value" id="ai-kpi-top-dest-name" style="font-size: 1.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 4px 0;">—</div>
-              <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="18"></line><line x1="15" y1="22" x2="15" y2="18"></line></svg>
-              <div class="card-footer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg><span id="ai-kpi-top-dest-sub">0 قطعة مسحوبة</span></div>
+            <div class="ai-glass-kpi-card ai-card-amber">
+              <div class="ai-kpi-header">
+                <div class="ai-kpi-title">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="18"></line><line x1="15" y1="22" x2="15" y2="18"></line></svg>
+                  <span>الجهة الأكثر استهلاكاً</span>
+                </div>
+                <div class="badge badge-warning" id="ai-kpi-top-dest-pct" style="font-size: 0.72rem;">—</div>
+              </div>
+              <div class="ai-kpi-value" id="ai-kpi-top-dest-name" style="font-size: 1.12rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">—</div>
+              <div class="ai-kpi-sub" id="ai-kpi-top-dest-sub">0 قطعة مسحوبة</div>
             </div>
 
             <!-- بطاقة 4: المادة الأكثر طلباً -->
-            <div class="metric-card card-5">
-              <div class="trend-badge" id="ai-kpi-top-item-badge"><span>الأكثر طلباً</span></div>
-              <div class="card-header"><span class="card-title">المادة الأكثر طلباً وتوزيعاً</span></div>
-              <div class="card-value" id="ai-kpi-top-item-name" style="font-size: 1.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 4px 0;">—</div>
-              <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
-              <div class="card-footer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg><span id="ai-kpi-top-item-sub">0 قطعة موزعة</span></div>
+            <div class="ai-glass-kpi-card ai-card-purple">
+              <div class="ai-kpi-header">
+                <div class="ai-kpi-title">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                  <span>المادة الأكثر طلباً</span>
+                </div>
+                <div class="badge badge-subtle" id="ai-kpi-top-item-badge" style="font-size: 0.72rem;">الأكثر طلباً</div>
+              </div>
+              <div class="ai-kpi-value" id="ai-kpi-top-item-name" style="font-size: 1.12rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">—</div>
+              <div class="ai-kpi-sub" id="ai-kpi-top-item-sub">0 قطعة موزعة</div>
             </div>
           </div>
 
@@ -10580,6 +10790,7 @@
       renderTopItemsChart(filteredTxs);
       renderRecipientsChart(filteredTxs);
       renderCategoriesChart(filteredTxs);
+      if (typeof renderItemConsumptionChart === 'function') renderItemConsumptionChart();
       renderRecentTransactions(filteredTxs);
       renderRecentOrders();
     }
@@ -11883,7 +12094,8 @@ ${itemsText}
         if (count === 3) return '#3b82f6'; // أزرق (3)
         if (count === 4) return '#10b981'; // أخضر (4)
         if (count === 5) return '#8b5cf6'; // بنفسجي (5)
-        return '#1e40af'; // أزرق غامق / كحلي (> 5)
+        if (count === 6) return '#4338ca'; // نيلي (6)
+        return '#1e3a8a'; // أزرق غامق كحلي (7+)
       }
       let html = '';
 
@@ -19217,6 +19429,303 @@ ${itemsText}
       if (e) e.stopPropagation();
       _entitiesDisplayMode = _entitiesDisplayMode === 'destinations' ? 'categories' : 'destinations';
       updateDashboardDualCardsMetrics();
+    }
+
+
+    // =========================================================================
+    // ADVANCED ITEM CONSUMPTION ANALYTICS (حاوية تحليل استهلاك المواد - أعمدة عمودية)
+    // =========================================================================
+    let _itemAnalyticsMode = 'entities'; // 'entities' | 'beneficiaries'
+    let _itemAnalyticsSelectedEntities = null; // Set of destination names, null = all
+
+    function setItemAnalyticsMode(mode) {
+      _itemAnalyticsMode = mode;
+      const btnEnt = document.getElementById('btn-item-mode-entities');
+      const btnBen = document.getElementById('btn-item-mode-beneficiaries');
+      if (btnEnt && btnBen) {
+        if (mode === 'entities') {
+          btnEnt.className = 'btn btn-sm btn-primary';
+          btnBen.className = 'btn btn-sm btn-outline';
+        } else {
+          btnBen.className = 'btn btn-sm btn-primary';
+          btnEnt.className = 'btn btn-sm btn-outline';
+        }
+      }
+      renderItemConsumptionChart();
+    }
+
+    function toggleItemEntitiesFilterDropdown(e) {
+      if (e) e.stopPropagation();
+      const dd = document.getElementById('item-entities-filter-dropdown');
+      if (!dd) return;
+      const isOpen = dd.style.display === 'block';
+      dd.style.display = isOpen ? 'none' : 'block';
+      if (!isOpen) {
+        populateItemEntitiesFilterCheckboxes();
+      }
+    }
+
+    function populateItemEntitiesFilterCheckboxes() {
+      const container = document.getElementById('item-entities-checkboxes-list');
+      if (!container) return;
+      const allDests = Object.keys(state.data.destinations || {});
+      if (!_itemAnalyticsSelectedEntities) {
+        _itemAnalyticsSelectedEntities = new Set(allDests);
+      }
+      container.innerHTML = allDests.map(d => {
+        const isChecked = _itemAnalyticsSelectedEntities.has(d);
+        const dEsc = escapeHtml(d);
+        return `
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 0.8rem; cursor: pointer; user-select: none; padding: 3px 0;">
+            <input type="checkbox" value="${dEsc}" ${isChecked ? 'checked' : ''} onchange="onItemEntityCheckboxChange(this.value, this.checked)" style="accent-color: var(--primary);" />
+            <span>${dEsc}</span>
+          </label>
+        `;
+      }).join('');
+    }
+
+    function onItemEntityCheckboxChange(dest, checked) {
+      const allDests = Object.keys(state.data.destinations || {});
+      if (!_itemAnalyticsSelectedEntities) {
+        _itemAnalyticsSelectedEntities = new Set(allDests);
+      }
+      if (checked) {
+        _itemAnalyticsSelectedEntities.add(dest);
+      } else {
+        _itemAnalyticsSelectedEntities.delete(dest);
+      }
+      updateItemEntitiesFilterSummary();
+      renderItemConsumptionChart();
+    }
+
+    function selectAllItemEntities(selected) {
+      const allDests = Object.keys(state.data.destinations || {});
+      _itemAnalyticsSelectedEntities = selected ? new Set(allDests) : new Set();
+      populateItemEntitiesFilterCheckboxes();
+      updateItemEntitiesFilterSummary();
+      renderItemConsumptionChart();
+    }
+
+    function resetItemEntitiesFilter() {
+      selectAllItemEntities(true);
+    }
+
+    function updateItemEntitiesFilterSummary() {
+      const summaryEl = document.getElementById('item-filter-entities-summary');
+      if (!summaryEl) return;
+      const allDests = Object.keys(state.data.destinations || {});
+      const count = _itemAnalyticsSelectedEntities ? _itemAnalyticsSelectedEntities.size : allDests.length;
+      if (count === allDests.length || !_itemAnalyticsSelectedEntities) {
+        summaryEl.textContent = 'تصفية الجهات (الكل)';
+      } else if (count === 0) {
+        summaryEl.textContent = 'تصفية الجهات (لا شيء)';
+      } else {
+        summaryEl.textContent = `تصفية الجهات (${count}/${allDests.length})`;
+      }
+    }
+
+    // إغلاق القائمة المنسدلة عند النقر في أي مكان خارجها
+    window.addEventListener('click', (e) => {
+      const dd = document.getElementById('item-entities-filter-dropdown');
+      const btn = document.getElementById('btn-item-entities-filter');
+      if (dd && dd.style.display === 'block') {
+        if (!dd.contains(e.target) && (!btn || !btn.contains(e.target))) {
+          dd.style.display = 'none';
+        }
+      }
+    });
+
+    function initItemConsumptionAnalyticsSelect() {
+      const sel = document.getElementById('item-consumption-select');
+      if (!sel) return;
+      const prevVal = sel.value;
+      const items = (Array.isArray(state.data.items) ? state.data.items : [])
+        .filter(i => i && !i.isDeleted)
+        .sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ar'));
+
+      if (items.length === 0) {
+        sel.innerHTML = '<option value="">-- لا توجد مواد مسجلة --</option>';
+        return;
+      }
+
+      sel.innerHTML = items.map(it => {
+        return `<option value="${escapeHtml(it.id)}">${escapeHtml(it.name)} [الرصيد: ${sanitize(it.stock)}]</option>`;
+      }).join('');
+
+      if (prevVal && items.some(i => i.id === prevVal)) {
+        sel.value = prevVal;
+      } else {
+        sel.value = items[0].id;
+      }
+    }
+
+    function isSettatDirectorateName(destName) {
+      if (!destName) return false;
+      const norm = normalizeArabicKey(destName);
+      return norm.includes('المديرية الاقليمية') || norm.includes('المديريه الاقليميه') || (norm.includes('المديرية') && norm.includes('سطات'));
+    }
+
+    function isSettatOfficial(recipientName) {
+      if (!recipientName) return false;
+      const norm = normalizeArabicKey(recipientName);
+      return norm.includes('المدير الاقليمي') || norm.includes('المدير') || norm.includes('رئيس مصلحة') || norm.includes('رئيس المصلحة');
+    }
+
+    function renderItemConsumptionChart() {
+      try {
+        const sel = document.getElementById('item-consumption-select');
+        const container = document.getElementById('item-consumption-chart-container');
+        if (!container) return;
+
+        // تهيئة القائمة إن لم تكن مهيأة
+        if (!sel || sel.options.length <= 1) {
+          initItemConsumptionAnalyticsSelect();
+        }
+
+        const selectedItemId = sel ? sel.value : null;
+        const selectedItem = (state.data.items || []).find(i => i.id === selectedItemId);
+
+        if (!selectedItem) {
+          container.innerHTML = `<div style="width: 100%; text-align: center; color: var(--text-muted); padding: 40px 10px;">يرجى اختيار مادة من القائمة أعلاه لعرض تحليل الاستهلاك</div>`;
+          return;
+        }
+
+        const txsSource = Array.isArray(state.data.transactions) ? state.data.transactions.filter(t => t && !t.isDeleted) : [];
+        const filteredTxs = typeof filterTransactionsByTimeframe === 'function' ? filterTransactionsByTimeframe(txsSource) : txsSource;
+        const allDests = Object.keys(state.data.destinations || {});
+        const allowedDests = _itemAnalyticsSelectedEntities || new Set(allDests);
+
+        // تجميع السحب حسب المادة المحددة
+        const barsData = []; // [{ label, qty, type: 'regular'|'official'|'aggregated-staff' }]
+
+        if (_itemAnalyticsMode === 'entities') {
+          // النمط 1: حسب الجهات المستفيدة
+          const destQtyMap = {};
+          allDests.forEach(d => {
+            if (allowedDests.has(d)) destQtyMap[d] = 0;
+          });
+
+          filteredTxs.forEach(t => {
+            const dest = t.destination;
+            if (!dest || !allowedDests.has(dest)) return;
+            (t.items || []).forEach(it => {
+              if (it.id === selectedItem.id || it.name === selectedItem.name) {
+                const q = Math.max(0, sanitize(it.qty));
+                destQtyMap[dest] = (destQtyMap[dest] || 0) + q;
+              }
+            });
+          });
+
+          for (const d in destQtyMap) {
+            barsData.push({
+              label: d,
+              qty: destQtyMap[d],
+              type: 'regular'
+            });
+          }
+        } else {
+          // النمط 2: حسب المستفيدين مع قاعدة المديرية الإقليمية بسطات الحصرية الصارمة
+          const recipMap = {};
+          let directorateStaffAggregatedQty = 0;
+          let directorateOfficialBars = {};
+
+          filteredTxs.forEach(t => {
+            const dest = t.destination || '';
+            if (!allowedDests.has(dest)) return;
+
+            let txItemQty = 0;
+            (t.items || []).forEach(it => {
+              if (it.id === selectedItem.id || it.name === selectedItem.name) {
+                txItemQty += Math.max(0, sanitize(it.qty));
+              }
+            });
+
+            if (txItemQty <= 0) return;
+
+            const recip = (t.recipient || 'غير محدد').trim();
+
+            if (isSettatDirectorateName(dest)) {
+              // جهة المديرية الإقليمية للعدل بسطات
+              if (isSettatOfficial(recip)) {
+                // مسؤول إداري (المدير الإقليمي أو رئيس مصلحة) -> عمود مستقل
+                const officialKey = `${recip}`;
+                directorateOfficialBars[officialKey] = (directorateOfficialBars[officialKey] || 0) + txItemQty;
+              } else {
+                // باقي الموظفين -> تجميع صلب في عمود واحد يمنع التكرار نهائياً
+                directorateStaffAggregatedQty += txItemQty;
+              }
+            } else {
+              // باقي المحاكم والمراكز
+              const key = `${recip} (${dest.replace('المحكمة الابتدائية', 'ابتدائية').replace('محكمة الاستئناف', 'استئناف')})`;
+              recipMap[key] = (recipMap[key] || 0) + txItemQty;
+            }
+          });
+
+          // إضافة المسؤولين المستقلين بالمديرية
+          for (const offName in directorateOfficialBars) {
+            barsData.push({
+              label: offName,
+              qty: directorateOfficialBars[offName],
+              type: 'official'
+            });
+          }
+
+          // إضافة العمود المجمع لباقي موظفي المديرية إذا وجد سحب أو لتوضيح الاستهلاك
+          if (directorateStaffAggregatedQty > 0 || Object.keys(directorateOfficialBars).length > 0) {
+            barsData.push({
+              label: 'المديرية الإقليمية - باقي الموظفين',
+              qty: directorateStaffAggregatedQty,
+              type: 'aggregated-staff'
+            });
+          }
+
+          // إضافة باقي المستفيدين بالمحاكم
+          for (const rKey in recipMap) {
+            barsData.push({
+              label: rKey,
+              qty: recipMap[rKey],
+              type: 'regular'
+            });
+          }
+        }
+
+        // فرز تنازلي حسب الكمية
+        barsData.sort((a, b) => b.qty - a.qty);
+
+        const maxQty = barsData.reduce((m, b) => Math.max(m, b.qty), 0);
+
+        if (barsData.length === 0 || maxQty === 0) {
+          container.innerHTML = `
+            <div style="width: 100%; text-align: center; color: var(--text-muted); padding: 50px 14px;">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="margin: 0 auto 10px auto; opacity: 0.5;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <div style="font-size: 0.92rem; font-weight: 700;">لا توجد عمليات سحب مسجلة لمادة "${escapeHtml(selectedItem.name)}" خلال هذه الفترة</div>
+              <div style="font-size: 0.78rem; margin-top: 4px;">يمكنك تغيير النطاق الزمني أو اختيار مادة أخرى لتحليل استهلاكها</div>
+            </div>
+          `;
+          return;
+        }
+
+        const maxBarPx = 180;
+        let html = '';
+
+        barsData.forEach(b => {
+          const heightPx = maxQty > 0 ? Math.max(6, Math.round((b.qty / maxQty) * maxBarPx)) : 6;
+          const cls = b.type === 'official' ? 'is-official' : (b.type === 'aggregated-staff' ? 'is-aggregated-staff' : '');
+          const labelEsc = escapeHtml(b.label);
+
+          html += `
+            <div class="vertical-chart-bar-item ${cls}">
+              <span class="bar-qty">${b.qty}</span>
+              <div class="bar-pillar" style="height: ${heightPx}px;" title="${labelEsc}: ${b.qty} قطعة مسحوبة"></div>
+              <span class="bar-label" title="${labelEsc}">${labelEsc}</span>
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+      } catch (err) {
+        console.error('renderItemConsumptionChart error:', err);
+      }
     }
 
 
