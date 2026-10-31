@@ -5000,62 +5000,87 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      min-height: 125px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      min-height: 140px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
       position: relative;
       overflow: hidden;
-      border: 1px solid var(--border-subtle);
-      background: var(--bg-card);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
       box-sizing: border-box;
+      padding: 16px 18px 0 18px;
     }
     .ai-glass-kpi-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
     }
     .ai-glass-kpi-card.ai-card-teal {
-      background: linear-gradient(135deg, rgba(13, 112, 130, 0.12) 0%, rgba(16, 187, 195, 0.06) 100%);
-      border-color: rgba(16, 187, 195, 0.35);
-    }
-    .ai-glass-kpi-card.ai-card-rose {
-      background: linear-gradient(135deg, rgba(166, 14, 53, 0.12) 0%, rgba(244, 63, 94, 0.06) 100%);
-      border-color: rgba(244, 63, 94, 0.35);
+      background: linear-gradient(135deg, #0e7490 0%, #06b6d4 100%);
+      color: #ffffff;
     }
     .ai-glass-kpi-card.ai-card-amber {
-      background: linear-gradient(135deg, rgba(158, 91, 34, 0.12) 0%, rgba(254, 162, 79, 0.06) 100%);
-      border-color: rgba(254, 162, 79, 0.35);
+      background: linear-gradient(135deg, #b45309 0%, #f59e0b 100%);
+      color: #ffffff;
+    }
+    .ai-glass-kpi-card.ai-card-rose {
+      background: linear-gradient(135deg, #881337 0%, #e11d48 100%);
+      color: #ffffff;
     }
     .ai-glass-kpi-card.ai-card-purple {
-      background: linear-gradient(135deg, rgba(61, 15, 89, 0.12) 0%, rgba(147, 51, 234, 0.06) 100%);
-      border-color: rgba(147, 51, 234, 0.35);
+      background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%);
+      color: #ffffff;
+    }
+    .ai-glass-kpi-card .ai-kpi-watermark-icon {
+      position: absolute;
+      left: 14px;
+      top: 14px;
+      width: 48px;
+      height: 48px;
+      opacity: 0.16;
+      pointer-events: none;
+      color: #ffffff;
+      z-index: 1;
     }
     .ai-glass-kpi-card .ai-kpi-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
+      position: relative;
+      z-index: 2;
     }
     .ai-glass-kpi-card .ai-kpi-title {
       font-size: 0.88rem;
       font-weight: 700;
-      color: var(--text-main);
+      color: rgba(255, 255, 255, 0.95);
       display: flex;
       align-items: center;
       gap: 6px;
     }
     .ai-glass-kpi-card .ai-kpi-value {
-      font-size: 1.85rem;
+      font-size: 2.1rem;
       font-weight: 900;
-      color: var(--text-main);
-      margin: 4px 0 6px 0;
+      color: #ffffff;
+      margin: 4px 0 2px 0;
       line-height: 1.1;
+      position: relative;
+      z-index: 2;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.15);
     }
-    .ai-glass-kpi-card .ai-kpi-sub {
-      font-size: 0.78rem;
-      color: var(--text-muted);
+    .ai-glass-kpi-card .ai-kpi-footer-strip {
+      margin: 10px -18px 0 -18px;
+      padding: 7px 18px;
+      background: rgba(0, 0, 0, 0.22);
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 0.76rem;
       font-weight: 600;
-      line-height: 1.3;
+      color: rgba(255, 255, 255, 0.9);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+      z-index: 2;
     }
 
     /* Vertical Bar Chart styling for Item Consumption Analytics */
@@ -5065,35 +5090,34 @@
       align-items: center;
       justify-content: flex-end;
       min-width: 58px;
-      flex-shrink: 0;
+      flex: 1;
+      max-width: 110px;
       height: 100%;
       position: relative;
+      cursor: pointer;
+      padding: 0 4px;
+      transition: transform 0.2s ease;
+    }
+    .vertical-chart-bar-item:hover {
+      transform: translateY(-3px);
     }
     .vertical-chart-bar-item .bar-qty {
       font-size: 0.84rem;
       font-weight: 800;
-      color: #38bdf8;
       margin-bottom: 6px;
       font-family: monospace;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
     .vertical-chart-bar-item .bar-pillar {
-      width: 34px;
-      background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+      width: 100%;
+      max-width: 44px;
+      min-width: 22px;
       border-radius: 6px 6px 0 0;
-      transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);
+      transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1), filter 0.2s ease;
       cursor: pointer;
     }
-    .vertical-chart-bar-item .bar-pillar:hover {
-      filter: brightness(1.15);
-    }
-    .vertical-chart-bar-item.is-official .bar-pillar {
-      background: linear-gradient(180deg, #818cf8 0%, #4f46e5 100%);
-      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
-    }
-    .vertical-chart-bar-item.is-aggregated-staff .bar-pillar {
-      background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
-      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
+    .vertical-chart-bar-item:hover .bar-pillar {
+      filter: brightness(1.2);
     }
     .vertical-chart-bar-item .bar-label {
       font-size: 0.74rem;
@@ -5101,10 +5125,82 @@
       color: var(--text-main);
       margin-top: 8px;
       text-align: center;
-      max-width: 90px;
+      max-width: 95px;
       word-break: break-word;
       line-height: 1.25;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
+    [data-theme="dark"] .vertical-chart-bar-item .bar-label {
+      color: #e2e8f0;
+    }
+
+    /* Searchable Autocomplete Combobox dropdown */
+    .combobox-suggestions {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+    }
+    [data-theme="dark"] .combobox-suggestions {
+      background: #0f172a;
+      border-color: rgba(255,255,255,0.15);
+    }
+    .combobox-suggestion-item {
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: background 0.15s ease;
+    }
+    .combobox-suggestion-item:last-child {
+      border-bottom: none;
+    }
+    .combobox-suggestion-item:hover,
+    .combobox-suggestion-item.active {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+    }
+
+    /* Responsive Mobile Table Typography & Padding */
+    @media (max-width: 768px) {
+      table.data-table,
+      .data-table {
+        font-size: 0.72rem !important;
+      }
+      table.data-table th,
+      table.data-table td,
+      .data-table th,
+      .data-table td {
+        font-size: 0.72rem !important;
+        padding: 6px 4px !important;
+        white-space: normal !important;
+      }
+      #trash-view .data-table th,
+      #trash-view .data-table td,
+      #ai-insights-view .data-table th,
+      #ai-insights-view .data-table td,
+      #history-view .data-table th,
+      #history-view .data-table td,
+      #inventory-view .data-table th,
+      #inventory-view .data-table td,
+      #orders-view .data-table th,
+      #orders-view .data-table td {
+        font-size: 0.72rem !important;
+        padding: 5px 3px !important;
+      }
+    }
+
+    /* Strict visibility lock for header timeframe icon button */
+    body:not(.dashboard-view-active) #header-timeframe-icon-btn {
+      display: none !important;
+    }
+
     [data-theme="dark"] #dashboard-view .donut-bottom-detail-bar {
       background: rgba(5, 26, 45, 0.6);
       border-color: rgba(255, 255, 255, 0.08);
@@ -6296,7 +6392,7 @@
               </div>
             </div>
 
-            <!-- حاوية تحليل استهلاك المواد المتقدمة (Strictly Vertical Bar Chart with Settat Aggregation Rule) -->
+            <!-- حاوية تحليل استهلاك المواد المتقدمة (Strictly Vertical Bar Chart with Multi-Color & Settat Aggregation Rule) -->
             <div class="glass-box" id="box-item-consumption-analytics" style="margin-bottom: 24px; width: 100%; box-sizing: border-box;">
               <div class="box-header" style="flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
                 <div class="box-title-wrapper" style="display: flex; align-items: center; gap: 8px;">
@@ -6309,17 +6405,24 @@
                   </span>
                   <div>
                     <h2 class="box-title" style="margin: 0; font-size: 1.05rem;">تحليل استهلاك المواد</h2>
-                    <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">توزيع سحب المادة المختارة وفق مخطط أشرطة عمودية صارم</div>
+                    <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">توزيع سحب المادة المختارة وفق مخطط أشرطة عمودية ملوّنة</div>
                   </div>
                 </div>
 
                 <!-- لوحة التحكم التفاعلية بالحاوية -->
                 <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                  <!-- محدد المادة -->
-                  <div style="min-width: 220px; max-width: 280px; flex: 1;">
-                    <select id="item-consumption-select" class="form-control" style="height: 34px; font-size: 0.82rem; padding: 4px 8px;" onchange="renderItemConsumptionChart()">
-                      <!-- يملأ ديناميكياً من كافة المواد -->
-                    </select>
+                  <!-- محدد المادة بالبحث الذكي التلقائي (Searchable Autocomplete) -->
+                  <div class="item-combobox-wrap" style="position: relative; min-width: 220px; max-width: 290px; flex: 1;">
+                    <div style="position: relative;">
+                      <input type="text" id="item-consumption-search-input" class="form-control" placeholder="ابحث أو اختر مادة..." autocomplete="off" style="height: 34px; font-size: 0.82rem; padding: 4px 28px 4px 8px;" onfocus="openItemConsumptionSuggestions()" oninput="filterItemConsumptionSuggestions(this.value)" />
+                      <span style="position: absolute; left: 8px; top: 8px; color: var(--text-muted); pointer-events: none;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                      </span>
+                    </div>
+                    <input type="hidden" id="item-consumption-selected-id" value="" />
+                    <div id="item-consumption-autocomplete-list" class="combobox-suggestions" style="display: none; position: absolute; top: calc(100% + 4px); right: 0; left: 0; max-height: 250px; overflow-y: auto; z-index: 120;">
+                      <!-- تملأ ديناميكياً بالاقتراحات -->
+                    </div>
                   </div>
 
                   <!-- مفتاح التبديل: حسب الجهات / حسب المستفيدين -->
@@ -6332,33 +6435,56 @@
                     </button>
                   </div>
 
-                  <!-- زر وخيارات تصفية الجهات -->
-                  <div style="position: relative; display: inline-block;">
-                    <button type="button" class="btn btn-outline btn-sm" id="btn-item-entities-filter" onclick="toggleItemEntitiesFilterDropdown(event)" style="height: 34px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 6px;">
+                  <!-- زر فتح النافذة المنبثقة لتصفية الجهات المستفيدة (Modal لتجنب الخروج خارج الشاشة على الهواتف) -->
+                  <div>
+                    <button type="button" class="btn btn-outline btn-sm" id="btn-item-entities-filter" onclick="openItemEntitiesFilterModal()" style="height: 34px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 6px;">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
                       <span id="item-filter-entities-summary">تصفية الجهات (الكل)</span>
-                      <span style="font-size: 0.7rem;">▼</span>
                     </button>
-
-                    <!-- القائمة المنسدلة للجهات -->
-                    <div id="item-entities-filter-dropdown" style="display: none; position: absolute; top: calc(100% + 4px); right: 0; min-width: 260px; max-height: 300px; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); z-index: 100; padding: 10px; overflow-y: auto;">
-                      <div style="display: flex; gap: 6px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle);">
-                        <button type="button" class="btn btn-outline btn-sm" style="flex: 1; padding: 3px 6px; font-size: 0.75rem;" onclick="selectAllItemEntities(true)">تحديد الكل</button>
-                        <button type="button" class="btn btn-outline btn-sm" style="flex: 1; padding: 3px 6px; font-size: 0.75rem;" onclick="selectAllItemEntities(false)">إلغاء</button>
-                        <button type="button" class="btn btn-outline btn-sm" style="flex: 1; padding: 3px 6px; font-size: 0.75rem;" onclick="resetItemEntitiesFilter()">إعادة ضبط</button>
-                      </div>
-                      <div id="item-entities-checkboxes-list" style="display: flex; flex-direction: column; gap: 6px;">
-                        <!-- تملأ ديناميكياً -->
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
 
-              <!-- مساحة المخطط البياني بالأعمدة العمودية الحصرية -->
-              <div class="vertical-chart-scroll-wrap" id="item-consumption-chart-wrapper" style="overflow-x: auto; padding: 18px 10px 8px 10px; min-height: 290px; width: 100%; box-sizing: border-box;">
-                <div id="item-consumption-chart-container" style="display: flex; align-items: flex-end; justify-content: flex-start; gap: 20px; min-height: 250px; min-width: 100%; padding-bottom: 10px;">
-                  <!-- تملأ بالأعمدة العمودية من محرك جافاسكريبت -->
+              <!-- مساحة المخطط البياني بالأعمدة العمودية المتعددة الألوان مع التوزيع المتكافئ -->
+              <div class="vertical-chart-scroll-wrap" id="item-consumption-chart-wrapper" style="overflow-x: auto; padding: 18px 8px 8px 8px; min-height: 280px; width: 100%; box-sizing: border-box;">
+                <div id="item-consumption-chart-container" style="display: flex; align-items: flex-end; justify-content: space-evenly !important; gap: 12px; min-height: 240px; width: 100%; padding-bottom: 6px;">
+                  <!-- تملأ بالأعمدة العمودية الملونة ديناميكياً -->
+                </div>
+              </div>
+
+              <!-- شريط التفاصيل الثابت أسفل المخطط لمنع التداخل والقفزات البصرية -->
+              <div id="item-consumption-chart-detail-bar" style="margin-top: 10px; padding: 10px 14px; border-radius: 10px; background: var(--bg-muted); border: 1px solid var(--border-subtle); min-height: 44px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 0.82rem;">
+                <div style="display: flex; align-items: center; gap: 8px; color: var(--text-muted);" id="item-chart-detail-content">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                  <span>مرّر المؤشر أو انقر فوق أي عمود لعرض التفاصيل الكاملة والاسم الرسمي والكمية المسحوبة</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- نافذة منبثقة مركزية لتصفية الجهات (Centered Modal مع Backdrop) -->
+            <div id="item-entities-filter-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 9999; align-items: center; justify-content: center; padding: 16px;">
+              <div style="background: var(--bg-card); border: 1.5px solid var(--border-subtle); border-radius: 16px; width: 100%; max-width: 460px; box-shadow: 0 20px 45px rgba(0,0,0,0.4); display: flex; flex-direction: column; max-height: 85vh; overflow: hidden;">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--border-subtle);">
+                  <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                    <span>تصفية الجهات المستفيدة</span>
+                  </h3>
+                  <button type="button" class="btn-icon" onclick="closeItemEntitiesFilterModal()" style="border: none; background: transparent; cursor: pointer; color: var(--text-muted);">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+                </div>
+                <div style="display: flex; gap: 8px; padding: 10px 18px; background: var(--bg-muted); border-bottom: 1px solid var(--border-subtle);">
+                  <button type="button" class="btn btn-outline btn-sm" style="flex: 1; padding: 5px 8px; font-size: 0.78rem;" onclick="selectAllItemEntities(true)">تحديد الكل</button>
+                  <button type="button" class="btn btn-outline btn-sm" style="flex: 1; padding: 5px 8px; font-size: 0.78rem;" onclick="selectAllItemEntities(false)">إلغاء التحديد</button>
+                  <button type="button" class="btn btn-outline btn-sm" style="flex: 1; padding: 5px 8px; font-size: 0.78rem;" onclick="resetItemEntitiesFilter()">إعادة ضبط</button>
+                </div>
+                <div id="item-entities-checkboxes-list" style="padding: 14px 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; max-height: 350px;">
+                  <!-- تملأ ديناميكياً بخيارات الجهات -->
+                </div>
+                <div style="padding: 12px 18px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: flex-end; gap: 8px; background: var(--bg-muted);">
+                  <button type="button" class="btn btn-primary btn-sm" onclick="applyItemEntitiesFilter()" style="padding: 6px 20px; font-size: 0.84rem; font-weight: 700;">
+                    تطبيق التصفية
+                  </button>
                 </div>
               </div>
             </div>
@@ -6816,12 +6942,12 @@
               <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
                 <div class="orders-tab-toggle" style="display: inline-flex; background: var(--bg-surface); padding: 3px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
                   <button type="button" id="tab-orders-active" class="btn btn-sm btn-primary" onclick="setOrdersViewMode('active')" style="font-weight: 800; font-size: 0.82rem; padding: 6px 14px; border-radius: var(--radius-sm); display: inline-flex; align-items: center; gap: 6px;">
-                    <i class="fa-solid fa-inbox"></i>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
                     <span>الطلبيات النشطة (المعلقة)</span>
                     <span id="badge-orders-active-count" class="badge" style="background: rgba(255,255,255,0.25); color: #fff; font-size: 0.72rem; padding: 2px 7px;">0</span>
                   </button>
                   <button type="button" id="tab-orders-archive" class="btn btn-sm btn-outline" onclick="setOrdersViewMode('archive')" style="font-weight: 800; font-size: 0.82rem; padding: 6px 14px; border-radius: var(--radius-sm); display: inline-flex; align-items: center; gap: 6px;">
-                    <i class="fa-solid fa-box-archive"></i>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
                     <span>أرشيف الطلبات المعتمدة</span>
                     <span id="badge-orders-archive-count" class="badge badge-subtle" style="font-size: 0.72rem; padding: 2px 7px;">0</span>
                   </button>
@@ -7174,75 +7300,234 @@
           <div class="ai-kpi-grid">
             <!-- بطاقة 1: سرعة الاستهلاك الدوري -->
             <div class="ai-glass-kpi-card ai-card-teal">
+              <svg class="ai-kpi-watermark-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
               <div class="ai-kpi-header">
                 <div class="ai-kpi-title">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
                   <span>معدل الاستهلاك الدوري</span>
                 </div>
-                <div class="badge badge-subtle" id="ai-kpi-velocity-trend" style="font-size: 0.72rem;">—</div>
+                <div class="badge" id="ai-kpi-velocity-trend" style="background: rgba(255,255,255,0.25); color: #fff; font-size: 0.72rem; padding: 2px 8px;">—</div>
               </div>
               <div class="ai-kpi-value tabular-nums" id="ai-kpi-velocity-val">0</div>
-              <div class="ai-kpi-sub" id="ai-kpi-velocity-sub">قطعة / شهر في المتوسط</div>
+              <div class="ai-kpi-footer-strip">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                <span id="ai-kpi-velocity-sub">قطعة / شهر في المتوسط</span>
+              </div>
             </div>
 
             <!-- بطاقة 2: مؤشر خطر النفاد -->
             <div class="ai-glass-kpi-card ai-card-rose">
+              <svg class="ai-kpi-watermark-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
               <div class="ai-kpi-header">
                 <div class="ai-kpi-title">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                   <span>مواد معرضة للنفاد (&lt; 30 يوم)</span>
                 </div>
-                <div class="badge badge-danger" id="ai-kpi-risk-badge" style="font-size: 0.72rem;">حرج</div>
+                <div class="badge" id="ai-kpi-risk-badge" style="background: rgba(255,255,255,0.25); color: #fff; font-size: 0.72rem; padding: 2px 8px;">حرج</div>
               </div>
-              <div class="ai-kpi-value tabular-nums" id="ai-kpi-risk-val" style="color: #ef4444;">0</div>
-              <div class="ai-kpi-sub" id="ai-kpi-risk-sub">تتطلب تزويداً عاجلاً</div>
+              <div class="ai-kpi-value tabular-nums" id="ai-kpi-risk-val">0</div>
+              <div class="ai-kpi-footer-strip">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path></svg>
+                <span id="ai-kpi-risk-sub">تتطلب تزويداً عاجلاً</span>
+              </div>
             </div>
 
             <!-- بطاقة 3: الوجهة الأكثر استهلاكاً -->
             <div class="ai-glass-kpi-card ai-card-amber">
+              <svg class="ai-kpi-watermark-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="18"></line><line x1="15" y1="22" x2="15" y2="18"></line></svg>
               <div class="ai-kpi-header">
                 <div class="ai-kpi-title">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="18"></line><line x1="15" y1="22" x2="15" y2="18"></line></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="18"></line><line x1="15" y1="22" x2="15" y2="18"></line></svg>
                   <span>الجهة الأكثر استهلاكاً</span>
                 </div>
-                <div class="badge badge-warning" id="ai-kpi-top-dest-pct" style="font-size: 0.72rem;">—</div>
+                <div class="badge" id="ai-kpi-top-dest-pct" style="background: rgba(255,255,255,0.25); color: #fff; font-size: 0.72rem; padding: 2px 8px;">—</div>
               </div>
-              <div class="ai-kpi-value" id="ai-kpi-top-dest-name" style="font-size: 1.12rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">—</div>
-              <div class="ai-kpi-sub" id="ai-kpi-top-dest-sub">0 قطعة مسحوبة</div>
+              <div class="ai-kpi-value" id="ai-kpi-top-dest-name" style="font-size: 1.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">—</div>
+              <div class="ai-kpi-footer-strip">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                <span id="ai-kpi-top-dest-sub">0 قطعة مسحوبة</span>
+              </div>
             </div>
 
             <!-- بطاقة 4: المادة الأكثر طلباً -->
             <div class="ai-glass-kpi-card ai-card-purple">
+              <svg class="ai-kpi-watermark-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
               <div class="ai-kpi-header">
                 <div class="ai-kpi-title">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
                   <span>المادة الأكثر طلباً</span>
                 </div>
-                <div class="badge badge-subtle" id="ai-kpi-top-item-badge" style="font-size: 0.72rem;">الأكثر طلباً</div>
+                <div class="badge" id="ai-kpi-top-item-badge" style="background: rgba(255,255,255,0.25); color: #fff; font-size: 0.72rem; padding: 2px 8px;">الأكثر طلباً</div>
               </div>
-              <div class="ai-kpi-value" id="ai-kpi-top-item-name" style="font-size: 1.12rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">—</div>
-              <div class="ai-kpi-sub" id="ai-kpi-top-item-sub">0 قطعة موزعة</div>
+              <div class="ai-kpi-value" id="ai-kpi-top-item-name" style="font-size: 1.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">—</div>
+              <div class="ai-kpi-footer-strip">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                <span id="ai-kpi-top-item-sub">0 قطعة موزعة</span>
+              </div>
             </div>
           </div>
 
-          <!-- شريط التبويبات الفرعية للأقسام التحليلية الأربعة -->
+          <!-- شريط التبويبات الفرعية للأقسام التحليلية الخمسة -->
           <div class="tab-pills-nav" style="display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; background: var(--bg-card); padding: 8px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
-            <button type="button" class="btn btn-primary btn-sm ai-subtab-btn active" id="ai-subtab-btn-forecast" onclick="switchAiSubTab('forecast')">
+            <button type="button" class="btn btn-primary btn-sm ai-subtab-btn active" id="ai-subtab-btn-planning" onclick="switchAiSubTab('planning')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              <span>1. التخطيط الاستباقي لحاجيات السنة المقبلة (جديد)</span>
+            </button>
+            <button type="button" class="btn btn-outline btn-sm ai-subtab-btn" id="ai-subtab-btn-forecast" onclick="switchAiSubTab('forecast')">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-              <span>1. سرعة النضوب والتنبؤ بالنفاد</span>
+              <span>2. سرعة النضوب والتنبؤ بالنفاد</span>
             </button>
             <button type="button" class="btn btn-outline btn-sm ai-subtab-btn" id="ai-subtab-btn-entities" onclick="switchAiSubTab('entities')">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-              <span>2. نمط استهلاك الجهات والمؤشرات غير النمطية</span>
+              <span>3. نمط استهلاك الجهات والمؤشرات غير النمطية</span>
             </button>
             <button type="button" class="btn btn-outline btn-sm ai-subtab-btn" id="ai-subtab-btn-recommendations" onclick="switchAiSubTab('recommendations')">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-              <span>3. توصيات إدارية استباقية</span>
+              <span>4. توصيات إدارية استباقية</span>
             </button>
             <button type="button" class="btn btn-outline btn-sm ai-subtab-btn" id="ai-subtab-btn-sandbox" onclick="switchAiSubTab('sandbox')">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-              <span>4. منصة محاكاة سيناريوهات التوزيع (Sandbox)</span>
+              <span>5. منصة محاكاة سيناريوهات التوزيع (Sandbox)</span>
             </button>
+          </div>
+
+          <!-- القسم 1 الجديد: وحدة التخطيط الاستباقي لحاجيات السنة المقبلة -->
+          <div id="ai-section-planning" class="ai-sub-section">
+            <div class="card" style="border: 1.5px solid rgba(56, 189, 248, 0.4); box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
+              <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 14px;">
+                <div>
+                  <h3 class="card-title" style="font-size: 1.15rem; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                    <span style="display: inline-flex; width: 32px; height: 32px; border-radius: 8px; background: rgba(56, 189, 248, 0.15); color: #0284c7; align-items: center; justify-content: center;">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    </span>
+                    وحدة التخطيط الاستباقي لحاجيات السنة المقبلة وتحديد الكوطة
+                  </h3>
+                  <div class="card-subtitle" style="margin-top: 4px;">نموذج رياضي تنبؤي لتقدير كميات الشراء وتوزيع الحصص التقديرية على المحاكم والموظفين مع هامش الأمان الإداري</div>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm" onclick="printForecastReportA4()" style="padding: 7px 16px; font-size: 0.82rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                  <span>🖨️ طباعة بطاقة التوقعات الرسمية (A4)</span>
+                </button>
+              </div>
+
+              <!-- شريط التحكم: اختيار المادة مع البحث التلقائي + تحديد هامش الأمان -->
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; padding: 14px 16px; background: var(--bg-muted); border-radius: var(--radius-md); margin: 14px 0;">
+                <!-- محدد المادة بالبحث الذكي -->
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label" style="font-weight: 700; font-size: 0.8rem;"><span class="req-star">*</span> المادة المراد تقدير حاجياتها السنوية:</label>
+                  <div class="item-combobox-wrap" style="position: relative;">
+                    <input type="text" id="forecast-item-search-input" class="form-control" placeholder="ابحث عن مادة لتقدير حاجياتها..." autocomplete="off" onfocus="openForecastItemSuggestions()" oninput="filterForecastItemSuggestions(this.value)" style="height: 36px; font-size: 0.84rem; padding: 4px 28px 4px 8px;" />
+                    <span style="position: absolute; left: 8px; top: 9px; color: var(--text-muted); pointer-events: none;">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </span>
+                    <input type="hidden" id="forecast-item-selected-id" value="" />
+                    <div id="forecast-item-autocomplete-list" class="combobox-suggestions" style="display: none; position: absolute; top: calc(100% + 4px); right: 0; left: 0; max-height: 250px; overflow-y: auto; z-index: 120;"></div>
+                  </div>
+                </div>
+
+                <!-- محدد هامش الأمان -->
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label" style="font-weight: 700; font-size: 0.8rem;">🛡️ هامش الأمان الإضافي المعتمد:</label>
+                  <select id="forecast-safety-margin" class="form-control" style="height: 36px; font-size: 0.84rem;" onchange="calculateAndRenderForecast()">
+                    <option value="0">0% (استهلاك فعلي فقط دون هامش احتياطي)</option>
+                    <option value="10">10% (هامش أمان اعتيادي)</option>
+                    <option value="15" selected>15% (موصى به: هامش أمان متوازن لمواجهة الطوارئ)</option>
+                    <option value="20">20% (هامش أمان موسع)</option>
+                    <option value="25">25% (هامش أمان استراتيجي للمواد الحيوية)</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- أزرار التبويبات الفرعية الثلاث للتخطيط: الإجمالي / حسب الجهات / حسب المستفيدين -->
+              <div style="display: flex; gap: 8px; margin-bottom: 14px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 8px; flex-wrap: wrap;">
+                <button type="button" class="btn btn-primary btn-sm" id="btn-forecast-tab-total" onclick="switchForecastDrillTab('total')">
+                  أ) الإجمالي الكلي وأمر الشراء المقترح
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" id="btn-forecast-tab-entities" onclick="switchForecastDrillTab('entities')">
+                  ب) حسب الجهات المستفيدة (الكوطة)
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" id="btn-forecast-tab-beneficiaries" onclick="switchForecastDrillTab('beneficiaries')">
+                  ج) حسب المستفيدين والمكاتب
+                </button>
+              </div>
+
+              <!-- حاويات محتوى التبويبات الثلاث -->
+              <div id="forecast-drill-content-total">
+                <!-- بطاقات الملخص الإجمالي الخمس -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px;">
+                  <div style="background: var(--bg-card); border: 1.5px solid var(--border-subtle); border-radius: 12px; padding: 12px 14px;">
+                    <div style="font-size: 0.76rem; color: var(--text-muted); font-weight: 700;">الاستهلاك السنوي المرجعي</div>
+                    <div style="font-size: 1.5rem; font-weight: 900; color: var(--text-main); margin-top: 4px;" id="fc-metric-annual-burn">0</div>
+                    <div style="font-size: 0.72rem; color: var(--text-muted);">قطعة / سنة</div>
+                  </div>
+                  <div style="background: var(--bg-card); border: 1.5px solid var(--border-subtle); border-radius: 12px; padding: 12px 14px;">
+                    <div style="font-size: 0.76rem; color: var(--text-muted); font-weight: 700;">هامش الأمان المضاف</div>
+                    <div style="font-size: 1.5rem; font-weight: 900; color: #3b82f6; margin-top: 4px;" id="fc-metric-margin-qty">+0</div>
+                    <div style="font-size: 0.72rem; color: var(--text-muted);" id="fc-metric-margin-pct">+15% احتياطي</div>
+                  </div>
+                  <div style="background: var(--bg-card); border: 1.5px solid rgba(56, 189, 248, 0.5); border-radius: 12px; padding: 12px 14px; background: rgba(56, 189, 248, 0.05);">
+                    <div style="font-size: 0.76rem; color: #0284c7; font-weight: 700;">إجمالي الحاجيات التقديرية</div>
+                    <div style="font-size: 1.6rem; font-weight: 900; color: #0284c7; margin-top: 4px;" id="fc-metric-total-needed">0</div>
+                    <div style="font-size: 0.72rem; color: var(--text-muted);">قطعة مطلوبة للسنة القادمة</div>
+                  </div>
+                  <div style="background: var(--bg-card); border: 1.5px solid var(--border-subtle); border-radius: 12px; padding: 12px 14px;">
+                    <div style="font-size: 0.76rem; color: var(--text-muted); font-weight: 700;">الرصيد الفعلي المتوفر بالمستودع</div>
+                    <div style="font-size: 1.5rem; font-weight: 900; color: var(--text-main); margin-top: 4px;" id="fc-metric-current-stock">0</div>
+                    <div style="font-size: 0.72rem; color: var(--text-muted);">قطعة حالياً بالمخزن</div>
+                  </div>
+                  <div style="background: var(--bg-card); border: 1.5px solid rgba(239, 68, 68, 0.5); border-radius: 12px; padding: 12px 14px; background: rgba(239, 68, 68, 0.05);">
+                    <div style="font-size: 0.76rem; color: #ef4444; font-weight: 700;">العجز المتوقع / كمية الشراء المقترحة</div>
+                    <div style="font-size: 1.6rem; font-weight: 900; color: #ef4444; margin-top: 4px;" id="fc-metric-purchase-order">0</div>
+                    <div style="font-size: 0.72rem; color: #ef4444;" id="fc-metric-po-status">أمر شراء واجب الإدراج بالصفقة</div>
+                  </div>
+                </div>
+                <!-- نص التحليل الاستراتيجي -->
+                <div id="fc-strategic-summary" style="padding: 12px 16px; border-radius: 10px; background: var(--bg-muted); border: 1px solid var(--border-subtle); font-size: 0.85rem; line-height: 1.5;">
+                  <!-- يملأ ديناميكياً -->
+                </div>
+              </div>
+
+              <div id="forecast-drill-content-entities" style="display: none;">
+                <div class="table-scroll-wrapper">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th style="width: 40px; text-align: center;">#</th>
+                        <th>الجهة المستفيدة (المحكمة / المركز)</th>
+                        <th style="text-align: center; width: 120px;">الاستهلاك التاريخي</th>
+                        <th style="text-align: center; width: 110px;">نسبة الحصة (%)</th>
+                        <th style="text-align: center; width: 140px;">الكوطة السنوية المقترحة</th>
+                        <th style="text-align: center; width: 140px;">الحصة الربع سنوية</th>
+                        <th>شريط توزيع الكوطة</th>
+                      </tr>
+                    </thead>
+                    <tbody id="fc-entities-tbody">
+                      <!-- Filled by JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div id="forecast-drill-content-beneficiaries" style="display: none;">
+                <div class="table-scroll-wrapper">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th style="width: 40px; text-align: center;">#</th>
+                        <th>المستفيد / المكتب الإداري</th>
+                        <th>الجهة التابع لها</th>
+                        <th style="text-align: center; width: 130px;">متوسط السحب الشهري</th>
+                        <th style="text-align: center; width: 140px;">الكوطة السنوية المقترحة</th>
+                        <th style="text-align: center; width: 130px;">نسبة الاستحقاق</th>
+                      </tr>
+                    </thead>
+                    <tbody id="fc-beneficiaries-tbody">
+                      <!-- Filled by JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- القسم 1: جدول سرعة النضوب والتنبؤ بالنفاد -->
@@ -10910,7 +11195,7 @@
               <div class="progress-item">
                 <div class="prog-info">
                   <span class="prog-label-wrapper" title="${escapeHtml(e.name)}">
-                    <i class="${e.icon || 'fa-solid fa-circle-dot'}" style="color: ${e.color};"></i>
+                    <i class="${e.icon || 'fa-regular fa-circle-dot'}" style="color: ${e.color};"></i>
                     <span>${escapeHtml(e.name)}</span>
                   </span>
                   <span class="prog-val tabular-nums">${e.count} ${escapeHtml(unit)} (${pct}%)</span>
@@ -10940,7 +11225,7 @@
         name: d,
         count: destCounts[d] || 0,
         color: DASH_PALETTE[idx % DASH_PALETTE.length],
-        icon: 'fa-solid fa-map-location-dot'
+        icon: 'fa-regular fa-compass'
       })).sort((a, b) => b.count - a.count);
       const totalOps = txs.length || 0;
       if (dashboardChartModes.dest === 'circle') {
@@ -10977,7 +11262,7 @@
         name: item.name,
         count: item.total,
         color: DASH_PALETTE[idx % DASH_PALETTE.length],
-        icon: 'fa-solid fa-box'
+        icon: 'fa-regular fa-folder'
       }));
       if (dashboardChartModes.items === 'circle') {
         renderSplitDonutChart(container, totalAllDistributions, 'قطعة', entries);
@@ -11010,7 +11295,7 @@
         name: rec.name,
         count: rec.total,
         color: DASH_PALETTE[idx % DASH_PALETTE.length],
-        icon: 'fa-solid fa-user-tie'
+        icon: 'fa-regular fa-user'
       }));
       if (dashboardChartModes.recipients === 'circle') {
         renderSplitDonutChart(container, totalPieces, 'قطعة', entries);
@@ -11038,7 +11323,7 @@
         name: cat,
         count: catTotals[cat],
         color: DASH_PALETTE[idx % DASH_PALETTE.length],
-        icon: 'fa-solid fa-tags'
+        icon: 'fa-regular fa-bookmark'
       })).sort((a, b) => b.count - a.count).slice(0, 6);
       if (entries.length === 0) {
         container.innerHTML = '<div style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 20px;">لا توجد أصناف موزعة في هذه الفترة</div>';
@@ -11158,7 +11443,7 @@
                   المواد المطلوبة: ${escapeHtml(itemsSummary || '—')}
                 </div>
                 <div style="margin-top: 8px; font-size: 0.74rem; color: #10b981; font-weight: 800; display: flex; align-items: center; gap: 4px;">
-                  <i class="fa-solid fa-arrow-turn-down-left"></i> انقر لتحويل الطلبية إلى إشهاد تسليم وخصم المخزون
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/></svg> انقر لتحويل الطلبية إلى إشهاد تسليم وخصم المخزون
                 </div>
               </div>
             `;
@@ -13661,7 +13946,7 @@ ${itemsText}
                   <span>معاينة</span>
                 </button>
                 <button type="button" class="btn btn-outline btn-sm" onclick="printCertificate('${o.convertedVoucherId}')" title="طباعة الإشهاد" style="padding: 4px 8px; font-size: 0.72rem;">
-                  <i class="fa-solid fa-print"></i>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
                 </button>
               ` : '<span style="font-size:0.75rem;color:var(--text-muted);">معتمد</span>'}
               <button type="button" class="btn-icon danger" style="width: 26px; height: 26px;" onclick="deleteOrder('${o.id}')" title="حذف من الأرشيف">
@@ -19438,6 +19723,71 @@ ${itemsText}
     let _itemAnalyticsMode = 'entities'; // 'entities' | 'beneficiaries'
     let _itemAnalyticsSelectedEntities = null; // Set of destination names, null = all
 
+    // لوحة الألوان المتعددة المأخوذة من بطاقات لوحة القيادة (Multi-Color Vibrant Palette)
+    const VERTICAL_BAR_PALETTES = [
+      { from: '#10BBC3', to: '#068187', glow: 'rgba(16, 187, 195, 0.45)', text: '#10BBC3' },
+      { from: '#FEA24F', to: '#E65100', glow: 'rgba(254, 162, 79, 0.45)', text: '#FEA24F' },
+      { from: '#38BDF8', to: '#0284C7', glow: 'rgba(56, 189, 248, 0.45)', text: '#38BDF8' },
+      { from: '#F43F5E', to: '#BE123C', glow: 'rgba(244, 63, 94, 0.45)', text: '#F43F5E' },
+      { from: '#A855F7', to: '#6B21A8', glow: 'rgba(168, 85, 247, 0.45)', text: '#A855F7' },
+      { from: '#10B981', to: '#047857', glow: 'rgba(16, 185, 129, 0.45)', text: '#10B981' },
+      { from: '#F59E0B', to: '#B45309', glow: 'rgba(245, 158, 11, 0.45)', text: '#F59E0B' },
+      { from: '#6366F1', to: '#4338CA', glow: 'rgba(99, 102, 241, 0.45)', text: '#6366F1' },
+      { from: '#EC4899', to: '#9D174D', glow: 'rgba(236, 72, 153, 0.45)', text: '#EC4899' },
+      { from: '#14B8A6', to: '#0F766E', glow: 'rgba(20, 184, 166, 0.45)', text: '#14B8A6' }
+    ];
+
+    // قاموس الاختصارات الذكية للجهات والمناصب لمنع تكسر وتداخل النصوص أسفل الأعمدة
+    const ENTITY_ABBREVIATIONS = {
+      'المديرية الإقليمية للعدل بسطات': 'المديرية الإقليمية',
+      'المديرية الاقليمية للعدل بسطات': 'المديرية الإقليمية',
+      'المديرية الإقليمية بسطات': 'المديرية الإقليمية',
+      'محكمة الاستئناف بسطات': 'استئناف سطات',
+      'المحكمة الابتدائية بسطات': 'ابتدائية سطات',
+      'المحكمة الابتدائية ببرشيد': 'ابتدائية برشيد',
+      'المحكمة الابتدائية بابن احمد': 'ابتدائية ابن أحمد',
+      'المحكمة الابتدائية بابن أحمد': 'ابتدائية ابن أحمد',
+      'المركز القضائي بالبروج': 'قضائي البروج',
+      'المركز القضائي البروج': 'قضائي البروج'
+    };
+
+    const OFFICIAL_ABBREVIATIONS = {
+      'رئيس كتابة الضبط': 'ر.ك.ض',
+      'رئيس كتابة النيابة العامة': 'ر.ك.ن.ع',
+      'رئيس مصلحة كتابة الضبط': 'ر.م.ك.ض',
+      'رئيس مصلحة كتابة النيابة العامة': 'ر.م.ك.ن.ع',
+      'المدير الإقليمي': 'المدير الإقليمي',
+      'المدير الاقليمي': 'المدير الإقليمي',
+      'رئيس مصلحة الميزانية والصفقات': 'ر.م.الميزانية',
+      'رئيس مصلحة الموارد البشرية': 'ر.م.الموارد البشرية',
+      'رئيس مصلحة البنايات': 'ر.م.البنايات'
+    };
+
+    function getSmartAbbreviation(name) {
+      if (!name) return '—';
+      const trimmed = name.trim();
+      if (ENTITY_ABBREVIATIONS[trimmed]) return ENTITY_ABBREVIATIONS[trimmed];
+      if (OFFICIAL_ABBREVIATIONS[trimmed]) return OFFICIAL_ABBREVIATIONS[trimmed];
+
+      let s = trimmed;
+      s = s.replace(/المحكمة الابتدائية ب/g, 'ابتدائية ');
+      s = s.replace(/المحكمة الابتدائية /g, 'ابتدائية ');
+      s = s.replace(/محكمة الاستئناف ب/g, 'استئناف ');
+      s = s.replace(/محكمة الاستئناف /g, 'استئناف ');
+      s = s.replace(/المركز القضائي بال/g, 'قضائي ');
+      s = s.replace(/المركز القضائي /g, 'قضائي ');
+      s = s.replace(/المديرية الإقليمية للعدل ب/g, 'مديرية ');
+      s = s.replace(/المديرية الاقليمية للعدل ب/g, 'مديرية ');
+      s = s.replace(/رئيس كتابة الضبط/g, 'ر.ك.ض');
+      s = s.replace(/رئيس كتابة النيابة العامة/g, 'ر.ك.ن.ع');
+      s = s.replace(/رئيس مصلحة /g, 'ر.م ');
+
+      if (s.length > 22) {
+        return s.substring(0, 20) + '..';
+      }
+      return s;
+    }
+
     function setItemAnalyticsMode(mode) {
       _itemAnalyticsMode = mode;
       const btnEnt = document.getElementById('btn-item-mode-entities');
@@ -19454,18 +19804,94 @@ ${itemsText}
       renderItemConsumptionChart();
     }
 
-    function toggleItemEntitiesFilterDropdown(e) {
-      if (e) e.stopPropagation();
-      const dd = document.getElementById('item-entities-filter-dropdown');
-      if (!dd) return;
-      const isOpen = dd.style.display === 'block';
-      dd.style.display = isOpen ? 'none' : 'block';
-      if (!isOpen) {
-        populateItemEntitiesFilterCheckboxes();
-      }
+    // --- محرك الإكمال التلقائي والبحث في المواد (Autocomplete Combobox) ---
+    function openItemConsumptionSuggestions() {
+      const input = document.getElementById('item-consumption-search-input');
+      const q = input ? input.value : '';
+      filterItemConsumptionSuggestions(q);
+      const list = document.getElementById('item-consumption-autocomplete-list');
+      if (list) list.style.display = 'block';
     }
 
-    function populateItemEntitiesFilterCheckboxes() {
+    function filterItemConsumptionSuggestions(query) {
+      const list = document.getElementById('item-consumption-autocomplete-list');
+      if (!list) return;
+      const q = (query || '').trim().toLowerCase();
+      const items = (Array.isArray(state.data.items) ? state.data.items : [])
+        .filter(i => i && !i.isDeleted)
+        .filter(i => !q || (i.name && i.name.toLowerCase().includes(q)) || (i.category && i.category.toLowerCase().includes(q)))
+        .sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ar'));
+
+      if (items.length === 0) {
+        list.innerHTML = `<div style="padding: 10px; font-size: 0.8rem; color: var(--text-muted); text-align: center;">لا توجد مواد مطابقة للبحث</div>`;
+        list.style.display = 'block';
+        return;
+      }
+
+      const activeId = document.getElementById('item-consumption-selected-id')?.value;
+      list.innerHTML = items.map(it => {
+        const isSel = it.id === activeId;
+        const nameEsc = escapeHtml(it.name);
+        const catEsc = escapeHtml(it.category || 'عام');
+        const stockVal = sanitize(it.stock);
+        return `
+          <div class="combobox-suggestion-item ${isSel ? 'active' : ''}" onclick="selectItemConsumptionOption('${escapeHtml(it.id)}')">
+            <div>
+              <strong style="color: var(--text-main); font-size: 0.84rem;">${nameEsc}</strong>
+              <div style="font-size: 0.72rem; color: var(--text-muted);">${catEsc}</div>
+            </div>
+            <span class="badge ${stockVal > 0 ? 'badge-primary' : 'badge-subtle'}" style="font-size: 0.72rem;">${stockVal} قط</span>
+          </div>
+        `;
+      }).join('');
+      list.style.display = 'block';
+    }
+
+    function selectItemConsumptionOption(itemId) {
+      const item = (state.data.items || []).find(i => i.id === itemId);
+      if (!item) return;
+      const hiddenInput = document.getElementById('item-consumption-selected-id');
+      const textInput = document.getElementById('item-consumption-search-input');
+      const list = document.getElementById('item-consumption-autocomplete-list');
+      if (hiddenInput) hiddenInput.value = item.id;
+      if (textInput) textInput.value = item.name;
+      if (list) list.style.display = 'none';
+      renderItemConsumptionChart();
+    }
+
+    // إغلاق قوائم الاقتراحات عند النقر خارجها
+    window.addEventListener('click', (e) => {
+      const wrap1 = document.querySelector('.item-combobox-wrap');
+      const list1 = document.getElementById('item-consumption-autocomplete-list');
+      if (list1 && list1.style.display === 'block') {
+        if (!wrap1 || !wrap1.contains(e.target)) {
+          list1.style.display = 'none';
+        }
+      }
+
+      const listForecast = document.getElementById('forecast-item-autocomplete-list');
+      if (listForecast && listForecast.style.display === 'block') {
+        const inputF = document.getElementById('forecast-item-search-input');
+        if (!inputF || (!inputF.contains(e.target) && !listForecast.contains(e.target))) {
+          listForecast.style.display = 'none';
+        }
+      }
+    });
+
+    // --- النافذة المنبثقة لتصفية الجهات المستفيدة (Modal Dialog) ---
+    function openItemEntitiesFilterModal() {
+      const modal = document.getElementById('item-entities-filter-modal');
+      if (!modal) return;
+      populateItemEntitiesFilterModal();
+      modal.style.display = 'flex';
+    }
+
+    function closeItemEntitiesFilterModal() {
+      const modal = document.getElementById('item-entities-filter-modal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function populateItemEntitiesFilterModal() {
       const container = document.getElementById('item-entities-checkboxes-list');
       if (!container) return;
       const allDests = Object.keys(state.data.destinations || {});
@@ -19476,38 +19902,40 @@ ${itemsText}
         const isChecked = _itemAnalyticsSelectedEntities.has(d);
         const dEsc = escapeHtml(d);
         return `
-          <label style="display: flex; align-items: center; gap: 8px; font-size: 0.8rem; cursor: pointer; user-select: none; padding: 3px 0;">
-            <input type="checkbox" value="${dEsc}" ${isChecked ? 'checked' : ''} onchange="onItemEntityCheckboxChange(this.value, this.checked)" style="accent-color: var(--primary);" />
-            <span>${dEsc}</span>
+          <label style="display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 0.84rem; cursor: pointer; user-select: none; padding: 6px 8px; border-radius: 8px; background: var(--bg-surface); border: 1px solid var(--border-subtle);">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <input type="checkbox" class="item-entity-cb" value="${dEsc}" ${isChecked ? 'checked' : ''} style="accent-color: var(--primary); width: 16px; height: 16px;" />
+              <span style="font-weight: 600; color: var(--text-main);">${dEsc}</span>
+            </div>
+            <span class="badge badge-subtle" style="font-size: 0.72rem;">${isChecked ? 'محددة' : 'مستثناة'}</span>
           </label>
         `;
       }).join('');
     }
 
-    function onItemEntityCheckboxChange(dest, checked) {
-      const allDests = Object.keys(state.data.destinations || {});
-      if (!_itemAnalyticsSelectedEntities) {
-        _itemAnalyticsSelectedEntities = new Set(allDests);
-      }
-      if (checked) {
-        _itemAnalyticsSelectedEntities.add(dest);
-      } else {
-        _itemAnalyticsSelectedEntities.delete(dest);
-      }
-      updateItemEntitiesFilterSummary();
-      renderItemConsumptionChart();
-    }
-
     function selectAllItemEntities(selected) {
-      const allDests = Object.keys(state.data.destinations || {});
-      _itemAnalyticsSelectedEntities = selected ? new Set(allDests) : new Set();
-      populateItemEntitiesFilterCheckboxes();
-      updateItemEntitiesFilterSummary();
-      renderItemConsumptionChart();
+      const checkboxes = document.querySelectorAll('.item-entity-cb');
+      checkboxes.forEach(cb => {
+        cb.checked = selected;
+        const badge = cb.parentElement.nextElementSibling;
+        if (badge) badge.textContent = selected ? 'محددة' : 'مستثناة';
+      });
     }
 
     function resetItemEntitiesFilter() {
       selectAllItemEntities(true);
+    }
+
+    function applyItemEntitiesFilter() {
+      const checkboxes = document.querySelectorAll('.item-entity-cb');
+      const selected = new Set();
+      checkboxes.forEach(cb => {
+        if (cb.checked) selected.add(cb.value);
+      });
+      _itemAnalyticsSelectedEntities = selected;
+      updateItemEntitiesFilterSummary();
+      closeItemEntitiesFilterModal();
+      renderItemConsumptionChart();
     }
 
     function updateItemEntitiesFilterSummary() {
@@ -19524,39 +19952,23 @@ ${itemsText}
       }
     }
 
-    // إغلاق القائمة المنسدلة عند النقر في أي مكان خارجها
-    window.addEventListener('click', (e) => {
-      const dd = document.getElementById('item-entities-filter-dropdown');
-      const btn = document.getElementById('btn-item-entities-filter');
-      if (dd && dd.style.display === 'block') {
-        if (!dd.contains(e.target) && (!btn || !btn.contains(e.target))) {
-          dd.style.display = 'none';
-        }
-      }
-    });
+    function showItemConsumptionBarDetail(label, qty, type, fullDest) {
+      const detailContent = document.getElementById('item-chart-detail-content');
+      if (!detailContent) return;
+      const typeBadge = type === 'official'
+        ? '<span class="badge badge-warning" style="font-size: 0.72rem;">مسؤول إداري</span>'
+        : (type === 'aggregated-staff' ? '<span class="badge badge-success" style="font-size: 0.72rem;">تجميع موظفي المديرية</span>' : '<span class="badge badge-primary" style="font-size: 0.72rem;">جهة مستفيدة</span>');
 
-    function initItemConsumptionAnalyticsSelect() {
-      const sel = document.getElementById('item-consumption-select');
-      if (!sel) return;
-      const prevVal = sel.value;
-      const items = (Array.isArray(state.data.items) ? state.data.items : [])
-        .filter(i => i && !i.isDeleted)
-        .sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ar'));
-
-      if (items.length === 0) {
-        sel.innerHTML = '<option value="">-- لا توجد مواد مسجلة --</option>';
-        return;
-      }
-
-      sel.innerHTML = items.map(it => {
-        return `<option value="${escapeHtml(it.id)}">${escapeHtml(it.name)} [الرصيد: ${sanitize(it.stock)}]</option>`;
-      }).join('');
-
-      if (prevVal && items.some(i => i.id === prevVal)) {
-        sel.value = prevVal;
-      } else {
-        sel.value = items[0].id;
-      }
+      detailContent.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          ${typeBadge}
+          <strong style="color: var(--text-main); font-size: 0.9rem;">${escapeHtml(label)}</strong>
+          ${fullDest ? `<span style="color: var(--text-muted); font-size: 0.78rem;">(${escapeHtml(fullDest)})</span>` : ''}
+          <span style="display: inline-flex; align-items: center; gap: 4px; background: rgba(56, 189, 248, 0.15); color: #0284c7; padding: 2px 8px; border-radius: 6px; font-weight: 800; font-family: monospace;">
+            ${qty} قطعة مسحوبة
+          </span>
+        </div>
+      `;
     }
 
     function isSettatDirectorateName(destName) {
@@ -19573,21 +19985,28 @@ ${itemsText}
 
     function renderItemConsumptionChart() {
       try {
-        const sel = document.getElementById('item-consumption-select');
+        const hiddenInput = document.getElementById('item-consumption-selected-id');
+        const textInput = document.getElementById('item-consumption-search-input');
         const container = document.getElementById('item-consumption-chart-container');
         if (!container) return;
 
-        // تهيئة القائمة إن لم تكن مهيأة
-        if (!sel || sel.options.length <= 1) {
-          initItemConsumptionAnalyticsSelect();
+        const items = (Array.isArray(state.data.items) ? state.data.items : [])
+          .filter(i => i && !i.isDeleted)
+          .sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ar'));
+
+        if (items.length === 0) {
+          container.innerHTML = `<div style="width: 100%; text-align: center; color: var(--text-muted); padding: 40px 10px;">لا توجد مواد مسجلة بالمخزون</div>`;
+          return;
         }
 
-        const selectedItemId = sel ? sel.value : null;
-        const selectedItem = (state.data.items || []).find(i => i.id === selectedItemId);
+        // اختيار مادة افتراضية إن لم يتم تحديد شيء
+        let selectedItemId = hiddenInput ? hiddenInput.value : null;
+        let selectedItem = items.find(i => i.id === selectedItemId);
 
         if (!selectedItem) {
-          container.innerHTML = `<div style="width: 100%; text-align: center; color: var(--text-muted); padding: 40px 10px;">يرجى اختيار مادة من القائمة أعلاه لعرض تحليل الاستهلاك</div>`;
-          return;
+          selectedItem = items[0];
+          if (hiddenInput) hiddenInput.value = selectedItem.id;
+          if (textInput) textInput.value = selectedItem.name;
         }
 
         const txsSource = Array.isArray(state.data.transactions) ? state.data.transactions.filter(t => t && !t.isDeleted) : [];
@@ -19596,7 +20015,7 @@ ${itemsText}
         const allowedDests = _itemAnalyticsSelectedEntities || new Set(allDests);
 
         // تجميع السحب حسب المادة المحددة
-        const barsData = []; // [{ label, qty, type: 'regular'|'official'|'aggregated-staff' }]
+        const barsData = []; // [{ label, fullLabel, qty, type: 'regular'|'official'|'aggregated-staff', dest }]
 
         if (_itemAnalyticsMode === 'entities') {
           // النمط 1: حسب الجهات المستفيدة
@@ -19619,12 +20038,14 @@ ${itemsText}
           for (const d in destQtyMap) {
             barsData.push({
               label: d,
+              fullLabel: d,
               qty: destQtyMap[d],
-              type: 'regular'
+              type: 'regular',
+              dest: ''
             });
           }
         } else {
-          // النمط 2: حسب المستفيدين مع قاعدة المديرية الإقليمية بسطات الحصرية الصارمة
+          // النمط 2: حسب المستفيدين مع تطبيق قاعدة المديرية الإقليمية بسطات الحصرية الصارمة
           const recipMap = {};
           let directorateStaffAggregatedQty = 0;
           let directorateOfficialBars = {};
@@ -19645,46 +20066,55 @@ ${itemsText}
             const recip = (t.recipient || 'غير محدد').trim();
 
             if (isSettatDirectorateName(dest)) {
-              // جهة المديرية الإقليمية للعدل بسطات
               if (isSettatOfficial(recip)) {
-                // مسؤول إداري (المدير الإقليمي أو رئيس مصلحة) -> عمود مستقل
+                // مسؤول إداري مستقل
                 const officialKey = `${recip}`;
                 directorateOfficialBars[officialKey] = (directorateOfficialBars[officialKey] || 0) + txItemQty;
               } else {
-                // باقي الموظفين -> تجميع صلب في عمود واحد يمنع التكرار نهائياً
+                // باقي الموظفين مجمعون صلباً
                 directorateStaffAggregatedQty += txItemQty;
               }
             } else {
-              // باقي المحاكم والمراكز
+              // باقي المحاكم
               const key = `${recip} (${dest.replace('المحكمة الابتدائية', 'ابتدائية').replace('محكمة الاستئناف', 'استئناف')})`;
-              recipMap[key] = (recipMap[key] || 0) + txItemQty;
+              if (!recipMap[key]) {
+                recipMap[key] = { label: recip, dest: dest, qty: 0 };
+              }
+              recipMap[key].qty += txItemQty;
             }
           });
 
-          // إضافة المسؤولين المستقلين بالمديرية
+          // إضافة مسؤولي المديرية
           for (const offName in directorateOfficialBars) {
             barsData.push({
               label: offName,
+              fullLabel: offName,
               qty: directorateOfficialBars[offName],
-              type: 'official'
+              type: 'official',
+              dest: 'المديرية الإقليمية بسطات'
             });
           }
 
-          // إضافة العمود المجمع لباقي موظفي المديرية إذا وجد سحب أو لتوضيح الاستهلاك
+          // إضافة باقي موظفي المديرية
           if (directorateStaffAggregatedQty > 0 || Object.keys(directorateOfficialBars).length > 0) {
             barsData.push({
-              label: 'المديرية الإقليمية - باقي الموظفين',
+              label: 'باقي موظفي المديرية',
+              fullLabel: 'المديرية الإقليمية بسطات - باقي الموظفين',
               qty: directorateStaffAggregatedQty,
-              type: 'aggregated-staff'
+              type: 'aggregated-staff',
+              dest: 'المديرية الإقليمية بسطات'
             });
           }
 
-          // إضافة باقي المستفيدين بالمحاكم
+          // إضافة مستفيدي المحاكم
           for (const rKey in recipMap) {
+            const rObj = recipMap[rKey];
             barsData.push({
-              label: rKey,
-              qty: recipMap[rKey],
-              type: 'regular'
+              label: rObj.label,
+              fullLabel: `${rObj.label} (${rObj.dest})`,
+              qty: rObj.qty,
+              type: 'regular',
+              dest: rObj.dest
             });
           }
         }
@@ -19705,19 +20135,24 @@ ${itemsText}
           return;
         }
 
-        const maxBarPx = 180;
+        const maxBarPx = 170;
         let html = '';
 
-        barsData.forEach(b => {
-          const heightPx = maxQty > 0 ? Math.max(6, Math.round((b.qty / maxQty) * maxBarPx)) : 6;
-          const cls = b.type === 'official' ? 'is-official' : (b.type === 'aggregated-staff' ? 'is-aggregated-staff' : '');
-          const labelEsc = escapeHtml(b.label);
+        barsData.forEach((b, idx) => {
+          const palette = VERTICAL_BAR_PALETTES[idx % VERTICAL_BAR_PALETTES.length];
+          const heightPx = maxQty > 0 ? Math.max(8, Math.round((b.qty / maxQty) * maxBarPx)) : 8;
+          const displayLabel = getSmartAbbreviation(b.label);
+          const fullLabelEsc = escapeHtml(b.fullLabel || b.label);
+          const destEsc = escapeHtml(b.dest || '');
 
           html += `
-            <div class="vertical-chart-bar-item ${cls}">
-              <span class="bar-qty">${b.qty}</span>
-              <div class="bar-pillar" style="height: ${heightPx}px;" title="${labelEsc}: ${b.qty} قطعة مسحوبة"></div>
-              <span class="bar-label" title="${labelEsc}">${labelEsc}</span>
+            <div class="vertical-chart-bar-item" 
+                 onmouseover="showItemConsumptionBarDetail('${escapeHtml(b.label)}', ${b.qty}, '${b.type}', '${destEsc}')"
+                 onclick="showItemConsumptionBarDetail('${escapeHtml(b.label)}', ${b.qty}, '${b.type}', '${destEsc}')"
+                 title="${fullLabelEsc}: ${b.qty} قطعة مسحوبة">
+              <span class="bar-qty" style="color: ${palette.text};">${b.qty}</span>
+              <div class="bar-pillar" style="height: ${heightPx}px; background: linear-gradient(180deg, ${palette.from} 0%, ${palette.to} 100%); box-shadow: 0 4px 12px ${palette.glow};"></div>
+              <span class="bar-label" title="${fullLabelEsc}">${escapeHtml(displayLabel)}</span>
             </div>
           `;
         });
@@ -19730,23 +20165,456 @@ ${itemsText}
 
 
     // =========================================================================
-    // AI INSIGHTS & PREDICTIVE ANALYTICS ENGINE (محرك الرؤى والتحليل الذكي)
+    // AI INSIGHTS & ANNUAL FORECASTING PLANNING ENGINE (محرك التحليل والتخطيط السنوي)
     // =========================================================================
-    let _aiActiveSubTab = 'forecast';
+    let _aiActiveSubTab = 'planning'; // 'planning' | 'forecast' | 'entities' | 'recommendations' | 'sandbox'
+    let _forecastDrillTab = 'total'; // 'total' | 'entities' | 'beneficiaries'
 
     function switchAiSubTab(tabName) {
       _aiActiveSubTab = tabName;
-      ['forecast', 'entities', 'recommendations', 'sandbox'].forEach(name => {
+      ['planning', 'forecast', 'entities', 'recommendations', 'sandbox'].forEach(name => {
         const btn = document.getElementById(`ai-subtab-btn-${name}`);
         const sec = document.getElementById(`ai-section-${name}`);
         if (btn) btn.classList.toggle('active', name === tabName);
         if (sec) sec.style.display = (name === tabName) ? 'block' : 'none';
       });
 
-      if (tabName === 'forecast') renderAiForecastTable();
+      if (tabName === 'planning') initAndRenderAnnualForecast();
+      else if (tabName === 'forecast') renderAiForecastTable();
       else if (tabName === 'entities') renderAiEntitiesPatterns();
       else if (tabName === 'recommendations') renderAiRecommendations();
       else if (tabName === 'sandbox') initAiSimulationSandbox();
+    }
+
+    function switchForecastDrillTab(tab) {
+      _forecastDrillTab = tab;
+      ['total', 'entities', 'beneficiaries'].forEach(t => {
+        const btn = document.getElementById(`btn-forecast-tab-${t}`);
+        const cont = document.getElementById(`forecast-drill-content-${t}`);
+        if (btn) {
+          btn.className = (t === tab) ? 'btn btn-primary btn-sm' : 'btn btn-outline btn-sm';
+        }
+        if (cont) {
+          cont.style.display = (t === tab) ? 'block' : 'none';
+        }
+      });
+      calculateAndRenderForecast();
+    }
+
+    // --- محرك الإكمال التلقائي لمادة التخطيط السنوي ---
+    function openForecastItemSuggestions() {
+      const input = document.getElementById('forecast-item-search-input');
+      const q = input ? input.value : '';
+      filterForecastItemSuggestions(q);
+      const list = document.getElementById('forecast-item-autocomplete-list');
+      if (list) list.style.display = 'block';
+    }
+
+    function filterForecastItemSuggestions(query) {
+      const list = document.getElementById('forecast-item-autocomplete-list');
+      if (!list) return;
+      const q = (query || '').trim().toLowerCase();
+      const items = (Array.isArray(state.data.items) ? state.data.items : [])
+        .filter(i => i && !i.isDeleted)
+        .filter(i => !q || (i.name && i.name.toLowerCase().includes(q)) || (i.category && i.category.toLowerCase().includes(q)))
+        .sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ar'));
+
+      if (items.length === 0) {
+        list.innerHTML = `<div style="padding: 10px; font-size: 0.8rem; color: var(--text-muted); text-align: center;">لا توجد مواد مطابقة</div>`;
+        list.style.display = 'block';
+        return;
+      }
+
+      const activeId = document.getElementById('forecast-item-selected-id')?.value;
+      list.innerHTML = items.map(it => {
+        const isSel = it.id === activeId;
+        const nameEsc = escapeHtml(it.name);
+        const catEsc = escapeHtml(it.category || 'عام');
+        const stockVal = sanitize(it.stock);
+        return `
+          <div class="combobox-suggestion-item ${isSel ? 'active' : ''}" onclick="selectForecastItem('${escapeHtml(it.id)}')">
+            <div>
+              <strong style="color: var(--text-main); font-size: 0.84rem;">${nameEsc}</strong>
+              <div style="font-size: 0.72rem; color: var(--text-muted);">${catEsc}</div>
+            </div>
+            <span class="badge ${stockVal > 0 ? 'badge-primary' : 'badge-subtle'}" style="font-size: 0.72rem;">${stockVal} قط</span>
+          </div>
+        `;
+      }).join('');
+      list.style.display = 'block';
+    }
+
+    function selectForecastItem(itemId) {
+      const item = (state.data.items || []).find(i => i.id === itemId);
+      if (!item) return;
+      const hiddenInput = document.getElementById('forecast-item-selected-id');
+      const textInput = document.getElementById('forecast-item-search-input');
+      const list = document.getElementById('forecast-item-autocomplete-list');
+      if (hiddenInput) hiddenInput.value = item.id;
+      if (textInput) textInput.value = item.name;
+      if (list) list.style.display = 'none';
+      calculateAndRenderForecast();
+    }
+
+    function initAndRenderAnnualForecast() {
+      const items = (Array.isArray(state.data.items) ? state.data.items : []).filter(i => i && !i.isDeleted);
+      if (items.length === 0) return;
+      const hiddenInput = document.getElementById('forecast-item-selected-id');
+      const textInput = document.getElementById('forecast-item-search-input');
+      if (hiddenInput && !hiddenInput.value) {
+        hiddenInput.value = items[0].id;
+        if (textInput) textInput.value = items[0].name;
+      }
+      calculateAndRenderForecast();
+    }
+
+    function calculateAndRenderForecast() {
+      try {
+        const hiddenInput = document.getElementById('forecast-item-selected-id');
+        const items = (Array.isArray(state.data.items) ? state.data.items : []).filter(i => i && !i.isDeleted);
+        if (items.length === 0) return;
+
+        let selectedItemId = hiddenInput ? hiddenInput.value : null;
+        let selectedItem = items.find(i => i.id === selectedItemId);
+        if (!selectedItem) {
+          selectedItem = items[0];
+          if (hiddenInput) hiddenInput.value = selectedItem.id;
+          const textInput = document.getElementById('forecast-item-search-input');
+          if (textInput) textInput.value = selectedItem.name;
+        }
+
+        const marginSelect = document.getElementById('forecast-safety-margin');
+        const marginPct = marginSelect ? parseInt(marginSelect.value, 10) : 15;
+
+        // حساب الاستهلاك السنوي المرجعي استناداً لكافة المعاملات في سنة 2026 أو كامل السجل
+        const txsSource = Array.isArray(state.data.transactions) ? state.data.transactions.filter(t => t && !t.isDeleted) : [];
+        let annualBurnUnits = 0;
+        const destBurnMap = {};
+        const recipBurnMap = {};
+
+        txsSource.forEach(t => {
+          const dest = t.destination || 'غير محدد';
+          const recip = t.recipient || 'غير محدد';
+          (t.items || []).forEach(it => {
+            if (it.id === selectedItem.id || it.name === selectedItem.name) {
+              const q = Math.max(0, sanitize(it.qty));
+              annualBurnUnits += q;
+              destBurnMap[dest] = (destBurnMap[dest] || 0) + q;
+              const rKey = `${recip}___${dest}`;
+              recipBurnMap[rKey] = (recipBurnMap[rKey] || 0) + q;
+            }
+          });
+        });
+
+        const currentStock = Math.max(0, sanitize(selectedItem.stock));
+        const marginQty = Math.round(annualBurnUnits * (marginPct / 100));
+        const totalNeeded = annualBurnUnits + marginQty;
+        const purchaseOrder = Math.max(0, totalNeeded - currentStock);
+
+        // 1. تحديث مقاييس التبويب الأول (الإجمالي الكلي)
+        const elBurn = document.getElementById('fc-metric-annual-burn');
+        if (elBurn) elBurn.textContent = sanitize(annualBurnUnits);
+
+        const elMarginQty = document.getElementById('fc-metric-margin-qty');
+        if (elMarginQty) elMarginQty.textContent = `+${sanitize(marginQty)}`;
+
+        const elMarginPct = document.getElementById('fc-metric-margin-pct');
+        if (elMarginPct) elMarginPct.textContent = `+${marginPct}% احتياطي أمان`;
+
+        const elNeeded = document.getElementById('fc-metric-total-needed');
+        if (elNeeded) elNeeded.textContent = sanitize(totalNeeded);
+
+        const elStock = document.getElementById('fc-metric-current-stock');
+        if (elStock) elStock.textContent = sanitize(currentStock);
+
+        const elPo = document.getElementById('fc-metric-purchase-order');
+        if (elPo) elPo.textContent = sanitize(purchaseOrder);
+
+        const elPoStatus = document.getElementById('fc-metric-po-status');
+        if (elPoStatus) {
+          if (purchaseOrder <= 0) {
+            elPoStatus.textContent = 'المخزون الحالي كافٍ للسنة القادمة بالكامل مع هامش الأمان';
+            elPoStatus.style.color = '#10b981';
+          } else {
+            elPoStatus.textContent = `عجز بمقدار ${purchaseOrder} قطعة يجب برمجتها في صفقة الشراء`;
+            elPoStatus.style.color = '#ef4444';
+          }
+        }
+
+        const elStrategic = document.getElementById('fc-strategic-summary');
+        if (elStrategic) {
+          elStrategic.innerHTML = `
+            <div style="font-weight: 700; color: var(--text-main); margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              التقرير الاستشرافي والتوجيه الإداري لمادة: "${escapeHtml(selectedItem.name)}"
+            </div>
+            <div style="color: var(--text-muted); font-size: 0.82rem; line-height: 1.6;">
+              بناءً على وتيرة الاستهلاك الفعلي لسنة 2026 البالغة <strong>${annualBurnUnits} قطعة</strong>، وإضافة هامش أمان بنسبة <strong>${marginPct}%</strong> لمواجهة أي ضغط إداري استثنائي، يُقدّر الاحتياج الإجمالي للسنة المقبلة بـ <strong>${totalNeeded} قطعة</strong>. 
+              نظراً لتوفر رصيد فعلي حالي بالمستودع قدره <strong>${currentStock} قطعة</strong>، يُوصى بإصدار أمر شراء بكمية لا تقل عن <strong>${purchaseOrder} قطعة</strong> لضمان انتظام العمل دون انقطاع.
+            </div>
+          `;
+        }
+
+        // 2. تحديث جدول التبويب الثاني (حسب الجهات المستفيدة - الكوطة)
+        const entitiesTbody = document.getElementById('fc-entities-tbody');
+        if (entitiesTbody) {
+          const allDests = Object.keys(state.data.destinations || {});
+          const entitiesList = allDests.map(d => {
+            const burned = destBurnMap[d] || 0;
+            const ratio = annualBurnUnits > 0 ? (burned / annualBurnUnits) : (1 / allDests.length);
+            const quotaAnnual = Math.round(totalNeeded * ratio);
+            const quotaQuarterly = Math.round(quotaAnnual / 4);
+            return { name: d, burned, ratio, quotaAnnual, quotaQuarterly };
+          }).sort((a, b) => b.quotaAnnual - a.quotaAnnual);
+
+          entitiesTbody.innerHTML = entitiesList.map((ent, idx) => {
+            const pct = (ent.ratio * 100).toFixed(1);
+            const palette = VERTICAL_BAR_PALETTES[idx % VERTICAL_BAR_PALETTES.length];
+            return `
+              <tr>
+                <td style="text-align: center; font-weight: 700; color: var(--text-muted);">${idx + 1}</td>
+                <td>
+                  <strong style="color: var(--text-main); font-size: 0.86rem;">${escapeHtml(ent.name)}</strong>
+                  <div style="font-size: 0.72rem; color: var(--text-muted);">${getSmartAbbreviation(ent.name)}</div>
+                </td>
+                <td style="text-align: center; font-weight: 700;">${ent.burned} قطعة</td>
+                <td style="text-align: center;"><span class="badge badge-subtle tabular-nums">${pct}%</span></td>
+                <td style="text-align: center;"><strong style="color: ${palette.text}; font-size: 0.95rem;">${ent.quotaAnnual} قطعة</strong></td>
+                <td style="text-align: center; color: var(--text-muted); font-size: 0.82rem;">${ent.quotaQuarterly} قطعة / 3 أشهر</td>
+                <td style="min-width: 120px;">
+                  <div style="height: 8px; width: 100%; background: var(--bg-muted); border-radius: 999px; overflow: hidden; border: 1px solid var(--border-subtle);">
+                    <div style="width: ${Math.min(100, Math.max(5, pct))}%; height: 100%; background: linear-gradient(90deg, ${palette.from}, ${palette.to});"></div>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join('');
+        }
+
+        // 3. تحديث جدول التبويب الثالث (حسب المستفيدين والمكاتب)
+        const recipTbody = document.getElementById('fc-beneficiaries-tbody');
+        if (recipTbody) {
+          const recipEntries = Object.entries(recipBurnMap).map(([rKey, bQty]) => {
+            const [recip, dest] = rKey.split('___');
+            const monthlyAvg = (bQty / 12).toFixed(1);
+            const ratio = annualBurnUnits > 0 ? (bQty / annualBurnUnits) : 0;
+            const quota = Math.round(totalNeeded * ratio);
+            return { recip, dest, bQty, monthlyAvg, ratio, quota };
+          }).sort((a, b) => b.quota - a.quota);
+
+          if (recipEntries.length === 0) {
+            recipTbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">لا توجد سجلات مستفيدين مسجلة لهذه المادة</td></tr>`;
+          } else {
+            recipTbody.innerHTML = recipEntries.map((r, idx) => {
+              const pct = (r.ratio * 100).toFixed(1);
+              return `
+                <tr>
+                  <td style="text-align: center; font-weight: 700; color: var(--text-muted);">${idx + 1}</td>
+                  <td><strong style="color: var(--text-main); font-size: 0.86rem;">${escapeHtml(r.recip)}</strong></td>
+                  <td style="color: var(--text-muted); font-size: 0.82rem;">${escapeHtml(r.dest)}</td>
+                  <td style="text-align: center; font-weight: 600;">${r.monthlyAvg} قط / شهر</td>
+                  <td style="text-align: center;"><strong style="color: #0284c7; font-size: 0.92rem;">${r.quota} قطعة</strong></td>
+                  <td style="text-align: center;"><span class="badge badge-subtle tabular-nums">${pct}%</span></td>
+                </tr>
+              `;
+            }).join('');
+          }
+        }
+      } catch (err) {
+        console.error('calculateAndRenderForecast error:', err);
+      }
+    }
+
+    // --- طباعة تقرير التوقعات السنوية A4 الرسمي (Official Ministry of Justice A4 Printable Report) ---
+    function printForecastReportA4() {
+      try {
+        const hiddenInput = document.getElementById('forecast-item-selected-id');
+        const items = (Array.isArray(state.data.items) ? state.data.items : []).filter(i => i && !i.isDeleted);
+        const selectedItemId = hiddenInput ? hiddenInput.value : (items[0]?.id || '');
+        const selectedItem = items.find(i => i.id === selectedItemId) || items[0] || { name: 'مادة تجريبية', stock: 0 };
+
+        const marginSelect = document.getElementById('forecast-safety-margin');
+        const marginPct = marginSelect ? parseInt(marginSelect.value, 10) : 15;
+
+        const txsSource = Array.isArray(state.data.transactions) ? state.data.transactions.filter(t => t && !t.isDeleted) : [];
+        let annualBurn = 0;
+        const destBurnMap = {};
+
+        txsSource.forEach(t => {
+          const dest = t.destination || 'جهة غير محددة';
+          (t.items || []).forEach(it => {
+            if (it.id === selectedItem.id || it.name === selectedItem.name) {
+              const q = Math.max(0, sanitize(it.qty));
+              annualBurn += q;
+              destBurnMap[dest] = (destBurnMap[dest] || 0) + q;
+            }
+          });
+        });
+
+        const currentStock = Math.max(0, sanitize(selectedItem.stock));
+        const marginQty = Math.round(annualBurn * (marginPct / 100));
+        const totalProjected = annualBurn + marginQty;
+        const deficitQty = Math.max(0, totalProjected - currentStock);
+
+        const allDests = Object.keys(state.data.destinations || {});
+        const destRows = allDests.map((d, idx) => {
+          const b = destBurnMap[d] || 0;
+          const ratio = annualBurn > 0 ? (b / annualBurn) : (1 / allDests.length);
+          const quota = Math.round(totalProjected * ratio);
+          const quarterly = Math.round(quota / 4);
+          const pct = (ratio * 100).toFixed(1);
+          return `
+            <tr>
+              <td style="text-align: center; border: 1px solid #cbd5e1; padding: 6px;">${idx + 1}</td>
+              <td style="border: 1px solid #cbd5e1; padding: 6px; font-weight: bold;">${escapeHtml(d)}</td>
+              <td style="text-align: center; border: 1px solid #cbd5e1; padding: 6px;">${b}</td>
+              <td style="text-align: center; border: 1px solid #cbd5e1; padding: 6px;">${pct}%</td>
+              <td style="text-align: center; border: 1px solid #cbd5e1; padding: 6px; font-weight: bold; color: #0284c7;">${quota}</td>
+              <td style="text-align: center; border: 1px solid #cbd5e1; padding: 6px;">${quarterly}</td>
+            </tr>
+          `;
+        }).join('');
+
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) {
+          showToast('يرجى السماح بفتح النوافذ المنبثقة لطباعة بطاقة التوقعات', 'warning');
+          return;
+        }
+
+        const htmlContent = `
+          <!DOCTYPE html>
+          <html lang="ar" dir="rtl">
+          <head>
+            <meta charset="UTF-8">
+            <title>بطاقة التخطيط الاستباقي لحاجيات السنة المقبلة — ${escapeHtml(selectedItem.name)}</title>
+            <style>
+              @page { size: A4 portrait; margin: 15mm; }
+              body {
+                font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+                direction: rtl;
+                text-align: right;
+                margin: 0;
+                padding: 15px;
+                color: #0f172a;
+                background: #ffffff;
+                font-size: 11pt;
+              }
+              .header-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; border-bottom: 2px solid #0f172a; padding-bottom: 10px; }
+              .header-table td { vertical-align: middle; }
+              .doc-title { text-align: center; font-size: 15pt; font-weight: 800; margin: 14px 0 6px 0; color: #0f172a; }
+              .doc-subtitle { text-align: center; font-size: 10pt; color: #475569; margin-bottom: 18px; }
+              .metrics-grid { display: flex; gap: 10px; justify-content: space-between; margin-bottom: 16px; }
+              .metric-box { flex: 1; border: 1.5px solid #cbd5e1; border-radius: 6px; padding: 8px 10px; text-align: center; background: #f8fafc; }
+              .metric-box .label { font-size: 8.5pt; color: #475569; font-weight: bold; }
+              .metric-box .val { font-size: 14pt; font-weight: 900; color: #0284c7; margin-top: 3px; }
+              table.data { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 10pt; }
+              table.data th { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 8px; font-weight: bold; text-align: center; }
+              .signatures-wrap { margin-top: 35px; display: flex; justify-content: space-between; page-break-inside: avoid; }
+              .sig-block { width: 30%; text-align: center; border: 1px dashed #94a3b8; border-radius: 6px; padding: 12px 6px; min-height: 80px; }
+              .sig-title { font-weight: bold; font-size: 9.5pt; margin-bottom: 35px; color: #1e293b; }
+            </style>
+          </head>
+          <body>
+            <table class="header-table">
+              <tr>
+                <td style="width: 35%; text-align: right; line-height: 1.4; font-size: 9pt;">
+                  <strong>المملكة المغربية</strong><br>
+                  وزارة العدل<br>
+                  المديرية الإقليمية بسطات<br>
+                  مصلحة الميزانية والصفقات والمخازن
+                </td>
+                <td style="width: 30%; text-align: center;">
+                  <div style="font-size: 11pt; font-weight: 900; border: 1.5px solid #0f172a; padding: 6px 10px; border-radius: 6px; display: inline-block;">
+                    وثيقة إدارية استشرافية
+                  </div>
+                </td>
+                <td style="width: 35%; text-align: left; font-size: 9pt; line-height: 1.4;">
+                  التاريخ: <strong>${new Date().toLocaleDateString('ar-MA')}</strong><br>
+                  السنة المستهدفة: <strong>2027</strong><br>
+                  المرجع: DPJ-SET/PREV-2027
+                </td>
+              </tr>
+            </table>
+
+            <div class="doc-title">بطاقة التخطيط الاستباقي لحاجيات ومشتريات السنة المقبلة</div>
+            <div class="doc-subtitle">بيان الاحتياج السنوي التقديري وتوزيع الكوطة المعتمدة لمادة: <strong>${escapeHtml(selectedItem.name)}</strong> [الصنف: ${escapeHtml(selectedItem.category || 'عام')}]</div>
+
+            <div class="metrics-grid">
+              <div class="metric-box">
+                <div class="label">الاستهلاك السنوي المرجعي</div>
+                <div class="val">${annualBurn}</div>
+                <div style="font-size: 8pt; color: #64748b;">قطعة مسحوبة</div>
+              </div>
+              <div class="metric-box">
+                <div class="label">هامش الأمان (+${marginPct}%)</div>
+                <div class="val" style="color: #3b82f6;">+${marginQty}</div>
+                <div style="font-size: 8pt; color: #64748b;">قطعة طوارئ</div>
+              </div>
+              <div class="metric-box" style="border-color: #0284c7; background: #f0f9ff;">
+                <div class="label" style="color: #0369a1;">إجمالي الحاجيات التقديرية</div>
+                <div class="val">${totalProjected}</div>
+                <div style="font-size: 8pt; color: #0369a1;">قطعة مطلوبة</div>
+              </div>
+              <div class="metric-box">
+                <div class="label">الرصيد الفعلي بالمستودع</div>
+                <div class="val" style="color: #334155;">${currentStock}</div>
+                <div style="font-size: 8pt; color: #64748b;">قطعة متوفرة حالياً</div>
+              </div>
+              <div class="metric-box" style="border-color: #ef4444; background: #fef2f2;">
+                <div class="label" style="color: #b91c1c;">أمر الشراء المقترح (العجز)</div>
+                <div class="val" style="color: #dc2626;">${deficitQty}</div>
+                <div style="font-size: 8pt; color: #b91c1c;">قطعة واجب شراؤها</div>
+              </div>
+            </div>
+
+            <div style="font-size: 10pt; font-weight: bold; margin-bottom: 6px; color: #0f172a;">
+              جدول الحصص التقديرية وتوزيع الكوطة على محاكم ومراكز الدائرة القضائية:
+            </div>
+
+            <table class="data">
+              <thead>
+                <tr>
+                  <th style="width: 35px;">#</th>
+                  <th>الجهة المستفيدة (المحكمة / المركز)</th>
+                  <th style="width: 100px;">الاستهلاك السنوي</th>
+                  <th style="width: 80px;">النسبة</th>
+                  <th style="width: 130px;">الكوطة السنوية الموصى بها</th>
+                  <th style="width: 120px;">الحصة الربع سنوية</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${destRows}
+              </tbody>
+            </table>
+
+            <div class="signatures-wrap">
+              <div class="sig-block">
+                <div class="sig-title">مسؤول تدبير المخزون والمواد</div>
+                <div>(الاسم والتوقيع)</div>
+              </div>
+              <div class="sig-block">
+                <div class="sig-title">رئيس مصلحة الميزانية والصفقات</div>
+                <div>(التأشيرة والملاحظات)</div>
+              </div>
+              <div class="sig-block">
+                <div class="sig-title">السيد المدير الإقليمي للعدل بسطات</div>
+                <div>(المصادقة والاعتماد)</div>
+              </div>
+            </div>
+            <script>
+              window.onload = function() { window.print(); }
+            <\/script>
+          </body>
+          </html>
+        `;
+
+        printWindow.document.open();
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+      } catch (err) {
+        console.error('printForecastReportA4 error:', err);
+        showToast('تعذر إنشاء تقرير التوقعات: ' + err.message, 'error');
+      }
     }
 
     function onAiFilterChanged() {
