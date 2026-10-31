@@ -3695,10 +3695,14 @@
       box-sizing: border-box !important;
     }
 
-    /* زر تخصيص النطاق الزمني للإحصائيات (ساعة الحائط الدائرية): إطار برتقالي */
+    /* زر تخصيص النطاق الزمني للإحصائيات (ساعة الحائط الدائرية): إطار برتقالي ومحصور حصرياً في لوحة القيادة */
     #header-timeframe-icon-btn {
       border: 1.5px solid #f59e0b !important;
       color: #f59e0b !important;
+      display: none !important;
+    }
+    body.dashboard-view-active #header-timeframe-icon-btn {
+      display: inline-flex !important;
     }
     #header-timeframe-icon-btn:hover {
       background: rgba(245, 158, 11, 0.12) !important;
@@ -5236,7 +5240,22 @@
       margin-top: 2px;
     }
 
-    /* 3. تصغير وضغط قسم "آخر العمليات المنجزة" (Operations List) */
+    /* 3. حاوية العرض المتجاور لآخر العمليات وآخر الطلبات (Desktop/Tablet) ورأسياً على الهاتف (Mobile) */
+    #dashboard-view .dashboard-dual-ops-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 12px;
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: 4px;
+    }
+    @media (max-width: 768px) {
+      #dashboard-view .dashboard-dual-ops-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* تصغير وضغط قسم "آخر العمليات المنجزة" و"آخر الطلبات" */
     #dashboard-view .operations-box {
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
@@ -5245,7 +5264,7 @@
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
       width: 100%;
       box-sizing: border-box;
-      margin-top: 5px;
+      margin-top: 0;
     }
     [data-theme="dark"] #dashboard-view .operations-box {
       background: rgba(11, 36, 59, 0.7);
@@ -5876,6 +5895,17 @@
 
           <div class="nav-section-title">الإدارة والتهيئة</div>
 
+          <div class="nav-item" id="tab-btn-ai-insights" onclick="switchTab('ai-insights-view'); toggleSidebar(false);">
+            <span class="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </span>
+            <span class="nav-label">التحليل الذكي (AI)</span>
+            <span class="order-badge" style="background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.35);">جديد</span>
+          </div>
+
           <div class="nav-item" id="tab-btn-settings" onclick="switchTab('settings-view'); toggleSidebar(false);">
             <span class="nav-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -6013,41 +6043,41 @@
             <!-- قسم المؤشرات الستة (The 6 Gradient Metric Cards - Model IMG_0386) -->
             <div class="metrics-grid">
               <div class="metric-card card-1" onclick="switchTab('history-view')" title="النقر للانتقال إلى سجل العمليات والأرشيف">
-                <div class="trend-badge"><span>12%+</span></div>
+                <div class="trend-badge" id="kpi-trend-vouchers"><span>—</span></div>
                 <div class="card-header"><span class="card-title">التسليمات المكتملة</span></div>
-                <div class="card-value tabular-nums" id="kpi-total-vouchers">142</div>
+                <div class="card-value tabular-nums" id="kpi-total-vouchers">0</div>
                 <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>
                 <div class="card-footer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg><span>إشهاد تسليم معتمد</span></div>
                 <strong id="kpi-total-distributed" style="display: none;">0</strong>
               </div>
 
               <div class="metric-card card-2" onclick="switchTab('orders-view')" title="النقر للانتقال إلى صفحة الطلبات">
-                <div class="trend-badge"><span>2%-</span></div>
+                <div class="trend-badge" id="kpi-trend-orders"><span>—</span></div>
                 <div class="card-header"><span class="card-title">الطلبات قيد المعالجة</span></div>
-                <div class="card-value tabular-nums" id="kpi-pending-orders-dash">3</div>
+                <div class="card-value tabular-nums" id="kpi-pending-orders-dash">0</div>
                 <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"></path><path d="M5 2h14"></path><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"></path><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"></path></svg>
                 <div class="card-footer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span>طلبية مفتوحة</span></div>
               </div>
 
               <div class="metric-card card-3" onclick="rotateConsumptionMetric(event)" title="انقر للتبديل بين: متوسط سنوي | متوسط شهري | مقارنة سنوية">
-                <div class="trend-badge"><span>5%+</span></div>
+                <div class="trend-badge" id="kpi-trend-consumption"><span>—</span></div>
                 <div class="card-header"><span class="card-title" id="kpi-consumption-title">معدل الاستهلاك</span></div>
-                <div class="card-value tabular-nums" id="kpi-consumption-rate">810</div>
+                <div class="card-value tabular-nums" id="kpi-consumption-rate">0</div>
                 <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
                 <div class="card-footer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg><span id="kpi-consumption-sub">قطعة / سنة</span></div>
                 <span id="consumption-period-label" style="display: none;">متوسط سنوي</span>
               </div>
 
               <div class="metric-card card-4" onclick="openInventoryFilteredByStatus('critical')" title="انقر لعرض لائحة المواد الحرجة في الجرد">
-                <div class="trend-badge"><span>8%+</span></div>
+                <div class="trend-badge" id="kpi-trend-lowstock"><span>—</span></div>
                 <div class="card-header"><span class="card-title">المواد الحرجة أو النافدة</span></div>
-                <div class="card-value tabular-nums" id="kpi-low-stock">86</div>
+                <div class="card-value tabular-nums" id="kpi-low-stock">0</div>
                 <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                 <div class="card-footer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg><span id="kpi-low-stock-sub">بلغت الحد الأدنى</span></div>
               </div>
 
               <div class="metric-card card-5" onclick="openInventoryFilteredByStatus('good')" title="انقر لعرض لائحة المواد المتوفرة بوفرة في الجرد">
-                <div class="trend-badge"><span>0%</span></div>
+                <div class="trend-badge" id="kpi-trend-stock"><span>—</span></div>
                 <div class="card-header"><span class="card-title">المواد المتوفرة فعلياً</span></div>
                 <div class="card-value tabular-nums" id="kpi-total-stock">0</div>
                 <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
@@ -6055,12 +6085,12 @@
               </div>
 
               <div class="metric-card card-6" onclick="rotateEntitiesMetric(event)" title="انقر للتبديل بين: عدد الجهات المستفيدة | عدد الأصناف المعتمدة">
-                <div class="trend-badge"><span>15%+</span></div>
+                <div class="trend-badge" id="kpi-trend-destinations"><span>—</span></div>
                 <div class="card-header"><span class="card-title" id="kpi-entities-title">عدد الجهات المستفيدة</span></div>
-                <div class="card-value tabular-nums" id="kpi-total-destinations">6</div>
+                <div class="card-value tabular-nums" id="kpi-total-destinations">0</div>
                 <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="18"></line><line x1="15" y1="22" x2="15" y2="18"></line><line x1="9" y1="18" x2="15" y2="18"></line><line x1="8" y1="6" x2="10" y2="6"></line><line x1="14" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="10" y2="10"></line><line x1="14" y1="10" x2="16" y2="10"></line><line x1="8" y1="14" x2="10" y2="14"></line><line x1="14" y1="14" x2="16" y2="14"></line></svg>
-                <div class="card-footer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="4" rx="1"></rect><rect x="3" y="17" width="6" height="4" rx="1"></rect><rect x="15" y="17" width="6" height="4" rx="1"></rect><path d="M12 7v5"></path><path d="M6 17v-3a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3"></path></svg><span id="kpi-entities-sub">الأصناف: 12 | المواد: 86</span></div>
-                <strong id="kpi-total-categories" class="tabular-nums" style="display: none;">12</strong>
+                <div class="card-footer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="4" rx="1"></rect><rect x="3" y="17" width="6" height="4" rx="1"></rect><rect x="15" y="17" width="6" height="4" rx="1"></rect><path d="M12 7v5"></path><path d="M6 17v-3a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3"></path></svg><span id="kpi-entities-sub">الأصناف: 0 | المواد: 0</span></div>
+                <strong id="kpi-total-categories" class="tabular-nums" style="display: none;">0</strong>
               </div>
             </div>
 
@@ -6139,33 +6169,36 @@
               </div>
             </div>
 
-            <!-- قسم آخر العمليات المنجزة (قائمة سفلية حديثة مع زر طباعة مربع) -->
-            <div class="operations-box">
-              <div class="op-header">
-                <div class="box-title-wrapper">
-                  <h2 class="box-title">آخر العمليات المنجزة</h2>
+            <!-- حاوية مزدوجة متجاوبة: جنباً إلى جنب على الحاسوب والتابلت، وعمودياً على الهاتف -->
+            <div class="dashboard-dual-ops-grid">
+              <!-- قسم آخر العمليات المنجزة (قائمة سفلية حديثة مع زر طباعة مربع) -->
+              <div class="operations-box">
+                <div class="op-header">
+                  <div class="box-title-wrapper">
+                    <h2 class="box-title">آخر العمليات المنجزة</h2>
+                  </div>
+                  <button type="button" class="view-all-btn" onclick="switchTab('history-view')" title="عرض سجل العمليات والأرشيف كاملاً">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                  </button>
                 </div>
-                <button type="button" class="view-all-btn" onclick="switchTab('history-view')" title="عرض سجل العمليات والأرشيف كاملاً">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                </button>
+                <div id="dashboard-recent-txs" class="op-list">
+                  <!-- يملأ ديناميكياً من بيانات السجل التاريخية الحقيقية (آخر 3 عمليات) -->
+                </div>
               </div>
-              <div id="dashboard-recent-txs" class="op-list">
-                <!-- يملأ ديناميكياً من بيانات السجل التاريخية الحقيقية (آخر 3 عمليات) -->
-              </div>
-            </div>
 
-            <!-- قسم آخر الطلبات (New Pending Orders Box - هيكل مطابق تماماً لآخر العمليات) -->
-            <div class="operations-box">
-              <div class="op-header">
-                <div class="box-title-wrapper">
-                  <h2 class="box-title">آخر الطلبات</h2>
+              <!-- قسم آخر الطلبات (New Pending Orders Box - هيكل مطابق تماماً لآخر العمليات) -->
+              <div class="operations-box">
+                <div class="op-header">
+                  <div class="box-title-wrapper">
+                    <h2 class="box-title">آخر الطلبات</h2>
+                  </div>
+                  <button type="button" class="view-all-btn" onclick="switchTab('orders-view')" title="عرض سجل وإدارة الطلبات كاملاً">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                  </button>
                 </div>
-                <button type="button" class="view-all-btn" onclick="switchTab('orders-view')" title="عرض سجل وإدارة الطلبات كاملاً">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                </button>
-              </div>
-              <div id="dashboard-recent-orders" class="op-list">
-                <!-- يملأ ديناميكياً بآخر 3 طلبات مسجلة مع زر تحويل سريع إلى إشهاد -->
+                <div id="dashboard-recent-orders" class="op-list">
+                  <!-- يملأ ديناميكياً بآخر 3 طلبات مسجلة مع زر تحويل سريع إلى إشهاد -->
+                </div>
               </div>
             </div>
           </div>
@@ -6887,6 +6920,269 @@
         </section>
 
         <!-- ====================================================================
+             VIEW: الرؤى والتحليل الذكي للمخزون (ai-insights-view)
+             ==================================================================== -->
+        <section id="ai-insights-view" class="view-panel" style="display: none;">
+          <div class="card" style="margin-bottom: 16px;">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 10px; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </span>
+                  <h2 class="card-title" style="margin: 0; font-size: 1.25rem;">منظومة الرؤى والتحليل الذكي للمخزون</h2>
+                </div>
+                <div class="card-subtitle" style="margin-top: 4px;">محرك إحصائي ذكي وسيناريوهات محاكاة تنبؤية لمعدلات الاستهلاك ومخاطر النفاد والتوزيع المتوازن</div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <button type="button" class="btn btn-outline btn-sm" onclick="exportAiReportCSV()" style="font-size: 0.8rem; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  <span>تصدير البيانات (CSV)</span>
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="printAiAnalysisReport()" style="font-size: 0.8rem; padding: 6px 14px; display: inline-flex; align-items: center; gap: 6px;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                  <span>🖨️ طباعة تقرير التحليل الرسمي (A4)</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- شريط تصفية التحليل الذكي -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 14px; padding: 12px 14px; background: var(--bg-muted); border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" style="font-size: 0.76rem; color: var(--text-muted); margin-bottom: 4px;">📅 النطاق الزمني المعتمد للتحليل</label>
+                <select id="ai-filter-timeframe" class="form-control" style="font-size: 0.82rem; height: 34px;" onchange="onAiFilterChanged()">
+                  <option value="all">كامل البيانات التاريخية (الكل)</option>
+                  <option value="current-year" selected>السنة الحالية (2026)</option>
+                  <option value="last-month">الشهر الماضي</option>
+                  <option value="last-3-months">آخر 3 أشهر</option>
+                  <option value="last-6-months">آخر 6 أشهر</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" style="font-size: 0.76rem; color: var(--text-muted); margin-bottom: 4px;">📦 تصفية حسب الصنف</label>
+                <select id="ai-filter-category" class="form-control" style="font-size: 0.82rem; height: 34px;" onchange="onAiFilterChanged()">
+                  <option value="all">كافة الأصناف المسجلة</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" style="font-size: 0.76rem; color: var(--text-muted); margin-bottom: 4px;">🏛️ تصفية حسب الوجهة المستفيدة</label>
+                <select id="ai-filter-destination" class="form-control" style="font-size: 0.82rem; height: 34px;" onchange="onAiFilterChanged()">
+                  <option value="all">كافة الجهات المستفيدة</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- بطاقات المؤشرات الذكية الأربعة (AI KPI Cards) -->
+          <div class="metrics-grid" style="margin-bottom: 16px;">
+            <!-- بطاقة 1: سرعة الاستهلاك الدوري -->
+            <div class="metric-card card-3">
+              <div class="trend-badge" id="ai-kpi-velocity-trend"><span>—</span></div>
+              <div class="card-header"><span class="card-title">معدل الاستهلاك الدوري</span></div>
+              <div class="card-value tabular-nums" id="ai-kpi-velocity-val">0</div>
+              <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+              <div class="card-footer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg><span id="ai-kpi-velocity-sub">قطعة / شهر في المتوسط</span></div>
+            </div>
+
+            <!-- بطاقة 2: مؤشر خطر النفاد -->
+            <div class="metric-card card-4">
+              <div class="trend-badge" id="ai-kpi-risk-badge" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border-color: rgba(239, 68, 68, 0.4);"><span>حرج</span></div>
+              <div class="card-header"><span class="card-title">مواد معرضة للنفاد &lt; 30 يوم</span></div>
+              <div class="card-value tabular-nums" id="ai-kpi-risk-val">0</div>
+              <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              <div class="card-footer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path></svg><span id="ai-kpi-risk-sub">تتطلب تزويداً عاجلاً</span></div>
+            </div>
+
+            <!-- بطاقة 3: الوجهة الأكثر استهلاكاً -->
+            <div class="metric-card card-1">
+              <div class="trend-badge" id="ai-kpi-top-dest-pct"><span>—</span></div>
+              <div class="card-header"><span class="card-title">الجهة الأكثر استهلاكاً</span></div>
+              <div class="card-value" id="ai-kpi-top-dest-name" style="font-size: 1.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 4px 0;">—</div>
+              <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="18"></line><line x1="15" y1="22" x2="15" y2="18"></line></svg>
+              <div class="card-footer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg><span id="ai-kpi-top-dest-sub">0 قطعة مسحوبة</span></div>
+            </div>
+
+            <!-- بطاقة 4: المادة الأكثر طلباً -->
+            <div class="metric-card card-5">
+              <div class="trend-badge" id="ai-kpi-top-item-badge"><span>الأكثر طلباً</span></div>
+              <div class="card-header"><span class="card-title">المادة الأكثر طلباً وتوزيعاً</span></div>
+              <div class="card-value" id="ai-kpi-top-item-name" style="font-size: 1.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 4px 0;">—</div>
+              <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+              <div class="card-footer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg><span id="ai-kpi-top-item-sub">0 قطعة موزعة</span></div>
+            </div>
+          </div>
+
+          <!-- شريط التبويبات الفرعية للأقسام التحليلية الأربعة -->
+          <div class="tab-pills-nav" style="display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; background: var(--bg-card); padding: 8px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+            <button type="button" class="btn btn-primary btn-sm ai-subtab-btn active" id="ai-subtab-btn-forecast" onclick="switchAiSubTab('forecast')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              <span>1. سرعة النضوب والتنبؤ بالنفاد</span>
+            </button>
+            <button type="button" class="btn btn-outline btn-sm ai-subtab-btn" id="ai-subtab-btn-entities" onclick="switchAiSubTab('entities')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              <span>2. نمط استهلاك الجهات والمؤشرات غير النمطية</span>
+            </button>
+            <button type="button" class="btn btn-outline btn-sm ai-subtab-btn" id="ai-subtab-btn-recommendations" onclick="switchAiSubTab('recommendations')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              <span>3. توصيات إدارية استباقية</span>
+            </button>
+            <button type="button" class="btn btn-outline btn-sm ai-subtab-btn" id="ai-subtab-btn-sandbox" onclick="switchAiSubTab('sandbox')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              <span>4. منصة محاكاة سيناريوهات التوزيع (Sandbox)</span>
+            </button>
+          </div>
+
+          <!-- القسم 1: جدول سرعة النضوب والتنبؤ بالنفاد -->
+          <div id="ai-section-forecast" class="ai-sub-section">
+            <div class="card">
+              <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <div>
+                  <h3 class="card-title" style="font-size: 1.05rem;">مصفوفة سرعة النضوب ومؤشرات الأيام المتبقية قبل النفاد</h3>
+                  <div class="card-subtitle">حساب معدل الاستهلاك اليومي والتنبؤ بعدد الأيام المتبقية حتى نفاد الرصيد وفقاً لنشاط التوزيع الفعلي</div>
+                </div>
+                <div style="width: 240px;">
+                  <input type="text" id="ai-forecast-search" class="form-control" placeholder="بحث سريع في المواد..." oninput="renderAiForecastTable()" style="height: 32px; font-size: 0.8rem;" />
+                </div>
+              </div>
+              <div class="table-scroll-wrapper">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 40px; text-align: center;">#</th>
+                      <th>بيان المادة والمواصفات</th>
+                      <th>الصنف</th>
+                      <th style="text-align: center; width: 110px;">الرصيد الفعلي</th>
+                      <th style="text-align: center; width: 130px;">معدل السحب الشهري</th>
+                      <th style="text-align: center; width: 140px;">الأيام المتبقية للنفاد</th>
+                      <th style="text-align: center; width: 120px;">مستوى الموثوقية</th>
+                      <th style="text-align: center; width: 150px;">التوصية الاستباقية</th>
+                    </tr>
+                  </thead>
+                  <tbody id="ai-forecast-tbody">
+                    <!-- يملأ ديناميكياً بواسطة renderAiForecastTable -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- القسم 2: نمط استهلاك الجهات والمؤشرات غير النمطية -->
+          <div id="ai-section-entities" class="ai-sub-section" style="display: none;">
+            <div class="card" style="margin-bottom: 14px;">
+              <div class="card-header">
+                <h3 class="card-title" style="font-size: 1.05rem;">تحليل سلوك ونمط السحب لدى الجهات والمستفيدين</h3>
+                <div class="card-subtitle">كشف المؤشرات غير النمطية (طفرات سحب مفاجئة، جهات مستقرة، أو جهات خاملة) مقارنة بالمتوسط العام</div>
+              </div>
+              <div id="ai-entities-patterns-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; margin-top: 10px;">
+                <!-- يملأ ديناميكياً ببطاقات الجهات والمؤشرات غير النمطية -->
+              </div>
+            </div>
+          </div>
+
+          <!-- القسم 3: توصيات إدارية استباقية قابلة للتنفيذ -->
+          <div id="ai-section-recommendations" class="ai-sub-section" style="display: none;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px;">
+              <!-- بطاقة 1: مواد تتطلب تزويداً عاجلاً -->
+              <div class="card" style="border-right: 4px solid #ef4444;">
+                <div class="card-header" style="margin-bottom: 8px;">
+                  <h3 class="card-title" style="font-size: 0.98rem; color: #ef4444; display: flex; align-items: center; gap: 6px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    تزويد استعجالي فوري (أقل من 20 يوماً أو نافدة)
+                  </h3>
+                </div>
+                <div id="ai-recom-urgent-list" style="display: flex; flex-direction: column; gap: 8px;">
+                  <!-- يملأ ديناميكياً -->
+                </div>
+              </div>
+
+              <!-- بطاقة 2: مواد بطيئة الحركة أو راكدة -->
+              <div class="card" style="border-right: 4px solid #f59e0b;">
+                <div class="card-header" style="margin-bottom: 8px;">
+                  <h3 class="card-title" style="font-size: 0.98rem; color: #f59e0b; display: flex; align-items: center; gap: 6px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    مخزون راكد أو بطيء الحركة (دون سحب مؤخراً)
+                  </h3>
+                </div>
+                <div id="ai-recom-dormant-list" style="display: flex; flex-direction: column; gap: 8px;">
+                  <!-- يملأ ديناميكياً -->
+                </div>
+              </div>
+
+              <!-- بطاقة 3: إرشادات التوزيع المتوازن وترشيد الطلب -->
+              <div class="card" style="border-right: 4px solid #10b981;">
+                <div class="card-header" style="margin-bottom: 8px;">
+                  <h3 class="card-title" style="font-size: 0.98rem; color: #10b981; display: flex; align-items: center; gap: 6px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    توجيهات إدارية للتوزيع المتوازن والاستباقي
+                  </h3>
+                </div>
+                <div id="ai-recom-guidelines-list" style="display: flex; flex-direction: column; gap: 8px;">
+                  <!-- يملأ ديناميكياً -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- القسم 4: منصة محاكاة سيناريوهات التوزيع الافتراضية (What-If Sandbox) -->
+          <div id="ai-section-sandbox" class="ai-sub-section" style="display: none;">
+            <div class="card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(59, 130, 246, 0.05)); border: 1.5px solid rgba(16, 185, 129, 0.35);">
+              <div class="card-header" style="border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px; margin-bottom: 16px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                  <div>
+                    <h3 class="card-title" style="font-size: 1.1rem; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                      <span style="display: inline-flex; width: 28px; height: 28px; border-radius: 8px; background: #10b981; color: #ffffff; align-items: center; justify-content: center; font-size: 0.9rem;">⚡</span>
+                      مختبر محاكاة سيناريوهات التوزيع الافتراضية (What-If Simulation Sandbox)
+                    </h3>
+                    <div class="card-subtitle">بيئة تجريبية معزولة: تتيح لك اختبار توزيع كميات معينة على جهة محددة لمعرفة أثرها على رصيد المخزون ومؤشر الاستقرار دون التأثير على السجلات الحقيقية</div>
+                  </div>
+                  <span class="badge badge-success" style="font-size: 0.78rem; padding: 4px 10px;">آمن ومستقل 100%</span>
+                </div>
+              </div>
+
+              <!-- نموذج إعداد سيناريو المحاكاة -->
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 16px;">
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label"><span class="req-star">*</span> 1. اختر المادة المراد محاكاتها</label>
+                  <select id="sim-item-select" class="form-control" onchange="onSimItemChanged()">
+                    <!-- يملأ ديناميكياً بجميع المواد وأرصدتها الحقيقية -->
+                  </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label"><span class="req-star">*</span> 2. الجهة المفترضة المستفيدة</label>
+                  <select id="sim-dest-select" class="form-control">
+                    <!-- يملأ ديناميكياً بالجهات -->
+                  </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label"><span class="req-star">*</span> 3. الكمية المفترض تسليمها (قطعة)</label>
+                  <input type="number" id="sim-qty-input" class="form-control tabular-nums" min="1" value="10" placeholder="أدخل الكمية الافتراضية..." />
+                </div>
+              </div>
+
+              <!-- أزرار التحكم بالمحاكاة -->
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 18px; flex-wrap: wrap;">
+                <button type="button" class="btn btn-primary" onclick="runAiSimulationSandbox()" style="display: inline-flex; align-items: center; gap: 6px;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                  <span>تشغيل المحاكاة وفحص الأثر</span>
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="resetAiSimulationSandbox()">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v6h6"></path><path d="M21 12A9 9 0 0 0 6 5.3L3 8"></path><path d="M21 22v-6h-6"></path><path d="M3 12a9 9 0 0 0 15 6.7l3-2.7"></path></svg>
+                  <span>إعادة ضبط المحاكاة</span>
+                </button>
+              </div>
+
+              <!-- نتائج المحاكاة -->
+              <div id="sim-result-box" style="display: none; padding: 18px; background: var(--bg-card); border-radius: var(--radius-md); border: 1.5px solid var(--border-subtle); box-shadow: var(--shadow-sm);">
+                <!-- يملأ ديناميكياً بواسطة runAiSimulationSandbox -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================================
              VIEW 6: مركز الإعدادات والتهيئة (settings-view)
              ==================================================================== -->
         <section id="settings-view" class="view-panel" style="display: none;">
@@ -7597,15 +7893,15 @@
             <div class="top-header">
               <div class="header-badges">
                 <div class="badge-pill primary">
-                  <i class="fa-solid fa-barcode"></i>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h1v6H4zm4 0h2v6H8zm5 0h1v6h-1zm4 0h3v6h-3z"/><rect x="2" y="5" width="20" height="14" rx="2"/></svg>
                   <span id="bulk-header-batch-pill">#DIST-2026-001</span>
                 </div>
                 <div class="badge-pill secondary">
-                  <i class="fa-regular fa-calendar-days"></i>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                   <span id="bulk-header-date-pill">2026-10-30</span>
                 </div>
                 <button type="button" class="empty-basket-btn" onclick="resetBulkDistributionRun()">
-                  <i class="fa-solid fa-trash-can"></i>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                   <span>تفريغ السلة</span>
                 </button>
                 <input type="date" id="bulk-run-date" style="display:none;" />
@@ -7627,7 +7923,7 @@
                   <div class="val tabular-nums" id="bulk-metric-total-pool" style="color: var(--text-main);">0</div>
                 </div>
                 <div class="bulk-metric-box">
-                  <div class="lbl">الموزع على المحاكم</div>
+                  <div class="lbl">الموزع على الجهات المستفيدة</div>
                   <div class="val tabular-nums" id="bulk-metric-total-allocated" style="color: #108AB1;">0</div>
                 </div>
                 <div class="bulk-metric-box" id="bulk-metric-remainder-box">
@@ -7652,7 +7948,7 @@
                 <div class="step-circle">2</div>
                 <div>
                   <div class="step-title">التوزيع</div>
-                  <div class="step-desc">مصفوفة توزيع الحصص على المحاكم والمراكز</div>
+                  <div class="step-desc">مصفوفة توزيع الحصص على الجهات والوجهات المستفيدة</div>
                 </div>
               </div>
               <div class="step-tab tab-3" id="bulk-tab-btn-3" onclick="setBulkStep(3)">
@@ -7803,7 +8099,7 @@
                   <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
                     <div style="display: flex; align-items: center; gap: 8px;">
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-phase-2);"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                      <strong style="font-size: 0.95rem; color: var(--text-main);">تخصيص المحاكم والجهات والمستفيدين:</strong>
+                      <strong style="font-size: 0.95rem; color: var(--text-main);">تخصيص الجهات والوجهات المستفيدة:</strong>
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px; flex: 1; max-width: 440px;">
                       <select id="bulk-multiselect-dest" class="form-control" style="height: 38px; font-weight: 800;" onchange="renderDestRecipientsChecklist()">
@@ -7840,7 +8136,7 @@
                         <span>جدول المراجعة والتدقيق قبل الاعتماد النهائي</span>
                       </h4>
                       <p style="margin:3px 0 0;font-size:0.78rem;color:var(--text-muted);">
-                        مراجعة وتعديل الحصص الموزعة لكل محكمة ومستفيد قبل توليد الإشهادات
+                        مراجعة وتعديل الحصص الموزعة لكل جهة ووجهة مستفيدة قبل توليد الإشهادات
                       </p>
                     </div>
                     <div id="bulk-precommit-summary-badge" class="badge badge-subtle" style="font-size:0.8rem;font-weight:800;">
@@ -7852,7 +8148,7 @@
                       <thead>
                         <tr>
                           <th style="width:45px;text-align:center;">#</th>
-                          <th>المحكمة / الوجهة المستفيدة</th>
+                          <th>الجهة / الوجهة المستفيدة</th>
                           <th>المسؤول المستفيد</th>
                           <th>المادة المسلمة</th>
                           <th style="text-align:center;width:95px;">الحصة الموزعة</th>
@@ -9988,6 +10284,7 @@
         'notifications-view': { btn: 'tab-btn-notifications', title: 'مركز التنبيهات' },
         'trash-view': { btn: 'tab-btn-trash', title: 'مركز الحذف المؤقت' },
         'bulk-distribution-view': { btn: 'tab-btn-bulk-distribution', title: 'عملية التوزيع' },
+        'ai-insights-view': { btn: 'tab-btn-ai-insights', title: 'الرؤى والتحليل الذكي' },
         'settings-view': { btn: 'tab-btn-settings', title: 'مركز الإعدادات والتهيئة' }
       };
 
@@ -10014,13 +10311,14 @@
       }
 
       state.currentTab = viewId;
+      document.body.classList.toggle('dashboard-view-active', viewId === 'dashboard-view');
       const appCont = document.querySelector('.app-container');
       if (appCont) {
         appCont.classList.toggle('dashboard-view-active', viewId === 'dashboard-view');
       }
       const headerTfBtn = document.getElementById('header-timeframe-icon-btn');
       if (headerTfBtn) {
-        headerTfBtn.style.display = (viewId === 'dashboard-view') ? '' : 'none';
+        headerTfBtn.style.display = (viewId === 'dashboard-view') ? 'inline-flex' : 'none';
       }
 
       if (viewId === 'dashboard-view') renderDashboard();
@@ -10032,6 +10330,7 @@
       else if (viewId === 'notifications-view') renderNotificationsView();
       else if (viewId === 'trash-view') renderTrashView();
       else if (viewId === 'bulk-distribution-view') initBulkDistributionView();
+      else if (viewId === 'ai-insights-view') renderAiInsightsView();
       else if (viewId === 'settings-view') {
         renderSettings();
         refreshCloudBackupsList();
@@ -17558,43 +17857,19 @@ ${itemsText}
 
     function syncBulkDestinationRows() {
       if (!Array.isArray(bulkDistState.rows)) bulkDistState.rows = [];
-      const destObj = state.data.destinations || {};
-      const destNames = Object.keys(destObj);
+      // البداية الفارغة الصارمة: تبدأ القائمة فارغة تماماً []؛ يختار المستخدم الوجهة يدوياً ويحدد المستفيد
+    }
 
-      if (bulkDistState.rows.length === 0) {
-        destNames.forEach((dName, idx) => {
-          const recs = typeof getRecipientsForDestination === 'function'
-            ? getRecipientsForDestination(dName)
-            : (Array.isArray(destObj[dName]) ? destObj[dName] : []);
-          const defaultRec = recs.length > 0 ? recs[0] : 'رئيس كتابة الضبط';
-          bulkDistState.rows.push({
-            rowId: 'brow_' + idx,
-            destName: dName,
-            recipientName: defaultRec,
-            enabled: true,
-            isExtra: false,
-            allocations: {}
-          });
-        });
-      } else {
-        // إضافة أي وجهة جديدة مضافة في النظام وغير موجودة في القائمة
-        destNames.forEach((dName, idx) => {
-          const exists = bulkDistState.rows.some(r => r.destName === dName);
-          if (!exists) {
-            const recs = typeof getRecipientsForDestination === 'function'
-              ? getRecipientsForDestination(dName)
-              : (Array.isArray(destObj[dName]) ? destObj[dName] : []);
-            bulkDistState.rows.push({
-              rowId: 'brow_' + Date.now() + '_' + idx,
-              destName: dName,
-              recipientName: recs.length > 0 ? recs[0] : 'رئيس كتابة الضبط',
-              enabled: true,
-              isExtra: false,
-              allocations: {}
-            });
-          }
-        });
-      }
+    function removeBulkRow(rowId) {
+      if (!Array.isArray(bulkDistState.rows)) return;
+      const row = bulkDistState.rows.find(r => r.rowId === rowId);
+      const name = row ? `${row.destName} — ${row.recipientName}` : '';
+      bulkDistState.rows = bulkDistState.rows.filter(r => r.rowId !== rowId);
+      renderBulkAllocationMatrix();
+      updateBulkLiveMonitor();
+      renderDestRecipientsChecklist();
+      saveBulkDistributionDraft();
+      showToast(name ? `تم حذف الجهة المستفيدة "${name}" من جدول التوزيع` : 'تم حذف الجهة من جدول التوزيع', 'info');
     }
 
     const BULK_DRAFT_KEY = 'E_STOCK_BULK_DRAFT_V1';
@@ -18038,6 +18313,16 @@ ${itemsText}
         </tr>
       `;
 
+      if (!bulkDistState.rows.length) {
+        tbody.innerHTML = `<tr><td colspan="${poolItems.length + 4}" style="text-align:center;padding:36px;color:var(--text-muted);">
+          <div style="font-weight:800;font-size:1rem;color:var(--text-main);margin-bottom:6px;">لم يتم تخصيص أي جهة مستفيدة بعد</div>
+          <div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">اختر الجهة المستفيدة والمسؤول من القائمة أعلاه ثم اضغط «إضافة للجدول» لإدراجها في مصفوفة التوزيع</div>
+        </td></tr>`;
+        tfoot.innerHTML = '';
+        renderBulkPrecommitReviewTable();
+        return;
+      }
+
       tbody.innerHTML = bulkDistState.rows.map(row => {
         const recs = typeof getRecipientsForDestination === 'function'
           ? getRecipientsForDestination(row.destName)
@@ -18049,14 +18334,14 @@ ${itemsText}
 
         const rowTotal = poolItems.reduce((s, p) => s + (row.enabled ? (parseInt(row.allocations[p.itemId], 10) || 0) : 0), 0);
 
-        const destCellHtml = row.isExtra
-          ? `<div style="display:flex;align-items:center;gap:6px;">
-               <select class="form-control" style="height:32px;font-size:0.8rem;font-weight:800;" onchange="updateExtraBulkRowDest('${row.rowId}', this.value)">
-                 ${allDestNames.map(d => `<option value="${escapeHtml(d)}" ${d === row.destName ? 'selected' : ''}>${escapeHtml(d)}</option>`).join('')}
-               </select>
-               <button type="button" class="btn-icon danger" style="width:26px;height:26px;flex-shrink:0;" onclick="removeExtraBulkRow('${row.rowId}')" title="حذف السطر الإضافي">&times;</button>
-             </div>`
-          : `<div style="font-weight:800;color:var(--text-main);">🏛️ ${escapeHtml(row.destName)}</div>`;
+        const destCellHtml = `
+          <div class="bulk-dest-name-box" style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:10px;min-height:44px;line-height:1.4;word-break:break-word;">
+            <span style="font-weight:800;font-size:0.88rem;color:var(--text-main);">${escapeHtml(row.destName)}</span>
+            <button type="button" class="btn-icon danger" onclick="removeBulkRow('${row.rowId}')" title="حذف هذه الجهة من جدول التوزيع" style="width:26px;height:26px;flex-shrink:0;color:#ef4444;cursor:pointer;border:none;background:rgba(239,68,68,0.1);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
+        `;
 
         return `
           <tr style="${!row.enabled ? 'opacity:0.45;' : ''}">
@@ -18797,6 +19082,894 @@ ${itemsText}
       const sandbox = document.getElementById('print-sandbox-area');
       if (sandbox) sandbox.innerHTML = htmls;
       openDocPreviewModal(`طباعة مجمعة لإشهادات دفعة التوزيع المركزي — ${targetBatchId} (${vouchers.length} إشهادات رسمية)`, htmls);
+    }
+
+
+    // =========================================================================
+    // DYNAMIC DASHBOARD METRICS & TREND BADGES ENGINE (ربط الأرقام الحقيقية 100%)
+    // =========================================================================
+    let _consumptionDisplayMode = 'annual'; // 'annual', 'monthly', 'total'
+    let _entitiesDisplayMode = 'destinations'; // 'destinations', 'categories'
+
+    function updateDashboardDualCardsMetrics() {
+      try {
+        const txsSource = Array.isArray(state.data.transactions) ? state.data.transactions : [];
+        const filteredTxs = typeof filterTransactionsByTimeframe === 'function' ? filterTransactionsByTimeframe(txsSource) : txsSource;
+        const items = Array.isArray(state.data.items) ? state.data.items.filter(i => !i.isDeleted) : [];
+        const totalItemsCount = items.length || 1;
+        const orders = Array.isArray(state.data.orders) ? state.data.orders : [];
+        const pendingOrders = orders.filter(o => !o.status || o.status === 'pending');
+        const destKeys = Object.keys(state.data.destinations || {});
+        const cats = state.data.categories || [];
+
+        // 1. حساب إجمالي القطع الموزعة
+        let totalDistributedUnits = 0;
+        filteredTxs.forEach(t => {
+          (t.items || []).forEach(i => {
+            totalDistributedUnits += Math.max(0, sanitize(i && i.qty !== undefined ? i.qty : 1));
+          });
+        });
+
+        // 2. حساب المواد الحرجة والمواد بوفرة
+        let criticalItemsCount = 0;
+        let abundantItemsCount = 0;
+        items.forEach(it => {
+          const lvl = getItemAvailabilityLevel(it);
+          if (lvl === 'critical') criticalItemsCount++;
+          else if (lvl === 'good') abundantItemsCount++;
+        });
+
+        // 3. تحديث مؤشرات البطاقة 3 (معدل الاستهلاك)
+        const elConsVal = document.getElementById('kpi-consumption-rate');
+        const elConsTitle = document.getElementById('kpi-consumption-title');
+        const elConsSub = document.getElementById('kpi-consumption-sub');
+        if (elConsVal) {
+          if (_consumptionDisplayMode === 'monthly') {
+            const monthlyAvg = Math.round(totalDistributedUnits / 12) || totalDistributedUnits;
+            elConsVal.textContent = sanitize(monthlyAvg);
+            if (elConsTitle) elConsTitle.textContent = 'متوسط الاستهلاك الشهري';
+            if (elConsSub) elConsSub.textContent = 'قطعة / شهر';
+          } else if (_consumptionDisplayMode === 'total') {
+            elConsVal.textContent = sanitize(totalDistributedUnits);
+            if (elConsTitle) elConsTitle.textContent = 'إجمالي المسحوب بالفترة';
+            if (elConsSub) elConsSub.textContent = 'قطعة إجمالية';
+          } else {
+            elConsVal.textContent = sanitize(totalDistributedUnits);
+            if (elConsTitle) elConsTitle.textContent = 'معدل الاستهلاك السنوي';
+            if (elConsSub) elConsSub.textContent = 'قطعة / سنة';
+          }
+        }
+
+        // 4. تحديث مؤشرات البطاقة 6 (الجهات / الأصناف)
+        const elEntVal = document.getElementById('kpi-total-destinations');
+        const elEntTitle = document.getElementById('kpi-entities-title');
+        const elEntSub = document.getElementById('kpi-entities-sub');
+        if (elEntVal) {
+          if (_entitiesDisplayMode === 'categories') {
+            elEntVal.textContent = sanitize(cats.length);
+            if (elEntTitle) elEntTitle.textContent = 'الأصناف المعتمدة';
+          } else {
+            elEntVal.textContent = sanitize(destKeys.length);
+            if (elEntTitle) elEntTitle.textContent = 'عدد الجهات المستفيدة';
+          }
+        }
+        if (elEntSub) {
+          elEntSub.textContent = `الأصناف: ${cats.length} | المواد: ${items.length}`;
+        }
+
+        // 5. نصوص بطاقات المخزون الفرعية
+        const elLowSub = document.getElementById('kpi-low-stock-sub');
+        if (elLowSub) elLowSub.textContent = `بلغت الحد الأدنى (${criticalItemsCount} مادة)`;
+
+        const elStockSub = document.getElementById('kpi-total-stock-sub');
+        if (elStockSub) elStockSub.textContent = `مادة بوفرة (${abundantItemsCount} مادة)`;
+
+        // 6. شارات النسب المئوية الحقيقية (Real Calculated Trend Badges)
+        const badgeVouchers = document.getElementById('kpi-trend-vouchers');
+        if (badgeVouchers) {
+          const pct = txsSource.length > 0 ? Math.round((filteredTxs.length / txsSource.length) * 100) : 100;
+          badgeVouchers.innerHTML = `<span>${pct}% نشط</span>`;
+        }
+
+        const badgeOrders = document.getElementById('kpi-trend-orders');
+        if (badgeOrders) {
+          const ordPct = orders.length > 0 ? Math.round((pendingOrders.length / orders.length) * 100) : 0;
+          badgeOrders.innerHTML = `<span>${ordPct}% معلق</span>`;
+        }
+
+        const badgeCons = document.getElementById('kpi-trend-consumption');
+        if (badgeCons) {
+          badgeCons.innerHTML = `<span>موزعة</span>`;
+        }
+
+        const badgeLow = document.getElementById('kpi-trend-lowstock');
+        if (badgeLow) {
+          const lowPct = Math.round((criticalItemsCount / totalItemsCount) * 100);
+          badgeLow.innerHTML = `<span>${lowPct}% من المخزون</span>`;
+        }
+
+        const badgeStock = document.getElementById('kpi-trend-stock');
+        if (badgeStock) {
+          const goodPct = Math.round((abundantItemsCount / totalItemsCount) * 100);
+          badgeStock.innerHTML = `<span>${goodPct}% بوفرة</span>`;
+        }
+
+        const badgeDest = document.getElementById('kpi-trend-destinations');
+        if (badgeDest) {
+          const activeDestsInTxs = new Set(filteredTxs.map(t => t.destination)).size;
+          const destPct = destKeys.length > 0 ? Math.round((activeDestsInTxs / destKeys.length) * 100) : 100;
+          badgeDest.innerHTML = `<span>${destPct}% مستفيدة</span>`;
+        }
+      } catch (err) {
+        console.error('updateDashboardDualCardsMetrics error:', err);
+      }
+    }
+
+    function rotateConsumptionMetric(e) {
+      if (e) e.stopPropagation();
+      if (_consumptionDisplayMode === 'annual') _consumptionDisplayMode = 'monthly';
+      else if (_consumptionDisplayMode === 'monthly') _consumptionDisplayMode = 'total';
+      else _consumptionDisplayMode = 'annual';
+      updateDashboardDualCardsMetrics();
+    }
+
+    function rotateEntitiesMetric(e) {
+      if (e) e.stopPropagation();
+      _entitiesDisplayMode = _entitiesDisplayMode === 'destinations' ? 'categories' : 'destinations';
+      updateDashboardDualCardsMetrics();
+    }
+
+
+    // =========================================================================
+    // AI INSIGHTS & PREDICTIVE ANALYTICS ENGINE (محرك الرؤى والتحليل الذكي)
+    // =========================================================================
+    let _aiActiveSubTab = 'forecast';
+
+    function switchAiSubTab(tabName) {
+      _aiActiveSubTab = tabName;
+      ['forecast', 'entities', 'recommendations', 'sandbox'].forEach(name => {
+        const btn = document.getElementById(`ai-subtab-btn-${name}`);
+        const sec = document.getElementById(`ai-section-${name}`);
+        if (btn) btn.classList.toggle('active', name === tabName);
+        if (sec) sec.style.display = (name === tabName) ? 'block' : 'none';
+      });
+
+      if (tabName === 'forecast') renderAiForecastTable();
+      else if (tabName === 'entities') renderAiEntitiesPatterns();
+      else if (tabName === 'recommendations') renderAiRecommendations();
+      else if (tabName === 'sandbox') initAiSimulationSandbox();
+    }
+
+    function onAiFilterChanged() {
+      renderAiInsightsView();
+    }
+
+    function getFilteredAiTransactions() {
+      const tfVal = document.getElementById('ai-filter-timeframe')?.value || 'current-year';
+      const catVal = document.getElementById('ai-filter-category')?.value || 'all';
+      const destVal = document.getElementById('ai-filter-destination')?.value || 'all';
+
+      const now = new Date(2026, 8, 25);
+      let txs = Array.isArray(state.data.transactions) ? [...state.data.transactions] : [];
+
+      // 1. تصفية النطاق الزمني
+      if (tfVal !== 'all') {
+        txs = txs.filter(t => {
+          const iso = getTxISODate(t);
+          if (!iso) return true;
+          const parts = iso.split('-');
+          if (parts.length < 3) return true;
+          const y = parseInt(parts[0], 10);
+          const m = parseInt(parts[1], 10);
+          const d = parseInt(parts[2], 10);
+          const tDate = new Date(y, m - 1, d);
+
+          if (tfVal === 'current-year') return y === 2026;
+          if (tfVal === 'last-month') return y === 2026 && m === 8;
+          if (tfVal === 'last-3-months') {
+            const diffDays = (now - tDate) / (1000 * 60 * 60 * 24);
+            return diffDays >= -5 && diffDays <= 92;
+          }
+          if (tfVal === 'last-6-months') {
+            const diffDays = (now - tDate) / (1000 * 60 * 60 * 24);
+            return diffDays >= -5 && diffDays <= 185;
+          }
+          return true;
+        });
+      }
+
+      // 2. تصفية الوجهة
+      if (destVal !== 'all') {
+        txs = txs.filter(t => t.destination === destVal);
+      }
+
+      // 3. تصفية الصنف داخل عناصر كل إشهاد
+      if (catVal !== 'all') {
+        txs = txs.map(t => {
+          const filteredItems = (t.items || []).filter(it => it.category === catVal);
+          return { ...t, items: filteredItems };
+        }).filter(t => t.items.length > 0);
+      }
+
+      return txs;
+    }
+
+    function getAiTimeframeDays() {
+      const tfVal = document.getElementById('ai-filter-timeframe')?.value || 'current-year';
+      if (tfVal === 'last-month') return 30;
+      if (tfVal === 'last-3-months') return 90;
+      if (tfVal === 'last-6-months') return 180;
+      return 270; // 9 أشهر من يناير إلى شتنبر 2026
+    }
+
+    function renderAiInsightsView() {
+      try {
+        // مزامنة خيارات قوائم التصفية
+        const catSelect = document.getElementById('ai-filter-category');
+        if (catSelect && catSelect.options.length <= 1) {
+          const cats = state.data.categories || [];
+          cats.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c;
+            opt.textContent = c;
+            catSelect.appendChild(opt);
+          });
+        }
+
+        const destSelect = document.getElementById('ai-filter-destination');
+        if (destSelect && destSelect.options.length <= 1) {
+          const dests = Object.keys(state.data.destinations || {});
+          dests.forEach(d => {
+            const opt = document.createElement('option');
+            opt.value = d;
+            opt.textContent = d;
+            destSelect.appendChild(opt);
+          });
+        }
+
+        const filteredTxs = getFilteredAiTransactions();
+        const timeframeDays = getAiTimeframeDays();
+        const items = Array.isArray(state.data.items) ? state.data.items.filter(i => !i.isDeleted) : [];
+
+        // حساب إجمالي السحب وسرعة الاستهلاك
+        let totalPieces = 0;
+        const itemStats = {}; // { itemId: { name, category, stock, units, txCount } }
+        const destStats = {}; // { destName: units }
+
+        items.forEach(it => {
+          itemStats[it.id] = {
+            id: it.id,
+            name: it.name,
+            category: it.category,
+            stock: sanitize(it.stock),
+            units: 0,
+            txCount: 0
+          };
+        });
+
+        filteredTxs.forEach(t => {
+          const dest = t.destination || 'غير محدد';
+          (t.items || []).forEach(it => {
+            const q = Math.max(0, sanitize(it.qty));
+            totalPieces += q;
+            destStats[dest] = (destStats[dest] || 0) + q;
+
+            if (it.id && itemStats[it.id]) {
+              itemStats[it.id].units += q;
+              itemStats[it.id].txCount++;
+            } else {
+              const found = items.find(x => x.name === it.name);
+              if (found && itemStats[found.id]) {
+                itemStats[found.id].units += q;
+                itemStats[found.id].txCount++;
+              }
+            }
+          });
+        });
+
+        const dailyVelocity = totalPieces / timeframeDays;
+        const monthlyVelocity = Math.round(dailyVelocity * 30);
+
+        // حساب المواد المعرضة لخطر النفاد < 30 يوم
+        let riskCount = 0;
+        Object.values(itemStats).forEach(stat => {
+          const dailyBurn = stat.units / timeframeDays;
+          const daysToStockout = dailyBurn > 0 ? (stat.stock / dailyBurn) : 999;
+          if (stat.stock === 0 || daysToStockout <= 30) {
+            riskCount++;
+          }
+        });
+
+        // أعلى جهة استهلاكاً
+        let topDestName = 'لا توجد عمليات';
+        let topDestUnits = 0;
+        Object.entries(destStats).forEach(([d, u]) => {
+          if (u > topDestUnits) {
+            topDestUnits = u;
+            topDestName = d;
+          }
+        });
+
+        // أعلى مادة طلباً
+        let topItemName = 'لا توجد بيانات';
+        let topItemUnits = 0;
+        Object.values(itemStats).forEach(stat => {
+          if (stat.units > topItemUnits) {
+            topItemUnits = stat.units;
+            topItemName = stat.name;
+          }
+        });
+
+        // تحديث بطاقات المؤشرات الأربعة
+        const elVelVal = document.getElementById('ai-kpi-velocity-val');
+        if (elVelVal) elVelVal.textContent = sanitize(monthlyVelocity);
+
+        const elVelSub = document.getElementById('ai-kpi-velocity-sub');
+        if (elVelSub) elVelSub.textContent = `${totalPieces} قطعة إجمالية في ${timeframeDays} يوماً`;
+
+        const elRiskVal = document.getElementById('ai-kpi-risk-val');
+        if (elRiskVal) elRiskVal.textContent = sanitize(riskCount);
+
+        const elDestName = document.getElementById('ai-kpi-top-dest-name');
+        if (elDestName) {
+          elDestName.textContent = topDestName;
+          elDestName.title = topDestName;
+        }
+
+        const elDestSub = document.getElementById('ai-kpi-top-dest-sub');
+        if (elDestSub) {
+          const pct = totalPieces > 0 ? Math.round((topDestUnits / totalPieces) * 100) : 0;
+          elDestSub.textContent = `${topDestUnits} قطعة (${pct}% من الإجمالي)`;
+        }
+
+        const elTopDestPct = document.getElementById('ai-kpi-top-dest-pct');
+        if (elTopDestPct) {
+          const pct = totalPieces > 0 ? Math.round((topDestUnits / totalPieces) * 100) : 0;
+          elTopDestPct.innerHTML = `<span>${pct}% حصة</span>`;
+        }
+
+        const elItemName = document.getElementById('ai-kpi-top-item-name');
+        if (elItemName) {
+          elItemName.textContent = topItemName;
+          elItemName.title = topItemName;
+        }
+
+        const elItemSub = document.getElementById('ai-kpi-top-item-sub');
+        if (elItemSub) elItemSub.textContent = `${topItemUnits} قطعة تم توزيعها`;
+
+        // تحديث القسم الفرعي النشط
+        switchAiSubTab(_aiActiveSubTab);
+      } catch (err) {
+        console.error('renderAiInsightsView error:', err);
+      }
+    }
+
+    function renderAiForecastTable() {
+      const tbody = document.getElementById('ai-forecast-tbody');
+      if (!tbody) return;
+
+      const filteredTxs = getFilteredAiTransactions();
+      const timeframeDays = getAiTimeframeDays();
+      const items = Array.isArray(state.data.items) ? state.data.items.filter(i => !i.isDeleted) : [];
+      const search = (document.getElementById('ai-forecast-search')?.value || '').trim().toLowerCase();
+
+      const itemStats = {};
+      items.forEach(it => {
+        itemStats[it.id] = { ...it, units: 0, txCount: 0 };
+      });
+
+      filteredTxs.forEach(t => {
+        (t.items || []).forEach(it => {
+          const q = Math.max(0, sanitize(it.qty));
+          const target = itemStats[it.id] || Object.values(itemStats).find(x => x.name === it.name);
+          if (target) {
+            target.units += q;
+            target.txCount++;
+          }
+        });
+      });
+
+      let statsList = Object.values(itemStats).map(it => {
+        const stock = sanitize(it.stock);
+        const dailyBurn = it.units / timeframeDays;
+        const monthlyBurn = Math.round(dailyBurn * 30 * 10) / 10;
+        const daysToStockout = dailyBurn > 0 ? Math.round(stock / dailyBurn) : (stock > 0 ? 999 : 0);
+
+        let confidence = 'high';
+        let confidenceBadge = '<span class="badge badge-success" style="font-size:0.72rem;">موثوقية عالية</span>';
+        if (it.txCount === 0) {
+          confidence = 'none';
+          confidenceBadge = '<span class="badge badge-subtle" style="font-size:0.72rem;">بيانات غير كافية</span>';
+        } else if (it.txCount <= 2) {
+          confidence = 'medium';
+          confidenceBadge = '<span class="badge badge-warning" style="font-size:0.72rem;">موثوقية متوسطة</span>';
+        }
+
+        let recomBadge = '';
+        if (stock === 0) {
+          recomBadge = '<span class="badge badge-danger" style="font-size:0.74rem;">🔴 نفاد فعلي - تزويد عاجل</span>';
+        } else if (daysToStockout <= 20) {
+          recomBadge = '<span class="badge badge-danger" style="font-size:0.74rem;">🔴 حرج (&le; 20 يوماً)</span>';
+        } else if (daysToStockout <= 60) {
+          recomBadge = '<span class="badge badge-warning" style="font-size:0.74rem;">🟡 مراقبة وإدراج بالطلبية</span>';
+        } else if (it.units === 0) {
+          recomBadge = '<span class="badge badge-subtle" style="font-size:0.74rem;">📦 مخزون راكد / بطيء</span>';
+        } else {
+          recomBadge = '<span class="badge badge-success" style="font-size:0.74rem;">🟢 رصيد آمن ومستقر</span>';
+        }
+
+        return {
+          ...it,
+          stock,
+          monthlyBurn,
+          daysToStockout,
+          confidence,
+          confidenceBadge,
+          recomBadge
+        };
+      });
+
+      if (search) {
+        statsList = statsList.filter(s => (s.name || '').toLowerCase().includes(search) || (s.category || '').toLowerCase().includes(search));
+      }
+
+      // فرز حسب الأيام المتبقية تصاعدياً (الأكثر خطورة أولاً)
+      statsList.sort((a, b) => a.daysToStockout - b.daysToStockout);
+
+      if (statsList.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 24px; color: var(--text-muted);">لا توجد مواد مطابقة لشرط البحث</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = statsList.map((stat, idx) => {
+        const daysDisplay = stat.daysToStockout === 999 ? 'غير محدد (> سنة)' : `${stat.daysToStockout} يوم`;
+        const daysColor = stat.stock === 0 || stat.daysToStockout <= 20 ? '#ef4444' : (stat.daysToStockout <= 60 ? '#f59e0b' : 'var(--text-main)');
+        return `
+          <tr>
+            <td style="text-align: center; font-size: 0.76rem;" class="tabular-nums">${idx + 1}</td>
+            <td>
+              <strong style="color: var(--text-main); font-size: 0.88rem;">${formatItemDisplayHtml(stat.name)}</strong>
+            </td>
+            <td><span class="badge badge-subtle" style="font-size: 0.74rem;">${escapeHtml(stat.category)}</span></td>
+            <td style="text-align: center;"><strong class="tabular-nums" style="font-size: 0.9rem;">${stat.stock}</strong></td>
+            <td style="text-align: center;"><span class="tabular-nums">${stat.monthlyBurn}</span> قطعة/شهر</td>
+            <td style="text-align: center;"><strong class="tabular-nums" style="color: ${daysColor}; font-weight: 800;">${daysDisplay}</strong></td>
+            <td style="text-align: center;">${stat.confidenceBadge}</td>
+            <td style="text-align: center;">${stat.recomBadge}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderAiEntitiesPatterns() {
+      const container = document.getElementById('ai-entities-patterns-grid');
+      if (!container) return;
+
+      const filteredTxs = getFilteredAiTransactions();
+      const destMap = state.data.destinations || {};
+      const destKeys = Object.keys(destMap);
+
+      const destUnits = {};
+      const destOps = {};
+      let grandTotal = 0;
+
+      destKeys.forEach(d => {
+        destUnits[d] = 0;
+        destOps[d] = 0;
+      });
+
+      filteredTxs.forEach(t => {
+        const d = t.destination || 'أخرى';
+        destOps[d] = (destOps[d] || 0) + 1;
+        (t.items || []).forEach(it => {
+          const q = Math.max(0, sanitize(it.qty));
+          destUnits[d] = (destUnits[d] || 0) + q;
+          grandTotal += q;
+        });
+      });
+
+      const avgPerDest = grandTotal / (destKeys.length || 1);
+
+      const cardsHtml = destKeys.map(d => {
+        const units = destUnits[d] || 0;
+        const ops = destOps[d] || 0;
+        const sharePct = grandTotal > 0 ? Math.round((units / grandTotal) * 100) : 0;
+        const ratioToAvg = avgPerDest > 0 ? (units / avgPerDest) : 1;
+
+        let anomalyBadge = '';
+        let anomalyDesc = '';
+        let borderColor = 'var(--border-subtle)';
+
+        if (ratioToAvg >= 1.6 && units > 20) {
+          anomalyBadge = '<span class="badge badge-warning" style="font-size: 0.72rem;">⚡ استهلاك قياسي مرتفع</span>';
+          anomalyDesc = 'سحب أعلى بكثير من المتوسط المعتاد لباقي الجهات القضائية.';
+          borderColor = '#f59e0b';
+        } else if (units === 0 && ops === 0) {
+          anomalyBadge = '<span class="badge badge-subtle" style="font-size: 0.72rem;">💤 جهة خاملة في الفترة</span>';
+          anomalyDesc = 'لم يتم تسجيل أي طلب أو عملية تسليم لهذه الوجهة خلال هذه الفترة.';
+          borderColor = 'var(--border-subtle)';
+        } else if (ratioToAvg <= 0.4 && units > 0) {
+          anomalyBadge = '<span class="badge badge-subtle" style="font-size: 0.72rem;">📉 استهلاك محدود</span>';
+          anomalyDesc = 'وتيرة سحب منخفضة مقارنة بالمعدل العام لباقي الدوائر.';
+          borderColor = 'var(--border-subtle)';
+        } else {
+          anomalyBadge = '<span class="badge badge-success" style="font-size: 0.72rem;">⚖️ وتيرة معتدلة ومنتظمة</span>';
+          anomalyDesc = 'حجم الاستهلاك يتماشى تماماً مع المعدل التقديري المستقر.';
+          borderColor = '#10b981';
+        }
+
+        return `
+          <div style="background: var(--bg-card); border: 1.5px solid ${borderColor}; border-radius: var(--radius-md); padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 8px;">
+                <strong style="color: var(--text-main); font-size: 0.94rem;">🏛️ ${escapeHtml(d)}</strong>
+                ${anomalyBadge}
+              </div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 10px;">
+                ${anomalyDesc}
+              </div>
+            </div>
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 4px;">
+                <span>إجمالي المستلم: <strong class="tabular-nums" style="color: var(--text-main);">${units} قطعة</strong> (${ops} إشهادات)</span>
+                <strong class="tabular-nums" style="color: var(--primary);">${sharePct}%</strong>
+              </div>
+              <div class="prog-track" style="height: 6px; background: var(--bg-muted); border-radius: 4px; overflow: hidden;">
+                <div style="height: 100%; width: ${Math.min(100, Math.max(4, sharePct))}%; background: ${borderColor === '#10b981' ? '#10b981' : (borderColor === '#f59e0b' ? '#f59e0b' : '#3b82f6')}; border-radius: 4px;"></div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = cardsHtml || '<div style="color: var(--text-muted); text-align: center; padding: 20px;">لا توجد بيانات جهات كافية</div>';
+    }
+
+    function renderAiRecommendations() {
+      const urgentList = document.getElementById('ai-recom-urgent-list');
+      const dormantList = document.getElementById('ai-recom-dormant-list');
+      const guidelinesList = document.getElementById('ai-recom-guidelines-list');
+      if (!urgentList || !dormantList || !guidelinesList) return;
+
+      const filteredTxs = getFilteredAiTransactions();
+      const timeframeDays = getAiTimeframeDays();
+      const items = Array.isArray(state.data.items) ? state.data.items.filter(i => !i.isDeleted) : [];
+
+      const itemUnits = {};
+      items.forEach(it => { itemUnits[it.id] = 0; });
+      filteredTxs.forEach(t => {
+        (t.items || []).forEach(it => {
+          if (it.id && itemUnits[it.id] !== undefined) {
+            itemUnits[it.id] += Math.max(0, sanitize(it.qty));
+          } else {
+            const found = items.find(x => x.name === it.name);
+            if (found) itemUnits[found.id] += Math.max(0, sanitize(it.qty));
+          }
+        });
+      });
+
+      const urgentItems = [];
+      const dormantItems = [];
+
+      items.forEach(it => {
+        const stock = sanitize(it.stock);
+        const units = itemUnits[it.id] || 0;
+        const dailyBurn = units / timeframeDays;
+        const daysToStockout = dailyBurn > 0 ? (stock / dailyBurn) : (stock > 0 ? 999 : 0);
+
+        if (stock === 0 || daysToStockout <= 20) {
+          urgentItems.push({ ...it, stock, daysToStockout });
+        } else if (units === 0 && stock > 0) {
+          dormantItems.push({ ...it, stock });
+        }
+      });
+
+      // 1. المواد العاجلة
+      if (urgentItems.length === 0) {
+        urgentList.innerHTML = `<div style="font-size: 0.82rem; color: var(--text-muted); padding: 12px; text-align: center;">✓ وضعية ممتازة: لا توجد أي مادة تواجه خطراً وشيكاً للنفاد خلال الـ 20 يوماً القادمة.</div>`;
+      } else {
+        urgentList.innerHTML = urgentItems.slice(0, 5).map(it => `
+          <div style="background: var(--bg-muted); border-radius: var(--radius-sm); padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem;">
+            <div>
+              <strong style="color: var(--text-main);">${escapeHtml(it.name)}</strong>
+              <div style="font-size: 0.74rem; color: var(--text-muted);">${escapeHtml(it.category)}</div>
+            </div>
+            <div style="text-align: left;">
+              <span class="badge badge-danger tabular-nums" style="font-size: 0.74rem;">الرصيد: ${it.stock}</span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // 2. المخزون الراكد
+      if (dormantItems.length === 0) {
+        dormantList.innerHTML = `<div style="font-size: 0.82rem; color: var(--text-muted); padding: 12px; text-align: center;">لا توجد مواد راكدة؛ جميع بنود المستودع تسجل حركية سحب دورية.</div>`;
+      } else {
+        dormantList.innerHTML = dormantItems.slice(0, 5).map(it => `
+          <div style="background: var(--bg-muted); border-radius: var(--radius-sm); padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem;">
+            <div>
+              <strong style="color: var(--text-main);">${escapeHtml(it.name)}</strong>
+              <div style="font-size: 0.74rem; color: var(--text-muted);">${escapeHtml(it.category)}</div>
+            </div>
+            <div style="text-align: left;">
+              <span class="badge badge-subtle tabular-nums" style="font-size: 0.74rem;">المخزن: ${it.stock}</span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // 3. التوجيهات الإدارية
+      guidelinesList.innerHTML = `
+        <div style="font-size: 0.82rem; line-height: 1.55; display: flex; flex-direction: column; gap: 8px;">
+          <div style="background: var(--bg-muted); padding: 8px 10px; border-radius: var(--radius-sm); border-right: 3px solid #10b981;">
+            📌 <strong>الجدولة الدورية:</strong> يُوصى باعتماد جدول توزيع مسبق كل 15 يوماً للجهات القضائية الأكثر سحباً لتقليل ضغط العمليات الفردية.
+          </div>
+          <div style="background: var(--bg-muted); padding: 8px 10px; border-radius: var(--radius-sm); border-right: 3px solid #3b82f6;">
+            📌 <strong>تحويل المواد الراكدة:</strong> فحص إمكانية إعادة توجيه المواد التي لم تُسحب منذ أكثر من 90 يوماً للمحاكم المحتاجة قبل انتهاء الصلاحية.
+          </div>
+          <div style="background: var(--bg-muted); padding: 8px 10px; border-radius: var(--radius-sm); border-right: 3px solid #f59e0b;">
+            📌 <strong>حماية الأرشيف:</strong> بعد عمليات الصرف الكبرى، احرص دائماً على أخذ نسخة احتياطية من قائمة الإعدادات لحماية رصيد المستودع.
+          </div>
+        </div>
+      `;
+    }
+
+    function initAiSimulationSandbox() {
+      const itemSelect = document.getElementById('sim-item-select');
+      const destSelect = document.getElementById('sim-dest-select');
+      if (!itemSelect || !destSelect) return;
+
+      const items = Array.isArray(state.data.items) ? state.data.items.filter(i => !i.isDeleted) : [];
+      itemSelect.innerHTML = items.map(it => `<option value="${escapeHtml(it.id)}">${escapeHtml(it.name)} (الرصيد الفعلي: ${sanitize(it.stock)})</option>`).join('');
+
+      const dests = Object.keys(state.data.destinations || {});
+      destSelect.innerHTML = dests.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
+
+      onSimItemChanged();
+    }
+
+    function onSimItemChanged() {
+      const resultBox = document.getElementById('sim-result-box');
+      if (resultBox) resultBox.style.display = 'none';
+    }
+
+    function runAiSimulationSandbox() {
+      const itemSelect = document.getElementById('sim-item-select');
+      const destSelect = document.getElementById('sim-dest-select');
+      const qtyInput = document.getElementById('sim-qty-input');
+      const resultBox = document.getElementById('sim-result-box');
+      if (!itemSelect || !destSelect || !qtyInput || !resultBox) return;
+
+      const itemId = itemSelect.value;
+      const destName = destSelect.value;
+      const simQty = Math.max(1, parseInt(qtyInput.value, 10) || 1);
+
+      const item = (state.data.items || []).find(i => i.id === itemId);
+      if (!item) {
+        showToast('يرجى اختيار مادة صالحة', 'warning');
+        return;
+      }
+
+      const initialStock = sanitize(item.stock);
+      const projectedStock = initialStock - simQty;
+      const cMin = getItemCriticalThreshold(item);
+
+      let impactStatus = 'safe';
+      let statusTitle = 'العملية آمنة والمخزون مستقر';
+      let statusColor = '#10b981';
+      let statusBadge = '<span class="badge badge-success" style="font-size:0.8rem;">رصيد آمن ومتاح</span>';
+      let adviceText = 'الكمية المفترضة متاحة بالكامل وتسمح بالإشهاد دون أي إخلال باحتياط المستودع.';
+
+      if (projectedStock < 0) {
+        impactStatus = 'deficit';
+        statusTitle = 'تنبيه: عجز مفترض في الرصيد';
+        statusColor = '#ef4444';
+        statusBadge = '<span class="badge badge-danger" style="font-size:0.8rem;">عجز بالرصيد بالمستودع</span>';
+        adviceText = `الكمية المطلوبة (${simQty}) تتجاوز الرصيد الحالي (${initialStock}) بـ ${Math.abs(projectedStock)} قطعة. (تذكير: النظام يسمح بإتمام الإشهاد إدارياً حتى في حالة الصفر، مع التنبيه بضرورة التزويد).`;
+      } else if (projectedStock <= cMin) {
+        impactStatus = 'critical';
+        statusTitle = 'تحذير: الرصيد سيصل للحد الحرج';
+        statusColor = '#f59e0b';
+        statusBadge = '<span class="badge badge-warning" style="font-size:0.8rem;">سيبلغ الحد الحرج الأدنى</span>';
+        adviceText = `بعد تنفيذ هذه العملية الافتراضية، سيتبقى ${projectedStock} قطعة فقط بالمخزن (الحد الأدنى الحرج لهذه المادة هو ${cMin}). يُوصى بإدراج المادة في جدول الشراء فوراً.`;
+      }
+
+      resultBox.style.display = 'block';
+      resultBox.style.borderRight = `4px solid ${statusColor}`;
+      resultBox.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+          <div>
+            <strong style="font-size: 1rem; color: var(--text-main);">نتائج تقييم أثر التوزيع الافتراضي</strong>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">المادة: <strong>${escapeHtml(item.name)}</strong> &larr; الوجهة: <strong>${escapeHtml(destName)}</strong></div>
+          </div>
+          ${statusBadge}
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 12px;">
+          <div style="background: var(--bg-muted); padding: 10px; border-radius: var(--radius-sm); text-align: center;">
+            <div style="font-size: 0.74rem; color: var(--text-muted);">الرصيد الفعلي الحالي</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: var(--text-main);" class="tabular-nums">${initialStock}</div>
+          </div>
+          <div style="background: var(--bg-muted); padding: 10px; border-radius: var(--radius-sm); text-align: center;">
+            <div style="font-size: 0.74rem; color: var(--text-muted);">الكمية المفترضة للتسليم</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: #3b82f6;" class="tabular-nums">${simQty}</div>
+          </div>
+          <div style="background: var(--bg-muted); padding: 10px; border-radius: var(--radius-sm); text-align: center;">
+            <div style="font-size: 0.74rem; color: var(--text-muted);">الرصيد المتبقي المتوقع</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: ${statusColor};" class="tabular-nums">${projectedStock}</div>
+          </div>
+          <div style="background: var(--bg-muted); padding: 10px; border-radius: var(--radius-sm); text-align: center;">
+            <div style="font-size: 0.74rem; color: var(--text-muted);">الحد الأدنى الحرج للمادة</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: var(--text-muted);" class="tabular-nums">${cMin}</div>
+          </div>
+        </div>
+
+        <div style="background: ${statusColor}14; border: 1px solid ${statusColor}40; padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.84rem; line-height: 1.55; color: var(--text-main);">
+          💡 <strong>التقييم الإداري للأثر:</strong> ${adviceText}
+        </div>
+      `;
+
+      showToast('تم إجراء المحاكاة المعزولة بنجاح ✓ (لم يتم تعديل أي رصيد حقيقي)', 'info');
+    }
+
+    function resetAiSimulationSandbox() {
+      const qtyInput = document.getElementById('sim-qty-input');
+      const resultBox = document.getElementById('sim-result-box');
+      if (qtyInput) qtyInput.value = 10;
+      if (resultBox) resultBox.style.display = 'none';
+      showToast('تمت إعادة ضبط منصة المحاكاة الافتراضية', 'info');
+    }
+
+    function printAiAnalysisReport() {
+      const filteredTxs = getFilteredAiTransactions();
+      const timeframeDays = getAiTimeframeDays();
+      const tfVal = document.getElementById('ai-filter-timeframe')?.value || 'current-year';
+      const items = Array.isArray(state.data.items) ? state.data.items.filter(i => !i.isDeleted) : [];
+      const headerSrc = escapeHtml(getBrandingAssetSrc('header') || './en_tete.png');
+      const footerSrc = escapeHtml(getBrandingAssetSrc('footer') || './en_pied.png');
+      const todayStr = new Date().toLocaleDateString('ar-MA');
+
+      let totalUnits = 0;
+      const destUnits = {};
+      const itemUnits = {};
+      items.forEach(i => { itemUnits[i.id] = 0; });
+
+      filteredTxs.forEach(t => {
+        const d = t.destination || 'غير محدد';
+        (t.items || []).forEach(it => {
+          const q = Math.max(0, sanitize(it.qty));
+          totalUnits += q;
+          destUnits[d] = (destUnits[d] || 0) + q;
+          if (it.id && itemUnits[it.id] !== undefined) itemUnits[it.id] += q;
+          else {
+            const found = items.find(x => x.name === it.name);
+            if (found) itemUnits[found.id] += q;
+          }
+        });
+      });
+
+      const forecastRows = items.map((it, idx) => {
+        const stock = sanitize(it.stock);
+        const units = itemUnits[it.id] || 0;
+        const dailyBurn = units / timeframeDays;
+        const daysToStockout = dailyBurn > 0 ? Math.round(stock / dailyBurn) : (stock > 0 ? 999 : 0);
+        const statusText = stock === 0 ? 'نفاد فعلي' : (daysToStockout <= 20 ? 'حرج' : (daysToStockout <= 60 ? 'مراقبة' : 'مستقر'));
+        return `
+          <tr>
+            <td style="text-align:center;">${idx + 1}</td>
+            <td style="font-weight:bold;">${escapeHtml(it.name)}</td>
+            <td>${escapeHtml(it.category)}</td>
+            <td style="text-align:center;font-weight:bold;">${stock}</td>
+            <td style="text-align:center;">${units}</td>
+            <td style="text-align:center;">${daysToStockout === 999 ? '> سنة' : daysToStockout + ' يوم'}</td>
+            <td style="text-align:center;">${statusText}</td>
+          </tr>
+        `;
+      }).join('');
+
+      const html = `
+        <div class="official-cert-page" style="padding: 20px; font-family: 'Cairo', sans-serif; direction: rtl;">
+          <div style="text-align: center; margin-bottom: 15px;">
+            <img src="${headerSrc}" style="width: 100%; max-height: 100px; object-fit: contain;" alt="En-tête" />
+          </div>
+
+          <div style="text-align: center; border: 2px solid #0f172a; padding: 8px 16px; border-radius: 6px; margin: 15px 0 20px 0; background: #f8fafc;">
+            <h2 style="margin: 0; font-size: 15pt; color: #0f172a;">تقرير الرؤى والتحليل الإحصائي الذكي للمخزون والتوزيع</h2>
+            <div style="font-size: 9.5pt; color: #475569; margin-top: 4px;">المديرية الإقليمية للعدل بسطات — تاريخ إعداد التقرير: ${todayStr}</div>
+          </div>
+
+          <div style="margin-bottom: 16px; font-size: 9pt; line-height: 1.6; background: #f1f5f9; padding: 12px; border-radius: 6px;">
+            <div><strong>النطاق الزمني:</strong> ${tfVal} (${timeframeDays} يوماً) | <strong>عدد الإشهادات المنجزة:</strong> ${filteredTxs.length} | <strong>إجمالي القطع الموزعة:</strong> ${totalUnits} قطعة</div>
+            <div><strong>عدد بنود المخزون:</strong> ${items.length} مادة مسجلة | <strong>عدد الدوائر المستفيدة:</strong> ${Object.keys(destUnits).length} جهة</div>
+          </div>
+
+          <h3 style="font-size: 11pt; border-bottom: 1.5px solid #0f172a; padding-bottom: 4px; margin-bottom: 8px;">أولاً: مصفوفة سرعة استهلاك المواد والتنبؤ بالنفاد</h3>
+          <table class="cert-official-table" style="width: 100%; font-size: 8.5pt; border-collapse: collapse; margin-bottom: 20px;">
+            <thead>
+              <tr style="background: #e2e8f0;">
+                <th style="width: 5%;">#</th>
+                <th style="width: 40%;">بيان المادة والمواصفات</th>
+                <th style="width: 18%;">الصنف</th>
+                <th style="width: 10%;">الرصيد الفعلي</th>
+                <th style="width: 9%;">المسحوب</th>
+                <th style="width: 9%;">الأيام للنفاد</th>
+                <th style="width: 9%;">الوضعية</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${forecastRows}
+            </tbody>
+          </table>
+
+          <div style="display: flex; justify-content: space-between; margin-top: 35px; page-break-inside: avoid;">
+            <div style="text-align: center; width: 220px;">
+              <strong>مسؤول تدبير المخزون</strong>
+              <div style="height: 60px;"></div>
+              <div>التوقيع والخاتم</div>
+            </div>
+            <div style="text-align: center; width: 220px;">
+              <strong>السيد المدير الإقليمي للعدل بسطات</strong>
+              <div style="height: 60px;"></div>
+              <div>تأشيرة الاعتماد</div>
+            </div>
+          </div>
+
+          <div style="text-align: center; margin-top: 30px;">
+            <img src="${footerSrc}" style="width: 100%; max-height: 70px; object-fit: contain;" alt="Pied" />
+          </div>
+        </div>
+      `;
+
+      openDocPreviewModal(`تقرير التحليل الإحصائي الذكي للمخزون — ${todayStr}`, html);
+    }
+
+    function exportAiReportCSV() {
+      const filteredTxs = getFilteredAiTransactions();
+      const timeframeDays = getAiTimeframeDays();
+      const items = Array.isArray(state.data.items) ? state.data.items.filter(i => !i.isDeleted) : [];
+
+      const itemUnits = {};
+      items.forEach(i => { itemUnits[i.id] = 0; });
+      filteredTxs.forEach(t => {
+        (t.items || []).forEach(it => {
+          if (it.id && itemUnits[it.id] !== undefined) itemUnits[it.id] += Math.max(0, sanitize(it.qty));
+          else {
+            const found = items.find(x => x.name === it.name);
+            if (found) itemUnits[found.id] += Math.max(0, sanitize(it.qty));
+          }
+        });
+      });
+
+      const headers = ["المعرف", "المادة", "الصنف", "الرصيد الفعلي", "الكمية المسحوبة", "الاستهلاك اليومي", "الأيام المتبقية للنفاد", "الحالة الموصى بها"];
+      const rows = items.map(it => {
+        const stock = sanitize(it.stock);
+        const units = itemUnits[it.id] || 0;
+        const dailyBurn = (units / timeframeDays).toFixed(2);
+        const daysToStockout = units > 0 ? Math.round(stock / (units / timeframeDays)) : 999;
+        const status = stock === 0 ? "نفاد فعلي" : (daysToStockout <= 20 ? "حرج" : "مستقر");
+        return [
+          `"${it.id}"`,
+          `"${it.name.replace(/"/g, '""')}"`,
+          `"${it.category.replace(/"/g, '""')}"`,
+          `"${stock}"`,
+          `"${units}"`,
+          `"${dailyBurn}"`,
+          `"${daysToStockout === 999 ? '>365' : daysToStockout}"`,
+          `"${status}"`
+        ].join(',');
+      });
+
+      const csvContent = "\uFEFF" + [headers.join(','), ...rows].join('\r\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `تقرير_التحليل_الذكي_مخزون_سطات_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      showToast('تم تصدير تقرير التحليل الذكي بصيغة CSV بنجاح', 'success');
     }
 
     document.addEventListener('DOMContentLoaded', bootApplication);
