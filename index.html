@@ -6293,23 +6293,23 @@
     #ai-insights-view .ai-glass-kpi-card .ai-kpi-watermark-icon,
     .kpi-card .kpi-bg-icon {
       position: absolute !important;
-      top: auto !important;
+      top: 50% !important;
+      bottom: auto !important;
       right: auto !important;
-      left: 15px !important;
-      bottom: 15px !important;
-      width: 64px !important;
-      height: 64px !important;
+      left: 20px !important;
+      width: 76px !important;
+      height: 76px !important;
       opacity: 0.22 !important;
       pointer-events: none !important;
       z-index: 1 !important;
       transform-origin: center center !important;
-      transform: rotate(18deg) scale(1.22) !important;
+      transform: translateY(-50%) rotate(10deg) scale(1.20) !important;
       transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease !important;
     }
     #dashboard-view .metric-card:hover .card-icon,
     #ai-insights-view .ai-glass-kpi-card:hover .ai-kpi-watermark-icon,
     .kpi-card:hover .kpi-bg-icon {
-      transform: rotate(25deg) scale(1.35) !important;
+      transform: translateY(-50%) rotate(14deg) scale(1.30) !important;
       opacity: 0.32 !important;
     }
 
@@ -6562,7 +6562,7 @@
     }
 
   
-    /* صف أزرار اعتماد الإشهاد: سطر واحد متناسق على الحاسوب، و3×2 متمركز في الوسط على الهاتف */
+    /* صف أزرار اعتماد الإشهاد (7 أزرار): صف واحد أفقي على الحاسوب، و(3 تحتها 3 تحتها 1 في المنتصف تماماً) على الهاتف */
     .issuance-square-actions-row {
       display: flex !important;
       flex-wrap: nowrap !important;
@@ -6574,9 +6574,16 @@
     }
     @media (max-width: 640px) {
       .issuance-square-actions-row {
-        flex-wrap: wrap !important;
-        max-width: 176px !important;
+        display: grid !important;
+        grid-template-columns: repeat(3, 46px) !important;
         justify-content: center !important;
+        justify-items: center !important;
+        gap: 10px !important;
+        max-width: 168px !important;
+        margin: 8px auto 0 auto !important;
+      }
+      .issuance-square-actions-row > button:nth-child(7) {
+        grid-column: 2 / 3 !important;
       }
     }
 
@@ -7391,6 +7398,19 @@
                     <polyline points="6 9 6 2 18 2 18 9"></polyline>
                     <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
                     <rect x="6" y="14" width="12" height="8"></rect>
+                  </svg>
+                </button>
+
+                <!-- 7. مشاركة وإرسال وتحميل الإشهاد (واتساب / بريد / مشاركة الهاتف / تحميل) -->
+                <button type="button" class="btn-square-action btn-sq-share" onclick="openShareCurrentIssuanceModal()" 
+                        title="مشاركة الإشهاد: إرسال عبر واتساب أو البريد أو مشاركة الهاتف أو تحميل الوثيقة" aria-label="مشاركة الإشهاد"
+                        style="background: rgba(14, 165, 233, 0.14); color: #38bdf8; border: 1.5px solid rgba(56, 189, 248, 0.45);">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="18" cy="5" r="3"></circle>
+                    <circle cx="6" cy="12" r="3"></circle>
+                    <circle cx="18" cy="19" r="3"></circle>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
                   </svg>
                 </button>
 
@@ -26034,6 +26054,826 @@ ${itemsText}
       );
     };
 
+    
+    // =========================================================================
+    // ENGINE V3: WEB SHARE / WHATSAPP / DOWNLOAD, STOCK CHOICE ON DELETE,
+    // AND BULK DISTRIBUTION "سلة الطباعة" (PRINT BASKET) WORKFLOW
+    // =========================================================================
+
+    window.APP_ICONS.share = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>';
+
+    // 1. نافذة مشاركة وتحميل الإشهاد (واتساب / البريد / مشاركة الهاتف / تحميل الوثيقة)
+    let _activeShareVoucherObj = null;
+
+    function buildVoucherPlainTextSummary(v) {
+      if (!v) return '';
+      const totalUnits = (v.items || []).reduce((s, i) => s + sanitize(i.qty), 0);
+      const itemsLines = (v.items || []).map((it, idx) => `${idx + 1}. ${it.name} (الكمية: ${it.qty})`).join('\n');
+      const sCode = v.secretCode || generateCertSecretCode(v);
+      return [
+        `المملكة المغربية - وزارة العدل`,
+        `المديرية الإقليمية للعدل بسطات`,
+        `إشهاد تسليم رقم: ${v.id} [${sCode}]`,
+        `التاريخ: ${v.isoDate || v.date}`,
+        `الجهة المستفيدة: ${v.destination}`,
+        `المسؤول المستفيد: ${v.recipient}`,
+        `إجمالي القطع المسلمة: ${totalUnits} قطعة`,
+        `المواد المسلمة:`,
+        itemsLines
+      ].join('\n');
+    }
+
+    function openShareVoucherModalByObj(voucherObj) {
+      if (!voucherObj) return;
+      _activeShareVoucherObj = voucherObj;
+      const modal = document.getElementById('share-voucher-modal');
+      const summaryBox = document.getElementById('share-voucher-summary-box');
+      if (!modal) return;
+      const totalUnits = (voucherObj.items || []).reduce((s, i) => s + sanitize(i.qty), 0);
+      if (summaryBox) {
+        summaryBox.innerHTML = `
+          <div><strong>رقم الإشهاد:</strong> <span class="tabular-nums">${escapeHtml(voucherObj.id)}</span></div>
+          <div><strong>الجهة المستفيدة:</strong> ${escapeHtml(voucherObj.destination)} — ${escapeHtml(voucherObj.recipient)}</div>
+          <div><strong>مجموع المواد:</strong> ${(voucherObj.items || []).length} بنود (${totalUnits} قطعة)</div>
+        `;
+      }
+      modal.style.display = 'flex';
+    }
+    window.openShareVoucherModalByObj = openShareVoucherModalByObj;
+
+    function openShareVoucherModalById(voucherId) {
+      let v = (state.data.transactions || []).find(t => t.id === voucherId);
+      if (!v && Array.isArray(window._lastPrintBasketVouchers)) {
+        v = window._lastPrintBasketVouchers.find(t => t.id === voucherId);
+      }
+      if (!v) {
+        showToast('لم يتم العثور على الإشهاد المطلوب مشاركته', 'warning');
+        return;
+      }
+      openShareVoucherModalByObj(v);
+    }
+    window.openShareVoucherModalById = openShareVoucherModalById;
+
+    function openShareCurrentIssuanceModal() {
+      if (!state.cart || state.cart.length === 0) {
+        showToast('السلة فارغة! أضف مادة واحدة على الأقل لمشاركة الإشهاد أو تحميله', 'warning');
+        return;
+      }
+      const dateVal = document.getElementById('voucher-date-input')?.value || new Date().toISOString().split('T')[0];
+      const destVal = document.getElementById('voucher-dest-select')?.value || 'المديرية الإقليمية للعدل بسطات';
+      let recipVal = document.getElementById('voucher-recipient-select')?.value || '';
+      if (recipVal === '__custom__') {
+        recipVal = (document.getElementById('custom-recipient-input')?.value || '').trim();
+      }
+      if (!recipVal) recipVal = 'المستفيد المعتمد';
+      const tempId = document.getElementById('voucher-num-input')?.value || generateNextVoucherNumber();
+      const tempVoucher = {
+        id: tempId,
+        operationId: tempId,
+        date: new Date().toLocaleString('ar-MA'),
+        isoDate: dateVal,
+        destination: destVal,
+        recipient: recipVal,
+        reason: document.getElementById('voucher-reason-select')?.value || 'حصة دورية',
+        channel: document.getElementById('voucher-channel-select')?.value || 'تسليم مباشر',
+        status: 'استجابة كلية',
+        items: JSON.parse(JSON.stringify(state.cart))
+      };
+      tempVoucher.secretCode = generateCertSecretCode(tempVoucher);
+      openShareVoucherModalByObj(tempVoucher);
+    }
+    window.openShareCurrentIssuanceModal = openShareCurrentIssuanceModal;
+
+    function closeShareVoucherModal() {
+      const modal = document.getElementById('share-voucher-modal');
+      if (modal) modal.style.display = 'none';
+    }
+    window.closeShareVoucherModal = closeShareVoucherModal;
+
+    async function triggerNativeWebShareVoucher() {
+      if (!_activeShareVoucherObj) return;
+      const text = buildVoucherPlainTextSummary(_activeShareVoucherObj);
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: `إشهاد تسليم ${_activeShareVoucherObj.id} — ${_activeShareVoucherObj.destination}`,
+            text: text
+          });
+          closeShareVoucherModal();
+          showToast('تمت مشاركة الإشهاد بنجاح', 'success');
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+        }
+      }
+      // في حال عدم دعم المتصفح لمشاركة الهاتف المباشرة، ننسخ النص ونفتح واتساب
+      triggerWhatsAppShareVoucher();
+    }
+    window.triggerNativeWebShareVoucher = triggerNativeWebShareVoucher;
+
+    function triggerWhatsAppShareVoucher() {
+      if (!_activeShareVoucherObj) return;
+      const text = buildVoucherPlainTextSummary(_activeShareVoucherObj);
+      const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+      window.open(waUrl, '_blank', 'noopener,noreferrer');
+      closeShareVoucherModal();
+    }
+    window.triggerWhatsAppShareVoucher = triggerWhatsAppShareVoucher;
+
+    function triggerMailtoShareVoucher() {
+      if (!_activeShareVoucherObj) return;
+      const targetEmail = (state.profile?.userProfile?.email || 'mohamed105@gmail.com').trim();
+      const subject = `إشهاد تسليم رسمي رقم ${_activeShareVoucherObj.id} — ${_activeShareVoucherObj.destination}`;
+      const body = buildVoucherPlainTextSummary(_activeShareVoucherObj);
+      window.location.href = `mailto:${encodeURIComponent(targetEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      closeShareVoucherModal();
+    }
+    window.triggerMailtoShareVoucher = triggerMailtoShareVoucher;
+
+    function triggerDownloadStandaloneVoucherHtml() {
+      if (!_activeShareVoucherObj) return;
+      const certBody = generateVoucherA4Html(_activeShareVoucherObj);
+      const fullHtml = `<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>إشهاد تسليم ${_activeShareVoucherObj.id}</title><style>@page{size:A4 portrait;margin:10mm;}body{font-family:'Tajawal',Arial,sans-serif;direction:rtl;margin:0;padding:16px;background:#fff;color:#0f172a;}</style></head><body>${certBody}<script>window.onload=function(){setTimeout(function(){window.print();},300);};<\/script></body></html>`;
+      const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `إشهاد_تسليم_${_activeShareVoucherObj.id}.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      closeShareVoucherModal();
+      showToast(`تم تحميل وثيقة الإشهاد (${_activeShareVoucherObj.id}) بنجاح`, 'success');
+    }
+    window.triggerDownloadStandaloneVoucherHtml = triggerDownloadStandaloneVoucherHtml;
+
+    // 2. نافذة التخيير الذكية عند حذف أي عملية أو إشهاد أو دفعة: (إعادة المواد للمخزون أم الحذف دون تغيير المخزون)
+    let _pendingDeleteStockCallback = null;
+
+    function openDeleteStockChoiceModal(title, descHtml, onChoiceCallback) {
+      const modal = document.getElementById('delete-stock-choice-modal');
+      const titleEl = document.getElementById('delete-stock-choice-title');
+      const descEl = document.getElementById('delete-stock-choice-desc');
+      const btnYes = document.getElementById('btn-delete-with-restock');
+      const btnNo = document.getElementById('btn-delete-without-restock');
+      if (!modal) return;
+
+      if (titleEl) titleEl.textContent = title || 'تأكيد حذف العملية وخيار المخزون';
+      if (descEl) descEl.innerHTML = descHtml || '';
+      _pendingDeleteStockCallback = onChoiceCallback;
+
+      if (btnYes) {
+        btnYes.onclick = () => {
+          const cb = _pendingDeleteStockCallback;
+          closeDeleteStockChoiceModal();
+          if (typeof cb === 'function') cb(true);
+        };
+      }
+      if (btnNo) {
+        btnNo.onclick = () => {
+          const cb = _pendingDeleteStockCallback;
+          closeDeleteStockChoiceModal();
+          if (typeof cb === 'function') cb(false);
+        };
+      }
+
+      modal.style.display = 'flex';
+    }
+    window.openDeleteStockChoiceModal = openDeleteStockChoiceModal;
+
+    function closeDeleteStockChoiceModal() {
+      const modal = document.getElementById('delete-stock-choice-modal');
+      if (modal) modal.style.display = 'none';
+      _pendingDeleteStockCallback = null;
+    }
+    window.closeDeleteStockChoiceModal = closeDeleteStockChoiceModal;
+
+    // دالة مساعدة لإعادة الكميات المخصومة إلى المخزون عند اختيار المستخدم "نعم، أعدها للمخزون"
+    function restoreVoucherItemsToStock(voucher) {
+      if (!voucher || !Array.isArray(voucher.items)) return 0;
+      let restoredUnits = 0;
+      voucher.items.forEach(it => {
+        const stockItem = (state.data.items || []).find(i => i.id === it.id || i.name === it.name);
+        if (stockItem) {
+          // إذا كان الإشهاد مسجلاً فيه actualDeducted نعيد الكمية المخصومة، أو نعيد كمية الإشهاد بناءً على طلب المستخدم الصريح
+          const qtyToRestore = (it.actualDeducted !== undefined && it.actualDeducted !== null)
+            ? Math.max(0, sanitize(it.actualDeducted))
+            : Math.max(1, sanitize(it.qty));
+          const finalAdd = qtyToRestore > 0 ? qtyToRestore : Math.max(1, sanitize(it.qty));
+          stockItem.stock = sanitize(stockItem.stock) + finalAdd;
+          restoredUnits += finalAdd;
+        }
+      });
+      return restoredUnits;
+    }
+
+    // ترقية deleteVoucher لتسأل المستخدم دائماً: هل نعيد المواد المسحوبة إلى المخزون أم نحذف الإشهاد فقط؟
+    deleteVoucher = function(id) {
+      const voucher = (state.data.transactions || []).find(t => t.id === id);
+      if (!voucher) {
+        // إذا كان إشهاداً داخل سلة الطباعة فقط، نزيله من العرض
+        if (Array.isArray(window._lastPrintBasketVouchers)) {
+          window._lastPrintBasketVouchers = window._lastPrintBasketVouchers.filter(v => v.id !== id);
+        }
+        const container = document.getElementById('bulk-generated-certificates-container');
+        if (container) {
+          container.querySelectorAll('tr').forEach(tr => {
+            if (tr.innerHTML.includes(id)) tr.remove();
+          });
+        }
+        return;
+      }
+
+      const totalUnits = (voucher.items || []).reduce((s, i) => s + sanitize(i.qty), 0);
+      const itemsSummary = (voucher.items || []).map(i => `${escapeHtml(i.name)} (<strong>${i.qty}</strong>)`).join(' ، ');
+      const descHtml = `
+        <div><strong>رقم الإشهاد:</strong> <span class="tabular-nums">${escapeHtml(voucher.id)}</span></div>
+        <div><strong>المستفيد:</strong> ${escapeHtml(voucher.recipient)} — ${escapeHtml(voucher.destination)}</div>
+        <div><strong>المواد المسحوبة (${totalUnits} قطعة):</strong> ${itemsSummary}</div>
+      `;
+
+      openDeleteStockChoiceModal(
+        'حذف الإشهاد وخيار إعادة المواد للمخزون',
+        descHtml,
+        (shouldRestock) => {
+          let restored = 0;
+          if (shouldRestock) {
+            restored = restoreVoucherItemsToStock(voucher);
+          }
+
+          moveRecordToSoftTrash('voucher', voucher, `إشهاد ${voucher.id} — ${voucher.recipient} (${voucher.destination})`);
+          state.data.transactions = (state.data.transactions || []).filter(t => t.id !== id);
+          state.selectedVouchersForPrint.delete(id);
+
+          if (Array.isArray(state.data.bulkBatches)) {
+            state.data.bulkBatches.forEach(b => {
+              if (Array.isArray(b.voucherIds) && b.voucherIds.includes(id)) {
+                b.voucherIds = b.voucherIds.filter(vid => vid !== id);
+                b.certificatesCount = b.voucherIds.length;
+                const remVouchers = (state.data.transactions || []).filter(t => b.voucherIds.includes(t.id));
+                b.totalUnits = remVouchers.reduce((s, v) => s + (v.items || []).reduce((a, i) => a + sanitize(i.qty), 0), 0);
+              }
+            });
+            state.data.bulkBatches = state.data.bulkBatches.filter(b => (b.certificatesCount || 0) > 0);
+          }
+
+          if (Array.isArray(window._lastPrintBasketVouchers)) {
+            window._lastPrintBasketVouchers = window._lastPrintBasketVouchers.filter(v => v.id !== id);
+          }
+
+          persistAll();
+          renderHistoryTable();
+          renderBulkBatchesHistory();
+          renderInventoryTable();
+          updateDashboardDualCardsMetrics();
+          refreshAllBadges();
+
+          if (Array.isArray(window._lastPrintBasketVouchers) && window._lastPrintBasketVouchers.length > 0 && window._lastPrintBasketRecord) {
+            renderLastCommittedBatchCertificates(window._lastPrintBasketRecord, window._lastPrintBasketVouchers);
+          } else {
+            clearBulkStep3DisplayedCertificates(true);
+          }
+
+          showToast(
+            shouldRestock
+              ? `تم حذف الإشهاد وإعادة (${restored} قطعة) إلى رصيد المخزون بنجاح ✓`
+              : `تم حذف الإشهاد دون تغيير أرصدة المخزون الحالية ✓`,
+            'info'
+          );
+        }
+      );
+    };
+
+    // ترقية deleteSelectedVouchersBatch في أرشيف العمليات لتسأل المستخدم أيضاً عن إعادة المخزون
+    deleteSelectedVouchersBatch = function() {
+      const ids = Array.from(state.selectedVouchersForPrint || []);
+      if (ids.length === 0) {
+        showToast('يرجى تحديد إشهاد واحد على الأقل للحذف من القائمة', 'warning');
+        return;
+      }
+      const targetVouchers = (state.data.transactions || []).filter(t => ids.includes(t.id));
+      const totalUnits = targetVouchers.reduce((s, v) => s + (v.items || []).reduce((a, i) => a + sanitize(i.qty), 0), 0);
+
+      openDeleteStockChoiceModal(
+        `حذف (${ids.length}) إشهادات محددة`,
+        `<div>تم تحديد <strong>${ids.length} إشهادات</strong> بإجمالي <strong>${totalUnits} قطعة</strong> مسحوبة.</div>`,
+        (shouldRestock) => {
+          let restored = 0;
+          targetVouchers.forEach(voucher => {
+            if (shouldRestock) restored += restoreVoucherItemsToStock(voucher);
+            moveRecordToSoftTrash('voucher', voucher, `إشهاد ${voucher.id} — ${voucher.recipient} (${voucher.destination})`);
+          });
+          state.data.transactions = (state.data.transactions || []).filter(t => !ids.includes(t.id));
+          state.selectedVouchersForPrint.clear();
+          const checkAll = document.getElementById('check-all-vouchers');
+          if (checkAll) checkAll.checked = false;
+          persistAll();
+          renderHistoryTable();
+          renderInventoryTable();
+          renderRecentTransactions();
+          updateDashboardDualCardsMetrics();
+          refreshAllBadges();
+          showToast(
+            shouldRestock
+              ? `تم حذف (${ids.length}) إشهادات وإعادة (${restored} قطعة) إلى المخزون ✓`
+              : `تم حذف (${ids.length}) إشهادات دون المساس بأرصدة المخزون ✓`,
+            'info'
+          );
+        }
+      );
+    };
+
+    // ترقية deleteBulkBatch في أرشيف دفعات التوزيع لتسأل المستخدم عن إعادة المخزون أم لا
+    deleteBulkBatch = function(batchId) {
+      if (!batchId) return;
+      const batch = (state.data.bulkBatches || []).find(b => b.batchId === batchId);
+      const vouchers = (state.data.transactions || []).filter(t => t.batchId === batchId || (batch && (batch.voucherIds || []).includes(t.id)));
+      const totalUnits = vouchers.reduce((s, v) => s + (v.items || []).reduce((a, i) => a + sanitize(i.qty), 0), 0);
+
+      openDeleteStockChoiceModal(
+        `حذف دفعة التوزيع (${batchId}) من الأرشيف`,
+        `<div><strong>رقم الدفعة:</strong> <span class="tabular-nums">${escapeHtml(batchId)}</span></div>
+         <div><strong>عدد الإشهادات المرتبطة:</strong> ${vouchers.length} إشهادات (إجمالي <strong>${totalUnits} قطعة</strong>)</div>`,
+        (shouldRestock) => {
+          let restored = 0;
+          vouchers.forEach(v => {
+            if (shouldRestock) restored += restoreVoucherItemsToStock(v);
+            moveRecordToSoftTrash('voucher', v, `إشهاد ${v.id} — ${v.recipient} (${v.destination})`);
+          });
+
+          const voucherIdSet = new Set(vouchers.map(v => v.id));
+          state.data.transactions = (state.data.transactions || []).filter(t => t.batchId !== batchId && !voucherIdSet.has(t.id));
+          state.data.bulkBatches = (state.data.bulkBatches || []).filter(b => b.batchId !== batchId);
+
+          if (bulkDistState.lastCommittedBatchId === batchId || (state.data.bulkBatches || []).length === 0) {
+            clearBulkStep3DisplayedCertificates(true);
+          }
+
+          persistAll();
+          renderBulkBatchesHistory();
+          renderHistoryTable();
+          renderInventoryTable();
+          updateDashboardDualCardsMetrics();
+          refreshAllBadges();
+          showToast(
+            shouldRestock
+              ? `تم حذف الدفعة (${batchId}) وإعادة (${restored} قطعة) إلى المخزون بنجاح ✓`
+              : `تم حذف الدفعة (${batchId}) من الأرشيف دون تغيير أرصدة المخزون ✓`,
+            'success'
+          );
+        }
+      );
+    };
+
+    // 3. ترقية submitIssuance لتسجيل actualDeducted بدقة والتنبيه الواضح عند كون الستوك = 0
+    const _v2SubmitIssuance = submitIssuance;
+    submitIssuance = function(andPrint = false) {
+      if (_isSubmittingIssuance) return;
+      const zeroStockItems = [];
+      (state.cart || []).forEach(cartItem => {
+        const stockItem = (state.data.items || []).find(i => i.id === cartItem.id);
+        const curStock = stockItem ? sanitize(stockItem.stock) : 0;
+        const reqQty = Math.max(1, sanitize(cartItem.qty));
+        cartItem.actualDeducted = Math.min(curStock, reqQty);
+        if (curStock <= 0) {
+          zeroStockItems.push(`${cartItem.name} (الرصيد: 0)`);
+        } else if (curStock < reqQty) {
+          zeroStockItems.push(`${cartItem.name} (المتوفر: ${curStock} من أصل ${reqQty})`);
+        }
+      });
+
+      if (zeroStockItems.length > 0) {
+        showToast(`تنبيه: الرصيد بالمخزن فارغ أو غير كافٍ لـ [${zeroStockItems.join(' ، ')}] — تم تمرير العملية وإصدار الإشهاد بسلام.`, 'warning');
+      }
+      _v2SubmitIssuance(andPrint);
+    };
+
+    // 4. ترقية عملية التوزيع (commitBulkDistributionRun) و"سلة الطباعة" (Print Basket) وفصل الإفراغ عن الأرشيف
+    window._lastPrintBasketRecord = null;
+    window._lastPrintBasketVouchers = [];
+
+    commitBulkDistributionRun = function(andPreviewPrint = false) {
+      if (_isCommittingBulkRun) return;
+      if (!bulkDistState.pool.length) {
+        showToast('سلة التوزيع فارغة!', 'warning');
+        return;
+      }
+
+      for (const p of bulkDistState.pool) {
+        const item = (state.data.items || []).find(i => i.id === p.itemId);
+        if (!item) {
+          showToast('إحدى المواد غير موجودة في المخزون', 'error');
+          return;
+        }
+        const alloc = getBulkItemAllocatedSum(p.itemId);
+        if (alloc !== p.qty) {
+          showToast(`قاعدة الباقي صفر: المادة "${item.name}" لم يتم توزيع رصيدها بالكامل (المسحوب ${p.qty} والموزع ${alloc})`, 'error');
+          return;
+        }
+      }
+
+      const activeRows = bulkDistState.rows.filter(r => r.enabled && bulkDistState.pool.some(p => (parseInt(r.allocations[p.itemId], 10) || 0) > 0));
+      const totalUnitsToDistribute = bulkDistState.pool.reduce((s, p) => s + (parseInt(p.qty, 10) || 0), 0);
+
+      // نافذة تأكيد التفعيل والحفظ في الأرشيف
+      openAppConfirmModal(
+        'تأكيد تفعيل عملية التوزيع وحفظها في الأرشيف',
+        `سيتم الآن اعتماد عملية التوزيع (${bulkDistState.batchId || 'DIST'}) لـ (${activeRows.length}) جهات مستفيدة بإجمالي (${totalUnitsToDistribute} قطعة):\n• سيتم سحب الكميات المتوفرة من رصيد الجرد الحالي.\n• سيتم ترحيل وحفظ الإشهادات رسمياً في أرشيف العمليات.\n• سيتم تفريغ سلة التوزيع للبدء بعملية جديدة مع إبقاء الوثائق في «سلة الطباعة» لطباعتها.`,
+        () => {
+          _executeCommitBulkDistributionNow(andPreviewPrint);
+        },
+        'تأكيد التفعيل والحفظ',
+        false
+      );
+    };
+
+    function _executeCommitBulkDistributionNow(andPreviewPrint = false) {
+      if (_isCommittingBulkRun) return;
+      _isCommittingBulkRun = true;
+      try {
+        const preBulkSnapshot = {
+          type: 'bulk_distribution',
+          items: JSON.parse(JSON.stringify(state.data.items || [])),
+          transactions: JSON.parse(JSON.stringify(state.data.transactions || [])),
+          orders: JSON.parse(JSON.stringify(state.data.orders || [])),
+          bulkBatches: JSON.parse(JSON.stringify(state.data.bulkBatches || [])),
+          bulkState: {
+            batchId: bulkDistState.batchId,
+            pool: JSON.parse(JSON.stringify(bulkDistState.pool || [])),
+            rows: JSON.parse(JSON.stringify(bulkDistState.rows || []))
+          }
+        };
+
+        const batchId = bulkDistState.batchId || generateNewBulkBatchCode(false);
+        const dateVal = document.getElementById('bulk-run-date')?.value || new Date().toISOString().split('T')[0];
+        const reasonVal = document.getElementById('bulk-run-reason')?.value || 'حصة التوزيع المركزي الدوري';
+        const channelVal = document.getElementById('bulk-run-channel')?.value || 'تسليم مباشر';
+        const userNotes = (document.getElementById('bulk-run-notes')?.value || '').trim();
+        const itemNoteText = userNotes ? `${userNotes} (${batchId})` : `دفعة التوزيع المركزي ${batchId}`;
+        const ownerName = state.profile?.userProfile?.fullName || state.profile?.projectMeta?.ownerName || 'محمد أيت حمادي';
+
+        const pooledSummary = [];
+        const zeroStockAlerts = [];
+        const itemDeductRatio = {}; // لحفظ الكمية المخصومة فعلياً لكل مادة
+
+        bulkDistState.pool.forEach(p => {
+          const stockItem = state.data.items.find(i => i.id === p.itemId);
+          if (stockItem) {
+            const curStock = Math.max(0, sanitize(stockItem.stock));
+            const reqQty = Math.max(1, sanitize(p.qty));
+            const actualDeductedTotal = Math.min(curStock, reqQty);
+            if (curStock <= 0) {
+              zeroStockAlerts.push(`${stockItem.name} (الرصيد: 0)`);
+            } else if (curStock < reqQty) {
+              zeroStockAlerts.push(`${stockItem.name} (المتوفر: ${curStock} من أصل ${reqQty})`);
+            }
+            stockItem.stock = Math.max(0, curStock - reqQty);
+            itemDeductRatio[p.itemId] = { remainingDeductible: actualDeductedTotal };
+            pooledSummary.push({
+              id: stockItem.id,
+              name: stockItem.name,
+              category: stockItem.category,
+              qty: p.qty,
+              actualDeducted: actualDeductedTotal
+            });
+          }
+        });
+
+        if (zeroStockAlerts.length > 0) {
+          showToast(`تنبيه: الرصيد بالمخزن فارغ أو غير كافٍ لـ [${zeroStockAlerts.join(' ، ')}] — تم تمرير العملية وإصدار الإشهادات بسلام.`, 'warning');
+        }
+
+        const generatedVouchers = [];
+        const activeRows = bulkDistState.rows.filter(r => r.enabled);
+
+        activeRows.forEach((row, idx) => {
+          const voucherItems = [];
+          bulkDistState.pool.forEach(p => {
+            const q = parseInt(row.allocations[p.itemId], 10) || 0;
+            if (q > 0) {
+              const stItem = state.data.items.find(i => i.id === p.itemId);
+              if (stItem) {
+                const track = itemDeductRatio[p.itemId] || { remainingDeductible: 0 };
+                const rowDeducted = Math.min(track.remainingDeductible, q);
+                track.remainingDeductible = Math.max(0, track.remainingDeductible - rowDeducted);
+                voucherItems.push({
+                  id: stItem.id,
+                  name: stItem.name,
+                  category: stItem.category,
+                  qty: q,
+                  actualDeducted: rowDeducted,
+                  notes: itemNoteText
+                });
+              }
+            }
+          });
+
+          if (voucherItems.length > 0) {
+            let voucherId = `CERT-${Date.now()}-${idx + 1}-${Math.floor(100 + Math.random() * 900)}`;
+            while (state.data.transactions.some(t => t.id === voucherId) || generatedVouchers.some(v => v.id === voucherId)) {
+              voucherId = `CERT-${Date.now()}-${idx + 1}-${Math.floor(100 + Math.random() * 900)}`;
+            }
+
+            const newVoucher = {
+              id: voucherId,
+              operationId: voucherId,
+              batchId: batchId,
+              isBulkDistribution: true,
+              date: new Date().toLocaleString('ar-MA'),
+              isoDate: dateVal,
+              destination: row.destName,
+              recipient: row.recipientName || 'رئيس كتابة الضبط',
+              reason: reasonVal,
+              channel: channelVal,
+              status: 'استجابة كلية',
+              orderRef: batchId,
+              items: voucherItems
+            };
+            newVoucher.secretCode = generateCertSecretCode(newVoucher);
+            generatedVouchers.push(newVoucher);
+          }
+        });
+
+        for (let i = generatedVouchers.length - 1; i >= 0; i--) {
+          state.data.transactions.unshift(generatedVouchers[i]);
+        }
+
+        if (!state.data.bulkBatches) state.data.bulkBatches = [];
+        const batchRecord = {
+          batchId: batchId,
+          date: dateVal,
+          deliverer: ownerName,
+          reason: reasonVal,
+          notes: userNotes,
+          itemsCount: pooledSummary.length,
+          totalUnits: pooledSummary.reduce((s, i) => s + i.qty, 0),
+          pooledItems: pooledSummary,
+          certificatesCount: generatedVouchers.length,
+          voucherIds: generatedVouchers.map(v => v.id),
+          createdAt: new Date().toISOString()
+        };
+        state.data.bulkBatches.unshift(batchRecord);
+        bulkDistState.lastCommittedBatchId = batchId;
+        window._lastPrintBasketRecord = batchRecord;
+        window._lastPrintBasketVouchers = generatedVouchers;
+
+        if (typeof logSystemNotification === 'function') {
+          logSystemNotification(
+            `اعتماد عملية توزيع مركزي (${batchId})`,
+            `تم توزيع ${batchRecord.totalUnits} قطعة (${batchRecord.itemsCount} مواد) وتوليد ${generatedVouchers.length} إشهادات رسمية في الأرشيف.`,
+            'info',
+            'issuance'
+          );
+        }
+        if (typeof scanLowStockNotifications === 'function') {
+          scanLowStockNotifications(false);
+        }
+
+        // تصفير سلة التوزيع ومصفوفة التوزيع تماماً بعد ترحيل العملية للأرشيف، مع إبقاء الوثائق في "سلة الطباعة"
+        clearBulkDistributionDraft();
+        bulkDistState.pool = [];
+        bulkDistState.stagedItems = {};
+        bulkDistState.rows = [];
+        const notesEl = document.getElementById('bulk-run-notes');
+        if (notesEl) notesEl.value = '';
+        generateNewBulkBatchCode(false);
+
+        persistAll();
+        refreshAllBadges();
+        refreshBulkBadgesCount();
+
+        renderBulkBeneficiaryBubbleCards();
+        renderBulkPoolBasket();
+        renderBulkAllocationMatrix();
+        updateBulkLiveMonitor();
+
+        setBulkStep(3);
+        renderLastCommittedBatchCertificates(batchRecord, generatedVouchers);
+        renderBulkBatchesHistory();
+        renderHistoryTable();
+        renderInventoryTable();
+
+        triggerGracefulUndoBar(`تم اعتماد الدفعة (${batchRecord.batchId}) وترحيلها للأرشيف (${generatedVouchers.length} إشهادات)`, preBulkSnapshot);
+        showToast(`✓ تم اعتماد العملية وترحيلها إلى الأرشيف وتصفير سلة التوزيع! الإشهادات جاهزة الآن في «سلة الطباعة».`, 'success');
+
+        if (andPreviewPrint && generatedVouchers.length > 0) {
+          printBulkBatchCertificates(batchRecord.batchId);
+        }
+      } finally {
+        _isCommittingBulkRun = false;
+      }
+    }
+
+    // ترقية عرض "سلة الطباعة" (Print Basket) في المرحلة 3 لتتيح طباعة العملية كلها أو طباعة إشهاد بإشهاد أو جميع الإشهادات أو تفريغ سلة الطباعة دون مساس بالأرشيف
+    renderLastCommittedBatchCertificates = function(batchRecord, vouchersList) {
+      const container = document.getElementById('bulk-generated-certificates-container');
+      const printAllBtn = document.getElementById('btn-print-last-batch-all');
+      if (!container) return;
+
+      if (!batchRecord || !vouchersList || !vouchersList.length) {
+        if (printAllBtn) printAllBtn.style.display = 'none';
+        return;
+      }
+
+      window._lastPrintBasketRecord = batchRecord;
+      window._lastPrintBasketVouchers = vouchersList;
+
+      if (printAllBtn) {
+        printAllBtn.style.display = 'inline-flex';
+        printAllBtn.setAttribute('onclick', `printBulkBatchCertificates('${batchRecord.batchId}')`);
+      }
+
+      container.innerHTML = `
+        <div style="background:linear-gradient(90deg,rgba(16,185,129,0.10),rgba(37,99,235,0.06));border:1.5px solid #10b981;border-radius:12px;padding:14px 18px;margin-bottom:14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+            <div>
+              <span class="badge badge-success" style="font-size:0.8rem;padding:4px 10px;">
+                سلة الطباعة جاهزة (العملية محفوظة في الأرشيف العام)
+              </span>
+              <strong style="font-size:0.96rem;margin-right:8px;">دفعة: <span class="tabular-nums" style="color:#10b981;">${escapeHtml(batchRecord.batchId)}</span> (${vouchersList.length} إشهادات رسمية)</strong>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+              <button type="button" class="btn btn-primary btn-sm" onclick="printBulkBatchCertificates('${escapeHtml(batchRecord.batchId)}')" style="display:inline-flex;align-items:center;gap:5px;font-weight:800;">
+                ${getLinearIcon('print')}
+                <span>طباعة جميع الإشهادات (${vouchersList.length})</span>
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="printCommittedBatchSummaryTable('${escapeHtml(batchRecord.batchId)}')" style="display:inline-flex;align-items:center;gap:5px;font-weight:800;">
+                ${getLinearIcon('print')}
+                <span>طباعة العملية كلها (الجدول)</span>
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="clearBulkStep3DisplayedCertificates(false)" title="إفراغ سلة الطباعة فقط لبدء عملية جديدة (تبقى الإشهادات محفوظة في الأرشيف)" style="display:inline-flex;align-items:center;gap:5px;color:#f59e0b;border-color:rgba(245,158,11,0.4);font-weight:800;">
+                ${getLinearIcon('restore')}
+                <span>إفراغ سلة الطباعة</span>
+              </button>
+            </div>
+          </div>
+          <div class="table-scroll-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>رقم الإشهاد</th>
+                  <th>الوجهة القضائية / المستفيدة</th>
+                  <th>المسؤول المستفيد</th>
+                  <th>المواد المسلّمة</th>
+                  <th style="text-align:center;">مجموع القطع</th>
+                  <th>المعرف السري</th>
+                  <th style="text-align:center;">طباعة ومشاركة إشهاد بإشهاد</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${vouchersList.map(v => {
+                  const itemsDesc = (v.items || []).map(it => `${escapeHtml(it.name)} (<strong>${it.qty}</strong>)`).join(' ، ');
+                  const totalUnits = (v.items || []).reduce((s, i) => s + sanitize(i.qty), 0);
+                  return `
+                    <tr>
+                      <td class="tabular-nums"><strong>${escapeHtml(v.id)}</strong></td>
+                      <td><strong>${escapeHtml(v.destination)}</strong></td>
+                      <td>${escapeHtml(v.recipient)}</td>
+                      <td style="font-size:0.82rem;">${itemsDesc}</td>
+                      <td style="text-align:center;"><span class="badge badge-success tabular-nums">${totalUnits}</span></td>
+                      <td class="tabular-nums" style="font-size:0.75rem;color:var(--text-muted);">${escapeHtml(v.secretCode || '')}</td>
+                      <td style="text-align:center;">
+                        <div style="display:inline-flex;gap:4px;justify-content:center;align-items:center;">
+                          <button type="button" class="btn-icon square-action-btn" onclick="printCertificate('${escapeHtml(v.id)}', false)" title="طباعة هذا الإشهاد" aria-label="طباعة" style="border: 1px solid rgba(59,130,246,0.35); color: #3b82f6; background: rgba(59,130,246,0.08);">
+                            ${getLinearIcon('print')}
+                          </button>
+                          <button type="button" class="btn-icon square-action-btn" onclick="previewVoucherInModal('${escapeHtml(v.id)}')" title="معاينة الإشهاد" aria-label="معاينة" style="border: 1px solid rgba(16,185,129,0.35); color: #10b981; background: rgba(16,185,129,0.08);">
+                            ${getLinearIcon('eye')}
+                          </button>
+                          <button type="button" class="btn-icon square-action-btn" onclick="openShareVoucherModalById('${escapeHtml(v.id)}')" title="مشاركة الإشهاد (واتساب / بريد / تحميل)" aria-label="مشاركة" style="border: 1px solid rgba(56,189,248,0.35); color: #38bdf8; background: rgba(56,189,248,0.08);">
+                            ${getLinearIcon('share')}
+                          </button>
+                          <button type="button" class="btn-icon danger square-action-btn" onclick="deleteVoucher('${escapeHtml(v.id)}')" title="حذف من الأرشيف (مع خيار إعادة المخزون)" aria-label="حذف">
+                            ${getLinearIcon('trash')}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    };
+
+    // دالة طباعة جدول العملية كلها من سلة الطباعة في المرحلة 3
+    function printCommittedBatchSummaryTable(batchId) {
+      const vouchers = (window._lastPrintBasketVouchers && window._lastPrintBasketVouchers.length > 0)
+        ? window._lastPrintBasketVouchers
+        : (state.data.transactions || []).filter(t => t.batchId === batchId);
+      if (!vouchers.length) {
+        showToast('لا توجد بيانات في سلة الطباعة حالياً', 'warning');
+        return;
+      }
+      const entries = [];
+      let grandTotal = 0;
+      vouchers.forEach(v => {
+        (v.items || []).forEach(it => {
+          const q = sanitize(it.qty);
+          grandTotal += q;
+          entries.push({
+            destName: v.destination,
+            recipientName: v.recipient,
+            itemName: it.name,
+            category: it.category || 'عام',
+            qty: q
+          });
+        });
+      });
+
+      const headerSrc = escapeHtml(getBrandingAssetSrc('header') || './en_tete.png');
+      const footerSrc = escapeHtml(getBrandingAssetSrc('footer') || './en_pied.png');
+      const ownerName = state.profile?.userProfile?.fullName || 'محمد أيت حمادي';
+      const dateStr = vouchers[0]?.isoDate || new Date().toISOString().split('T')[0];
+
+      const htmlDoc = `
+        <div class="official-doc-page" style="padding: 18px; font-family: 'Tajawal', sans-serif; direction: rtl; color: #0f172a; background: #fff;">
+          <div style="text-align: center; margin-bottom: 10px;">
+            <img src="${headerSrc}" style="width: 100%; max-height: 95px; object-fit: contain;" alt="ترويسة" onerror="this.style.display='none'" />
+            <div style="font-size: 10pt; font-weight: 800; color: #0f172a; margin-top: 4px;">
+              المملكة المغربية — وزارة العدل — المديرية الإقليمية للعدل بسطات
+            </div>
+          </div>
+          <div style="text-align: center; border: 2px solid #0f172a; border-radius: 6px; padding: 8px 14px; margin-bottom: 14px; background: #f8fafc;">
+            <h2 style="margin: 0; font-size: 14pt; font-weight: 900;">بيان عملية التوزيع الإجمالية للمواد والتجهيزات (${escapeHtml(batchId)})</h2>
+            <div style="font-size: 9.5pt; color: #334155; margin-top: 4px; font-weight: 700;">
+              تاريخ العملية: <span class="tabular-nums">${escapeHtml(dateStr)}</span> | عدد الإشهادات الصادرة: ${vouchers.length} | مجموع القطع: ${grandTotal} قطعة
+            </div>
+          </div>
+          <table class="print-table" style="width: 100%; border-collapse: collapse; font-size: 9.5pt; margin-bottom: 16px;">
+            <thead>
+              <tr style="background: #e2e8f0;">
+                <th style="border: 1px solid #0f172a; padding: 7px; width: 38px; text-align: center;">#</th>
+                <th style="border: 1px solid #0f172a; padding: 7px; text-align: right;">الجهة المستفيدة</th>
+                <th style="border: 1px solid #0f172a; padding: 7px; text-align: right;">المسؤول المستفيد</th>
+                <th style="border: 1px solid #0f172a; padding: 7px; text-align: right;">المادة المسلمة</th>
+                <th style="border: 1px solid #0f172a; padding: 7px; width: 110px; text-align: center;">الصنف</th>
+                <th style="border: 1px solid #0f172a; padding: 7px; width: 85px; text-align: center;">الكمية</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${entries.map((e, i) => `
+                <tr>
+                  <td style="border: 1px solid #94a3b8; padding: 6px; text-align: center; font-weight: bold;">${i + 1}</td>
+                  <td style="border: 1px solid #94a3b8; padding: 6px; font-weight: bold;">${escapeHtml(e.destName)}</td>
+                  <td style="border: 1px solid #94a3b8; padding: 6px;">${escapeHtml(e.recipientName)}</td>
+                  <td style="border: 1px solid #94a3b8; padding: 6px; font-weight: bold;">${escapeHtml(e.itemName)}</td>
+                  <td style="border: 1px solid #94a3b8; padding: 6px; text-align: center;">${escapeHtml(e.category)}</td>
+                  <td style="border: 1px solid #94a3b8; padding: 6px; text-align: center; font-weight: 900;">${e.qty}</td>
+                </tr>
+              `).join('')}
+              <tr style="background: #f1f5f9; font-weight: 900;">
+                <td colspan="5" style="border: 1px solid #0f172a; padding: 8px; text-align: left;">المجموع الإجمالي للقطع الموزعة:</td>
+                <td style="border: 1px solid #0f172a; padding: 8px; text-align: center; font-size: 11pt;">${grandTotal} قطعة</td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="display: flex; justify-content: space-between; margin-top: 24px; page-break-inside: avoid; font-size: 9.5pt;">
+            <div style="text-align: center; width: 45%; border: 1px solid #64748b; border-radius: 6px; padding: 10px; min-height: 80px;">
+              <strong>المسؤول عن تدبير المخزون والتوزيع</strong>
+              <div style="margin-top: 4px; color: #1e40af; font-weight: bold;">${escapeHtml(ownerName)}</div>
+            </div>
+            <div style="text-align: center; width: 45%; border: 1px solid #64748b; border-radius: 6px; padding: 10px; min-height: 80px;">
+              <strong>تأشيرة السيد المدير الإقليمي للعدل بسطات</strong>
+            </div>
+          </div>
+          <div style="text-align: center; margin-top: 18px; border-top: 1px solid #cbd5e1; padding-top: 6px; font-size: 8pt; color: #475569;">
+            <img src="${footerSrc}" style="width: 100%; max-height: 60px; object-fit: contain;" alt="تذييل" onerror="this.style.display='none'" />
+          </div>
+        </div>
+      `;
+      openDocPreviewModal(`طباعة جدول العملية الإجمالي — ${batchId}`, htmlDoc);
+    }
+    window.printCommittedBatchSummaryTable = printCommittedBatchSummaryTable;
+
+    // إضافة زر المشاركة المربع (34px × 34px) في جدول أرشيف العمليات أيضاً لتسهيل مشاركة أي إشهاد سابق
+    renderHistoryTable = function() {
+      _origRenderHistoryTable();
+      const tbody = document.getElementById('history-table-body');
+      if (!tbody) return;
+      tbody.querySelectorAll('tr').forEach(tr => {
+        const printBtn = tr.querySelector('button[onclick^="printSingleVoucherA4"]');
+        if (printBtn && !tr.querySelector('.btn-share-voucher')) {
+          const m = (printBtn.getAttribute('onclick') || '').match(/'([^']+)'/);
+          if (m && m[1]) {
+            const vid = m[1];
+            const shareBtn = document.createElement('button');
+            shareBtn.type = 'button';
+            shareBtn.className = 'btn-icon square-action-btn btn-share-voucher';
+            shareBtn.title = 'مشاركة الإشهاد (واتساب / بريد / تحميل)';
+            shareBtn.setAttribute('aria-label', 'مشاركة الإشهاد');
+            shareBtn.style.cssText = 'border: 1px solid rgba(56,189,248,0.35); color: #38bdf8; background: rgba(56,189,248,0.08);';
+            shareBtn.innerHTML = getLinearIcon('share');
+            shareBtn.onclick = function() { openShareVoucherModalById(vid); };
+            printBtn.insertAdjacentElement('afterend', shareBtn);
+          }
+        }
+      });
+    };
+
     document.addEventListener('DOMContentLoaded', bootApplication);
     window.addEventListener('load', () => {
       populateUserProfileSettings();
@@ -26293,6 +27133,78 @@ ${itemsText}
     })();
   </script>
 
+
+
+  <!-- نافذة مشاركة وتحميل الإشهاد (واتساب / البريد الإلكتروني / مشاركة الهاتف / حفظ الوثيقة) -->
+  <div id="share-voucher-modal" class="modal-overlay no-print" style="display: none;" onclick="if(event.target === this) closeShareVoucherModal()">
+    <div class="modal-card" style="max-width: 460px; width: 92%;" onclick="event.stopPropagation()">
+      <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+          <h3 class="modal-title" style="margin: 0; font-size: 1rem; font-weight: 900;">مشاركة وتحميل إشهاد التسليم</h3>
+        </div>
+        <button type="button" class="sidebar-close-btn" onclick="closeShareVoucherModal()" aria-label="إغلاق">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 16px; display: flex; flex-direction: column; gap: 10px;">
+        <div id="share-voucher-summary-box" style="padding: 10px 12px; border-radius: 8px; background: var(--bg-muted); border: 1px solid var(--border-subtle); font-size: 0.82rem; line-height: 1.5;"></div>
+
+        <button type="button" class="btn btn-primary" onclick="triggerNativeWebShareVoucher()" style="width: 100%; justify-content: flex-start; gap: 10px; padding: 10px 14px; font-weight: 800;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+          <span>مشاركة سريعة عبر تطبيقات الهاتف</span>
+        </button>
+
+        <button type="button" class="btn btn-outline" onclick="triggerWhatsAppShareVoucher()" style="width: 100%; justify-content: flex-start; gap: 10px; padding: 10px 14px; font-weight: 800; border-color: rgba(16, 185, 129, 0.45); color: #10b981;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+          <span>إرسال عبر واتساب</span>
+        </button>
+
+        <button type="button" class="btn btn-outline" onclick="triggerMailtoShareVoucher()" style="width: 100%; justify-content: flex-start; gap: 10px; padding: 10px 14px; font-weight: 800; border-color: rgba(56, 189, 248, 0.45); color: #38bdf8;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          <span>إرسال عبر تطبيق البريد الإلكتروني</span>
+        </button>
+
+        <button type="button" class="btn btn-outline" onclick="triggerDownloadStandaloneVoucherHtml()" style="width: 100%; justify-content: flex-start; gap: 10px; padding: 10px 14px; font-weight: 800;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>تحميل وثيقة الإشهاد على الهاتف / الحاسوب</span>
+        </button>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: flex-end;">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeShareVoucherModal()">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة خيار إعادة المواد إلى المخزون عند حذف إشهاد أو دفعة من الأرشيف -->
+  <div id="delete-stock-choice-modal" class="modal-overlay no-print" style="display: none;" onclick="if(event.target === this) closeDeleteStockChoiceModal()">
+    <div class="modal-card" style="max-width: 500px; width: 94%;" onclick="event.stopPropagation()">
+      <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <h3 class="modal-title" id="delete-stock-choice-title" style="margin: 0; font-size: 1rem; font-weight: 900;">تأكيد حذف العملية وخيار المخزون</h3>
+        </div>
+        <button type="button" class="sidebar-close-btn" onclick="closeDeleteStockChoiceModal()" aria-label="إغلاق">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+        <div id="delete-stock-choice-desc" style="font-size: 0.85rem; color: var(--text-main); line-height: 1.6; background: var(--bg-muted); padding: 12px; border-radius: 8px; border: 1px solid var(--border-subtle);"></div>
+        <div style="font-size: 0.84rem; font-weight: 800; color: var(--text-main);">
+          هل تريد إعادة كميات المواد المسحوبة في هذه العملية إلى رصيد المخزون؟
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <button type="button" class="btn btn-primary" id="btn-delete-with-restock" style="justify-content: flex-start; gap: 10px; padding: 10px 14px; font-weight: 800; background: #059669; border: none;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+            <span>نعم، احذف العملية وأعد المواد المسحوبة إلى المخزون</span>
+          </button>
+          <button type="button" class="btn btn-outline" id="btn-delete-without-restock" style="justify-content: flex-start; gap: 10px; padding: 10px 14px; font-weight: 800; color: #ef4444; border-color: rgba(239, 68, 68, 0.4);">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            <span>لا، احذف العملية فقط دون إضافة أي كمية للمخزون</span>
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: flex-end;">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeDeleteStockChoiceModal()">إلغاء</button>
+      </div>
+    </div>
+  </div>
 
   <!-- نافذة التفريغ الكلي أو المرحلي لعملية التوزيع (Comprehensive Bulk Reset Modal) -->
   <div id="bulk-full-reset-modal" class="modal-overlay no-print" style="display: none;" onclick="if(event.target === this) closeBulkFullResetModal()">
