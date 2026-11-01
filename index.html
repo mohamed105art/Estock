@@ -6587,6 +6587,141 @@
       }
     }
 
+  
+    /* توحيد ارتفاع وعرض حاويات المؤشرات بالكامل في لوحة القيادة والتحليل الذكي */
+    #dashboard-view .metrics-grid,
+    #ai-insights-view .ai-kpi-grid {
+      align-items: stretch !important;
+      grid-auto-rows: 1fr !important;
+    }
+    #dashboard-view .metric-card,
+    #ai-insights-view .ai-glass-kpi-card {
+      height: 146px !important;
+      min-height: 146px !important;
+      max-height: 146px !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: space-between !important;
+    }
+    #dashboard-view .metric-card .card-header,
+    #ai-insights-view .ai-glass-kpi-card .ai-kpi-header {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 6px !important;
+      min-height: 24px !important;
+      flex-shrink: 0 !important;
+    }
+    #dashboard-view .metric-card .card-title,
+    #ai-insights-view .ai-glass-kpi-card .ai-kpi-title,
+    #ai-insights-view .ai-glass-kpi-card .ai-kpi-title span {
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      font-size: 0.84rem !important;
+      font-weight: 800 !important;
+      line-height: 1.3 !important;
+    }
+    #dashboard-view .metric-card .card-footer,
+    #ai-insights-view .ai-glass-kpi-card .ai-kpi-footer-strip {
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      margin-top: auto !important;
+      flex-shrink: 0 !important;
+    }
+    #dashboard-view .metric-card .card-footer span,
+    #ai-insights-view .ai-glass-kpi-card .ai-kpi-footer-strip span {
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+    }
+
+    /* أكورديون الأصناف القابل للتوسيع مع التمرير الأفقي السلس لأسماء المواد الطويلة في عملية التوزيع */
+    .bulk-cat-accordion-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 340px;
+      overflow-y: auto;
+      padding: 6px;
+    }
+    .bulk-cat-acc-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: border-color 0.2s ease;
+    }
+    .bulk-cat-acc-card.expanded {
+      border-color: #38bdf8;
+    }
+    .bulk-cat-acc-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      cursor: pointer;
+      user-select: none;
+      background: rgba(255, 255, 255, 0.02);
+      font-weight: 800;
+      font-size: 0.86rem;
+      color: var(--text-main);
+    }
+    .bulk-cat-acc-header:hover {
+      background: rgba(56, 189, 248, 0.08);
+    }
+    .bulk-cat-acc-body {
+      display: none;
+      padding: 8px 10px;
+      border-top: 1px solid var(--border-subtle);
+      background: var(--bg-muted);
+      flex-direction: column;
+      gap: 6px;
+    }
+    .bulk-cat-acc-card.expanded .bulk-cat-acc-body {
+      display: flex;
+    }
+    .bulk-item-horiz-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+    }
+    .bulk-item-horiz-row.selected {
+      background: rgba(56, 189, 248, 0.14);
+      border-color: #38bdf8;
+    }
+    .bulk-item-scroll-name {
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow-x: auto !important;
+      white-space: nowrap !important;
+      -webkit-overflow-scrolling: touch !important;
+      scrollbar-width: thin;
+      padding-bottom: 2px;
+      font-weight: 700;
+      font-size: 0.84rem;
+      color: var(--text-main);
+      direction: ltr;
+      text-align: left;
+    }
+    .bulk-item-scroll-name::-webkit-scrollbar {
+      height: 3px;
+    }
+    .bulk-item-scroll-name::-webkit-scrollbar-thumb {
+      background: rgba(56, 189, 248, 0.35);
+      border-radius: 999px;
+    }
+
   </style>
 </head>
 <body>
@@ -6896,7 +7031,7 @@
               </div>
 
               <div class="metric-card kpi-card card-4" onclick="openInventoryFilteredByStatus('critical')" title="انقر لعرض لائحة المواد الحرجة في الجرد">
-                <svg class="card-icon kpi-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                <svg class="card-icon kpi-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12.5"></line><circle cx="12" cy="16.2" r="0.9" fill="currentColor"></circle></svg>
                 <div class="card-header"><span class="card-title">المواد الحرجة أو النافدة</span></div>
                 <div class="card-value tabular-nums" id="kpi-low-stock">0</div>
                 <div class="trend-badge" id="kpi-trend-lowstock"><span>—</span></div>
@@ -7943,72 +8078,68 @@
             </div>
           </div>
 
-          <!-- بطاقات المؤشرات الذكية الأربعة (AI Glass KPI Cards) -->
+          <!-- بطاقات المؤشرات الذكية الأربعة (AI Glass KPI Cards — أيقونات مكتملة 100% وأبعاد موحدة) -->
           <div class="ai-kpi-grid">
             <!-- بطاقة 1: سرعة الاستهلاك الدوري -->
             <div class="ai-glass-kpi-card kpi-card ai-card-teal">
-              <svg class="ai-kpi-watermark-icon kpi-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+              <svg class="ai-kpi-watermark-icon kpi-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
               <div class="ai-kpi-header">
                 <div class="ai-kpi-title">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
                   <span>معدل الاستهلاك الدوري</span>
                 </div>
-                <div class="badge" id="ai-kpi-velocity-trend" style="background: rgba(255,255,255,0.25); color: #fff; font-size: 0.72rem; padding: 2px 8px;">—</div>
+                <div class="badge" id="ai-kpi-velocity-trend" style="background: rgba(255,255,255,0.22); color: #fff; font-size: 0.7rem; padding: 2px 7px; white-space: nowrap;">نشط</div>
               </div>
               <div class="ai-kpi-value tabular-nums" id="ai-kpi-velocity-val">0</div>
               <div class="ai-kpi-footer-strip">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
                 <span id="ai-kpi-velocity-sub">قطعة / شهر في المتوسط</span>
               </div>
             </div>
 
             <!-- بطاقة 2: مؤشر خطر النفاد -->
             <div class="ai-glass-kpi-card kpi-card ai-card-rose">
-              <svg class="ai-kpi-watermark-icon kpi-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              <svg class="ai-kpi-watermark-icon kpi-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12.5"></line><circle cx="12" cy="16.2" r="0.9" fill="currentColor"></circle></svg>
               <div class="ai-kpi-header">
                 <div class="ai-kpi-title">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                  <span>مواد معرضة للنفاد (&lt; 30 يوم)</span>
+                  <span>مواد معرضة للنفاد</span>
                 </div>
-                <div class="badge" id="ai-kpi-risk-badge" style="background: rgba(255,255,255,0.25); color: #fff; font-size: 0.72rem; padding: 2px 8px;">حرج</div>
+                <div class="badge" id="ai-kpi-risk-badge" style="background: rgba(255,255,255,0.22); color: #fff; font-size: 0.7rem; padding: 2px 7px; white-space: nowrap;">حرج</div>
               </div>
               <div class="ai-kpi-value tabular-nums" id="ai-kpi-risk-val">0</div>
               <div class="ai-kpi-footer-strip">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><circle cx="12" cy="17" r="0.8" fill="currentColor"></circle></svg>
                 <span id="ai-kpi-risk-sub">تتطلب تزويداً عاجلاً</span>
               </div>
             </div>
 
             <!-- بطاقة 3: الوجهة الأكثر استهلاكاً -->
             <div class="ai-glass-kpi-card kpi-card ai-card-amber">
-              <svg class="ai-kpi-watermark-icon kpi-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="18"></line><line x1="15" y1="22" x2="15" y2="18"></line></svg>
+              <svg class="ai-kpi-watermark-icon kpi-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="18"></line><line x1="15" y1="22" x2="15" y2="18"></line><line x1="9" y1="18" x2="15" y2="18"></line><line x1="8" y1="6" x2="10" y2="6"></line><line x1="14" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="10" y2="10"></line><line x1="14" y1="10" x2="16" y2="10"></line><line x1="8" y1="14" x2="10" y2="14"></line><line x1="14" y1="14" x2="16" y2="14"></line></svg>
               <div class="ai-kpi-header">
                 <div class="ai-kpi-title">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="18"></line><line x1="15" y1="22" x2="15" y2="18"></line></svg>
                   <span>الجهة الأكثر استهلاكاً</span>
                 </div>
-                <div class="badge" id="ai-kpi-top-dest-pct" style="background: rgba(255,255,255,0.25); color: #fff; font-size: 0.72rem; padding: 2px 8px;">—</div>
+                <div class="badge" id="ai-kpi-top-dest-pct" style="background: rgba(255,255,255,0.22); color: #fff; font-size: 0.7rem; padding: 2px 7px; white-space: nowrap;">—</div>
               </div>
-              <div class="ai-kpi-value" id="ai-kpi-top-dest-name" style="font-size: 1.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">—</div>
+              <div class="ai-kpi-value" id="ai-kpi-top-dest-name" style="font-size: 1.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">—</div>
               <div class="ai-kpi-footer-strip">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
                 <span id="ai-kpi-top-dest-sub">0 قطعة مسحوبة</span>
               </div>
             </div>
 
             <!-- بطاقة 4: المادة الأكثر طلباً -->
             <div class="ai-glass-kpi-card kpi-card ai-card-purple">
-              <svg class="ai-kpi-watermark-icon kpi-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+              <svg class="ai-kpi-watermark-icon kpi-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
               <div class="ai-kpi-header">
                 <div class="ai-kpi-title">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
                   <span>المادة الأكثر طلباً</span>
                 </div>
-                <div class="badge" id="ai-kpi-top-item-badge" style="background: rgba(255,255,255,0.25); color: #fff; font-size: 0.72rem; padding: 2px 8px;">الأكثر طلباً</div>
+                <div class="badge" id="ai-kpi-top-item-badge" style="background: rgba(255,255,255,0.22); color: #fff; font-size: 0.7rem; padding: 2px 7px; white-space: nowrap;">الأكثر طلباً</div>
               </div>
-              <div class="ai-kpi-value" id="ai-kpi-top-item-name" style="font-size: 1.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">—</div>
+              <div class="ai-kpi-value" id="ai-kpi-top-item-name" style="font-size: 1.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">—</div>
               <div class="ai-kpi-footer-strip">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                 <span id="ai-kpi-top-item-sub">0 قطعة موزعة</span>
               </div>
             </div>
@@ -8858,6 +8989,47 @@
                     </div>
                   </div>
 
+                  <!-- إعداد الرقم السري الخاص بالدخول السريع للأدمن + إدارة الحسابات والجيمايلات المسموح لها بالدخول -->
+                  <div id="admin-security-and-whitelist-box" style="margin-top: 14px; margin-bottom: 14px; padding: 14px; border-radius: 12px; background: var(--bg-muted); border: 1.5px solid rgba(56, 189, 248, 0.35);">
+                    <div style="font-weight: 900; font-size: 0.92rem; color: #38bdf8; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                      <span>الرقم السري للدخول السريع للأدمن وإدارة الحسابات المسموح لها بالدخول</span>
+                    </div>
+
+                    <!-- 1. الرقم السري الخاص بالأدمن للدخول من أي جهاز بدون جيميل -->
+                    <div style="background: var(--bg-card); padding: 12px; border-radius: 10px; border: 1px solid var(--border-subtle); margin-bottom: 12px;">
+                      <label class="form-label" style="font-size: 0.8rem; font-weight: 800; margin-bottom: 4px;">1. الرقم السري الخاص بالأدمن (للدخول السريع عبر الزر المخفي أسفل يسار نافذة الدخول بدون جيميل):</label>
+                      <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                        <input type="password" id="admin-quick-secret-pin-input" class="form-control tabular-nums" placeholder="أدخل الرقم السري الخاص بالأدمن (الافتراضي: 105)..." style="flex: 1; min-width: 200px; direction: ltr; text-align: left;" />
+                        <button type="button" class="btn btn-primary btn-sm" onclick="saveAdminQuickSecretPin()" style="font-weight: 800;">حفظ الرقم السري</button>
+                      </div>
+                      <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px;">* يتيح لك هذا الرقم السري الدخول لحساب الأدمن الرئيسي من أي هاتف أو حاسوب آخر دون كتابة بريدك الإلكتروني.</div>
+                    </div>
+
+                    <!-- 2. قائمة الجيمايلات المسموح لها بالدخول وتفعيل الحسابات الجديدة -->
+                    <div style="background: var(--bg-card); padding: 12px; border-radius: 10px; border: 1px solid var(--border-subtle);">
+                      <label class="form-label" style="font-size: 0.8rem; font-weight: 800; margin-bottom: 6px;">2. قائمة حسابات الجيميل (Gmail) المسموح لها بالدخول وتفعيل المنخرطين الجدد:</label>
+                      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;">
+                        <input type="email" id="new-allowed-gmail-input" class="form-control" placeholder="أضف بريد Gmail مسموح له بالدخول (مثال: user@gmail.com)..." style="flex: 1; min-width: 220px; direction: ltr; text-align: left;" />
+                        <button type="button" class="btn btn-primary btn-sm" onclick="addAllowedGmailAccount()" style="font-weight: 800;">إضافة وتفعيل</button>
+                      </div>
+                      <div class="table-scroll-wrapper" style="max-height: 220px;">
+                        <table class="data-table" style="font-size: 0.8rem;">
+                          <thead>
+                            <tr>
+                              <th style="width: 38px; text-align: center;">#</th>
+                              <th>البريد الإلكتروني (Gmail)</th>
+                              <th>الاسم / الصفة</th>
+                              <th style="text-align: center; width: 110px;">حالة الحساب</th>
+                              <th style="text-align: center; width: 110px;">إجراءات</th>
+                            </tr>
+                          </thead>
+                          <tbody id="allowed-gmails-tbody"></tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+
                   <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                       <button type="button" class="btn btn-outline btn-sm" onclick="forceCloudSyncNow()">
@@ -9319,12 +9491,12 @@
                     </div>
 
                     <!-- قائمة الاختيار المتعدد للمواد التابعة للفئة -->
-                    <div id="bulk-cat-multiselect-list" style="max-height:185px;overflow-y:auto;padding:8px;border-radius:10px;background:var(--bg-muted);border:1px solid var(--border-subtle);display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px;">
+                    <div id="bulk-cat-multiselect-list" class="bulk-cat-accordion-wrap" style="border-radius:10px;background:var(--bg-muted);border:1px solid var(--border-subtle);">
                       <!-- تملأ ديناميكياً بمواد الفئة المختارة -->
                     </div>
 
                     <!-- القائمة المنسدلة المفردة المساندة للتوافق السريع -->
-                    <select id="bulk-pool-item-select" class="form-control" onchange="onBulkItemSelectChange()" style="margin-top:8px;">
+                    <select id="bulk-pool-item-select" class="form-control" onchange="onBulkItemSelectChange()" style="display:none;">
                       <option value="">-- أو اختر مادة مفردة مباشرة من القائمة --</option>
                     </select>
                   </div>
@@ -10350,8 +10522,25 @@
         </button>
       </form>
 
-      <div style="font-size: 0.73rem; color: var(--text-muted); text-align: center; line-height: 1.5; border-top: 1px solid var(--border-subtle); padding-top: 10px;">
-        كل مستخدم يرتبط بحسابه المستقل في قاعدة بيانات <strong>Firebase (estock105)</strong>. حساب الأدمنستراتور الرئيسي (<code>mohamed105@gmail.com</code>) يحتفظ بجميع المعطيات الرسمية للمديرية، بينما يبدأ أي مستخدم آخر بصفحة بيانات فارغة تماماً (0).
+      <!-- لوحة الدخول السري السريع للأدمن برقم سري فقط (تظهر عند الضغط على الزر الصغير المخفي أسفل يسار النافذة) -->
+      <div id="admin-secret-pin-panel" style="display: none; background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(212, 175, 55, 0.45); border-radius: 10px; padding: 10px 12px; margin-top: 4px;">
+        <div style="font-size: 0.76rem; font-weight: 800; color: #fde68a; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+          <span>دخول الأدمن السريع (بالرقم السري فقط)</span>
+          <button type="button" onclick="toggleAdminSecretPinPanel(false)" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:0.9rem;">&times;</button>
+        </div>
+        <div style="display: flex; gap: 6px; align-items: center;">
+          <input type="password" id="admin-secret-pin-login-input" class="form-control tabular-nums" placeholder="الرقم السري للأدمن..." style="height: 36px; font-size: 0.85rem; text-align: center; direction: ltr;" onkeydown="if(event.key==='Enter'){event.preventDefault();loginWithAdminSecretPin();}" />
+          <button type="button" class="btn btn-primary btn-sm" onclick="loginWithAdminSecretPin()" style="height: 36px; padding: 0 14px; font-weight: 800; white-space: nowrap;">دخول</button>
+        </div>
+      </div>
+
+      <div style="position: relative; font-size: 0.73rem; color: var(--text-muted); text-align: center; line-height: 1.5; border-top: 1px solid var(--border-subtle); padding-top: 10px; padding-left: 24px;">
+        كل مستخدم يرتبط بحسابه المستقل في قاعدة البيانات السحابية. الدخول متاح عبر الجيميل للحسابات المفعلة والمعتمدة من طرف الإدارة.
+        <!-- زر مخفي صغير جداً في الزاوية السفلية اليسرى لنافذة الدخول مخصص للأدمن -->
+        <button type="button" id="btn-secret-admin-pin-toggle" onclick="toggleAdminSecretPinPanel()" title="دخول خاص" aria-label="دخول خاص"
+                style="position: absolute; bottom: 0; left: 0; width: 20px; height: 20px; padding: 0; border: none; background: transparent; color: var(--text-muted); opacity: 0.22; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; border-radius: 4px;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        </button>
       </div>
     </div>
   </div>
@@ -26874,6 +27063,765 @@ ${itemsText}
       });
     };
 
+    
+    // =========================================================================
+    // ENGINE V4: REAL PDF FILE GENERATOR & ATTACHMENT SHARING,
+    // ADMIN SECRET PIN LOGIN & ALLOWED GMAIL WHITELIST / ACTIVATION,
+    // AND EXPANDABLE CATEGORY ACCORDION WITH HORIZONTAL SCROLL IN STEP 1
+    // =========================================================================
+
+    // 1. محرك توليد ملف PDF حقيقي (ISO-32000 PDF 1.4 Binary Blob) من إشهاد التسليم لإرفاقه في واتساب والبريد الإلكتروني
+    function loadImageElementAsync(src) {
+      return new Promise((resolve) => {
+        if (!src) return resolve(null);
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+        img.src = src;
+      });
+    }
+
+    function jpegDataUrlToPdfBlob(jpegDataUrl, pageWidthPt = 595.28, pageHeightPt = 841.89, pixelW = 1240, pixelH = 1754) {
+      const base64Data = jpegDataUrl.split(',')[1] || '';
+      const binStr = atob(base64Data);
+      const imgBytes = new Uint8Array(binStr.length);
+      for (let i = 0; i < binStr.length; i++) {
+        imgBytes[i] = binStr.charCodeAt(i);
+      }
+
+      const encoder = new TextEncoder();
+      const chunks = [];
+      const offsets = [];
+      let currentOffset = 0;
+
+      function pushStr(str) {
+        const bytes = encoder.encode(str);
+        chunks.push(bytes);
+        currentOffset += bytes.length;
+      }
+      function pushBytes(bytes) {
+        chunks.push(bytes);
+        currentOffset += bytes.length;
+      }
+      function startObj(id) {
+        offsets[id] = currentOffset;
+        pushStr(`${id} 0 obj\n`);
+      }
+      function endObj() {
+        pushStr(`\nendobj\n`);
+      }
+
+      pushStr(`%PDF-1.4\n%\xFF\xFF\xFF\xFF\n`);
+
+      startObj(1);
+      pushStr(`<< /Type /Catalog /Pages 2 0 R >>`);
+      endObj();
+
+      startObj(2);
+      pushStr(`<< /Type /Pages /Kids [3 0 R] /Count 1 >>`);
+      endObj();
+
+      const contentStream = `q\n${pageWidthPt.toFixed(2)} 0 0 ${pageHeightPt.toFixed(2)} 0 0 cm\n/Im0 Do\nQ\n`;
+      const contentBytes = encoder.encode(contentStream);
+
+      startObj(3);
+      pushStr(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageWidthPt.toFixed(2)} ${pageHeightPt.toFixed(2)}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>`);
+      endObj();
+
+      startObj(4);
+      pushStr(`<< /Type /XObject /Subtype /Image /Width ${pixelW} /Height ${pixelH} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${imgBytes.length} >>\nstream\n`);
+      pushBytes(imgBytes);
+      pushStr(`\nendstream`);
+      endObj();
+
+      startObj(5);
+      pushStr(`<< /Length ${contentBytes.length} >>\nstream\n`);
+      pushBytes(contentBytes);
+      pushStr(`\nendstream`);
+      endObj();
+
+      const xrefOffset = currentOffset;
+      pushStr(`xref\n0 6\n0000000000 65535 f \n`);
+      for (let i = 1; i <= 5; i++) {
+        const off = String(offsets[i] || 0).padStart(10, '0');
+        pushStr(`${off} 00000 n \n`);
+      }
+      pushStr(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`);
+
+      return new Blob(chunks, { type: 'application/pdf' });
+    }
+
+    async function generateCertificatePdfBlob(voucher) {
+      const W = 1240;
+      const H = 1754;
+      const canvas = document.createElement('canvas');
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext('2d');
+
+      // خلفية بيضاء رسمية للوثيقة A4
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, W, H);
+      ctx.direction = 'rtl';
+
+      const headerSrc = getBrandingAssetSrc('header');
+      const footerSrc = getBrandingAssetSrc('footer');
+      const [headerImg, footerImg] = await Promise.all([
+        loadImageElementAsync(headerSrc),
+        loadImageElementAsync(footerSrc)
+      ]);
+
+      let y = 45;
+      if (headerImg && headerImg.width > 0) {
+        const ratio = Math.min((W - 120) / headerImg.width, 160 / headerImg.height);
+        const dw = headerImg.width * ratio;
+        const dh = headerImg.height * ratio;
+        ctx.drawImage(headerImg, (W - dw) / 2, y, dw, dh);
+        y += dh + 20;
+      } else {
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 26px Tajawal, Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('المملكة المغربية — وزارة العدل — المديرية الإقليمية للعدل بسطات', W / 2, y + 36);
+        y += 70;
+      }
+
+      // خط فاصل علوي
+      ctx.strokeStyle = '#1e3a8a';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(60, y);
+      ctx.lineTo(W - 60, y);
+      ctx.stroke();
+      y += 25;
+
+      // إطار عنوان الإشهاد
+      ctx.fillStyle = '#f8fafc';
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 2.5;
+      ctx.fillRect(60, y, W - 120, 95);
+      ctx.strokeRect(60, y, W - 120, 95);
+
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 34px Tajawal, Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('إشهاد بتسليم المواد والتجهيزات الإدارية', W / 2, y + 44);
+
+      const sCode = voucher.secretCode || generateCertSecretCode(voucher);
+      ctx.fillStyle = '#334155';
+      ctx.font = 'bold 20px Tajawal, Arial, sans-serif';
+      ctx.fillText(`رقم الإشهاد: ${voucher.id}   |   الرمز السري: ${sCode}   |   التاريخ: ${voucher.isoDate || voucher.date}`, W / 2, y + 78);
+      y += 120;
+
+      // جدول بيانات المستفيد والوجهة
+      ctx.fillStyle = '#ffffff';
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 2;
+      ctx.fillRect(60, y, W - 120, 110);
+      ctx.strokeRect(60, y, W - 120, 110);
+
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 22px Tajawal, Arial, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(`الجهة القضائية / المصلحة المستفيدة: ${voucher.destination || '—'}`, W - 85, y + 42);
+      ctx.fillText(`المسؤول المستفيد (المستلم): ${voucher.recipient || '—'}`, W - 85, y + 84);
+
+      ctx.textAlign = 'left';
+      ctx.fillText(`سبب التسليم: ${voucher.reason || 'حصة دورية'}`, 85, y + 42);
+      ctx.fillText(`حالة الاستجابة: ${voucher.status || 'استجابة كلية'}`, 85, y + 84);
+      y += 135;
+
+      // ترويسة جدول المواد
+      const tableX = 60;
+      const tableW = W - 120;
+      const colWidths = [80, 560, 220, 120, 140]; // #, المادة, الصنف, الكمية, ملاحظات
+      const rowH = 52;
+
+      ctx.fillStyle = '#1e3a8a';
+      ctx.fillRect(tableX, y, tableW, rowH);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 21px Tajawal, Arial, sans-serif';
+      ctx.textAlign = 'center';
+
+      const headers = ['#', 'بيان المادة والمواصفات الكاملة', 'الصنف', 'الكمية', 'ملاحظات'];
+      let curRight = W - 60;
+      headers.forEach((hText, i) => {
+        const cw = colWidths[i];
+        const centerX = curRight - cw / 2;
+        ctx.fillText(hText, centerX, y + 33);
+        curRight -= cw;
+      });
+      y += rowH;
+
+      // صفوف المواد
+      const items = voucher.items || [];
+      let totalQty = 0;
+      items.slice(0, 14).forEach((it, idx) => {
+        const q = sanitize(it.qty);
+        totalQty += q;
+        ctx.fillStyle = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
+        ctx.fillRect(tableX, y, tableW, rowH);
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(tableX, y, tableW, rowH);
+
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 19px Tajawal, Arial, sans-serif';
+        let rPos = W - 60;
+        const cells = [
+          String(idx + 1),
+          String(it.name || '').slice(0, 58),
+          String(it.category || 'عام').slice(0, 22),
+          String(q),
+          String(it.notes || 'سليم ومعتمد').slice(0, 18)
+        ];
+        cells.forEach((cText, cIdx) => {
+          const cw = colWidths[cIdx];
+          ctx.textAlign = 'center';
+          ctx.fillText(cText, rPos - cw / 2, y + 33);
+          rPos -= cw;
+        });
+        y += rowH;
+      });
+
+      // صف المجموع الإجمالي
+      ctx.fillStyle = '#e2e8f0';
+      ctx.fillRect(tableX, y, tableW, rowH);
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(tableX, y, tableW, rowH);
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 22px Tajawal, Arial, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(`المجموع الإجمالي للقطع المسلمة: ${totalQty} قطعة (${items.length} بنود)`, W - 85, y + 34);
+      y += rowH + 45;
+
+      // مربعات التوقيع
+      const sigY = Math.min(y, H - 310);
+      const boxW = (tableW - 40) / 2;
+      const boxH = 165;
+      const ownerName = state.profile?.userProfile?.fullName || 'محمد أيت حمادي';
+
+      ctx.fillStyle = '#ffffff';
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 2;
+      // مربع اليمين (المسؤول عن المخزون)
+      ctx.fillRect(W - 60 - boxW, sigY, boxW, boxH);
+      ctx.strokeRect(W - 60 - boxW, sigY, boxW, boxH);
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 21px Tajawal, Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('المسؤول عن تدبير المخزون والتسليم', W - 60 - boxW / 2, sigY + 38);
+      ctx.fillStyle = '#1e40af';
+      ctx.fillText(ownerName, W - 60 - boxW / 2, sigY + 72);
+      ctx.fillStyle = '#64748b';
+      ctx.font = '18px Tajawal, Arial, sans-serif';
+      ctx.fillText('التوقيع والخاتم الرسمي', W - 60 - boxW / 2, sigY + 135);
+
+      // مربع اليسار (توقيع المستلم)
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(60, sigY, boxW, boxH);
+      ctx.strokeRect(60, sigY, boxW, boxH);
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 21px Tajawal, Arial, sans-serif';
+      ctx.fillText('إشهاد وتوقيع المستلم', 60 + boxW / 2, sigY + 38);
+      ctx.fillStyle = '#334155';
+      ctx.fillText(voucher.recipient || 'المستلم', 60 + boxW / 2, sigY + 72);
+      ctx.fillStyle = '#64748b';
+      ctx.font = '18px Tajawal, Arial, sans-serif';
+      ctx.fillText('التوقيع والخاتم وتاريخ الاستلام', 60 + boxW / 2, sigY + 135);
+
+      // التذييل السفلي
+      if (footerImg && footerImg.width > 0) {
+        const fRatio = Math.min((W - 120) / footerImg.width, 95 / footerImg.height);
+        const fw = footerImg.width * fRatio;
+        const fh = footerImg.height * fRatio;
+        ctx.drawImage(footerImg, (W - fw) / 2, H - fh - 30, fw, fh);
+      } else {
+        ctx.fillStyle = '#475569';
+        ctx.font = '18px Tajawal, Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('المديرية الإقليمية للعدل بسطات — مصلحة التجهيز وتدبير المخزون', W / 2, H - 45);
+      }
+
+      const jpegUrl = canvas.toDataURL('image/jpeg', 0.92);
+      return jpegDataUrlToPdfBlob(jpegUrl, 595.28, 841.89, W, H);
+    }
+    window.generateCertificatePdfBlob = generateCertificatePdfBlob;
+
+    // تحديث دوال المشاركة لإرفاق ملف الـ PDF الحقيقي في واتساب والبريد الإلكتروني والهاتف
+    triggerNativeWebShareVoucher = async function() {
+      if (!_activeShareVoucherObj) return;
+      const v = _activeShareVoucherObj;
+      const text = buildVoucherPlainTextSummary(v);
+      try {
+        showToast('جارٍ تجهيز ملف الإشهاد (PDF) للمشاركة...', 'info');
+        const pdfBlob = await generateCertificatePdfBlob(v);
+        const fileName = `إشهاد_تسليم_${v.id}.pdf`;
+        const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+
+        if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+          await navigator.share({
+            files: [pdfFile],
+            title: `إشهاد تسليم ${v.id} — ${v.destination}`,
+            text: text
+          });
+          closeShareVoucherModal();
+          showToast('تم إرفاق ومشاركة ملف الإشهاد (PDF) بنجاح ✓', 'success');
+          return;
+        } else if (navigator.share) {
+          // تحميل ملف الـ PDF تلقائياً ثم فتح نافذة المشاركة
+          await triggerDownloadStandaloneVoucherHtml();
+          await navigator.share({
+            title: `إشهاد تسليم ${v.id} — ${v.destination}`,
+            text: text
+          });
+          return;
+        }
+      } catch (err) {
+        if (err && err.name === 'AbortError') return;
+        console.warn('Web Share PDF fallback:', err);
+      }
+      await triggerDownloadStandaloneVoucherHtml();
+    };
+    window.triggerNativeWebShareVoucher = triggerNativeWebShareVoucher;
+
+    triggerWhatsAppShareVoucher = async function() {
+      if (!_activeShareVoucherObj) return;
+      const v = _activeShareVoucherObj;
+      const text = buildVoucherPlainTextSummary(v);
+      try {
+        const pdfBlob = await generateCertificatePdfBlob(v);
+        const fileName = `إشهاد_تسليم_${v.id}.pdf`;
+        const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+
+        // على الهواتف الذكية، navigator.share يفتح واتساب مع ملف الـ PDF مرفقاً مباشرة
+        if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+          await navigator.share({
+            files: [pdfFile],
+            title: `إشهاد تسليم ${v.id}`,
+            text: text
+          });
+          closeShareVoucherModal();
+          return;
+        }
+
+        // على الحاسوب، نحمّل ملف الـ PDF تلقائياً ونفتح واتساب لإرفاقه
+        const url = URL.createObjectURL(pdfBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+        showToast(`تم تنزيل ملف (${fileName}) لإرفاقه في محادثة واتساب`, 'info');
+      } catch (err) {
+        if (err && err.name === 'AbortError') return;
+      }
+      const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+      window.open(waUrl, '_blank', 'noopener,noreferrer');
+      closeShareVoucherModal();
+    };
+    window.triggerWhatsAppShareVoucher = triggerWhatsAppShareVoucher;
+
+    triggerMailtoShareVoucher = async function() {
+      if (!_activeShareVoucherObj) return;
+      const v = _activeShareVoucherObj;
+      const text = buildVoucherPlainTextSummary(v);
+      try {
+        const pdfBlob = await generateCertificatePdfBlob(v);
+        const fileName = `إشهاد_تسليم_${v.id}.pdf`;
+        const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+
+        if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+          await navigator.share({
+            files: [pdfFile],
+            title: `إشهاد تسليم رسمي رقم ${v.id} — ${v.destination}`,
+            text: text
+          });
+          closeShareVoucherModal();
+          return;
+        }
+
+        const url = URL.createObjectURL(pdfBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+        showToast(`تم تنزيل ملف (${fileName}) لإرفاقه في رسالة البريد الإلكتروني`, 'info');
+      } catch (err) {
+        if (err && err.name === 'AbortError') return;
+      }
+      const targetEmail = (state.profile?.userProfile?.email || 'mohamed105@gmail.com').trim();
+      const subject = `إشهاد تسليم رسمي رقم ${v.id} — ${v.destination}`;
+      window.location.href = `mailto:${encodeURIComponent(targetEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`;
+      closeShareVoucherModal();
+    };
+    window.triggerMailtoShareVoucher = triggerMailtoShareVoucher;
+
+    triggerDownloadStandaloneVoucherHtml = async function() {
+      if (!_activeShareVoucherObj) return;
+      const v = _activeShareVoucherObj;
+      try {
+        const pdfBlob = await generateCertificatePdfBlob(v);
+        const fileName = `إشهاد_تسليم_${v.id}.pdf`;
+        const url = URL.createObjectURL(pdfBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+        closeShareVoucherModal();
+        showToast(`تم تحميل ملف الإشهاد (${fileName}) بصيغة PDF بنجاح ✓`, 'success');
+      } catch (e) {
+        console.error('PDF generation error:', e);
+      }
+    };
+    window.triggerDownloadStandaloneVoucherHtml = triggerDownloadStandaloneVoucherHtml;
+
+    // 2. نظام الدخول السريع بالرقم السري المخفي للأدمن + قائمة الجيمايلات المسموح لها وتفعيل الحسابات
+    const ADMIN_SECRET_PIN_STORAGE_KEY = 'E_STOCK_ADMIN_QUICK_PIN_V1';
+    const ALLOWED_EMAILS_STORAGE_KEY = 'E_STOCK_ALLOWED_EMAILS_V1';
+
+    function getAdminQuickSecretPin() {
+      const fromProfile = state.profile?.userProfile?.adminQuickPin;
+      if (fromProfile && String(fromProfile).trim()) return String(fromProfile).trim();
+      const fromStorage = localStorage.getItem(ADMIN_SECRET_PIN_STORAGE_KEY);
+      if (fromStorage && String(fromStorage).trim()) return String(fromStorage).trim();
+      return '105'; // الرقم السري الافتراضي للأدمن (قابل للتغيير من الإعدادات)
+    }
+
+    function saveAdminQuickSecretPin() {
+      const input = document.getElementById('admin-quick-secret-pin-input');
+      const val = (input?.value || '').trim();
+      if (!val || val.length < 3) {
+        showToast('يرجى إدخال رقم سري للأدمن يتكون من 3 خانات على الأقل', 'warning');
+        return;
+      }
+      if (!state.profile.userProfile) state.profile.userProfile = {};
+      state.profile.userProfile.adminQuickPin = val;
+      try { localStorage.setItem(ADMIN_SECRET_PIN_STORAGE_KEY, val); } catch (e) {}
+      persistAll(true);
+      showToast('تم حفظ الرقم السري الخاص بالدخول السريع للأدمن بنجاح ✓', 'success');
+    }
+    window.saveAdminQuickSecretPin = saveAdminQuickSecretPin;
+
+    function toggleAdminSecretPinPanel(forceState) {
+      const panel = document.getElementById('admin-secret-pin-panel');
+      const input = document.getElementById('admin-secret-pin-login-input');
+      if (!panel) return;
+      const show = forceState !== undefined ? forceState : (panel.style.display === 'none');
+      panel.style.display = show ? 'block' : 'none';
+      if (show && input) {
+        input.value = '';
+        setTimeout(() => input.focus(), 50);
+      }
+    }
+    window.toggleAdminSecretPinPanel = toggleAdminSecretPinPanel;
+
+    async function loginWithAdminSecretPin() {
+      showAuthGateError('');
+      const input = document.getElementById('admin-secret-pin-login-input');
+      const entered = (input?.value || '').trim();
+      const expected = getAdminQuickSecretPin();
+      const savedAdminPass = localStorage.getItem(`E_STOCK_USER_PASS_${PRINCIPAL_ADMIN_EMAIL}`);
+
+      if (!entered) {
+        showAuthGateError('يرجى إدخال الرقم السري الخاص بالأدمن.');
+        return;
+      }
+      if (entered !== expected && (!savedAdminPass || entered !== savedAdminPass)) {
+        showAuthGateError('الرقم السري للأدمن غير صحيح.');
+        return;
+      }
+
+      toggleAdminSecretPinPanel(false);
+      await completeUserSessionLogin({
+        email: PRINCIPAL_ADMIN_EMAIL,
+        displayName: 'محمد أيت حمادي',
+        provider: 'admin-secret-pin'
+      });
+    }
+    window.loginWithAdminSecretPin = loginWithAdminSecretPin;
+
+    // إدارة قائمة الجيمايلات المسموح لها بالدخول وتفعيل حسابات المستخدمين الجدد
+    function getAllowedAccountsRegistry() {
+      if (!Array.isArray(state.profile?.allowedAccounts)) {
+        let saved = [];
+        try {
+          const raw = localStorage.getItem(ALLOWED_EMAILS_STORAGE_KEY);
+          if (raw) saved = JSON.parse(raw);
+        } catch (e) {}
+        if (!Array.isArray(saved) || saved.length === 0) {
+          saved = [
+            { email: PRINCIPAL_ADMIN_EMAIL, name: 'محمد أيت حمادي (مدير النظام)', status: 'active', isAdmin: true, addedAt: '2026-01-01' }
+          ];
+        }
+        if (state.profile) state.profile.allowedAccounts = saved;
+        return saved;
+      }
+      if (!state.profile.allowedAccounts.some(a => isPrincipalAdminEmail(a.email))) {
+        state.profile.allowedAccounts.unshift({
+          email: PRINCIPAL_ADMIN_EMAIL,
+          name: 'محمد أيت حمادي (مدير النظام)',
+          status: 'active',
+          isAdmin: true,
+          addedAt: '2026-01-01'
+        });
+      }
+      return state.profile.allowedAccounts;
+    }
+
+    function saveAllowedAccountsRegistry(list) {
+      if (state.profile) state.profile.allowedAccounts = list;
+      try { localStorage.setItem(ALLOWED_EMAILS_STORAGE_KEY, JSON.stringify(list)); } catch (e) {}
+      persistAll(true);
+    }
+
+    function isEmailApprovedForLogin(email) {
+      const clean = String(email || '').trim().toLowerCase();
+      if (!clean) return false;
+      if (isPrincipalAdminEmail(clean)) return true;
+      const list = getAllowedAccountsRegistry();
+      const entry = list.find(a => String(a.email || '').trim().toLowerCase() === clean);
+      return Boolean(entry && entry.status === 'active');
+    }
+
+    function registerPendingAccountRequest(email, displayName) {
+      const clean = String(email || '').trim().toLowerCase();
+      if (!clean || isPrincipalAdminEmail(clean)) return;
+      const list = getAllowedAccountsRegistry();
+      let existing = list.find(a => String(a.email || '').trim().toLowerCase() === clean);
+      if (!existing) {
+        list.push({
+          email: clean,
+          name: (displayName || clean.split('@')[0] || 'مستخدم جديد').trim(),
+          status: 'pending',
+          isAdmin: false,
+          addedAt: new Date().toLocaleDateString('ar-MA')
+        });
+        saveAllowedAccountsRegistry(list);
+      }
+    }
+
+    function renderAllowedGmailsSettingsTable() {
+      const tbody = document.getElementById('allowed-gmails-tbody');
+      const pinInput = document.getElementById('admin-quick-secret-pin-input');
+      const box = document.getElementById('admin-security-and-whitelist-box');
+      const activeEmail = getActiveUserEmail();
+      const isAdmin = isPrincipalAdminEmail(activeEmail);
+
+      if (box) box.style.display = isAdmin ? 'block' : 'none';
+      if (pinInput && !pinInput.value) pinInput.value = getAdminQuickSecretPin();
+      if (!tbody) return;
+
+      const list = getAllowedAccountsRegistry();
+      tbody.innerHTML = list.map((acc, idx) => {
+        const isSelfAdmin = isPrincipalAdminEmail(acc.email);
+        const isActive = acc.status === 'active';
+        const statusBadge = isSelfAdmin
+          ? `<span class="badge badge-primary" style="font-size:0.72rem;">مدير النظام دائم</span>`
+          : (isActive
+              ? `<span class="badge badge-success" style="font-size:0.72rem;">مفعل ومسموح ✓</span>`
+              : `<span class="badge badge-warning" style="font-size:0.72rem;">بانتظار التفعيل</span>`);
+
+        const actionsHtml = isSelfAdmin
+          ? `<span style="font-size:0.72rem;color:var(--text-muted);">حساب رئيسي</span>`
+          : `
+            <div style="display:inline-flex;gap:4px;align-items:center;justify-content:center;">
+              <button type="button" class="btn-icon square-action-btn" onclick="toggleAllowedGmailStatus('${escapeHtml(acc.email)}')" title="${isActive ? 'إيقاف الحساب مؤقتاً' : 'تفعيل الحساب والسماح له بالدخول'}" style="border:1px solid ${isActive ? 'rgba(245,158,11,0.4)' : 'rgba(16,185,129,0.4)'};color:${isActive ? '#f59e0b' : '#10b981'};background:${isActive ? 'rgba(245,158,11,0.08)' : 'rgba(16,185,129,0.08)'};">
+                ${getLinearIcon('check')}
+              </button>
+              <button type="button" class="btn-icon danger square-action-btn" onclick="removeAllowedGmailAccount('${escapeHtml(acc.email)}')" title="حذف هذا البريد من قائمة المسموح لهم">
+                ${getLinearIcon('trash')}
+              </button>
+            </div>
+          `;
+
+        return `
+          <tr>
+            <td style="text-align:center;" class="tabular-nums">${idx + 1}</td>
+            <td style="direction:ltr;text-align:left;font-weight:800;">${escapeHtml(acc.email)}</td>
+            <td>${escapeHtml(acc.name || '—')}</td>
+            <td style="text-align:center;">${statusBadge}</td>
+            <td style="text-align:center;">${actionsHtml}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+    window.renderAllowedGmailsSettingsTable = renderAllowedGmailsSettingsTable;
+
+    function addAllowedGmailAccount() {
+      const input = document.getElementById('new-allowed-gmail-input');
+      const email = (input?.value || '').trim().toLowerCase();
+      if (!email || !email.includes('@')) {
+        showToast('يرجى إدخال بريد إلكتروني (Gmail) صحيح لإضافته لقائمة المسموح لهم', 'warning');
+        return;
+      }
+      const list = getAllowedAccountsRegistry();
+      const existing = list.find(a => String(a.email || '').trim().toLowerCase() === email);
+      if (existing) {
+        existing.status = 'active';
+      } else {
+        list.push({
+          email: email,
+          name: email.split('@')[0],
+          status: 'active',
+          isAdmin: false,
+          addedAt: new Date().toLocaleDateString('ar-MA')
+        });
+      }
+      if (input) input.value = '';
+      saveAllowedAccountsRegistry(list);
+      renderAllowedGmailsSettingsTable();
+      showToast(`تم تفعيل البريد (${email}) وإضافته لقائمة الحسابات المسموح لها بالدخول ✓`, 'success');
+    }
+    window.addAllowedGmailAccount = addAllowedGmailAccount;
+
+    function toggleAllowedGmailStatus(email) {
+      const clean = String(email || '').trim().toLowerCase();
+      if (isPrincipalAdminEmail(clean)) return;
+      const list = getAllowedAccountsRegistry();
+      const target = list.find(a => String(a.email || '').trim().toLowerCase() === clean);
+      if (!target) return;
+      target.status = target.status === 'active' ? 'pending' : 'active';
+      saveAllowedAccountsRegistry(list);
+      renderAllowedGmailsSettingsTable();
+      showToast(target.status === 'active' ? `تم تفعيل حساب (${clean}) بنجاح ✓` : `تم تعليق حساب (${clean}) مؤقتاً`, 'info');
+    }
+    window.toggleAllowedGmailStatus = toggleAllowedGmailStatus;
+
+    function removeAllowedGmailAccount(email) {
+      const clean = String(email || '').trim().toLowerCase();
+      if (isPrincipalAdminEmail(clean)) return;
+      const list = getAllowedAccountsRegistry().filter(a => String(a.email || '').trim().toLowerCase() !== clean);
+      saveAllowedAccountsRegistry(list);
+      renderAllowedGmailsSettingsTable();
+      showToast(`تم حذف الحساب (${clean}) من قائمة الدخول`, 'info');
+    }
+    window.removeAllowedGmailAccount = removeAllowedGmailAccount;
+
+    // ربط بوابة الدخول بفحص تفعيل الحساب لغير الأدمن
+    const _v3CompleteUserSessionLogin = completeUserSessionLogin;
+    completeUserSessionLogin = async function(userObj) {
+      if (!userObj || !userObj.email) return;
+      const cleanEmail = String(userObj.email).trim().toLowerCase();
+      if (!isPrincipalAdminEmail(cleanEmail) && !isEmailApprovedForLogin(cleanEmail)) {
+        registerPendingAccountRequest(cleanEmail, userObj.displayName || '');
+        showAuthGateError(`تم تسجيل طلب حسابك (${cleanEmail}) بنجاح — الحساب بانتظار التفعيل والمصادقة من طرف مدير النظام في الإعدادات.`);
+        showToast('حسابك بانتظار التفعيل من طرف مدير النظام', 'warning');
+        return;
+      }
+      await _v3CompleteUserSessionLogin(userObj);
+      renderAllowedGmailsSettingsTable();
+    };
+
+    const _v3PopulateUserProfileSettings = populateUserProfileSettings;
+    populateUserProfileSettings = function() {
+      _v3PopulateUserProfileSettings();
+      renderAllowedGmailsSettingsTable();
+    };
+
+    // 3. أكورديون الأصناف القابل للتوسيع مع التمرير الأفقي السلس لأسماء المواد الطويلة في عملية التوزيع (الخطوة 1)
+    if (!bulkDistState.expandedCategories) {
+      bulkDistState.expandedCategories = new Set();
+    }
+
+    function toggleBulkCategoryAccordion(catName) {
+      if (!bulkDistState.expandedCategories) bulkDistState.expandedCategories = new Set();
+      if (bulkDistState.expandedCategories.has(catName)) {
+        bulkDistState.expandedCategories.delete(catName);
+      } else {
+        bulkDistState.expandedCategories.add(catName);
+      }
+      renderBulkMultiSelectList();
+    }
+    window.toggleBulkCategoryAccordion = toggleBulkCategoryAccordion;
+
+    renderBulkMultiSelectList = function(itemsList) {
+      const container = document.getElementById('bulk-cat-multiselect-list');
+      if (!container) return;
+      const searchQ = (document.getElementById('bulk-multiselect-search')?.value || '').trim().toLowerCase();
+      const catSel = document.getElementById('bulk-pool-cat-select');
+      const selectedCat = catSel ? catSel.value : 'all';
+
+      const allItems = (state.data.items || []).filter(i => i && !i.isDeleted);
+      const catsToRender = selectedCat === 'all'
+        ? (Array.isArray(state.data.categories) && state.data.categories.length > 0 ? state.data.categories : [...new Set(allItems.map(i => i.category || 'عام'))])
+        : [selectedCat];
+
+      if (!bulkDistState.expandedCategories) bulkDistState.expandedCategories = new Set();
+      if (selectedCat !== 'all') {
+        bulkDistState.expandedCategories.add(selectedCat);
+      }
+
+      let htmlOut = '';
+      let totalMatchedItems = 0;
+
+      catsToRender.forEach((catName, cIdx) => {
+        const catItems = allItems
+          .filter(it => (it.category || 'عام') === catName)
+          .filter(it => !searchQ || (it.name || '').toLowerCase().includes(searchQ) || (it.category || '').toLowerCase().includes(searchQ));
+
+        if (catItems.length === 0) return;
+        totalMatchedItems += catItems.length;
+
+        const isExpanded = Boolean(searchQ) || selectedCat !== 'all' || bulkDistState.expandedCategories.has(catName) || (cIdx === 0 && bulkDistState.expandedCategories.size === 0);
+        if (isExpanded) bulkDistState.expandedCategories.add(catName);
+
+        const selectedInCatCount = catItems.filter(it => bulkDistState.stagedItems && bulkDistState.stagedItems[it.id]).length;
+        const safeCat = escapeHtml(catName);
+
+        htmlOut += `
+          <div class="bulk-cat-acc-card ${isExpanded ? 'expanded' : ''}">
+            <div class="bulk-cat-acc-header" onclick="toggleBulkCategoryAccordion('${safeCat}')">
+              <div style="display:flex;align-items:center;gap:8px;min-width:0;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s ease;transform:rotate(${isExpanded ? '180deg' : '0deg'});flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${safeCat}</span>
+                <span class="badge badge-subtle tabular-nums" style="font-size:0.7rem;">${catItems.length} مادة</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                ${selectedInCatCount > 0 ? `<span class="badge badge-primary tabular-nums" style="font-size:0.72rem;">محدد: ${selectedInCatCount}</span>` : ''}
+                <span style="font-size:0.72rem;color:var(--text-muted);">${isExpanded ? 'طي' : 'توسيع'}</span>
+              </div>
+            </div>
+            <div class="bulk-cat-acc-body">
+              ${catItems.map(it => {
+                const isStaged = Boolean(bulkDistState.stagedItems && bulkDistState.stagedItems[it.id]);
+                const inPool = (bulkDistState.pool || []).find(p => p.itemId === it.id);
+                const st = sanitize(it.stock);
+                return `
+                  <label class="bulk-item-horiz-row ${isStaged ? 'selected' : ''}">
+                    <input type="checkbox" class="bulk-multiselect-cb" value="${escapeHtml(it.id)}" ${isStaged ? 'checked' : ''} onchange="toggleStageBulkItem('${escapeHtml(it.id)}', this.checked)" style="width:16px;height:16px;accent-color:#38bdf8;flex-shrink:0;">
+                    <div class="bulk-item-scroll-name" title="مرر أفقياً لقراءة الاسم الكامل: ${escapeHtml(it.name)}">
+                      ${formatItemDisplayHtml(it.name)}
+                    </div>
+                    <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+                      ${inPool ? `<span class="badge badge-primary tabular-nums" style="font-size:0.68rem;">بالسلة: ${inPool.qty}</span>` : ''}
+                      <span class="badge ${st > 0 ? 'badge-success' : 'badge-warning'} tabular-nums" style="font-size:0.72rem;" title="الرصيد بالمخزن">${st}</span>
+                    </div>
+                  </label>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      });
+
+      if (totalMatchedItems === 0) {
+        container.innerHTML = `<div style="text-align:center;padding:14px;color:var(--text-muted);font-size:0.82rem;">لا توجد مواد مطابقة لشرط البحث</div>`;
+      } else {
+        container.innerHTML = htmlOut;
+      }
+    };
+
     document.addEventListener('DOMContentLoaded', bootApplication);
     window.addEventListener('load', () => {
       populateUserProfileSettings();
@@ -27150,7 +28098,7 @@ ${itemsText}
 
         <button type="button" class="btn btn-primary" onclick="triggerNativeWebShareVoucher()" style="width: 100%; justify-content: flex-start; gap: 10px; padding: 10px 14px; font-weight: 800;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-          <span>مشاركة سريعة عبر تطبيقات الهاتف</span>
+          <span>مشاركة ملف الإشهاد (PDF) عبر واتساب / البريد</span>
         </button>
 
         <button type="button" class="btn btn-outline" onclick="triggerWhatsAppShareVoucher()" style="width: 100%; justify-content: flex-start; gap: 10px; padding: 10px 14px; font-weight: 800; border-color: rgba(16, 185, 129, 0.45); color: #10b981;">
@@ -27165,7 +28113,7 @@ ${itemsText}
 
         <button type="button" class="btn btn-outline" onclick="triggerDownloadStandaloneVoucherHtml()" style="width: 100%; justify-content: flex-start; gap: 10px; padding: 10px 14px; font-weight: 800;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-          <span>تحميل وثيقة الإشهاد على الهاتف / الحاسوب</span>
+          <span>تحميل ملف الإشهاد (PDF) في الجهاز</span>
         </button>
       </div>
       <div class="modal-footer" style="display: flex; justify-content: flex-end;">
