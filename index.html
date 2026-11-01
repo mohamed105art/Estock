@@ -323,6 +323,18 @@
       padding: 0.5rem 0.75rem;
       display: flex;
       flex-direction: column;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+    }
+    .sidebar-mid-scrollable::-webkit-scrollbar {
+      width: 3px;
+    }
+    .sidebar-mid-scrollable::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .sidebar-mid-scrollable::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.18);
+      border-radius: 3px;
     }
 
     .sidebar-nav {
@@ -6061,10 +6073,77 @@
       background: rgba(5, 26, 45, 0.8) !important;
       color: #e2e8f0 !important;
     }
-    [data-theme="dark"] #bulk-precommit-review-card .data-table td {
-      background: rgba(11, 36, 59, 0.5) !important;
-      color: #e2e8f0 !important;
-      border-color: rgba(255, 255, 255, 0.06) !important;
+    /* ==========================================================================
+       إصلاحات عامة صارمة: القوائم المنسدلة، أشرطة تمرير الجداول، والأزرار المربعة 34px
+       ========================================================================== */
+    select.form-control,
+    .form-control select,
+    select {
+      min-height: 42px !important;
+      line-height: 1.5 !important;
+      padding: 6px 12px !important;
+      box-sizing: border-box !important;
+      font-family: inherit !important;
+      font-size: 0.86rem !important;
+    }
+
+    .table-scroll-wrapper,
+    .table-responsive {
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
+    .table-scroll-wrapper::-webkit-scrollbar,
+    .table-responsive::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+    .data-table th,
+    .data-table td {
+      white-space: nowrap !important;
+    }
+
+    .square-action-btn,
+    .btn-icon.square-action-btn,
+    .data-table .btn-icon,
+    .data-table .action-btn {
+      width: 34px !important;
+      height: 34px !important;
+      min-width: 34px !important;
+      min-height: 34px !important;
+      padding: 0 !important;
+      border-radius: 8px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      box-sizing: border-box !important;
+    }
+
+    /* مبيان استهلاك المواد: إلغاء التوهج المبالغ فيه والأرقام المزدوجة */
+    #item-consumption-chart-container .bar-pillar {
+      box-shadow: none !important;
+      transition: transform 0.18s ease, filter 0.18s ease !important;
+      position: relative !important;
+      border-radius: 6px 6px 0 0 !important;
+    }
+    #item-consumption-chart-container .vertical-chart-bar-item:hover .bar-pillar {
+      filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.4)) !important;
+      transform: translateY(-2px);
+    }
+    #item-consumption-chart-container .bar-qty-inside {
+      position: absolute !important;
+      top: 4px !important;
+      right: 5px !important;
+      font-size: 0.72rem !important;
+      font-weight: 800 !important;
+      opacity: 0.82 !important;
+      color: #ffffff !important;
+      line-height: 1 !important;
+    }
+    #item-consumption-chart-container .bar-qty-under {
+      display: none !important;
     }
   </style>
 </head>
@@ -6152,7 +6231,7 @@
             <span class="nav-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             </span>
-            <span class="nav-label">سجل العمليات والأرشيف</span>
+            <span class="nav-label">أرشيف العمليات</span>
             <span class="nav-badge" id="badge-total-vouchers">0</span>
           </div>
 
@@ -6160,7 +6239,7 @@
             <span class="nav-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
             </span>
-            <span class="nav-label">الجرد الدوري للمخزون</span>
+            <span class="nav-label">جرد المخزون</span>
             <span class="nav-badge" id="badge-total-items">0</span>
           </div>
 
@@ -6168,7 +6247,7 @@
             <span class="nav-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
             </span>
-            <span class="nav-label">مركز التنبيهات</span>
+            <span class="nav-label">التنبيهات</span>
             <span class="order-badge" id="badge-total-notifications">0</span>
           </div>
 
@@ -6176,7 +6255,7 @@
             <span class="nav-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
             </span>
-            <span class="nav-label">مركز الحذف المؤقت</span>
+            <span class="nav-label">الحذف المؤقت</span>
             <span class="order-badge" id="badge-total-trash">0</span>
           </div>
 
@@ -6189,7 +6268,7 @@
                 <circle cx="12" cy="12" r="3"/>
               </svg>
             </span>
-            <span class="nav-label">التحليل الذكي (AI)</span>
+            <span class="nav-label">التحليل الذكي</span>
             <span class="order-badge" style="background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.35);">جديد</span>
           </div>
 
@@ -6197,7 +6276,7 @@
             <span class="nav-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
             </span>
-            <span class="nav-label">مركز الإعدادات</span>
+            <span class="nav-label">الإعدادات</span>
           </div>
         </nav>
       </div>
@@ -6458,7 +6537,7 @@
 
             <!-- حاوية تحليل استهلاك المواد المتقدمة (Minimal Zero-Clutter Header + Super Modal) -->
             <div class="glass-box" id="box-item-consumption-analytics" style="margin-bottom: 24px; width: 100%; box-sizing: border-box;">
-              <div class="box-header" style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px; gap: 10px;">
+              <div class="box-header" style="display: flex; align-items: center; justify-content: space-between; border-bottom: none; padding-bottom: 6px; gap: 10px;">
                 <div class="box-title-wrapper" style="display: flex; align-items: center; gap: 8px;">
                   <span style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -6469,7 +6548,6 @@
                   </span>
                   <div>
                     <h2 class="box-title" id="item-consumption-box-heading" style="margin: 0; font-size: 1.05rem;">تحليل استهلاك المواد</h2>
-                    <div id="item-consumption-box-subheading" style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">توزيع سحب المادة المختارة وفق مخطط أشرطة عمودية ملوّنة</div>
                   </div>
                 </div>
 
@@ -6477,7 +6555,8 @@
                 <div>
                   <button type="button" class="btn-icon square-action-btn" id="btn-item-consumption-settings" onclick="openItemConsumptionSuperModal()" title="إعدادات وتصفية تحليل استهلاك المواد" aria-label="إعدادات وتصفية المبيان" style="width: 36px; height: 36px; border: 1px solid var(--border-subtle); border-radius: 10px; background: var(--bg-muted); color: var(--text-main); cursor: pointer;">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                      <circle cx="12" cy="12" r="3"></circle>
+                      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                     </svg>
                   </button>
                 </div>
@@ -6503,7 +6582,7 @@
               <div style="background: var(--bg-card); border: 1.5px solid var(--border-subtle); border-radius: 16px; width: 100%; max-width: 500px; box-shadow: 0 20px 45px rgba(0,0,0,0.4); display: flex; flex-direction: column; max-height: 88vh; overflow: hidden;">
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--border-subtle);">
                   <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                    <i class="fa-regular fa-chart-bar" style="color: #38bdf8;"></i>
                     <span>إعدادات وتصفية تحليل استهلاك المواد</span>
                   </h3>
                   <button type="button" class="btn-icon square-action-btn" onclick="closeItemConsumptionSuperModal()" style="border: none; background: transparent; cursor: pointer; color: var(--text-muted);" aria-label="إغلاق">
@@ -6529,11 +6608,13 @@
                   <div class="form-group" style="margin-bottom: 0;">
                     <label class="form-label" style="font-weight: 700; font-size: 0.84rem; margin-bottom: 6px;">2. نمط توزيع وتجميع الأعمدة:</label>
                     <div style="display: flex; gap: 8px;">
-                      <button type="button" class="btn btn-sm btn-primary" id="btn-item-mode-entities" onclick="setItemAnalyticsMode('entities')" style="flex: 1; padding: 6px 10px; font-size: 0.82rem;">
-                        🏛️ حسب الجهات المستفيدة
+                      <button type="button" class="btn btn-sm btn-primary" id="btn-item-mode-entities" onclick="setItemAnalyticsMode('entities')" style="flex: 1; padding: 6px 10px; font-size: 0.82rem; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+                        <i class="fa-regular fa-building"></i>
+                        <span>الجهات</span>
                       </button>
-                      <button type="button" class="btn btn-sm btn-outline" id="btn-item-mode-beneficiaries" onclick="setItemAnalyticsMode('beneficiaries')" style="flex: 1; padding: 6px 10px; font-size: 0.82rem;">
-                        👤 حسب المستفيدين والمكاتب
+                      <button type="button" class="btn btn-sm btn-outline" id="btn-item-mode-beneficiaries" onclick="setItemAnalyticsMode('beneficiaries')" style="flex: 1; padding: 6px 10px; font-size: 0.82rem; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+                        <i class="fa-regular fa-user"></i>
+                        <span>المستفيدين</span>
                       </button>
                     </div>
                     <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px;">* تطبق قاعدة المديرية الإقليمية بسطات تلقائياً (تجميع باقي الموظفين وعزل المسؤولين).</div>
@@ -7334,12 +7415,12 @@
               </div>
               <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                 <button type="button" class="btn btn-outline btn-sm" onclick="exportAiReportCSV()" style="font-size: 0.8rem; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                  <span>تصدير البيانات (CSV)</span>
+                  <i class="fa-regular fa-file-excel"></i>
+                  <span>تصدير البيانات</span>
                 </button>
                 <button type="button" class="btn btn-primary btn-sm" onclick="printAiAnalysisReport()" style="font-size: 0.8rem; padding: 6px 14px; display: inline-flex; align-items: center; gap: 6px;">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-                  <span>🖨️ طباعة تقرير التحليل الرسمي (A4)</span>
+                  <i class="fa-regular fa-file-lines"></i>
+                  <span>طباعة تقرير التحليل</span>
                 </button>
               </div>
             </div>
@@ -7445,43 +7526,43 @@
           <!-- شريط التبويبات الفرعية للأقسام التحليلية الخمسة -->
           <div class="tab-pills-nav" style="display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; background: var(--bg-card); padding: 8px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
             <button type="button" class="btn btn-primary btn-sm ai-subtab-btn active" id="ai-subtab-btn-planning" onclick="switchAiSubTab('planning')">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-              <span>1. التخطيط الاستباقي لحاجيات السنة المقبلة (جديد)</span>
+              <i class="fa-regular fa-calendar-check" style="margin-left: 6px;"></i>
+              <span>التخطيط السنوي للحاجيات</span>
+            </button>
+            <button type="button" class="btn btn-outline btn-sm ai-subtab-btn" id="ai-subtab-btn-simulation" onclick="switchAiSubTab('simulation')">
+              <i class="fa-regular fa-chart-bar" style="margin-left: 6px;"></i>
+              <span>محاكاة توزيع الحصص</span>
             </button>
             <button type="button" class="btn btn-outline btn-sm ai-subtab-btn" id="ai-subtab-btn-forecast" onclick="switchAiSubTab('forecast')">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-              <span>2. سرعة النضوب والتنبؤ بالنفاد</span>
+              <i class="fa-regular fa-clock" style="margin-left: 6px;"></i>
+              <span>سرعة النضوب والنفاد</span>
             </button>
             <button type="button" class="btn btn-outline btn-sm ai-subtab-btn" id="ai-subtab-btn-entities" onclick="switchAiSubTab('entities')">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-              <span>3. نمط استهلاك الجهات والمؤشرات غير النمطية</span>
+              <i class="fa-regular fa-building" style="margin-left: 6px;"></i>
+              <span>سلوك واستهلاك الجهات</span>
             </button>
             <button type="button" class="btn btn-outline btn-sm ai-subtab-btn" id="ai-subtab-btn-recommendations" onclick="switchAiSubTab('recommendations')">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-              <span>4. توصيات إدارية استباقية</span>
-            </button>
-            <button type="button" class="btn btn-outline btn-sm ai-subtab-btn" id="ai-subtab-btn-sandbox" onclick="switchAiSubTab('sandbox')">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-              <span>5. منصة محاكاة سيناريوهات التوزيع (Sandbox)</span>
+              <i class="fa-regular fa-lightbulb" style="margin-left: 6px;"></i>
+              <span>التوصيات الاستباقية</span>
             </button>
           </div>
 
-          <!-- القسم 1 الجديد: وحدة التخطيط الاستباقي لحاجيات السنة المقبلة -->
+          <!-- القسم 1: وحدة التخطيط الاستباقي لحاجيات السنة المقبلة -->
           <div id="ai-section-planning" class="ai-sub-section">
             <div class="card" style="border: 1.5px solid rgba(56, 189, 248, 0.4); box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
               <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 14px;">
                 <div>
                   <h3 class="card-title" style="font-size: 1.15rem; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
                     <span style="display: inline-flex; width: 32px; height: 32px; border-radius: 8px; background: rgba(56, 189, 248, 0.15); color: #0284c7; align-items: center; justify-content: center;">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                      <i class="fa-regular fa-calendar-check" style="font-size: 16px;"></i>
                     </span>
-                    وحدة التخطيط الاستباقي لحاجيات السنة المقبلة وتحديد الكوطة
+                    <span>وحدة التخطيط الاستباقي لحاجيات السنة المقبلة وتحديد الكوطة</span>
                   </h3>
                   <div class="card-subtitle" style="margin-top: 4px;">نموذج رياضي تنبؤي لتقدير كميات الشراء وتوزيع الحصص التقديرية على المحاكم والموظفين مع هامش الأمان الإداري</div>
                 </div>
                 <button type="button" class="btn btn-primary btn-sm" onclick="printForecastReportA4()" style="padding: 7px 16px; font-size: 0.82rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-                  <span>🖨️ طباعة بطاقة التوقعات الرسمية (A4)</span>
+                  <i class="fa-regular fa-file-lines"></i>
+                  <span>طباعة بطاقة التوقعات</span>
                 </button>
               </div>
 
@@ -7516,29 +7597,24 @@
               <!-- أزرار التبويبات الفرعية الثلاث للتخطيط: الإجمالي / حسب الجهات / حسب المستفيدين -->
               <div style="display: flex; gap: 8px; margin-bottom: 14px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 8px; flex-wrap: wrap;">
                 <button type="button" class="btn btn-primary btn-sm" id="btn-forecast-tab-total" onclick="switchForecastDrillTab('total')">
-                  أ) الإجمالي الكلي وأمر الشراء المقترح
+                  الإجمالي وأمر الشراء
                 </button>
                 <button type="button" class="btn btn-outline btn-sm" id="btn-forecast-tab-entities" onclick="switchForecastDrillTab('entities')">
-                  ب) حسب الجهات المستفيدة (الكوطة)
+                  حصص الجهات
                 </button>
                 <button type="button" class="btn btn-outline btn-sm" id="btn-forecast-tab-beneficiaries" onclick="switchForecastDrillTab('beneficiaries')">
-                  ج) حسب المستفيدين والمكاتب
+                  حصص المستفيدين
                 </button>
               </div>
 
               <!-- حاويات محتوى التبويبات الثلاث -->
               <div id="forecast-drill-content-total">
-                <!-- بطاقات الملخص الإجمالي الخمس -->
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px;">
+                <!-- بطاقات الملخص 2×2 المضغوطة -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 16px;">
                   <div style="background: var(--bg-card); border: 1.5px solid var(--border-subtle); border-radius: 12px; padding: 12px 14px;">
                     <div style="font-size: 0.76rem; color: var(--text-muted); font-weight: 700;">الاستهلاك السنوي المرجعي</div>
                     <div style="font-size: 1.5rem; font-weight: 900; color: var(--text-main); margin-top: 4px;" id="fc-metric-annual-burn">0</div>
-                    <div style="font-size: 0.72rem; color: var(--text-muted);">قطعة / سنة</div>
-                  </div>
-                  <div style="background: var(--bg-card); border: 1.5px solid var(--border-subtle); border-radius: 12px; padding: 12px 14px;">
-                    <div style="font-size: 0.76rem; color: var(--text-muted); font-weight: 700;">هامش الأمان المضاف</div>
-                    <div style="font-size: 1.5rem; font-weight: 900; color: #3b82f6; margin-top: 4px;" id="fc-metric-margin-qty">+0</div>
-                    <div style="font-size: 0.72rem; color: var(--text-muted);" id="fc-metric-margin-pct">+15% احتياطي</div>
+                    <div style="font-size: 0.72rem; color: var(--text-muted);" id="fc-metric-margin-pct">+15% احتياطي أمان</div>
                   </div>
                   <div style="background: var(--bg-card); border: 1.5px solid rgba(56, 189, 248, 0.5); border-radius: 12px; padding: 12px 14px; background: rgba(56, 189, 248, 0.05);">
                     <div style="font-size: 0.76rem; color: #0284c7; font-weight: 700;">إجمالي الحاجيات التقديرية</div>
@@ -7553,8 +7629,8 @@
                   <div style="background: var(--bg-card); border: 1.5px solid rgba(239, 68, 68, 0.5); border-radius: 12px; padding: 12px 14px; background: rgba(239, 68, 68, 0.05); position: relative;">
                     <div style="display: flex; justify-content: space-between; align-items: center; gap: 6px;">
                       <div style="font-size: 0.76rem; color: #ef4444; font-weight: 700;">العجز المتوقع / كمية الشراء</div>
-                      <button type="button" class="btn btn-outline btn-sm" onclick="openWhyForecastModal()" title="لماذا تم احتساب هذه النتيجة؟ عرض تفاصيل المعادلة الاستباقية" style="padding: 2px 8px; font-size: 0.72rem; border-color: rgba(239,68,68,0.4); color: #ef4444; border-radius: 6px; background: rgba(239,68,68,0.08); font-weight: 800; cursor: pointer;">
-                        لماذا؟
+                      <button type="button" class="btn-icon square-action-btn" onclick="openWhyForecastModal()" title="لماذا تم احتساب هذه النتيجة؟ عرض تفاصيل المعادلة الاستباقية" style="width: 30px; height: 30px; border: 1px solid rgba(2,132,199,0.3); color: #0284c7; border-radius: 8px; background: rgba(2,132,199,0.08); cursor: pointer;">
+                        <i class="fa-regular fa-circle-question" style="font-size: 16px;"></i>
                       </button>
                     </div>
                     <div style="font-size: 1.6rem; font-weight: 900; color: #ef4444; margin-top: 4px;" id="fc-metric-purchase-order">0</div>
@@ -7724,57 +7800,95 @@
             </div>
           </div>
 
-          <!-- القسم 4: منصة محاكاة سيناريوهات التوزيع الافتراضية (What-If Sandbox) -->
-          <div id="ai-section-sandbox" class="ai-sub-section" style="display: none;">
-            <div class="card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(59, 130, 246, 0.05)); border: 1.5px solid rgba(16, 185, 129, 0.35);">
-              <div class="card-header" style="border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px; margin-bottom: 16px;">
-                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-                  <div>
-                    <h3 class="card-title" style="font-size: 1.1rem; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
-                      <span style="display: inline-flex; width: 28px; height: 28px; border-radius: 8px; background: #10b981; color: #ffffff; align-items: center; justify-content: center; font-size: 0.9rem;">⚡</span>
-                      مختبر محاكاة سيناريوهات التوزيع الافتراضية (What-If Simulation Sandbox)
-                    </h3>
-                    <div class="card-subtitle">بيئة تجريبية معزولة: تتيح لك اختبار توزيع كميات معينة على جهة محددة لمعرفة أثرها على رصيد المخزون ومؤشر الاستقرار دون التأثير على السجلات الحقيقية</div>
+          <!-- القسم 2: محاكاة توزيع الحصص السنوية التلقائية (Automated Quota Distribution Simulator) -->
+          <div id="ai-section-simulation" class="ai-sub-section" style="display: none;">
+            <div class="card" style="border: 1.5px solid rgba(16, 185, 129, 0.4); box-shadow: 0 10px 30px rgba(0,0,0,0.06);">
+              <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 14px;">
+                <div>
+                  <h3 class="card-title" style="font-size: 1.15rem; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                    <span style="display: inline-flex; width: 32px; height: 32px; border-radius: 8px; background: rgba(16, 185, 129, 0.15); color: #10b981; align-items: center; justify-content: center;">
+                      <i class="fa-regular fa-chart-bar" style="font-size: 16px;"></i>
+                    </span>
+                    <span>محاكاة توزيع الحصص السنوية التلقائية</span>
+                  </h3>
+                  <div class="card-subtitle" style="margin-top: 4px;">نموذج محاكاة ذكي يقرأ سجل الاستهلاك الفعلي للمادة ويولد حصص التوزيع المتوقعة للسنة القادمة تلقائياً بدون أي إدخال يدوي</div>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm" onclick="printSimulatedQuotaTable()" style="padding: 7px 16px; font-size: 0.82rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                  <i class="fa-regular fa-file-lines"></i>
+                  <span>طباعة جدول الحصص السنوية</span>
+                </button>
+              </div>
+
+              <!-- شريط التحكم: اختيار المادة مع البحث التلقائي + تحديد هامش الأمان -->
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; padding: 14px 16px; background: var(--bg-muted); border-radius: var(--radius-md); margin: 14px 0;">
+                <!-- محدد المادة بالبحث الذكي -->
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label" style="font-weight: 700; font-size: 0.8rem;"><span class="req-star">*</span> المادة المراد محاكاة توزيع حصصها:</label>
+                  <div class="item-combobox-wrap" style="position: relative;">
+                    <input type="text" id="sim-quota-item-search-input" class="form-control" placeholder="ابحث أو اختر مادة من المخزون..." autocomplete="off" onfocus="openSimQuotaItemSuggestions()" oninput="filterSimQuotaItemSuggestions(this.value)" style="height: 36px; font-size: 0.84rem; padding: 4px 28px 4px 8px;" />
+                    <span style="position: absolute; left: 8px; top: 9px; color: var(--text-muted); pointer-events: none;">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </span>
+                    <input type="hidden" id="sim-quota-item-selected-id" value="" />
+                    <div id="sim-quota-item-autocomplete-list" class="combobox-suggestions" style="display: none; position: absolute; top: calc(100% + 4px); right: 0; left: 0; max-height: 250px; overflow-y: auto; z-index: 120;"></div>
                   </div>
-                  <span class="badge badge-success" style="font-size: 0.78rem; padding: 4px 10px;">آمن ومستقل 100%</span>
                 </div>
-              </div>
 
-              <!-- نموذج إعداد سيناريو المحاكاة -->
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 16px;">
+                <!-- محدد هامش الأمان التلقائي -->
                 <div class="form-group" style="margin-bottom: 0;">
-                  <label class="form-label"><span class="req-star">*</span> 1. اختر المادة المراد محاكاتها</label>
-                  <select id="sim-item-select" class="form-control" onchange="onSimItemChanged()">
-                    <!-- يملأ ديناميكياً بجميع المواد وأرصدتها الحقيقية -->
+                  <label class="form-label" style="font-weight: 700; font-size: 0.8rem;">🛡️ هامش الأمان الإضافي المعتمد:</label>
+                  <select id="sim-quota-safety-margin" class="form-control" style="height: 36px; font-size: 0.84rem;" onchange="calculateAndRenderSimulatedQuota()">
+                    <option value="0">0% (استهلاك فعلي فقط دون هامش)</option>
+                    <option value="10">10% (هامش أمان اعتيادي)</option>
+                    <option value="15" selected>15% (موصى به: متوازن لمواجهة الطوارئ)</option>
+                    <option value="20">20% (هامش أمان موسع)</option>
                   </select>
                 </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                  <label class="form-label"><span class="req-star">*</span> 2. الجهة المفترضة المستفيدة</label>
-                  <select id="sim-dest-select" class="form-control">
-                    <!-- يملأ ديناميكياً بالجهات -->
-                  </select>
+              </div>
+
+              <!-- بطاقات مؤشرات سريعة لمحاكاة الحصص -->
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px;">
+                <div style="background: var(--bg-card); border: 1.5px solid var(--border-subtle); border-radius: 12px; padding: 12px 14px;">
+                  <div style="font-size: 0.76rem; color: var(--text-muted); font-weight: 700;">المادة المختارة</div>
+                  <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="sim-quota-metric-item-name">—</div>
+                  <div style="font-size: 0.72rem; color: var(--text-muted);" id="sim-quota-metric-item-stock">الرصيد: 0</div>
                 </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                  <label class="form-label"><span class="req-star">*</span> 3. الكمية المفترض تسليمها (قطعة)</label>
-                  <input type="number" id="sim-qty-input" class="form-control tabular-nums" min="1" value="10" placeholder="أدخل الكمية الافتراضية..." />
+                <div style="background: var(--bg-card); border: 1.5px solid var(--border-subtle); border-radius: 12px; padding: 12px 14px;">
+                  <div style="font-size: 0.76rem; color: var(--text-muted); font-weight: 700;">الاستهلاك السنوي المرجعي</div>
+                  <div style="font-size: 1.4rem; font-weight: 900; color: var(--text-main); margin-top: 4px;" id="sim-quota-metric-burn">0</div>
+                  <div style="font-size: 0.72rem; color: var(--text-muted);">قطعة مسحوبة إجمالاً</div>
+                </div>
+                <div style="background: var(--bg-card); border: 1.5px solid rgba(16, 185, 129, 0.4); border-radius: 12px; padding: 12px 14px; background: rgba(16, 185, 129, 0.05);">
+                  <div style="font-size: 0.76rem; color: #059669; font-weight: 700;">إجمالي الحصص التقديرية</div>
+                  <div style="font-size: 1.4rem; font-weight: 900; color: #059669; margin-top: 4px;" id="sim-quota-metric-total">0</div>
+                  <div style="font-size: 0.72rem; color: var(--text-muted);" id="sim-quota-metric-margin-label">+15% هامش أمان</div>
+                </div>
+                <div style="background: var(--bg-card); border: 1.5px solid var(--border-subtle); border-radius: 12px; padding: 12px 14px;">
+                  <div style="font-size: 0.76rem; color: var(--text-muted); font-weight: 700;">الجهات المشمولة بالتوزيع</div>
+                  <div style="font-size: 1.4rem; font-weight: 900; color: var(--primary); margin-top: 4px;" id="sim-quota-metric-entities-count">0</div>
+                  <div style="font-size: 0.72rem; color: var(--text-muted);">محاكم ومصالح معتمدة</div>
                 </div>
               </div>
 
-              <!-- أزرار التحكم بالمحاكاة -->
-              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 18px; flex-wrap: wrap;">
-                <button type="button" class="btn btn-primary" onclick="runAiSimulationSandbox()" style="display: inline-flex; align-items: center; gap: 6px;">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                  <span>تشغيل المحاكاة وفحص الأثر</span>
-                </button>
-                <button type="button" class="btn btn-secondary" onclick="resetAiSimulationSandbox()">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v6h6"></path><path d="M21 12A9 9 0 0 0 6 5.3L3 8"></path><path d="M21 22v-6h-6"></path><path d="M3 12a9 9 0 0 0 15 6.7l3-2.7"></path></svg>
-                  <span>إعادة ضبط المحاكاة</span>
-                </button>
-              </div>
-
-              <!-- نتائج المحاكاة -->
-              <div id="sim-result-box" style="display: none; padding: 18px; background: var(--bg-card); border-radius: var(--radius-md); border: 1.5px solid var(--border-subtle); box-shadow: var(--shadow-sm);">
-                <!-- يملأ ديناميكياً بواسطة runAiSimulationSandbox -->
+              <!-- جدول محاكاة الحصص السنوية (المحاكم تظهر بمستفيديها، والمديرية كيان واحد موحد) -->
+              <div class="table-scroll-wrapper">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 40px; text-align: center;">#</th>
+                      <th>الجهة المستفيدة أو المستفيد المعتمد</th>
+                      <th>المقر / المحكمة</th>
+                      <th style="text-align: center; width: 120px;">الاستهلاك السابق</th>
+                      <th style="text-align: center; width: 100px;">نسبة الاستحقاق</th>
+                      <th style="text-align: center; width: 140px;">الحصة السنوية المقترحة</th>
+                      <th style="text-align: center; width: 130px;">الحصة الربع سنوية</th>
+                      <th style="min-width: 130px;">شريط الحصة</th>
+                    </tr>
+                  </thead>
+                  <tbody id="sim-quota-tbody">
+                    <!-- يملأ ديناميكياً آلياً بواسطة calculateAndRenderSimulatedQuota -->
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -8040,6 +8154,42 @@
                     <input type="number" id="setting-threshold-limited" class="form-control tabular-nums" />
                   </div>
                   <button type="button" class="btn btn-primary btn-sm" onclick="saveThresholdSettings()">حفظ معايير التنبيه</button>
+                </div>
+
+                <div class="card" style="margin-bottom: 0;">
+                  <h3 class="card-title">المادة الافتراضية للوحة القيادة</h3>
+                  <div class="card-subtitle" style="margin-bottom: 14px;">تحديد المادة التي تظهر تلقائياً في مبيان تحليل الاستهلاك عند فتح لوحة القيادة</div>
+                  <div class="form-group">
+                    <label class="form-label">المادة الافتراضية</label>
+                    <select id="setting-default-dashboard-item" class="form-control">
+                      <option value="auto">تلقائي (المادة الأعلى استهلاكاً)</option>
+                    </select>
+                  </div>
+                  <button type="button" class="btn btn-primary btn-sm" onclick="saveDefaultDashboardItemSetting()">حفظ المادة الافتراضية</button>
+                </div>
+
+                <div class="card" style="margin-bottom: 0; grid-column: 1 / -1;">
+                  <h3 class="card-title">قاموس ودليل الاختصارات الإدارية (مثل: ر.ك.ض)</h3>
+                  <div class="card-subtitle" style="margin-bottom: 14px;">إدارة الرموز والاختصارات الإدارية المعتمدة في المراسلات والإشهادات بالدائرة القضائية</div>
+                  <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center;">
+                    <input type="text" id="new-abbr-code" class="form-control" style="width:140px;" placeholder="الرمز (مثال: ر.ك.ض)">
+                    <input type="text" id="new-abbr-meaning" class="form-control" style="flex:1;min-width:200px;" placeholder="المعنى الإداري الكامل (مثال: رئيس كتابة الضبط)">
+                    <button type="button" class="btn btn-primary btn-sm" onclick="addNewAbbreviation()" style="display:inline-flex;align-items:center;gap:6px;">
+                      <i class="fa-regular fa-plus"></i> <span>إضافة للقاموس</span>
+                    </button>
+                  </div>
+                  <div class="table-scroll-wrapper" style="max-height:240px;overflow-y:auto;">
+                    <table class="data-table" style="font-size:0.84rem;">
+                      <thead>
+                        <tr>
+                          <th style="width:160px;">الرمز / الاختصار</th>
+                          <th>الدلالة والبيان الكامل</th>
+                          <th style="width:70px;text-align:center;">إجراء</th>
+                        </tr>
+                      </thead>
+                      <tbody id="settings-abbreviations-tbody"></tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
@@ -8453,12 +8603,12 @@
           <div class="card">
             <div class="card-header">
               <div>
-                <h2 class="card-title">🗑️ مركز الحذف المؤقت واسترجاع المحذوفات (Soft Delete Center)</h2>
-                <div class="card-subtitle">العناصر المحذوفة مؤقتاً (<code>isDeleted: true</code>) لا تُفقد نهائياً؛ يمكنك استرجاعها للمخزن أو الأرشيف بضغطة زر أو حذفها نهائياً</div>
+                <h2 class="card-title"><i class="fa-regular fa-trash-can" style="margin-left: 8px;"></i>مركز الحذف المؤقت واسترجاع المحذوفات</h2>
+                <div class="card-subtitle">العناصر المحذوفة مؤقتاً لا تُفقد نهائياً؛ يمكنك استرجاعها للمخزن أو الأرشيف بضغطة زر أو حذفها نهائياً</div>
               </div>
               <div class="header-actions">
                 <button type="button" class="btn btn-danger btn-sm" onclick="emptyAllTrashPermanently()">
-                  ⚠️ تفريغ سلة المحذوفات نهائياً
+                  تفريغ سلة المحذوفات نهائياً
                 </button>
               </div>
             </div>
@@ -8594,14 +8744,22 @@
                   </div>
 
                   <div class="form-group" style="margin: 0;">
-                    <label class="form-label" style="font-weight:800;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">
+                    <label class="form-label" style="font-weight:800;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;">
                       <span style="display:flex;align-items:center;gap:6px;">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-phase-1);"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
                         <span>3. الكمية الإجمالية للسحب (رصيد العملية المجمع)</span>
                       </span>
-                      <span id="bulk-selected-item-stock-hint" style="font-size:0.75rem;color:#10b981;font-weight:800;"></span>
+                      <span id="bulk-selected-item-stock-hint" style="font-size:0.78rem;color:#10b981;font-weight:800;"></span>
                     </label>
-                    <input type="number" id="bulk-pool-qty-input" class="form-control tabular-nums" min="1" value="10" placeholder="حدد الكمية الكلية للسحب...">
+                    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:8px;">
+                      <span style="font-size:0.78rem;color:var(--text-muted);font-weight:700;">نسب السحب السريع:</span>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="applyBulkQtyPercentage(25)" style="padding:3px 10px;font-size:0.78rem;font-weight:800;">25%</button>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="applyBulkQtyPercentage(50)" style="padding:3px 10px;font-size:0.78rem;font-weight:800;">50%</button>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="applyBulkQtyPercentage(70)" style="padding:3px 10px;font-size:0.78rem;font-weight:800;">70%</button>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="applyBulkQtyPercentage(100)" style="padding:3px 10px;font-size:0.78rem;font-weight:800;">100% (الكامل)</button>
+                      <span id="bulk-reserve-left-tag" class="badge badge-subtle" style="font-size:0.76rem;margin-right:auto;font-weight:800;display:none;"></span>
+                    </div>
+                    <input type="number" id="bulk-pool-qty-input" class="form-control tabular-nums" min="1" value="10" placeholder="حدد الكمية الكلية للسحب..." oninput="updateBulkReserveLeftHint()">
                   </div>
                 </div>
 
@@ -8692,27 +8850,41 @@
                   <input type="text" id="bulk-run-notes" class="form-control" placeholder="مثال: حصة التوزيع الدوري — سليم ومعتمد">
                 </div>
 
-                <!-- أداة تحديد وتخصيص المستفيدين للوجهة (تعدد المستفيدين في نفس المحكمة) -->
-                <div class="bulk-dest-recipients-box" style="background: var(--bg-muted); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
-                  <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+                <!-- أداة تحديد وتخصيص المستفيدين عبر كبسولات تفاعلية ذكية -->
+                <div class="bulk-dest-recipients-box" style="background: var(--bg-muted); border: 1.5px solid var(--border-subtle); border-radius: 12px; padding: 16px; margin-bottom: 18px;">
+                  <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
                     <div style="display: flex; align-items: center; gap: 8px;">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-phase-2);"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                      <strong style="font-size: 0.95rem; color: var(--text-main);">تخصيص الجهات والوجهات المستفيدة:</strong>
+                      <i class="fa-regular fa-building" style="font-size: 1.15rem; color: var(--color-phase-2);"></i>
+                      <strong style="font-size: 0.98rem; color: var(--text-main);">تحديد الجهات والمستفيدين عبر الكبسولات التفاعلية:</strong>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 8px; flex: 1; max-width: 440px;">
-                      <select id="bulk-multiselect-dest" class="form-control" style="height: 38px; font-weight: 800;" onchange="renderDestRecipientsChecklist()">
-                      </select>
-                      <button type="button" class="btn btn-primary" onclick="addBulkRecipientToMatrix()" style="background-color: var(--color-phase-2); border: none; height: 38px; padding: 0 14px; font-weight: 800; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        <span>إضافة للجدول</span>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                      <button type="button" class="btn btn-outline btn-sm" onclick="bulkSelectAllRecipients()" style="font-size:0.78rem;font-weight:800;display:inline-flex;align-items:center;gap:4px;">
+                        <i class="fa-regular fa-circle-check"></i> <span>تحديد كافة المحاكم</span>
+                      </button>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="bulkDeselectAllRecipients()" style="font-size:0.78rem;font-weight:800;color:#ef4444;border-color:rgba(239,68,68,0.3);display:inline-flex;align-items:center;gap:4px;">
+                        <i class="fa-regular fa-circle-xmark"></i> <span>إلغاء التحديد</span>
                       </button>
                     </div>
                   </div>
-                  <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">
-                    حدد أو أضف المسؤولين في الوجهة المختارة لإدراجهم فوراً كأسطر نشطة في مصفوفة التوزيع:
+                  
+                  <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">
+                    انقر على أي كبسولة لتفعيلها أو إلغائها فوراً في مصفوفة التوزيع:
                   </div>
-                  <div id="bulk-dest-recipients-checklist" style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
-                    <!-- تُملأ كبسولات الاختيار المتعدد ديناميكياً -->
+
+                  <!-- شبكة بطاقات المحاكم والجهات مع الكبسولات -->
+                  <div id="bulk-entity-bubble-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-bottom: 14px;">
+                    <!-- تُملأ ديناميكياً بواسطة renderBulkBeneficiaryBubbleCards() -->
+                  </div>
+
+                  <!-- شريط الملخص والصينية للمسؤولين المحددين (Selected Tray) -->
+                  <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                      <span style="font-size: 0.82rem; font-weight: 800; color: var(--text-main);">المستفيدون المختارون للتوزيع:</span>
+                      <span id="bulk-selected-tray-count" class="badge badge-primary" style="font-size: 0.8rem; font-weight: 800;">0 جهة / مسؤول</span>
+                    </div>
+                    <div id="bulk-selected-tray-chips" style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center;">
+                      <!-- كبسولات صغيرة للجهات المحددة -->
+                    </div>
                   </div>
                 </div>
 
@@ -8787,13 +8959,17 @@
                 </div>
 
                 <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;">
+                  <button type="button" id="btn-preview-all-bulk" class="btn btn-secondary" style="padding: 12px 20px; font-weight: 800; font-size: 0.92rem; display: inline-flex; align-items: center; gap: 8px;" disabled onclick="previewAllBulkCertificatesBeforeCommit()">
+                    <i class="fa-regular fa-eye"></i>
+                    <span>معاينة كافة الإشهادات</span>
+                  </button>
                   <button type="button" id="btn-commit-bulk-distribution" class="btn btn-primary" style="background-color: var(--color-phase-3); border: none; padding: 12px 22px; font-weight: 900; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 8px;" disabled onclick="commitBulkDistributionRun(false)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    <span>اعتماد التوزيع وتوليد الإشهادات</span>
+                    <i class="fa-regular fa-circle-check"></i>
+                    <span>تفعيل الكل (حفظ بالأرشيف)</span>
                   </button>
                   <button type="button" id="btn-commit-and-print-bulk" class="btn btn-success" style="padding: 12px 22px; font-weight: 900; font-size: 0.95rem; background: #059669; color: #fff; border: none; display: inline-flex; align-items: center; gap: 8px;" disabled onclick="commitBulkDistributionRun(true)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-                    <span>اعتماد ومعاينة طباعة كافة الإشهادات</span>
+                    <i class="fa-regular fa-print"></i>
+                    <span>تفعيل وطباعة الكل</span>
                   </button>
                 </div>
               </div>
@@ -10877,13 +11053,13 @@
         'issuance-view': { btn: 'tab-btn-issuance', title: 'تسليم جديد' },
         'orders-view': { btn: 'sidebar-btn-orders', title: 'الطلبات' },
         'calendar-view': { btn: 'tab-btn-calendar', title: 'التقويم الإداري' },
-        'history-view': { btn: 'tab-btn-history', title: 'سجل العمليات والأرشيف' },
-        'inventory-view': { btn: 'tab-btn-inventory', title: 'الجرد الدوري للمخزون' },
-        'notifications-view': { btn: 'tab-btn-notifications', title: 'مركز التنبيهات' },
-        'trash-view': { btn: 'tab-btn-trash', title: 'مركز الحذف المؤقت' },
+        'history-view': { btn: 'tab-btn-history', title: 'أرشيف العمليات' },
+        'inventory-view': { btn: 'tab-btn-inventory', title: 'جرد المخزون' },
+        'notifications-view': { btn: 'tab-btn-notifications', title: 'التنبيهات' },
+        'trash-view': { btn: 'tab-btn-trash', title: 'الحذف المؤقت' },
         'bulk-distribution-view': { btn: 'tab-btn-bulk-distribution', title: 'عملية التوزيع' },
-        'ai-insights-view': { btn: 'tab-btn-ai-insights', title: 'الرؤى والتحليل الذكي' },
-        'settings-view': { btn: 'tab-btn-settings', title: 'مركز الإعدادات والتهيئة' }
+        'ai-insights-view': { btn: 'tab-btn-ai-insights', title: 'التحليل الذكي' },
+        'settings-view': { btn: 'tab-btn-settings', title: 'الإعدادات' }
       };
 
       if (tabMap[viewId]) {
@@ -11201,13 +11377,13 @@
         }
       }
       bar.innerHTML = `
-        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 10px; overflow: hidden; white-space: nowrap;">
-          <div style="display: flex; align-items: center; gap: 7px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: ${color}; box-shadow: 0 0 6px ${color}88; flex-shrink: 0;"></span>
-            <strong style="color: var(--text-main); font-size: 0.84rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(name)}">${escapeHtml(name)}</strong>
+        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 8px; overflow: hidden; white-space: nowrap; line-height: 1.3;">
+          <div style="display: flex; align-items: center; gap: 6px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+            <span style="width: 8px; height: 8px; border-radius: 50%; background-color: ${color}; flex-shrink: 0;"></span>
+            <strong style="color: var(--text-main); font-size: 0.82rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(name)}">${escapeHtml(name)}</strong>
           </div>
-          <div style="font-size: 0.82rem; font-weight: 800; color: ${color}; flex-shrink: 0; white-space: nowrap;">
-            ${count} ${escapeHtml(unit)} <span style="opacity: 0.85; font-size: 0.74rem;">(${pct}%)</span>
+          <div style="font-size: 0.8rem; font-weight: 800; color: ${color}; flex-shrink: 0; white-space: nowrap;">
+            ${count} <span style="opacity: 0.85; font-size: 0.72rem;">(${pct}%)</span>
           </div>
         </div>
       `;
@@ -11218,10 +11394,14 @@
       if (!container || !container._defaultDonutData) return;
       const d = container._defaultDonutData;
       setDonutChartBottomLabel(containerId, d.name, d.count, d.unit, d.pct, d.color);
-      if (d.sliceId) {
-        highlightChartSlice(d.sliceId, true);
-        highlightChartLegendItem(d.sliceId, true);
-      }
+      container.querySelectorAll('.donut-slice').forEach(s => {
+        s.setAttribute('stroke-width', '6');
+        s.style.filter = 'none';
+        s.classList.remove('active');
+      });
+      container.querySelectorAll('.legend-item').forEach(l => {
+        l.classList.remove('highlighted');
+      });
     }
 
     function highlightChartLegendItem(sliceId, isHighlight) {
@@ -11236,8 +11416,8 @@
       const slice = document.querySelector(`.donut-slice[data-slice-id="${sliceId}"]`);
       if (slice) {
         if (isHighlight) {
-          slice.setAttribute('stroke-width', '8');
-          slice.style.filter = 'drop-shadow(0 0 5px rgba(255,255,255,0.7))';
+          slice.setAttribute('stroke-width', '7.5');
+          slice.style.filter = 'drop-shadow(0 0 4px rgba(255,255,255,0.6))';
         } else {
           slice.setAttribute('stroke-width', '6');
           slice.style.filter = 'none';
@@ -11268,23 +11448,23 @@
         if (isFirst) firstSliceId = sliceId;
 
         svgSlices += `
-          <circle cx="21" cy="21" r="${r}" fill="transparent" stroke="${e.color}" stroke-width="${isFirst ? '8' : '6'}"
+          <circle cx="21" cy="21" r="${r}" fill="transparent" stroke="${e.color}" stroke-width="6"
             stroke-dasharray="${pctVal} ${100 - pctVal}" stroke-dashoffset="${offset}"
-            class="donut-slice ${isFirst ? 'active' : ''}" data-slice-id="${sliceId}" data-name="${escapeHtml(e.name)}" data-count="${e.count}" data-pct="${pctDisplay}" data-unit="${escapeHtml(unit)}"
-            style="cursor: pointer; transition: stroke-width 0.2s ease, filter 0.2s ease; outline: none; ${isFirst ? `filter: drop-shadow(0 0 5px ${e.color});` : ''}"
-            onmouseenter="setDonutChartBottomLabel('${containerId}', '${escapeHtml(e.name)}', '${e.count}', '${escapeHtml(unit)}', '${pctDisplay}', '${e.color}'); highlightChartLegendItem('${sliceId}', true);"
+            class="donut-slice" data-slice-id="${sliceId}" data-name="${escapeHtml(e.name)}" data-count="${e.count}" data-pct="${pctDisplay}" data-unit="${escapeHtml(unit)}"
+            style="cursor: pointer; transition: stroke-width 0.2s ease, filter 0.2s ease; outline: none;"
+            onmouseenter="setDonutChartBottomLabel('${containerId}', '${escapeHtml(e.name)}', '${e.count}', '${escapeHtml(unit)}', '${pctDisplay}', '${e.color}'); highlightChartSlice('${sliceId}', true); highlightChartLegendItem('${sliceId}', true);"
             onmouseleave="resetDonutChartToDefault('${containerId}');"
-            ontouchstart="setDonutChartBottomLabel('${containerId}', '${escapeHtml(e.name)}', '${e.count}', '${escapeHtml(unit)}', '${pctDisplay}', '${e.color}'); highlightChartLegendItem('${sliceId}', true);">
+            ontouchstart="setDonutChartBottomLabel('${containerId}', '${escapeHtml(e.name)}', '${e.count}', '${escapeHtml(unit)}', '${pctDisplay}', '${e.color}'); highlightChartSlice('${sliceId}', true); highlightChartLegendItem('${sliceId}', true);">
           </circle>
         `;
 
         legendHtml += `
-          <div class="legend-item ${isFirst ? 'highlighted' : ''}" data-legend-id="${sliceId}"
+          <div class="legend-item" data-legend-id="${sliceId}"
             onmouseenter="setDonutChartBottomLabel('${containerId}', '${escapeHtml(e.name)}', '${e.count}', '${escapeHtml(unit)}', '${pctDisplay}', '${e.color}'); highlightChartSlice('${sliceId}', true);"
             onmouseleave="resetDonutChartToDefault('${containerId}');">
             <span class="legend-color-dot" style="background-color: ${e.color}; box-shadow: 0 0 6px ${e.color}66;"></span>
             <span class="legend-label" title="${escapeHtml(e.name)}">${escapeHtml(e.name)}</span>
-            <span class="legend-val tabular-nums">${e.count} ${escapeHtml(unit)} (${pctDisplay}%)</span>
+            <span class="legend-val tabular-nums">${e.count} (${pctDisplay}%)</span>
           </div>
         `;
       });
@@ -12757,20 +12937,20 @@ ${itemsText}
             <td style="text-align: center;"><strong class="tabular-nums font-bold" style="font-size: 0.95rem;">${totalQty}</strong></td>
             <td style="text-align: center;">
               <div style="display: inline-flex; gap: 4px; align-items: center;">
-                <button class="btn-icon" onclick="printSingleVoucherA4('${t.id}')" title="طباعة الإشهاد الرسمي (A4)">
+                <button class="btn-icon square-action-btn" onclick="printSingleVoucherA4('${t.id}')" title="طباعة الإشهاد" aria-label="طباعة">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="6 9 6 2 18 2 18 9"></polyline>
                     <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
                     <rect x="6" y="14" width="12" height="8"></rect>
                   </svg>
                 </button>
-                <button class="btn-icon" onclick="openEditVoucherModal('${t.id}')" title="التعديل الكامل للعملية وتدقيق المخزون">
+                <button class="btn-icon square-action-btn" onclick="openEditVoucherModal('${t.id}')" title="تعديل العملية" aria-label="تعديل">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                   </svg>
                 </button>
-                <button class="btn-icon danger" onclick="deleteVoucher('${t.id}')" title="حذف العملية">
+                <button class="btn-icon danger square-action-btn" onclick="deleteVoucher('${t.id}')" title="حذف العملية" aria-label="حذف">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -14222,7 +14402,11 @@ ${itemsText}
       if (_activeSettingsSubTab === 'cats') renderSettingsCatsTable();
       else if (_activeSettingsSubTab === 'items') renderSettingsItemsTable();
       else if (_activeSettingsSubTab === 'dests') renderSettingsDests();
-      else if (_activeSettingsSubTab === 'about') populateAboutAppSettings();
+      else if (_activeSettingsSubTab === 'about') {
+        populateAboutAppSettings();
+        populateDefaultDashboardItemSelect();
+        renderSettingsAbbreviationsTable();
+      }
       else if (_activeSettingsSubTab === 'profile') populateUserProfileSettings();
       else if (_activeSettingsSubTab === 'notes') renderSettingsQuickNotesTable();
       else if (_activeSettingsSubTab === 'branding') renderBrandingSettings();
@@ -15054,6 +15238,78 @@ ${itemsText}
       state.profile.invThresholds.limited = parseInt(document.getElementById('setting-threshold-limited').value, 10) || 100;
       persistAll();
       showToast('تم حفظ معايير التنبيه بنجاح', 'success');
+    }
+
+    function populateDefaultDashboardItemSelect() {
+      const sel = document.getElementById('setting-default-dashboard-item');
+      if (!sel) return;
+      const items = (Array.isArray(state.data.items) ? state.data.items : []).filter(i => !i.isDeleted);
+      const cur = state.defaultDashboardItemId || 'auto';
+      sel.innerHTML = `<option value="auto">تلقائي (المادة الأكثر استهلاكاً)</option>` +
+        items.map(it => `<option value="${escapeHtml(it.id)}" ${it.id === cur ? 'selected' : ''}>${escapeHtml(it.name)}</option>`).join('');
+    }
+
+    function saveDefaultDashboardItemSetting() {
+      const sel = document.getElementById('setting-default-dashboard-item');
+      if (!sel) return;
+      state.defaultDashboardItemId = sel.value;
+      persistAll();
+      showToast('تم حفظ المادة الافتراضية للوحة القيادة بنجاح', 'success');
+      if (typeof renderItemConsumptionChart === 'function') renderItemConsumptionChart();
+    }
+
+    const DEFAULT_ABBREVIATIONS = [
+      { code: 'ر.ك.ض', meaning: 'رئيس كتابة الضبط' },
+      { code: 'ر.ك.ن', meaning: 'رئيس كتابة النيابة العامة' },
+      { code: 'م.إ.ع', meaning: 'المديرية الإقليمية للعدل بسطات' },
+      { code: 'إ.ت', meaning: 'إشهاد تسليم مواد وتجهيزات' },
+      { code: 'م.س', meaning: 'مخزن السلع والمواد الإدارية' }
+    ];
+
+    function renderSettingsAbbreviationsTable() {
+      const tbody = document.getElementById('settings-abbreviations-tbody');
+      if (!tbody) return;
+      if (!Array.isArray(state.data.abbreviations) || !state.data.abbreviations.length) {
+        state.data.abbreviations = [...DEFAULT_ABBREVIATIONS];
+      }
+      tbody.innerHTML = state.data.abbreviations.map((item, idx) => `
+        <tr>
+          <td><strong style="color:var(--primary);">${escapeHtml(item.code)}</strong></td>
+          <td>${escapeHtml(item.meaning)}</td>
+          <td style="text-align:center;">
+            <button type="button" class="btn-icon danger square-action-btn" onclick="deleteAbbreviation(${idx})" title="حذف الاختصار" style="width:28px;height:28px;">
+              <i class="fa-regular fa-trash-can"></i>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function addNewAbbreviation() {
+      const codeInput = document.getElementById('new-abbr-code');
+      const meanInput = document.getElementById('new-abbr-meaning');
+      if (!codeInput || !meanInput) return;
+      const code = codeInput.value.trim();
+      const meaning = meanInput.value.trim();
+      if (!code || !meaning) {
+        showToast('يرجى إدخال رمز الاختصار والمعنى الكامل', 'warning');
+        return;
+      }
+      if (!Array.isArray(state.data.abbreviations)) state.data.abbreviations = [...DEFAULT_ABBREVIATIONS];
+      state.data.abbreviations.push({ code, meaning });
+      persistAll();
+      renderSettingsAbbreviationsTable();
+      codeInput.value = '';
+      meanInput.value = '';
+      showToast(`تمت إضافة الاختصار "${code}" إلى القاموس الإداري بنجاح`, 'success');
+    }
+
+    function deleteAbbreviation(idx) {
+      if (!Array.isArray(state.data.abbreviations)) return;
+      state.data.abbreviations.splice(idx, 1);
+      persistAll();
+      renderSettingsAbbreviationsTable();
+      showToast('تم حذف الاختصار من القاموس الإداري', 'info');
     }
 
     function populateUserProfileSettings() {
@@ -16866,7 +17122,7 @@ ${itemsText}
           <td style="text-align: center;">${typeBadges[entry.type] || '<span class="badge badge-subtle">سجل</span>'}</td>
           <td>
             <div style="font-weight: 800; color: var(--text-main);">${escapeHtml(entry.title || entry.originalId)}</div>
-            <div style="font-size: 0.75rem; color: var(--text-muted);">المعرف: <code>${escapeHtml(entry.originalId || '')}</code> | الحالة: <code>isDeleted: true</code></div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">المعرف: <code>${escapeHtml(entry.originalId || '')}</code> | الحالة: محذوف مؤقتاً</div>
           </td>
           <td style="text-align: center;" class="tabular-nums">${escapeHtml(entry.deletedAt || '—')}</td>
           <td style="text-align: center;">
@@ -18623,6 +18879,7 @@ ${itemsText}
       if (stepNum === 2) {
         if (typeof populateBulkMultiselectDest === "function") populateBulkMultiselectDest();
         if (typeof renderDestRecipientsChecklist === "function") renderDestRecipientsChecklist();
+        if (typeof renderBulkBeneficiaryBubbleCards === "function") renderBulkBeneficiaryBubbleCards();
         syncBulkDestinationRows();
         renderBulkAllocationMatrix();
       } else if (stepNum === 3) {
@@ -18837,6 +19094,257 @@ ${itemsText}
       showToast('تم تفريغ سلة التوزيع المركزي وتصفير جميع الحصص', 'info');
     }
 
+    function applyBulkQtyPercentage(pct) {
+      const itemSel = document.getElementById('bulk-pool-item-select');
+      const qtyInput = document.getElementById('bulk-pool-qty-input');
+      if (!itemSel || !itemSel.value) {
+        showToast('يرجى اختيار مادة من القائمة أولاً لتطبيق نسبة السحب', 'warning');
+        return;
+      }
+      const item = (state.data.items || []).find(i => i.id === itemSel.value);
+      if (!item) return;
+      const stock = sanitize(item.stock);
+      if (stock <= 0) {
+        if (qtyInput) qtyInput.value = 10;
+        showToast(`المادة "${item.name}" رصيدها الحالي بالمخزن هو 0 — مسموح بالتوزيع والإشهاد بدون قيود`, 'warning');
+      } else {
+        const calculated = Math.max(1, Math.round(stock * (pct / 100)));
+        if (qtyInput) qtyInput.value = calculated;
+        showToast(`تم تحديد نسبة ${pct}% من رصيد "${item.name}" (${calculated} قطعة من أصل ${stock})`, 'info');
+      }
+      updateBulkReserveLeftHint();
+    }
+
+    function updateBulkReserveLeftHint() {
+      const itemSel = document.getElementById('bulk-pool-item-select');
+      const qtyInput = document.getElementById('bulk-pool-qty-input');
+      const tag = document.getElementById('bulk-reserve-left-tag');
+      if (!tag) return;
+      if (!itemSel || !itemSel.value) {
+        tag.style.display = 'none';
+        return;
+      }
+      const item = (state.data.items || []).find(i => i.id === itemSel.value);
+      if (!item) {
+        tag.style.display = 'none';
+        return;
+      }
+      const stock = sanitize(item.stock);
+      const reqQty = parseInt(qtyInput ? qtyInput.value : 0, 10) || 0;
+      tag.style.display = 'inline-block';
+      if (stock <= 0) {
+        tag.className = 'badge badge-warning';
+        tag.textContent = 'الرصيد: 0 | مسموح بالتوزيع والإشهاد';
+      } else {
+        const rem = stock - reqQty;
+        if (rem >= 0) {
+          tag.className = 'badge badge-success';
+          tag.textContent = `المتبقي في الاحتياطي بالمخزن: ${rem} وحدة`;
+        } else {
+          tag.className = 'badge badge-danger';
+          tag.textContent = `تجاوز رصيد المخزن بـ ${Math.abs(rem)} وحدة (مسموح)`;
+        }
+      }
+    }
+
+    function changeBulkPoolItemQtyStepper(itemId, delta) {
+      const entry = bulkDistState.pool.find(p => p.itemId === itemId);
+      if (!entry) return;
+      const current = parseInt(entry.qty, 10) || 1;
+      const nextVal = Math.max(1, current + delta);
+      updateBulkPoolItemQty(itemId, nextVal);
+    }
+
+    function stepBulkMatrixCell(rowId, itemId, delta) {
+      const row = bulkDistState.rows.find(r => r.rowId === rowId);
+      if (!row || !row.enabled) return;
+      const cur = parseInt(row.allocations[itemId], 10) || 0;
+      const nextVal = Math.max(0, cur + delta);
+      onBulkMatrixCellInput(rowId, itemId, nextVal);
+    }
+
+    function isSettatDirectorate(destName) {
+      if (!destName) return false;
+      const d = String(destName).trim();
+      return d.includes('المديرية الإقليمية') || d.includes('مديرية بسطات');
+    }
+
+    function renderBulkBeneficiaryBubbleCards() {
+      const grid = document.getElementById('bulk-entity-bubble-grid');
+      if (!grid) return;
+
+      const destObj = state.data.destinations || {};
+      const destKeys = Object.keys(destObj);
+
+      if (!destKeys.length) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 16px;">لا توجد جهات مستفيدة مسجلة</div>';
+        updateSelectedBeneficiaryTray();
+        return;
+      }
+
+      grid.innerHTML = destKeys.map(destName => {
+        const isDir = isSettatDirectorate(destName);
+        let itemsHtml = '';
+
+        if (isDir) {
+          // RULE: Settat Directorate is strictly rendered as a single bubble chip without ordinary staff
+          const active = (bulkDistState.rows || []).some(r => isSettatDirectorate(r.destName) && r.enabled !== false);
+          itemsHtml = `
+            <button type="button" 
+              class="bubble-chip ${active ? 'active' : ''}" 
+              onclick="toggleBeneficiaryBubble('${escapeHtml(destName)}', 'المديرية الإقليمية للعدل بسطات')"
+              style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:0.82rem;font-weight:800;border:1.5px solid ${active ? '#10b981' : 'var(--border-subtle)'};background:${active ? 'rgba(16,185,129,0.12)' : 'var(--bg-card)'};color:${active ? '#065f46' : 'var(--text-main)'};cursor:pointer;transition:all 0.15s ease;">
+              <i class="fa-regular ${active ? 'fa-circle-check' : 'fa-circle'}" style="font-size:0.85rem;color:${active ? '#10b981' : 'var(--text-muted)'};"></i>
+              <span>المديرية الإقليمية للعدل بسطات (كيان موحد)</span>
+            </button>
+          `;
+        } else {
+          // Courts: list individual official bubbles (رئيس كتابة الضبط، رئيس كتابة النيابة العامة، etc.)
+          const recList = Array.isArray(destObj[destName]) && destObj[destName].length > 0
+            ? destObj[destName]
+            : ['رئيس كتابة الضبط', 'رئيس كتابة النيابة العامة'];
+
+          itemsHtml = recList.map(rec => {
+            const active = (bulkDistState.rows || []).some(r => r.destName === destName && r.recipientName === rec && r.enabled !== false);
+            return `
+              <button type="button" 
+                class="bubble-chip ${active ? 'active' : ''}" 
+                onclick="toggleBeneficiaryBubble('${escapeHtml(destName)}', '${escapeHtml(rec)}')"
+                style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:0.8rem;font-weight:700;border:1.5px solid ${active ? '#3b82f6' : 'var(--border-subtle)'};background:${active ? 'rgba(59,130,246,0.12)' : 'var(--bg-card)'};color:${active ? '#1d4ed8' : 'var(--text-main)'};cursor:pointer;transition:all 0.15s ease;">
+                <i class="fa-regular ${active ? 'fa-circle-check' : 'fa-circle'}" style="font-size:0.82rem;color:${active ? '#3b82f6' : 'var(--text-muted)'};"></i>
+                <span>${escapeHtml(rec)}</span>
+              </button>
+            `;
+          }).join('');
+        }
+
+        return `
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border-subtle);padding-bottom:6px;">
+              <i class="fa-regular ${isDir ? 'fa-landmark' : 'fa-building-columns'}" style="color:${isDir ? '#10b981' : '#3b82f6'};font-size:0.95rem;"></i>
+              <strong style="font-size:0.88rem;color:var(--text-main);">${escapeHtml(destName)}</strong>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+              ${itemsHtml}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      updateSelectedBeneficiaryTray();
+    }
+
+    function toggleBeneficiaryBubble(destName, recName) {
+      if (!Array.isArray(bulkDistState.rows)) bulkDistState.rows = [];
+      const isDir = isSettatDirectorate(destName);
+      const existing = bulkDistState.rows.find(r => {
+        if (isDir) return isSettatDirectorate(r.destName);
+        return r.destName === destName && r.recipientName === recName;
+      });
+
+      if (existing) {
+        existing.enabled = !existing.enabled;
+        if (!existing.enabled) existing.allocations = {};
+      } else {
+        bulkDistState.rows.push({
+          rowId: 'row-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
+          destName: isDir ? 'المديرية الإقليمية بسطات' : destName,
+          recipientName: recName,
+          enabled: true,
+          isExtra: true,
+          allocations: {}
+        });
+      }
+
+      renderBulkBeneficiaryBubbleCards();
+      renderBulkAllocationMatrix();
+      updateBulkLiveMonitor();
+      saveBulkDistributionDraft();
+    }
+
+    function bulkSelectAllRecipients() {
+      if (!Array.isArray(bulkDistState.rows)) bulkDistState.rows = [];
+      const destObj = state.data.destinations || {};
+      Object.keys(destObj).forEach(destName => {
+        if (isSettatDirectorate(destName)) {
+          let row = bulkDistState.rows.find(r => isSettatDirectorate(r.destName));
+          if (!row) {
+            row = {
+              rowId: 'row-dir-' + Date.now(),
+              destName: destName,
+              recipientName: 'المديرية الإقليمية للعدل بسطات',
+              enabled: true,
+              isExtra: true,
+              allocations: {}
+            };
+            bulkDistState.rows.push(row);
+          } else {
+            row.enabled = true;
+          }
+        } else {
+          const recs = Array.isArray(destObj[destName]) && destObj[destName].length > 0
+            ? destObj[destName]
+            : ['رئيس كتابة الضبط', 'رئيس كتابة النيابة العامة'];
+          recs.forEach(rec => {
+            let row = bulkDistState.rows.find(r => r.destName === destName && r.recipientName === rec);
+            if (!row) {
+              row = {
+                rowId: 'row-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
+                destName: destName,
+                recipientName: rec,
+                enabled: true,
+                isExtra: true,
+                allocations: {}
+              };
+              bulkDistState.rows.push(row);
+            } else {
+              row.enabled = true;
+            }
+          });
+        }
+      });
+
+      renderBulkBeneficiaryBubbleCards();
+      renderBulkAllocationMatrix();
+      updateBulkLiveMonitor();
+      saveBulkDistributionDraft();
+      showToast('تم تفعيل كافة المحاكم والجهات المستفيدة في مصفوفة التوزيع', 'success');
+    }
+
+    function bulkDeselectAllRecipients() {
+      if (!Array.isArray(bulkDistState.rows)) return;
+      bulkDistState.rows.forEach(r => {
+        r.enabled = false;
+        r.allocations = {};
+      });
+      renderBulkBeneficiaryBubbleCards();
+      renderBulkAllocationMatrix();
+      updateBulkLiveMonitor();
+      saveBulkDistributionDraft();
+      showToast('تم إلغاء تحديد كافة الجهات المستفيدة', 'info');
+    }
+
+    function updateSelectedBeneficiaryTray() {
+      const countEl = document.getElementById('bulk-selected-tray-count');
+      const chipsEl = document.getElementById('bulk-selected-tray-chips');
+      if (!chipsEl) return;
+
+      const activeRows = (bulkDistState.rows || []).filter(r => r.enabled !== false);
+      if (countEl) countEl.textContent = `تم تحديد ${activeRows.length} جهة / مسؤول`;
+
+      if (!activeRows.length) {
+        chipsEl.innerHTML = '<span style="font-size:0.78rem;color:var(--text-muted);">لم يتم تحديد أي جهة بعد — اختر من الكبسولات أعلاه</span>';
+        return;
+      }
+
+      chipsEl.innerHTML = activeRows.map(r => `
+        <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);padding:3px 8px;border-radius:14px;font-size:0.75rem;font-weight:800;color:var(--text-main);">
+          <span>${escapeHtml(r.destName)}: ${escapeHtml(r.recipientName)}</span>
+          <button type="button" onclick="toggleBeneficiaryBubble('${escapeHtml(r.destName)}', '${escapeHtml(r.recipientName)}')" style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:0.85rem;padding:0;line-height:1;" title="إزالة">&times;</button>
+        </span>
+      `).join('');
+    }
+
     function getBulkItemAllocatedSum(itemId) {
       return bulkDistState.rows.reduce((acc, r) => {
         if (!r.enabled) return acc;
@@ -18878,13 +19386,17 @@ ${itemsText}
             <td><span class="badge badge-subtle">${escapeHtml(item.category)}</span></td>
             <td style="text-align:center;"><span class="badge badge-success tabular-nums">${maxStock}</span></td>
             <td style="text-align:center;">
-              <input type="number" class="form-control tabular-nums" style="width:115px;margin:0 auto;text-align:center;font-weight:900;" min="1" max="9999" value="${p.qty}" onchange="updateBulkPoolItemQty('${p.itemId}', this.value)">
+              <div style="display:inline-flex;align-items:center;gap:3px;justify-content:center;">
+                <button type="button" class="btn btn-sm btn-outline" style="width:26px;height:28px;padding:0;font-weight:900;" onclick="changeBulkPoolItemQtyStepper('${p.itemId}', -1)">-</button>
+                <input type="number" class="form-control tabular-nums" style="width:75px;margin:0 auto;text-align:center;font-weight:900;" min="1" max="9999" value="${p.qty}" onchange="updateBulkPoolItemQty('${p.itemId}', this.value)">
+                <button type="button" class="btn btn-sm btn-outline" style="width:26px;height:28px;padding:0;font-weight:900;" onclick="changeBulkPoolItemQtyStepper('${p.itemId}', 1)">+</button>
+              </div>
             </td>
             <td style="text-align:center;font-weight:800;color:#2563eb;" class="tabular-nums">${allocated}</td>
             <td style="text-align:center;"><span class="bulk-item-rem-pill ${remClass} tabular-nums">${remText}</span></td>
             <td style="text-align:center;">
-              <button type="button" class="btn-icon danger" onclick="removeItemFromBulkPool('${p.itemId}')" title="إزالة من السلة" style="width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;color:#ef4444;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <button type="button" class="btn-icon danger square-action-btn" onclick="removeItemFromBulkPool('${p.itemId}')" title="إزالة من السلة" style="width:34px;height:34px;border-radius:8px;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="3 6 5 6 21 6"></polyline>
                   <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                 </svg>
@@ -18929,21 +19441,24 @@ ${itemsText}
           <th style="width:46px;">تفعيل</th>
           <th style="min-width:210px;text-align:right;">الوجهة المستفيدة (المحكمة / المركز / المصلحة)</th>
           <th style="min-width:225px;text-align:right;">المسؤول المستفيد (يصدر باسمه الإشهاد)</th>
-          ${poolItems.map(p => `
-            <th style="min-width:150px;">
-              <div style="font-size:0.82rem;font-weight:900;color:#fde68a;">${escapeHtml(p.item.name)}</div>
-              <div style="font-size:0.72rem;color:#cbd5e1;margin-top:2px;">
-                المسحوب للسلة: <strong class="tabular-nums">${p.qty}</strong>
+          ${poolItems.map(p => {
+            const alloc = getBulkItemAllocatedSum(p.itemId);
+            const rem = p.qty - alloc;
+            return `
+            <th style="min-width:160px;">
+              <div style="font-size:0.84rem;font-weight:900;color:#fde68a;">${escapeHtml(p.item.name)}</div>
+              <div style="font-size:0.74rem;color:#cbd5e1;margin-top:2px;">
+                المسحوب: <strong class="tabular-nums">${p.qty}</strong> (الموزع: <strong class="tabular-nums" id="col-alloc-head-${p.itemId}">${alloc}</strong> | الباقي: <strong class="tabular-nums" id="col-rem-head-${p.itemId}">${rem}</strong>)
               </div>
               <div style="margin-top:5px;display:flex;gap:4px;justify-content:center;">
                 <button type="button" class="btn btn-sm" style="padding:2px 7px;font-size:0.68rem;background:rgba(255,255,255,0.16);color:#fff;border:none;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;gap:3px;" onclick="distributeSingleItemEqually('${p.itemId}')" title="توزيع هذه المادة بالتساوي على الجهات المفعلة">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="3" x2="12" y2="21"></line><polyline points="8 8 4 14 12 14"></polyline><polyline points="16 8 12 14 20 14"></polyline></svg>
-                  <span>بالتساوي</span>
+                  <i class="fa-regular fa-scale-balanced" style="font-size:0.7rem;"></i>
+                  <span>توزيع بالتساوي</span>
                 </button>
                 <button type="button" class="btn btn-sm" style="padding:2px 7px;font-size:0.68rem;background:rgba(239,68,68,0.28);color:#fecaca;border:none;border-radius:6px;cursor:pointer;" onclick="clearSingleItemAllocations('${p.itemId}')" title="تصفير هذه المادة">تصفير</button>
               </div>
             </th>
-          `).join('')}
+          `;}).join('')}
           <th style="width:105px;">مجموع حصة الجهة</th>
         </tr>
       `;
@@ -18995,7 +19510,8 @@ ${itemsText}
               const val = parseInt(row.allocations[p.itemId], 10) || 0;
               return `
                 <td>
-                  <div style="display:flex;align-items:center;justify-content:center;gap:4px;">
+                  <div style="display:flex;align-items:center;justify-content:center;gap:3px;">
+                    <button type="button" class="btn btn-sm btn-outline" style="width:24px;height:28px;padding:0;font-weight:900;" onclick="stepBulkMatrixCell('${row.rowId}', '${p.itemId}', -1)" ${!row.enabled ? 'disabled' : ''}>-</button>
                     <input type="number"
                       id="bulk-cell-${row.rowId}-${p.itemId}"
                       class="bulk-matrix-input tabular-nums ${val > 0 ? 'has-val' : ''}"
@@ -19004,9 +19520,10 @@ ${itemsText}
                       value="${val}"
                       ${!row.enabled ? 'disabled' : ''}
                       oninput="onBulkMatrixCellInput('${row.rowId}', '${p.itemId}', this.value)">
+                    <button type="button" class="btn btn-sm btn-outline" style="width:24px;height:28px;padding:0;font-weight:900;" onclick="stepBulkMatrixCell('${row.rowId}', '${p.itemId}', 1)" ${!row.enabled ? 'disabled' : ''}>+</button>
                     <button type="button"
                       class="btn btn-sm"
-                      style="padding:3px 6px;font-size:0.7rem;background:#f1f5f9;color:#334155;border:1px solid #cbd5e1;border-radius:6px;cursor:pointer;"
+                      style="padding:3px 6px;font-size:0.7rem;background:#f1f5f9;color:#334155;border:1px solid #cbd5e1;border-radius:6px;cursor:pointer;white-space:nowrap;"
                       ${!row.enabled ? 'disabled' : ''}
                       onclick="fillRemainingToBulkCell('${row.rowId}', '${p.itemId}')"
                       title="إعطاء كامل الكمية المتبقية من هذه المادة لهذه الوجهة">+الباقي</button>
@@ -19594,15 +20111,18 @@ ${itemsText}
                       <td style="text-align:center;"><span class="badge badge-success tabular-nums">${totalUnits}</span></td>
                       <td class="tabular-nums" style="font-size:0.75rem;color:var(--text-muted);">${escapeHtml(v.secretCode || '')}</td>
                       <td style="text-align:center;">
-                        <div style="display:flex;gap:6px;justify-content:center;align-items:center;">
-                          <button type="button" class="btn-icon square-action-btn" onclick="printCertificate('${escapeHtml(v.id)}', false)" title="معاينة وطباعة الإشهاد" aria-label="طباعة" style="border: 1px solid rgba(59,130,246,0.35); color: #3b82f6; background: rgba(59,130,246,0.08);">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                        <div style="display:inline-flex;gap:4px;justify-content:center;align-items:center;">
+                          <button type="button" class="btn-icon square-action-btn" onclick="printCertificate('${escapeHtml(v.id)}', false)" title="طباعة الإشهاد" aria-label="طباعة" style="border: 1px solid rgba(59,130,246,0.35); color: #3b82f6; background: rgba(59,130,246,0.08);">
+                            <i class="fa-regular fa-print"></i>
+                          </button>
+                          <button type="button" class="btn-icon square-action-btn" onclick="previewVoucherInModal('${escapeHtml(v.id)}')" title="معاينة تفاصيل الإشهاد" aria-label="معاينة" style="border: 1px solid rgba(16,185,129,0.35); color: #10b981; background: rgba(16,185,129,0.08);">
+                            <i class="fa-regular fa-eye"></i>
+                          </button>
+                          <button type="button" class="btn-icon square-action-btn" onclick="exportSingleVoucherJSON('${escapeHtml(v.id)}')" title="تصدير بيانات الإشهاد" aria-label="تصدير" style="border: 1px solid rgba(245,158,11,0.35); color: #f59e0b; background: rgba(245,158,11,0.08);">
+                            <i class="fa-regular fa-file-lines"></i>
                           </button>
                           <button type="button" class="btn-icon danger square-action-btn" onclick="deleteVoucher('${escapeHtml(v.id)}')" title="حذف الإشهاد واسترجاع الرصيد" aria-label="حذف">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                              <polyline points="3 6 5 6 21 6"></polyline>
-                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            </svg>
+                            <i class="fa-regular fa-trash-can"></i>
                           </button>
                         </div>
                       </td>
@@ -19614,6 +20134,77 @@ ${itemsText}
           </div>
         </div>
       `;
+    }
+
+    function previewVoucherInModal(voucherId) {
+      if (typeof printCertificate === 'function') {
+        printCertificate(voucherId, false);
+      }
+    }
+
+    function exportSingleVoucherJSON(voucherId) {
+      const voucher = (state.data.transactions || []).find(t => t.id === voucherId);
+      if (!voucher) {
+        showToast('لم يتم العثور على الإشهاد', 'error');
+        return;
+      }
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(voucher, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `شهادة_تسليم_${voucher.id}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast(`تم تصدير الإشهاد ${voucher.id} بنجاح`, 'success');
+    }
+
+    function previewAllBulkCertificatesBeforeCommit() {
+      const activeRows = (bulkDistState.rows || []).filter(r => r.enabled);
+      const batchId = bulkDistState.batchId || 'مسودة_توزيع';
+      const previewVouchers = [];
+
+      activeRows.forEach(row => {
+        const voucherItems = [];
+        bulkDistState.pool.forEach(p => {
+          const q = parseInt(row.allocations[p.itemId], 10) || 0;
+          if (q > 0) {
+            const stItem = (state.data.items || []).find(i => i.id === p.itemId);
+            if (stItem) {
+              voucherItems.push({
+                id: stItem.id,
+                name: stItem.name,
+                category: stItem.category,
+                qty: q,
+                notes: 'مسودة معاينة قبل الاعتماد'
+              });
+            }
+          }
+        });
+        if (voucherItems.length > 0) {
+          previewVouchers.push({
+            id: 'مسودة_' + row.rowId,
+            destination: row.destName,
+            recipient: row.recipientName || 'رئيس كتابة الضبط',
+            date: new Date().toLocaleDateString('ar-MA'),
+            items: voucherItems,
+            secretCode: 'DRAFT-' + Math.random().toString(36).substr(2, 6).toUpperCase()
+          });
+        }
+      });
+
+      if (!previewVouchers.length) {
+        showToast('لم يتم تخصيص أي كميات للمستفيدين للمعاينة بعد', 'warning');
+        return;
+      }
+
+      setBulkStep(3);
+      renderLastCommittedBatchCertificates({
+        batchId: batchId + ' (مسودة)',
+        itemsCount: bulkDistState.pool.length,
+        totalUnits: previewVouchers.reduce((s, v) => s + v.items.reduce((acc, it) => acc + it.qty, 0), 0)
+      }, previewVouchers);
+
+      showToast(`تم عرض معاينة كافة الإشهادات (${previewVouchers.length}) قبل الاعتماد النهائي`, 'info');
     }
 
     function renderBulkBatchesHistory() {
@@ -19628,76 +20219,124 @@ ${itemsText}
       }
 
       tbody.innerHTML = batches.map(b => `
-        <tr>
-          <td class="tabular-nums"><strong style="color:#2563eb;">${escapeHtml(b.batchId)}</strong></td>
+        <tr class="bulk-batch-row" onclick="toggleBulkBatchAccordion('${escapeHtml(b.batchId)}')" style="cursor:pointer;" title="انقر لعرض أو إخفاء إشهادات هذه الدفعة">
+          <td class="tabular-nums">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <i id="batch-chevron-${escapeHtml(b.batchId)}" class="fa-regular fa-chevron-down" style="font-size:0.75rem;color:var(--text-muted);transition:transform 0.2s;"></i>
+              <strong style="color:#2563eb;">${escapeHtml(b.batchId)}</strong>
+            </div>
+          </td>
           <td class="tabular-nums">${escapeHtml(b.date || '')}</td>
           <td style="text-align:center;"><span class="badge badge-subtle tabular-nums">${b.itemsCount || 0} مواد</span></td>
           <td style="text-align:center;font-weight:900;color:#059669;" class="tabular-nums">${b.totalUnits || 0} قطعة</td>
           <td style="text-align:center;"><span class="badge badge-success tabular-nums">${b.certificatesCount || 0} إشهادات</span></td>
           <td>${escapeHtml(b.deliverer || '—')}</td>
-          <td style="text-align:center;">
-            <div style="display:flex;gap:6px;justify-content:center;align-items:center;">
-              <button type="button" class="btn-icon square-action-btn" onclick="inspectBulkBatch('${escapeHtml(b.batchId)}')" title="عرض إشهادات هذه الدفعة" aria-label="عرض الإشهادات" style="border: 1px solid rgba(59,130,246,0.35); color: #3b82f6; background: rgba(59,130,246,0.08);">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          <td style="text-align:center;" onclick="event.stopPropagation();">
+            <div style="display:inline-flex;gap:4px;justify-content:center;align-items:center;">
+              <button type="button" class="btn-icon square-action-btn" onclick="toggleBulkBatchAccordion('${escapeHtml(b.batchId)}')" title="عرض إشهادات هذه الدفعة" aria-label="عرض الإشهادات" style="border: 1px solid rgba(59,130,246,0.35); color: #3b82f6; background: rgba(59,130,246,0.08);">
+                <i class="fa-regular fa-folder-open"></i>
               </button>
               <button type="button" class="btn-icon square-action-btn" onclick="printBulkBatchCertificates('${escapeHtml(b.batchId)}')" title="طباعة جميع إشهادات الدفعة (${b.certificatesCount || 0})" aria-label="طباعة الكل" style="border: 1px solid rgba(16,185,129,0.35); color: #10b981; background: rgba(16,185,129,0.08);">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                <i class="fa-regular fa-print"></i>
               </button>
               <button type="button" class="btn-icon danger square-action-btn" onclick="deleteBulkBatch('${escapeHtml(b.batchId)}')" title="حذف دفعة التوزيع من الأرشيف" aria-label="حذف">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="3 6 5 6 21 6"></polyline>
-                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                </svg>
+                <i class="fa-regular fa-trash-can"></i>
               </button>
             </div>
+          </td>
+        </tr>
+        <tr id="batch-accordion-row-${escapeHtml(b.batchId)}" style="display:none;background:rgba(241,245,249,0.4);">
+          <td colspan="7" style="padding:12px 16px;">
+            <div id="batch-accordion-content-${escapeHtml(b.batchId)}"></div>
           </td>
         </tr>
       `).join('');
     }
 
-    function deleteBulkBatch(batchId) {
-      try {
-        const batches = Array.isArray(state.data.bulkBatches) ? state.data.bulkBatches : [];
-        const batch = batches.find(b => b.batchId === batchId);
-        if (!batch) {
-          showToast('لم يتم العثور على دفعة التوزيع المحددة', 'error');
-          return;
+    function toggleBulkBatchAccordion(batchId) {
+      const row = document.getElementById(`batch-accordion-row-${batchId}`);
+      const chevron = document.getElementById(`batch-chevron-${batchId}`);
+      if (!row) return;
+      const isVisible = row.style.display !== 'none';
+      if (isVisible) {
+        row.style.display = 'none';
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
+      } else {
+        const batch = (state.data.bulkBatches || []).find(b => b.batchId === batchId);
+        const vouchers = (state.data.transactions || []).filter(t => t.batchId === batchId || (batch?.voucherIds || []).includes(t.id));
+        const content = document.getElementById(`batch-accordion-content-${batchId}`);
+        if (content) {
+          if (!vouchers.length) {
+            content.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:10px;">لا توجد إشهادات مسجلة لهذه الدفعة</div>';
+          } else {
+            content.innerHTML = `
+              <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:10px;padding:12px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:0.85rem;font-weight:800;">
+                  <span><i class="fa-regular fa-folder-open" style="color:#2563eb;"></i> إشهادات الدفعة المعتمدة (${vouchers.length} إشهادات):</span>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="printBulkBatchCertificates('${batchId}')" style="font-size:0.75rem;padding:2px 8px;display:inline-flex;align-items:center;gap:4px;">
+                    <i class="fa-regular fa-print"></i> <span>طباعة الكل</span>
+                  </button>
+                </div>
+                <table class="data-table" style="font-size:0.82rem;margin:0;">
+                  <thead>
+                    <tr>
+                      <th>رقم الإشهاد</th>
+                      <th>الجهة المستفيدة</th>
+                      <th>المسؤول</th>
+                      <th>المواد والكميات</th>
+                      <th style="text-align:center;">إجمالي القطع</th>
+                      <th style="text-align:center;width:145px;">إجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${vouchers.map(v => {
+                      const desc = (v.items || []).map(it => `${escapeHtml(it.name)} (${it.qty})`).join(' ، ');
+                      const totalUnits = (v.items || []).reduce((s, i) => s + sanitize(i.qty), 0);
+                      return `
+                        <tr>
+                          <td class="tabular-nums font-bold">${escapeHtml(v.id)}</td>
+                          <td>${escapeHtml(v.destination)}</td>
+                          <td>${escapeHtml(v.recipient)}</td>
+                          <td style="font-size:0.78rem;">${desc}</td>
+                          <td style="text-align:center;"><span class="badge badge-success tabular-nums">${totalUnits}</span></td>
+                          <td style="text-align:center;">
+                            <div style="display:inline-flex;gap:4px;justify-content:center;">
+                              <button type="button" class="btn-icon square-action-btn" onclick="printCertificate('${escapeHtml(v.id)}', false)" title="طباعة الإشهاد" aria-label="طباعة" style="border:1px solid rgba(59,130,246,0.35);color:#3b82f6;background:rgba(59,130,246,0.08);">
+                                <i class="fa-regular fa-print"></i>
+                              </button>
+                              <button type="button" class="btn-icon square-action-btn" onclick="previewVoucherInModal('${escapeHtml(v.id)}')" title="معاينة تفاصيل الإشهاد" aria-label="معاينة" style="border:1px solid rgba(16,185,129,0.35);color:#10b981;background:rgba(16,185,129,0.08);">
+                                <i class="fa-regular fa-eye"></i>
+                              </button>
+                              <button type="button" class="btn-icon square-action-btn" onclick="exportSingleVoucherJSON('${escapeHtml(v.id)}')" title="تصدير بيانات الإشهاد" aria-label="تصدير" style="border:1px solid rgba(245,158,11,0.35);color:#f59e0b;background:rgba(245,158,11,0.08);">
+                                <i class="fa-regular fa-file-lines"></i>
+                              </button>
+                              <button type="button" class="btn-icon danger square-action-btn" onclick="deleteVoucher('${escapeHtml(v.id)}')" title="حذف الإشهاد واسترجاع الرصيد" aria-label="حذف">
+                                <i class="fa-regular fa-trash-can"></i>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      `;
+                    }).join('')}
+                  </tbody>
+                </table>
+              </div>
+            `;
+          }
         }
-
-        openAppConfirmModal(
-          'حذف دفعة التوزيع المركزي من الأرشيف',
-          `هل أنت متأكد من حذف دفعة التوزيع (${escapeHtml(batch.batchId)}) المؤرخة في ${escapeHtml(batch.date || '')}؟\nتنبيه: سيتم حذف سجل الدفعة من أرشيف التوزيع المركزي (${batch.certificatesCount || 0} إشهادات). الإشهادات الفردية المحفوظة في الأرشيف العام ستظل محفوظة لحين حذفها يدوياً إذا رغبت.`,
-          () => {
-            try {
-              state.data.bulkBatches = (state.data.bulkBatches || []).filter(b => b.batchId !== batchId);
-              if (bulkDistState && bulkDistState.lastCommittedBatchId === batchId) {
-                bulkDistState.lastCommittedBatchId = null;
-                const container = document.getElementById('last-committed-batch-view');
-                if (container) container.innerHTML = '';
-              }
-              persistAll();
-              renderBulkBatchesHistory();
-              refreshBulkBadgesCount();
-              showToast(`تم حذف دفعة التوزيع (${batchId}) من الأرشيف بنجاح`, 'info');
-            } catch (innerErr) {
-              console.error('Error deleting bulk batch:', innerErr);
-              showToast('حدث خطأ أثناء حذف الدفعة', 'error');
-            }
-          },
-          'حذف دفعة التوزيع',
-          true
-        );
-      } catch (err) {
-        console.error('deleteBulkBatch error:', err);
+        row.style.display = '';
+        if (chevron) chevron.style.transform = 'rotate(180deg)';
       }
     }
 
     function inspectBulkBatch(batchId) {
+      toggleBulkBatchAccordion(batchId);
       const batch = (state.data.bulkBatches || []).find(b => b.batchId === batchId);
-      if (!batch) return;
-      const vouchers = (state.data.transactions || []).filter(t => t.batchId === batchId || (batch.voucherIds || []).includes(t.id));
-      renderLastCommittedBatchCertificates(batch, vouchers);
-      showToast(`تم عرض إشهادات الدفعة ${batchId} (${vouchers.length} إشهادات رسمية)`, 'info');
+      if (batch) {
+        const vouchers = (state.data.transactions || []).filter(t => t.batchId === batchId || (batch.voucherIds || []).includes(t.id));
+        renderLastCommittedBatchCertificates(batch, vouchers);
+        showToast(`تم عرض إشهادات الدفعة ${batchId} (${vouchers.length} إشهادات رسمية)`, 'info');
+      }
     }
 
     function printBulkBatchCertificates(batchId) {
@@ -20014,6 +20653,14 @@ ${itemsText}
           listForecast.style.display = 'none';
         }
       }
+
+      const listSim = document.getElementById('sim-quota-item-autocomplete-list');
+      if (listSim && listSim.style.display === 'block') {
+        const inputSim = document.getElementById('sim-quota-item-search-input');
+        if (!inputSim || (!inputSim.contains(e.target) && !listSim.contains(e.target))) {
+          listSim.style.display = 'none';
+        }
+      }
     });
 
     // --- النافذة المنبثقة لتصفية وإعدادات تحليل استهلاك المواد (Super Modal Dialog) ---
@@ -20144,23 +20791,15 @@ ${itemsText}
       }
     }
 
-    function showItemConsumptionBarDetail(label, qty, type, fullDest) {
+    function showItemConsumptionBarDetail(label, qty, type, fullDest, dotColor = '#3b82f6') {
       const detailContent = document.getElementById('item-chart-detail-content');
       if (!detailContent) return;
-      const typeBadge = type === 'official'
-        ? '<span class="badge badge-warning" style="font-size: 0.72rem;">مسؤول إداري</span>'
-        : (type === 'aggregated-staff' ? '<span class="badge badge-success" style="font-size: 0.72rem;">تجميع موظفي المديرية</span>' : '<span class="badge badge-primary" style="font-size: 0.72rem;">جهة مستفيدة</span>');
-
+      const cleanLabel = fullDest && fullDest !== label ? `${label} (${fullDest})` : label;
       detailContent.innerHTML = `
-        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 8px;">
-          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-            ${typeBadge}
-            <strong style="color: var(--text-main); font-size: 0.88rem;">${escapeHtml(label)}</strong>
-            ${fullDest && fullDest !== label ? `<span style="color: var(--text-muted); font-size: 0.78rem;">(${escapeHtml(fullDest)})</span>` : ''}
-          </div>
-          <span style="display: inline-flex; align-items: center; gap: 4px; background: rgba(56, 189, 248, 0.15); color: #0284c7; padding: 3px 10px; border-radius: 6px; font-weight: 800; font-family: monospace; font-size: 0.82rem;">
-            ${qty} قطعة مسحوبة
-          </span>
+        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.84rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">
+          <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: ${dotColor}; flex-shrink: 0;"></span>
+          <span style="font-weight: 700; color: var(--text-main);">${escapeHtml(cleanLabel)}</span>
+          <span style="color: var(--text-secondary); font-family: monospace; font-weight: 600;">(${qty} قطعة مسحوبة)</span>
         </div>
       `;
     }
@@ -20193,18 +20832,48 @@ ${itemsText}
           return;
         }
 
-        // اختيار مادة افتراضية إن لم يتم تحديد شيء
+        const txsSource = Array.isArray(state.data.transactions) ? state.data.transactions.filter(t => t && !t.isDeleted) : [];
+        const filteredTxs = typeof filterTransactionsByTimeframe === 'function' ? filterTransactionsByTimeframe(txsSource) : txsSource;
+
+        // اختيار المادة الافتراضية المحددة في الإعدادات أو الأعلى استهلاكاً تلقائياً
         let selectedItemId = hiddenInput ? hiddenInput.value : null;
         let selectedItem = items.find(i => i.id === selectedItemId);
 
+        if (!selectedItem && state.defaultDashboardItemId && state.defaultDashboardItemId !== 'auto') {
+          selectedItem = items.find(i => i.id === state.defaultDashboardItemId);
+        }
+
         if (!selectedItem) {
-          selectedItem = items[0];
+          const itemTotals = {};
+          filteredTxs.forEach(t => {
+            (t.items || []).forEach(it => {
+              const q = Math.max(0, sanitize(it.qty));
+              itemTotals[it.id] = (itemTotals[it.id] || 0) + q;
+              const byName = items.find(x => x.name === it.name);
+              if (byName) itemTotals[byName.id] = (itemTotals[byName.id] || 0) + q;
+            });
+          });
+          let maxVal = -1;
+          items.forEach(it => {
+            const tot = itemTotals[it.id] || 0;
+            if (tot > maxVal) {
+              maxVal = tot;
+              selectedItem = it;
+            }
+          });
+          if (!selectedItem) selectedItem = items[0];
+          if (hiddenInput) hiddenInput.value = selectedItem.id;
+          if (textInput) textInput.value = selectedItem.name;
+        } else {
           if (hiddenInput) hiddenInput.value = selectedItem.id;
           if (textInput) textInput.value = selectedItem.name;
         }
 
-        const txsSource = Array.isArray(state.data.transactions) ? state.data.transactions.filter(t => t && !t.isDeleted) : [];
-        const filteredTxs = typeof filterTransactionsByTimeframe === 'function' ? filterTransactionsByTimeframe(txsSource) : txsSource;
+        const headingEl = document.getElementById('item-consumption-box-heading');
+        if (headingEl && selectedItem) {
+          headingEl.textContent = `تحليل استهلاك: ${selectedItem.name}`;
+        }
+
         const allDests = Object.keys(state.data.destinations || {});
         const allowedDests = _itemAnalyticsSelectedEntities || new Set(allDests);
 
@@ -20341,10 +21010,10 @@ ${itemsText}
 
           html += `
             <div class="vertical-chart-bar-item" 
-                 onmouseover="showItemConsumptionBarDetail('${escapeHtml(b.label)}', ${b.qty}, '${b.type}', '${destEsc}')"
-                 onclick="showItemConsumptionBarDetail('${escapeHtml(b.label)}', ${b.qty}, '${b.type}', '${destEsc}')"
+                 onmouseover="showItemConsumptionBarDetail('${escapeHtml(b.label)}', ${b.qty}, '${b.type}', '${destEsc}', '${palette.to}')"
+                 onclick="showItemConsumptionBarDetail('${escapeHtml(b.label)}', ${b.qty}, '${b.type}', '${destEsc}', '${palette.to}')"
                  title="${fullLabelEsc}: ${b.qty} قطعة مسحوبة">
-              <div class="bar-pillar" style="height: ${heightPx}px; background: linear-gradient(180deg, ${palette.from} 0%, ${palette.to} 100%); box-shadow: 0 4px 12px ${palette.glow};">
+              <div class="bar-pillar" style="height: ${heightPx}px; background: linear-gradient(180deg, ${palette.from} 0%, ${palette.to} 100%);">
                 <span class="bar-qty-inside">${b.qty}</span>
               </div>
               <span class="bar-qty-under" style="color: ${palette.text};">(${b.qty})</span>
@@ -20358,7 +21027,8 @@ ${itemsText}
         // التحديد التلقائي لأعلى استهلاك فور التحميل دون الحاجة لتحريك المؤشر
         if (barsData.length > 0) {
           const topBar = barsData[0];
-          showItemConsumptionBarDetail(topBar.label, topBar.qty, topBar.type, topBar.dest);
+          const topPalette = VERTICAL_BAR_PALETTES[0];
+          showItemConsumptionBarDetail(topBar.label, topBar.qty, topBar.type, topBar.dest, topPalette.to);
         }
       } catch (err) {
         console.error('renderItemConsumptionChart error:', err);
@@ -20369,23 +21039,26 @@ ${itemsText}
     // =========================================================================
     // AI INSIGHTS & ANNUAL FORECASTING PLANNING ENGINE (محرك التحليل والتخطيط السنوي)
     // =========================================================================
-    let _aiActiveSubTab = 'planning'; // 'planning' | 'forecast' | 'entities' | 'recommendations' | 'sandbox'
+    let _aiActiveSubTab = 'planning'; // 'planning' | 'simulation' | 'forecast' | 'entities' | 'recommendations'
     let _forecastDrillTab = 'total'; // 'total' | 'entities' | 'beneficiaries'
 
     function switchAiSubTab(tabName) {
       _aiActiveSubTab = tabName;
-      ['planning', 'forecast', 'entities', 'recommendations', 'sandbox'].forEach(name => {
+      ['planning', 'simulation', 'forecast', 'entities', 'recommendations'].forEach(name => {
         const btn = document.getElementById(`ai-subtab-btn-${name}`);
         const sec = document.getElementById(`ai-section-${name}`);
-        if (btn) btn.classList.toggle('active', name === tabName);
+        if (btn) {
+          btn.classList.toggle('active', name === tabName);
+          btn.className = (name === tabName) ? 'btn btn-primary btn-sm ai-subtab-btn active' : 'btn btn-outline btn-sm ai-subtab-btn';
+        }
         if (sec) sec.style.display = (name === tabName) ? 'block' : 'none';
       });
 
       if (tabName === 'planning') initAndRenderAnnualForecast();
+      else if (tabName === 'simulation') initAndRenderSimulatedQuota();
       else if (tabName === 'forecast') renderAiForecastTable();
       else if (tabName === 'entities') renderAiEntitiesPatterns();
       else if (tabName === 'recommendations') renderAiRecommendations();
-      else if (tabName === 'sandbox') initAiSimulationSandbox();
     }
 
     function switchForecastDrillTab(tab) {
@@ -21378,110 +22051,259 @@ ${itemsText}
       `;
     }
 
-    function initAiSimulationSandbox() {
-      const itemSelect = document.getElementById('sim-item-select');
-      const destSelect = document.getElementById('sim-dest-select');
-      if (!itemSelect || !destSelect) return;
-
-      const items = Array.isArray(state.data.items) ? state.data.items.filter(i => !i.isDeleted) : [];
-      itemSelect.innerHTML = items.map(it => `<option value="${escapeHtml(it.id)}">${escapeHtml(it.name)} (الرصيد الفعلي: ${sanitize(it.stock)})</option>`).join('');
-
-      const dests = Object.keys(state.data.destinations || {});
-      destSelect.innerHTML = dests.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
-
-      onSimItemChanged();
+    // --- محرك محاكاة توزيع الحصص السنوية التلقائية (Automated Quota Distribution Simulator) ---
+    function openSimQuotaItemSuggestions() {
+      const input = document.getElementById('sim-quota-item-search-input');
+      const q = input ? input.value : '';
+      filterSimQuotaItemSuggestions(q);
+      const list = document.getElementById('sim-quota-item-autocomplete-list');
+      if (list) list.style.display = 'block';
     }
 
-    function onSimItemChanged() {
-      const resultBox = document.getElementById('sim-result-box');
-      if (resultBox) resultBox.style.display = 'none';
-    }
+    function filterSimQuotaItemSuggestions(query) {
+      const list = document.getElementById('sim-quota-item-autocomplete-list');
+      if (!list) return;
+      const q = (query || '').trim().toLowerCase();
+      const items = (Array.isArray(state.data.items) ? state.data.items : [])
+        .filter(i => i && !i.isDeleted)
+        .filter(i => !q || (i.name && i.name.toLowerCase().includes(q)) || (i.category && i.category.toLowerCase().includes(q)))
+        .sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ar'));
 
-    function runAiSimulationSandbox() {
-      const itemSelect = document.getElementById('sim-item-select');
-      const destSelect = document.getElementById('sim-dest-select');
-      const qtyInput = document.getElementById('sim-qty-input');
-      const resultBox = document.getElementById('sim-result-box');
-      if (!itemSelect || !destSelect || !qtyInput || !resultBox) return;
-
-      const itemId = itemSelect.value;
-      const destName = destSelect.value;
-      const simQty = Math.max(1, parseInt(qtyInput.value, 10) || 1);
-
-      const item = (state.data.items || []).find(i => i.id === itemId);
-      if (!item) {
-        showToast('يرجى اختيار مادة صالحة', 'warning');
+      if (items.length === 0) {
+        list.innerHTML = `<div style="padding: 10px; font-size: 0.8rem; color: var(--text-muted); text-align: center;">لا توجد مواد مطابقة</div>`;
+        list.style.display = 'block';
         return;
       }
 
-      const initialStock = sanitize(item.stock);
-      const projectedStock = initialStock - simQty;
-      const cMin = getItemCriticalThreshold(item);
-
-      let impactStatus = 'safe';
-      let statusTitle = 'العملية آمنة والمخزون مستقر';
-      let statusColor = '#10b981';
-      let statusBadge = '<span class="badge badge-success" style="font-size:0.8rem;">رصيد آمن ومتاح</span>';
-      let adviceText = 'الكمية المفترضة متاحة بالكامل وتسمح بالإشهاد دون أي إخلال باحتياط المستودع.';
-
-      if (projectedStock < 0) {
-        impactStatus = 'deficit';
-        statusTitle = 'تنبيه: عجز مفترض في الرصيد';
-        statusColor = '#ef4444';
-        statusBadge = '<span class="badge badge-danger" style="font-size:0.8rem;">عجز بالرصيد بالمستودع</span>';
-        adviceText = `الكمية المطلوبة (${simQty}) تتجاوز الرصيد الحالي (${initialStock}) بـ ${Math.abs(projectedStock)} قطعة. (تذكير: النظام يسمح بإتمام الإشهاد إدارياً حتى في حالة الصفر، مع التنبيه بضرورة التزويد).`;
-      } else if (projectedStock <= cMin) {
-        impactStatus = 'critical';
-        statusTitle = 'تحذير: الرصيد سيصل للحد الحرج';
-        statusColor = '#f59e0b';
-        statusBadge = '<span class="badge badge-warning" style="font-size:0.8rem;">سيبلغ الحد الحرج الأدنى</span>';
-        adviceText = `بعد تنفيذ هذه العملية الافتراضية، سيتبقى ${projectedStock} قطعة فقط بالمخزن (الحد الأدنى الحرج لهذه المادة هو ${cMin}). يُوصى بإدراج المادة في جدول الشراء فوراً.`;
-      }
-
-      resultBox.style.display = 'block';
-      resultBox.style.borderRight = `4px solid ${statusColor}`;
-      resultBox.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-          <div>
-            <strong style="font-size: 1rem; color: var(--text-main);">نتائج تقييم أثر التوزيع الافتراضي</strong>
-            <div style="font-size: 0.8rem; color: var(--text-muted);">المادة: <strong>${escapeHtml(item.name)}</strong> &larr; الوجهة: <strong>${escapeHtml(destName)}</strong></div>
+      const activeId = document.getElementById('sim-quota-item-selected-id')?.value;
+      list.innerHTML = items.map(it => {
+        const isSel = it.id === activeId;
+        const nameEsc = escapeHtml(it.name);
+        const catEsc = escapeHtml(it.category || 'عام');
+        const stockVal = sanitize(it.stock);
+        return `
+          <div class="combobox-suggestion-item ${isSel ? 'active' : ''}" onclick="selectSimQuotaItem('${escapeHtml(it.id)}')">
+            <div>
+              <strong style="color: var(--text-main); font-size: 0.84rem;">${nameEsc}</strong>
+              <div style="font-size: 0.72rem; color: var(--text-muted);">${catEsc}</div>
+            </div>
+            <span class="badge ${stockVal > 0 ? 'badge-primary' : 'badge-subtle'}" style="font-size: 0.72rem;">${stockVal} قط</span>
           </div>
-          ${statusBadge}
-        </div>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 12px;">
-          <div style="background: var(--bg-muted); padding: 10px; border-radius: var(--radius-sm); text-align: center;">
-            <div style="font-size: 0.74rem; color: var(--text-muted);">الرصيد الفعلي الحالي</div>
-            <div style="font-size: 1.15rem; font-weight: 800; color: var(--text-main);" class="tabular-nums">${initialStock}</div>
-          </div>
-          <div style="background: var(--bg-muted); padding: 10px; border-radius: var(--radius-sm); text-align: center;">
-            <div style="font-size: 0.74rem; color: var(--text-muted);">الكمية المفترضة للتسليم</div>
-            <div style="font-size: 1.15rem; font-weight: 800; color: #3b82f6;" class="tabular-nums">${simQty}</div>
-          </div>
-          <div style="background: var(--bg-muted); padding: 10px; border-radius: var(--radius-sm); text-align: center;">
-            <div style="font-size: 0.74rem; color: var(--text-muted);">الرصيد المتبقي المتوقع</div>
-            <div style="font-size: 1.15rem; font-weight: 800; color: ${statusColor};" class="tabular-nums">${projectedStock}</div>
-          </div>
-          <div style="background: var(--bg-muted); padding: 10px; border-radius: var(--radius-sm); text-align: center;">
-            <div style="font-size: 0.74rem; color: var(--text-muted);">الحد الأدنى الحرج للمادة</div>
-            <div style="font-size: 1.15rem; font-weight: 800; color: var(--text-muted);" class="tabular-nums">${cMin}</div>
-          </div>
-        </div>
-
-        <div style="background: ${statusColor}14; border: 1px solid ${statusColor}40; padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.84rem; line-height: 1.55; color: var(--text-main);">
-          💡 <strong>التقييم الإداري للأثر:</strong> ${adviceText}
-        </div>
-      `;
-
-      showToast('تم إجراء المحاكاة المعزولة بنجاح ✓ (لم يتم تعديل أي رصيد حقيقي)', 'info');
+        `;
+      }).join('');
+      list.style.display = 'block';
     }
 
-    function resetAiSimulationSandbox() {
-      const qtyInput = document.getElementById('sim-qty-input');
-      const resultBox = document.getElementById('sim-result-box');
-      if (qtyInput) qtyInput.value = 10;
-      if (resultBox) resultBox.style.display = 'none';
-      showToast('تمت إعادة ضبط منصة المحاكاة الافتراضية', 'info');
+    function selectSimQuotaItem(itemId) {
+      const item = (state.data.items || []).find(i => i.id === itemId);
+      if (!item) return;
+      const hiddenInput = document.getElementById('sim-quota-item-selected-id');
+      const textInput = document.getElementById('sim-quota-item-search-input');
+      const list = document.getElementById('sim-quota-item-autocomplete-list');
+      if (hiddenInput) hiddenInput.value = item.id;
+      if (textInput) textInput.value = item.name;
+      if (list) list.style.display = 'none';
+      calculateAndRenderSimulatedQuota();
+    }
+
+    function initAndRenderSimulatedQuota() {
+      const items = (Array.isArray(state.data.items) ? state.data.items : []).filter(i => i && !i.isDeleted);
+      if (items.length === 0) return;
+      const hiddenInput = document.getElementById('sim-quota-item-selected-id');
+      const textInput = document.getElementById('sim-quota-item-search-input');
+      if (hiddenInput && !hiddenInput.value) {
+        const txsSource = Array.isArray(state.data.transactions) ? state.data.transactions.filter(t => t && !t.isDeleted) : [];
+        const itemTotals = {};
+        txsSource.forEach(t => {
+          (t.items || []).forEach(it => {
+            const q = Math.max(0, sanitize(it.qty));
+            itemTotals[it.id] = (itemTotals[it.id] || 0) + q;
+          });
+        });
+        let topItem = items[0];
+        let maxConsumed = -1;
+        items.forEach(it => {
+          const tot = itemTotals[it.id] || 0;
+          if (tot > maxConsumed) {
+            maxConsumed = tot;
+            topItem = it;
+          }
+        });
+        hiddenInput.value = topItem.id;
+        if (textInput) textInput.value = topItem.name;
+      }
+      calculateAndRenderSimulatedQuota();
+    }
+
+    function calculateAndRenderSimulatedQuota() {
+      try {
+        const hiddenInput = document.getElementById('sim-quota-item-selected-id');
+        const textInput = document.getElementById('sim-quota-item-search-input');
+        const items = (Array.isArray(state.data.items) ? state.data.items : []).filter(i => i && !i.isDeleted);
+        if (!items.length) return;
+
+        let selectedItemId = hiddenInput ? hiddenInput.value : null;
+        let selectedItem = items.find(i => i.id === selectedItemId);
+        if (!selectedItem) {
+          selectedItem = items[0];
+          if (hiddenInput) hiddenInput.value = selectedItem.id;
+          if (textInput) textInput.value = selectedItem.name;
+        }
+
+        const marginSelect = document.getElementById('sim-quota-safety-margin');
+        const marginPct = marginSelect ? parseInt(marginSelect.value, 10) : 15;
+
+        // 1. قراءة سجل الاستهلاك التاريخي الحقيقي للمادة
+        const txsSource = Array.isArray(state.data.transactions) ? state.data.transactions.filter(t => t && !t.isDeleted) : [];
+        let totalConsumed = 0;
+
+        let directorateBurn = 0;
+        const courtBeneficiaryBurn = {}; // { 'recip___dest': qty }
+
+        txsSource.forEach(t => {
+          const dest = t.destination || '';
+          const recip = (t.recipient || 'غير محدد').trim();
+          (t.items || []).forEach(it => {
+            if (it.id === selectedItem.id || it.name === selectedItem.name) {
+              const q = Math.max(0, sanitize(it.qty));
+              totalConsumed += q;
+
+              if (isSettatDirectorateName(dest)) {
+                directorateBurn += q;
+              } else {
+                const key = `${recip}___${dest}`;
+                courtBeneficiaryBurn[key] = (courtBeneficiaryBurn[key] || 0) + q;
+              }
+            }
+          });
+        });
+
+        const isZeroHistory = totalConsumed === 0;
+        const referenceBurn = isZeroHistory ? Math.max(20, sanitize(selectedItem.stock)) : totalConsumed;
+        const marginQty = Math.round(referenceBurn * (marginPct / 100));
+        const totalSimulatedQuota = referenceBurn + marginQty;
+
+        // تحديث بطاقات المؤشرات السريعة
+        const elName = document.getElementById('sim-quota-metric-item-name');
+        if (elName) elName.textContent = selectedItem.name;
+        const elStock = document.getElementById('sim-quota-metric-item-stock');
+        if (elStock) elStock.textContent = `الرصيد الفعلي: ${sanitize(selectedItem.stock)} قطعة`;
+        const elBurn = document.getElementById('sim-quota-metric-burn');
+        if (elBurn) elBurn.textContent = sanitize(totalConsumed);
+        const elTotal = document.getElementById('sim-quota-metric-total');
+        if (elTotal) elTotal.textContent = sanitize(totalSimulatedQuota);
+        const elMargin = document.getElementById('sim-quota-metric-margin-label');
+        if (elMargin) elMargin.textContent = `+${marginPct}% هامش أمان (${marginQty} قط)`;
+
+        // بناء قائمة صفوف المحاكاة
+        const quotaRows = [];
+
+        // أ) صف المديرية الإقليمية للعدل بسطات (كيان واحد موحد إلزامي)
+        const allDestKeys = Object.keys(state.data.destinations || {});
+        const dirPastBurn = directorateBurn;
+        const dirRatio = totalConsumed > 0 ? (dirPastBurn / totalConsumed) : 0.25;
+        const dirQuotaAnnual = Math.round(totalSimulatedQuota * dirRatio);
+        const dirQuotaQuarterly = Math.round(dirQuotaAnnual / 4);
+
+        quotaRows.push({
+          entityLabel: 'المديرية الإقليمية للعدل بسطات',
+          workplace: 'المديرية الإقليمية',
+          isDirectorate: true,
+          pastBurn: dirPastBurn,
+          ratio: dirRatio,
+          quotaAnnual: dirQuotaAnnual,
+          quotaQuarterly: dirQuotaQuarterly
+        });
+
+        // ب) صفوف المحاكم بمستفيديها المعتمدين
+        Object.entries(courtBeneficiaryBurn).forEach(([key, q]) => {
+          const [recip, dest] = key.split('___');
+          const ratio = totalConsumed > 0 ? (q / totalConsumed) : (0.75 / (Object.keys(courtBeneficiaryBurn).length || 1));
+          const qAnnual = Math.round(totalSimulatedQuota * ratio);
+          const qQuarterly = Math.round(qAnnual / 4);
+          quotaRows.push({
+            entityLabel: recip,
+            workplace: dest,
+            isDirectorate: false,
+            pastBurn: q,
+            ratio: ratio,
+            quotaAnnual: qAnnual,
+            quotaQuarterly: qQuarterly
+          });
+        });
+
+        // إذا لم تكن هناك سجلات تاريخية بعد للمحاكم، ننشئ للمسؤولين الرئيسيين للمحاكم
+        if (Object.keys(courtBeneficiaryBurn).length === 0) {
+          allDestKeys.forEach(d => {
+            if (!isSettatDirectorateName(d)) {
+              const recs = state.data.destinations[d] || ['رئيس كتابة الضبط'];
+              recs.slice(0, 2).forEach(r => {
+                const ratio = 0.75 / (allDestKeys.length * 2);
+                const qAnnual = Math.round(totalSimulatedQuota * ratio);
+                const qQuarterly = Math.round(qAnnual / 4);
+                quotaRows.push({
+                  entityLabel: r,
+                  workplace: d,
+                  isDirectorate: false,
+                  pastBurn: 0,
+                  ratio: ratio,
+                  quotaAnnual: qAnnual,
+                  quotaQuarterly: qQuarterly
+                });
+              });
+            }
+          });
+        }
+
+        quotaRows.sort((a, b) => {
+          if (a.isDirectorate) return -1;
+          if (b.isDirectorate) return 1;
+          return b.quotaAnnual - a.quotaAnnual;
+        });
+
+        const elCount = document.getElementById('sim-quota-metric-entities-count');
+        if (elCount) elCount.textContent = quotaRows.length;
+
+        const tbody = document.getElementById('sim-quota-tbody');
+        if (!tbody) return;
+
+        tbody.innerHTML = quotaRows.map((row, idx) => {
+          const pct = (row.ratio * 100).toFixed(1);
+          const palette = VERTICAL_BAR_PALETTES[idx % VERTICAL_BAR_PALETTES.length];
+          const highlightBg = row.isDirectorate ? 'background: rgba(16, 185, 129, 0.05); font-weight: 800;' : '';
+          const tagBadge = row.isDirectorate
+            ? `<span class="badge badge-success" style="font-size: 0.72rem; margin-right: 6px;">كيان موحد</span>`
+            : `<span class="badge badge-subtle" style="font-size: 0.72rem; margin-right: 6px;">محكمة / مركز</span>`;
+
+          return `
+            <tr style="${highlightBg}">
+              <td style="text-align: center; font-weight: 700; color: var(--text-muted);">${idx + 1}</td>
+              <td>
+                <div style="display: flex; align-items: center;">
+                  ${tagBadge}
+                  <strong style="color: var(--text-main); font-size: 0.88rem;">${escapeHtml(row.entityLabel)}</strong>
+                </div>
+              </td>
+              <td><span style="color: var(--text-secondary); font-size: 0.82rem;">${escapeHtml(row.workplace)}</span></td>
+              <td style="text-align: center; font-weight: 700;" class="tabular-nums">${row.pastBurn} قطعة</td>
+              <td style="text-align: center;"><span class="badge badge-subtle tabular-nums">${pct}%</span></td>
+              <td style="text-align: center;"><strong style="color: ${palette.text}; font-size: 0.95rem;" class="tabular-nums">${row.quotaAnnual} قطعة</strong></td>
+              <td style="text-align: center; color: var(--text-muted); font-size: 0.82rem;" class="tabular-nums">${row.quotaQuarterly} قط / 3 أشهر</td>
+              <td style="min-width: 130px;">
+                <div style="height: 8px; width: 100%; background: var(--bg-muted); border-radius: 999px; overflow: hidden; border: 1px solid var(--border-subtle);">
+                  <div style="width: ${Math.min(100, Math.max(5, pct))}%; height: 100%; background: linear-gradient(90deg, ${palette.from}, ${palette.to});"></div>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error('calculateAndRenderSimulatedQuota error:', err);
+      }
+    }
+
+    function printSimulatedQuotaTable() {
+      printForecastReportA4();
     }
 
     function printAiAnalysisReport() {
