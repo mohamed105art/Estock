@@ -6642,7 +6642,7 @@
     /* أكورديون الأصناف القابل للتوسيع مع التمرير الأفقي السلس لأسماء المواد الطويلة في عملية التوزيع */
     .bulk-cat-accordion-wrap {
       display: block !important;
-      max-height: 480px !important;
+      max-height: 520px !important;
       overflow-y: auto !important;
       padding: 10px !important;
       box-sizing: border-box !important;
@@ -6654,7 +6654,7 @@
       background: var(--bg-card) !important;
       border: 1.5px solid var(--border-subtle) !important;
       border-radius: 10px !important;
-      overflow: visible !important;
+      overflow: hidden !important;
       box-sizing: border-box !important;
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
@@ -6663,88 +6663,87 @@
     }
     .bulk-cat-acc-card.expanded {
       border-color: #38bdf8 !important;
-      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.10) !important;
+      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.12) !important;
     }
     .bulk-cat-acc-header {
       display: flex !important;
       align-items: center !important;
       justify-content: space-between !important;
-      gap: 10px !important;
-      min-height: 46px !important;
+      flex-wrap: wrap !important;
+      gap: 8px !important;
+      min-height: 48px !important;
       padding: 10px 14px !important;
       cursor: pointer !important;
       user-select: none !important;
       background: rgba(255, 255, 255, 0.03) !important;
-      border-radius: 9px !important;
       font-weight: 800 !important;
       font-size: 0.9rem !important;
       color: var(--text-main) !important;
       box-sizing: border-box !important;
     }
     .bulk-cat-acc-card.expanded .bulk-cat-acc-header {
-      background: rgba(56, 189, 248, 0.08) !important;
-      border-radius: 9px 9px 0 0 !important;
+      background: rgba(56, 189, 248, 0.09) !important;
+      border-bottom: 1px solid var(--border-subtle) !important;
     }
     .bulk-cat-acc-header:hover {
-      background: rgba(56, 189, 248, 0.10) !important;
+      background: rgba(56, 189, 248, 0.12) !important;
     }
     .bulk-cat-acc-body {
       display: none !important;
-      padding: 10px !important;
-      border-top: 1px solid var(--border-subtle) !important;
+      padding: 0 !important;
       background: var(--bg-muted) !important;
-      border-radius: 0 0 9px 9px !important;
-      max-height: 310px !important;
+      max-height: 320px !important;
       overflow-y: auto !important;
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
       box-sizing: border-box !important;
     }
     .bulk-cat-acc-card.expanded > .bulk-cat-acc-body {
       display: block !important;
     }
-    .bulk-item-horiz-row {
-      display: flex !important;
-      align-items: center !important;
-      justify-content: space-between !important;
-      gap: 10px !important;
-      min-height: 42px !important;
-      padding: 8px 12px !important;
-      margin-bottom: 6px !important;
-      border-radius: 8px !important;
+    /* جدول مواد الصنف القابل للتمرير الأفقي السلس لإعطاء مساحة كاملة لاسم المادة */
+    .bulk-cat-items-scroll-table {
+      width: 100% !important;
+      min-width: 580px !important;
+      border-collapse: collapse !important;
+      table-layout: auto !important;
+    }
+    .bulk-cat-items-scroll-table tr {
+      border-bottom: 1px solid var(--border-subtle) !important;
       background: var(--bg-card) !important;
-      border: 1px solid var(--border-subtle) !important;
       cursor: pointer !important;
-      box-sizing: border-box !important;
-      transition: background 0.15s ease, border-color 0.15s ease;
+      transition: background 0.15s ease !important;
     }
-    .bulk-item-horiz-row:last-child {
-      margin-bottom: 0 !important;
+    .bulk-cat-items-scroll-table tr:last-child {
+      border-bottom: none !important;
     }
-    .bulk-item-horiz-row:hover {
-      border-color: rgba(56, 189, 248, 0.5) !important;
+    .bulk-cat-items-scroll-table tr:hover {
+      background: rgba(56, 189, 248, 0.07) !important;
     }
-    .bulk-item-horiz-row.selected {
-      background: rgba(56, 189, 248, 0.15) !important;
-      border-color: #38bdf8 !important;
+    .bulk-cat-items-scroll-table tr.selected {
+      background: rgba(56, 189, 248, 0.16) !important;
     }
-    .bulk-item-scroll-name {
-      flex: 1 1 auto !important;
-      min-width: 0 !important;
-      overflow-x: auto !important;
+    .bulk-cat-items-scroll-table td {
+      padding: 10px 12px !important;
+      vertical-align: middle !important;
       white-space: nowrap !important;
+    }
+    /* حاوية التمرير الأفقي الموحدة لجميع جداول عملية التوزيع */
+    .bulk-horiz-scroll-box {
+      width: 100% !important;
+      overflow-x: auto !important;
       -webkit-overflow-scrolling: touch !important;
       scrollbar-width: thin;
-      padding-bottom: 2px !important;
-      font-weight: 700 !important;
-      font-size: 0.86rem !important;
-      color: var(--text-main) !important;
-      direction: rtl !important;
-      text-align: right !important;
+      padding-bottom: 4px !important;
     }
-    .bulk-item-scroll-name::-webkit-scrollbar {
-      height: 3px;
+    .bulk-horiz-scroll-box::-webkit-scrollbar,
+    .bulk-cat-acc-body::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
     }
-    .bulk-item-scroll-name::-webkit-scrollbar-thumb {
-      background: rgba(56, 189, 248, 0.35);
+    .bulk-horiz-scroll-box::-webkit-scrollbar-thumb,
+    .bulk-cat-acc-body::-webkit-scrollbar-thumb {
+      background: rgba(56, 189, 248, 0.45);
       border-radius: 999px;
     }
 
@@ -9589,22 +9588,24 @@
                     <span>تفريغ السلة</span>
                   </button>
                 </div>
-                <div class="table-responsive">
-                  <table class="data-table">
+                <div class="table-scroll-wrapper bulk-horiz-scroll-box" style="overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%;">
+                  <table class="data-table" style="min-width: 780px; width: 100%;">
                     <thead>
                       <tr>
-                        <th style="width: 45px; text-align: center;">#</th>
-                        <th>بيان المادة</th>
-                        <th>الصنف</th>
-                        <th style="text-align: center;">المتوفر بالمخزن</th>
-                        <th style="text-align: center;">الكمية المسحوبة</th>
-                        <th style="text-align: center; width: 80px;">إجراءات</th>
+                        <th style="width: 45px; text-align: center; white-space: nowrap;">#</th>
+                        <th style="min-width: 310px; text-align: right; white-space: nowrap;">بيان المادة الكامل</th>
+                        <th style="min-width: 120px; text-align: center; white-space: nowrap;">الصنف</th>
+                        <th style="width: 95px; text-align: center; white-space: nowrap;">المتوفر بالمخزن</th>
+                        <th style="width: 140px; text-align: center; white-space: nowrap;">الكمية المسحوبة</th>
+                        <th style="width: 95px; text-align: center; white-space: nowrap;">الموزع</th>
+                        <th style="width: 115px; text-align: center; white-space: nowrap;">الباقي للتوزيع</th>
+                        <th style="text-align: center; width: 70px; white-space: nowrap;">إجراءات</th>
                       </tr>
                     </thead>
                     <tbody id="bulk-pool-basket-tbody">
                       <tr>
-                        <td colspan="6" class="empty-state" style="text-align: center; padding: 24px; color: var(--text-muted);">
-                          السلة فارغة حالياً — اختر الصنف والمادة ثم اضغط إضافة للسلة
+                        <td colspan="8" class="empty-state" style="text-align: center; padding: 24px; color: var(--text-muted);">
+                          السلة فارغة حالياً — اختر الصنف والمادة أعلاه وحدد الكمية ثم اضغط إضافة للسلة
                         </td>
                       </tr>
                     </tbody>
@@ -9731,13 +9732,13 @@
                     </div>
                   </div>
                   <div class="table-scroll-wrapper" style="max-height:280px;overflow-y:auto;">
-                    <table class="data-table" style="font-size:0.84rem;">
+                    <table class="data-table" style="font-size:0.84rem;min-width:760px;width:100%;">
                       <thead>
                         <tr>
-                          <th style="width:45px;text-align:center;">#</th>
-                          <th>الجهة / الوجهة المستفيدة</th>
-                          <th>المسؤول المستفيد</th>
-                          <th>المادة المسلمة</th>
+                          <th style="width:45px;text-align:center;white-space:nowrap;">#</th>
+                          <th style="min-width:180px;white-space:nowrap;">الجهة / الوجهة المستفيدة</th>
+                          <th style="min-width:150px;white-space:nowrap;">المسؤول المستفيد</th>
+                          <th style="min-width:300px;white-space:nowrap;">المادة المسلمة</th>
                           <th style="text-align:center;width:95px;">الحصة الموزعة</th>
                           <th style="width:130px;text-align:center;">إجراءات التعديل</th>
                         </tr>
@@ -27771,103 +27772,20 @@ ${itemsText}
     }
     window.toggleBulkCategoryAccordion = toggleBulkCategoryAccordion;
 
-    renderBulkMultiSelectList = function(itemsList) {
-      const container = document.getElementById('bulk-cat-multiselect-list');
-      if (!container) return;
-      const searchQ = (document.getElementById('bulk-multiselect-search')?.value || '').trim().toLowerCase();
-      const catSel = document.getElementById('bulk-pool-cat-select');
-      const selectedCat = catSel ? catSel.value : 'all';
-
-      const allItems = (state.data.items || []).filter(i => i && !i.isDeleted);
-      const catsToRender = selectedCat === 'all'
-        ? (Array.isArray(state.data.categories) && state.data.categories.length > 0 ? state.data.categories : [...new Set(allItems.map(i => i.category || 'عام'))])
-        : [selectedCat];
-
-      if (!bulkDistState.expandedCategories) bulkDistState.expandedCategories = new Set();
-      if (selectedCat !== 'all') {
-        bulkDistState.expandedCategories.add(selectedCat);
-      }
-
-      let htmlOut = '';
-      let totalMatchedItems = 0;
-
-      catsToRender.forEach((catName, cIdx) => {
-        const catItems = allItems
-          .filter(it => (it.category || 'عام') === catName)
-          .filter(it => !searchQ || (it.name || '').toLowerCase().includes(searchQ) || (it.category || '').toLowerCase().includes(searchQ));
-
-        if (catItems.length === 0) return;
-        totalMatchedItems += catItems.length;
-
-        const isExpanded = Boolean(searchQ) || selectedCat !== 'all' || bulkDistState.expandedCategories.has(catName) || (cIdx === 0 && bulkDistState.expandedCategories.size === 0);
-        if (isExpanded) bulkDistState.expandedCategories.add(catName);
-
-        const selectedInCatCount = catItems.filter(it => bulkDistState.stagedItems && bulkDistState.stagedItems[it.id]).length;
-        const safeCat = escapeHtml(catName);
-
-        htmlOut += `
-          <div class="bulk-cat-acc-card ${isExpanded ? 'expanded' : ''}">
-            <div class="bulk-cat-acc-header" onclick="toggleBulkCategoryAccordion('${safeCat}')">
-              <div style="display:flex;align-items:center;gap:8px;min-width:0;">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s ease;transform:rotate(${isExpanded ? '180deg' : '0deg'});flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${safeCat}</span>
-                <span class="badge badge-subtle tabular-nums" style="font-size:0.7rem;">${catItems.length} مادة</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
-                ${selectedInCatCount > 0 ? `<span class="badge badge-primary tabular-nums" style="font-size:0.72rem;">محدد: ${selectedInCatCount}</span>` : ''}
-                <span style="font-size:0.72rem;color:var(--text-muted);">${isExpanded ? 'طي' : 'توسيع'}</span>
-              </div>
-            </div>
-            <div class="bulk-cat-acc-body">
-              ${catItems.map(it => {
-                const isStaged = Boolean(bulkDistState.stagedItems && bulkDistState.stagedItems[it.id]);
-                const inPool = (bulkDistState.pool || []).find(p => p.itemId === it.id);
-                const st = sanitize(it.stock);
-                return `
-                  <label class="bulk-item-horiz-row ${isStaged ? 'selected' : ''}">
-                    <input type="checkbox" class="bulk-multiselect-cb" value="${escapeHtml(it.id)}" ${isStaged ? 'checked' : ''} onchange="toggleStageBulkItem('${escapeHtml(it.id)}', this.checked)" style="width:16px;height:16px;accent-color:#38bdf8;flex-shrink:0;">
-                    <div class="bulk-item-scroll-name" title="مرر أفقياً لقراءة الاسم الكامل: ${escapeHtml(it.name)}">
-                      ${formatItemDisplayHtml(it.name)}
-                    </div>
-                    <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
-                      ${inPool ? `<span class="badge badge-primary tabular-nums" style="font-size:0.68rem;">بالسلة: ${inPool.qty}</span>` : ''}
-                      <span class="badge ${st > 0 ? 'badge-success' : 'badge-warning'} tabular-nums" style="font-size:0.72rem;" title="الرصيد بالمخزن">${st}</span>
-                    </div>
-                  </label>
-                `;
-              }).join('')}
-            </div>
-          </div>
-        `;
-      });
-
-      if (totalMatchedItems === 0) {
-        container.innerHTML = `<div style="text-align:center;padding:14px;color:var(--text-muted);font-size:0.82rem;">لا توجد مواد مطابقة لشرط البحث</div>`;
-      } else {
-        container.innerHTML = htmlOut;
-      }
-    };
-
-
-    // =========================================================================
-    // ENGINE V5: 100% IDENTICAL OFFICIAL CERTIFICATE PDF GENERATOR (MATCHING تسليم جديد),
-    // WHATSAPP + GMAIL PDF SHARING, AND CLEAN ORGANIZED BULK DISTRIBUTION STEP 1
-    // =========================================================================
-
     // تحميل صورة الترويسة أو التذييل مع الرجوع التلقائي للنسخة المدمجة FALLBACK_EN_TETE_B64 / FALLBACK_EN_PIED_B64
     function loadCertImageWithFallbackAsync(primarySrc, fallbackSrc) {
       return new Promise((resolve) => {
         const tryFallback = () => {
           if (!fallbackSrc) return resolve(null);
           const fImg = new Image();
-          fImg.crossOrigin = 'anonymous';
+          fImg.crossOrigin = "anonymous";
           fImg.onload = () => resolve(fImg);
           fImg.onerror = () => resolve(null);
           fImg.src = fallbackSrc;
         };
         if (!primarySrc) return tryFallback();
         const img = new Image();
-        img.crossOrigin = 'anonymous';
+        img.crossOrigin = "anonymous";
         img.onload = () => {
           if (img.width > 0 && img.height > 0) resolve(img);
           else tryFallback();
@@ -27877,16 +27795,15 @@ ${itemsText}
       });
     }
 
-    // تقسيم النصوص الطويلة إلى عدة أسطر داخل خلايا الجدول أو الفقرات في الـ Canvas
     function wrapCanvasTextLines(ctx, text, maxWidth) {
-      const raw = String(text || '').trim();
-      if (!raw) return [''];
+      const raw = String(text || "").trim();
+      if (!raw) return [""];
       const words = raw.split(/\s+/);
       const lines = [];
-      let currentLine = words[0] || '';
+      let currentLine = words[0] || "";
       for (let i = 1; i < words.length; i++) {
         const word = words[i];
-        const testLine = currentLine + ' ' + word;
+        const testLine = currentLine + " " + word;
         if (ctx.measureText(testLine).width <= maxWidth) {
           currentLine = testLine;
         } else {
@@ -27895,34 +27812,32 @@ ${itemsText}
         }
       }
       if (currentLine) lines.push(currentLine);
-      return lines.length > 0 ? lines : [''];
+      return lines.length > 0 ? lines : [""];
     }
 
     // توليد ملف PDF مطابق بنسبة 100% للإشهاد الطبيعي الموجود في صفحة تسليم جديد (generateVoucherA4Html)
     generateCertificatePdfBlob = async function(voucher) {
-      const W = 1240; // دقة عالية لصفحة A4 (210mm)
-      const H = 1754; // دقة عالية لصفحة A4 (297mm)
-      const canvas = document.createElement('canvas');
+      const W = 1240;
+      const H = 1754;
+      const canvas = document.createElement("canvas");
       canvas.width = W;
       canvas.height = H;
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext("2d");
 
-      // خلفية الصفحة البيضاء الصافية (#ffffff)
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, W, H);
-      ctx.direction = 'rtl';
+      ctx.direction = "rtl";
 
-      const padX = 48; // يطابق padding: 4mm 8mm في .official-cert-page
+      const padX = 48;
       const contentW = W - padX * 2;
 
-      const headerPrimary = getBrandingAssetSrc('header') || './en_tete.png';
-      const footerPrimary = getBrandingAssetSrc('footer') || './en_pied.png';
+      const headerPrimary = getBrandingAssetSrc("header") || "./en_tete.png";
+      const footerPrimary = getBrandingAssetSrc("footer") || "./en_pied.png";
       const [headerImg, footerImg] = await Promise.all([
         loadCertImageWithFallbackAsync(headerPrimary, window.FALLBACK_EN_TETE_B64),
         loadCertImageWithFallbackAsync(footerPrimary, window.FALLBACK_EN_PIED_B64)
       ]);
 
-      // 1. الترويسة الرسمية بعرض كامل في الأعلى (.cert-header-wrap)
       let y = 24;
       if (headerImg && headerImg.width > 0) {
         const maxH = 195;
@@ -27932,14 +27847,13 @@ ${itemsText}
         ctx.drawImage(headerImg, (W - dw) / 2, y, dw, dh);
         y += dh + 10;
       } else {
-        ctx.fillStyle = '#000000';
-        ctx.font = '800 24px Tajawal, Arial, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('المملكة المغربية — وزارة العدل — المديرية الإقليمية للعدل بسطات', W / 2, y + 40);
+        ctx.fillStyle = "#000000";
+        ctx.font = "800 24px Tajawal, Arial, sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("المملكة المغربية — وزارة العدل — المديرية الإقليمية للعدل بسطات", W / 2, y + 40);
         y += 65;
       }
 
-      // 2. كبسولة العنوان في الوسط تماماً (.cert-title-box): "إشهاد"
       const pillW = 220;
       const pillH = 48;
       const pillX = (W - pillW) / 2;
@@ -27954,36 +27868,35 @@ ${itemsText}
       ctx.lineTo(pillX + pillR, pillY + pillH);
       ctx.arc(pillX + pillR, pillY + pillR, pillR, Math.PI / 2, -Math.PI / 2);
       ctx.closePath();
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = "#ffffff";
       ctx.fill();
       ctx.lineWidth = 2.6;
-      ctx.strokeStyle = '#000000';
+      ctx.strokeStyle = "#000000";
       ctx.stroke();
 
-      ctx.fillStyle = '#000000';
-      ctx.font = '800 30px Tajawal, Arial, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('إشهاد', W / 2, pillY + pillH / 2 + 2);
+      ctx.fillStyle = "#000000";
+      ctx.font = "800 30px Tajawal, Arial, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("إشهاد", W / 2, pillY + pillH / 2 + 2);
       ctx.restore();
 
       y = pillY + pillH + 22;
 
-      // 3. النص التمهيدي الرسمي المطابق حرفياً لـ buildOfficialIntroLine(voucher) (.cert-intro-paragraph)
-      const formattedDate = typeof formatOfficialCertDate === 'function' ? formatOfficialCertDate(voucher) : (voucher.isoDate || voucher.date || '');
-      const rawRecip = safeText(voucher?.recipient, 'المستلم');
-      const rawDest = safeText(voucher?.destination, 'المديرية الإقليمية للعدل بسطات');
-      const normRecip = typeof normalizeArabicKey === 'function' ? normalizeArabicKey(rawRecip) : rawRecip;
-      const normDest = typeof normalizeArabicKey === 'function' ? normalizeArabicKey(rawDest) : rawDest;
+      const formattedDate = typeof formatOfficialCertDate === "function" ? formatOfficialCertDate(voucher) : (voucher.isoDate || voucher.date || "");
+      const rawRecip = safeText(voucher?.recipient, "المستلم");
+      const rawDest = safeText(voucher?.destination, "المديرية الإقليمية للعدل بسطات");
+      const normRecip = typeof normalizeArabicKey === "function" ? normalizeArabicKey(rawRecip) : rawRecip;
+      const normDest = typeof normalizeArabicKey === "function" ? normalizeArabicKey(rawDest) : rawDest;
       const alreadyIncludesDest = Boolean(normDest && normRecip.includes(normDest));
       const partyText = alreadyIncludesDest ? rawRecip : `${rawRecip} ب${rawDest}`;
       const introPlain = `بتاريخ ${formattedDate}، أشهد أنا الموقع (ة) أسفله، السيد (ة) ${partyText}، أني تسلمت المواد والمعدات المبينة أسفله:`;
 
       ctx.save();
-      ctx.fillStyle = '#000000';
-      ctx.font = '700 21px Tajawal, Arial, sans-serif';
-      ctx.textAlign = 'right';
-      ctx.textBaseline = 'top';
+      ctx.fillStyle = "#000000";
+      ctx.font = "700 21px Tajawal, Arial, sans-serif";
+      ctx.textAlign = "right";
+      ctx.textBaseline = "top";
       const introLines = wrapCanvasTextLines(ctx, introPlain, contentW);
       introLines.forEach(line => {
         ctx.fillText(line, W - padX, y);
@@ -27993,54 +27906,49 @@ ${itemsText}
 
       y += 10;
 
-      // 4. جدول المواد الرسمي المكون من 4 أعمدة بالحدود السوداء الخالصة وترويسة رمادية فاتحة (#efefef) (.cert-official-table)
-      // الأعمدة من اليمين إلى اليسار (RTL):
-      // # (6%) | المادة (52%) | الكمية (14%) | الملاحظات (28%)
       const colWidths = [
         Math.round(contentW * 0.06),
         Math.round(contentW * 0.52),
         Math.round(contentW * 0.14),
         contentW - Math.round(contentW * 0.06) - Math.round(contentW * 0.52) - Math.round(contentW * 0.14)
       ];
-      const headers = ['#', 'المادة', 'الكمية', 'الملاحظات'];
+      const headers = ["#", "المادة", "الكمية", "الملاحظات"];
       const thH = 44;
 
-      // رسم خلفية وحدود ترويسة الجدول
       ctx.save();
       let colRightX = W - padX;
       headers.forEach((hTitle, cIdx) => {
         const cw = colWidths[cIdx];
         const cellLeftX = colRightX - cw;
-        ctx.fillStyle = '#efefef';
+        ctx.fillStyle = "#efefef";
         ctx.fillRect(cellLeftX, y, cw, thH);
         ctx.lineWidth = 1.8;
-        ctx.strokeStyle = '#000000';
+        ctx.strokeStyle = "#000000";
         ctx.strokeRect(cellLeftX, y, cw, thH);
 
-        ctx.fillStyle = '#000000';
-        ctx.font = '800 20px Tajawal, Arial, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
+        ctx.fillStyle = "#000000";
+        ctx.font = "800 20px Tajawal, Arial, sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
         ctx.fillText(hTitle, cellLeftX + cw / 2, y + thH / 2 + 1);
         colRightX -= cw;
       });
       ctx.restore();
       y += thH;
 
-      // رسم صفوف المواد (.cert-official-table tbody tr)
       const items = Array.isArray(voucher?.items) ? voucher.items : [];
       items.forEach((item, idx) => {
-        const catStr = safeText(item?.category, '');
-        const nameStr = safeText(item?.name, '—');
-        const fullItemText = (catStr && catStr !== 'لم يُسجّل بعد') ? `${catStr}: ${nameStr}` : nameStr;
+        const catStr = safeText(item?.category, "");
+        const nameStr = safeText(item?.name, "—");
+        const fullItemText = (catStr && catStr !== "لم يُسجّل بعد") ? `${catStr}: ${nameStr}` : nameStr;
         const qtyVal = String(Math.max(1, sanitize(item?.qty !== undefined ? item.qty : 1)));
-        const rawNotes = (item?.notes === undefined || item?.notes === null || String(item.notes) === 'undefined')
-          ? ''
+        const rawNotes = (item?.notes === undefined || item?.notes === null || String(item.notes) === "undefined")
+          ? ""
           : String(item.notes).trim();
 
-        ctx.font = '700 19px Tajawal, Arial, sans-serif';
+        ctx.font = "700 19px Tajawal, Arial, sans-serif";
         const itemLines = wrapCanvasTextLines(ctx, fullItemText, colWidths[1] - 20);
-        ctx.font = '600 18px Tajawal, Arial, sans-serif';
+        ctx.font = "600 18px Tajawal, Arial, sans-serif";
         const noteLines = wrapCanvasTextLines(ctx, rawNotes, colWidths[3] - 18);
 
         const maxLines = Math.max(1, itemLines.length, noteLines.length);
@@ -28048,57 +27956,53 @@ ${itemsText}
         const rowH = Math.max(40, maxLines * lineHeight + 14);
 
         let rRightX = W - padX;
-        // 1) خلية الرقم الترتيبي (#)
         const w0 = colWidths[0];
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = "#ffffff";
         ctx.fillRect(rRightX - w0, y, w0, rowH);
         ctx.lineWidth = 1.6;
-        ctx.strokeStyle = '#000000';
+        ctx.strokeStyle = "#000000";
         ctx.strokeRect(rRightX - w0, y, w0, rowH);
-        ctx.fillStyle = '#000000';
-        ctx.font = '700 19px Tajawal, Arial, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
+        ctx.fillStyle = "#000000";
+        ctx.font = "700 19px Tajawal, Arial, sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
         ctx.fillText(String(idx + 1), rRightX - w0 / 2, y + rowH / 2 + 1);
         rRightX -= w0;
 
-        // 2) خلية المادة (الصنف: اسم المادة) بمحاذاة لليمين
         const w1 = colWidths[1];
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = "#ffffff";
         ctx.fillRect(rRightX - w1, y, w1, rowH);
         ctx.strokeRect(rRightX - w1, y, w1, rowH);
-        ctx.fillStyle = '#000000';
-        ctx.font = '700 19px Tajawal, Arial, sans-serif';
-        ctx.textAlign = 'right';
-        ctx.textBaseline = 'top';
+        ctx.fillStyle = "#000000";
+        ctx.font = "700 19px Tajawal, Arial, sans-serif";
+        ctx.textAlign = "right";
+        ctx.textBaseline = "top";
         const startItemY = y + (rowH - itemLines.length * lineHeight) / 2;
         itemLines.forEach((ln, lIdx) => {
           ctx.fillText(ln, rRightX - 10, startItemY + lIdx * lineHeight);
         });
         rRightX -= w1;
 
-        // 3) خلية الكمية بمحاذاة للوسط وخط عريض
         const w2 = colWidths[2];
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = "#ffffff";
         ctx.fillRect(rRightX - w2, y, w2, rowH);
         ctx.strokeRect(rRightX - w2, y, w2, rowH);
-        ctx.fillStyle = '#000000';
-        ctx.font = '800 20px Tajawal, Arial, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
+        ctx.fillStyle = "#000000";
+        ctx.font = "800 20px Tajawal, Arial, sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
         ctx.fillText(qtyVal, rRightX - w2 / 2, y + rowH / 2 + 1);
         rRightX -= w2;
 
-        // 4) خلية الملاحظات بمحاذاة للوسط
         const w3 = colWidths[3];
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = "#ffffff";
         ctx.fillRect(rRightX - w3, y, w3, rowH);
         ctx.strokeRect(rRightX - w3, y, w3, rowH);
         if (rawNotes) {
-          ctx.fillStyle = '#000000';
-          ctx.font = '600 18px Tajawal, Arial, sans-serif';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'top';
+          ctx.fillStyle = "#000000";
+          ctx.font = "600 18px Tajawal, Arial, sans-serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "top";
           const startNoteY = y + (rowH - noteLines.length * lineHeight) / 2;
           noteLines.forEach((ln, lIdx) => {
             ctx.fillText(ln, rRightX - w3 / 2, startNoteY + lIdx * lineHeight);
@@ -28108,18 +28012,15 @@ ${itemsText}
         y += rowH;
       });
 
-      // 5. عبارة "توقيع المستلم" في الجهة اليسرى أسفل الجدول (.cert-signature-block)
       y += 26;
       ctx.save();
-      ctx.fillStyle = '#000000';
-      ctx.font = '800 22px Tajawal, Arial, sans-serif';
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'top';
-      // padding-left: 16% كما في .cert-signature-block
-      ctx.fillText('توقيع المستلم', padX + Math.round(contentW * 0.16), y);
+      ctx.fillStyle = "#000000";
+      ctx.font = "800 22px Tajawal, Arial, sans-serif";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "top";
+      ctx.fillText("توقيع المستلم", padX + Math.round(contentW * 0.16), y);
       ctx.restore();
 
-      // 6. القسم السفلي في أسفل الصفحة (.cert-bottom-section): الكود السري + صورة التذييل الكاملة (en_pied.png)
       let footerDrawH = 0;
       let footerDrawW = 0;
       if (footerImg && footerImg.width > 0) {
@@ -28132,48 +28033,44 @@ ${itemsText}
       }
 
       const bottomY = H - footerDrawH - 22;
-      const sCode = voucher?.secretCode || (typeof generateCertSecretCode === 'function' ? generateCertSecretCode(voucher) : '');
+      const sCode = voucher?.secretCode || (typeof generateCertSecretCode === "function" ? generateCertSecretCode(voucher) : "");
 
-      // الكود السري الصغير فوق التذييل على اليسار (.cert-secret-code)
       ctx.save();
-      ctx.direction = 'ltr';
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.42)';
-      ctx.font = '14px monospace';
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'bottom';
+      ctx.direction = "ltr";
+      ctx.fillStyle = "rgba(0, 0, 0, 0.42)";
+      ctx.font = "14px monospace";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "bottom";
       ctx.fillText(String(sCode), padX, bottomY - 4);
       ctx.restore();
 
       if (footerImg && footerImg.width > 0) {
         ctx.drawImage(footerImg, (W - footerDrawW) / 2, bottomY, footerDrawW, footerDrawH);
       } else {
-        ctx.fillStyle = '#000000';
-        ctx.font = '700 17px Tajawal, Arial, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('المديرية الإقليمية للعدل بسطات — مصلحة التجهيز وتدبير المخزون', W / 2, H - 30);
+        ctx.fillStyle = "#000000";
+        ctx.font = "700 17px Tajawal, Arial, sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("المديرية الإقليمية للعدل بسطات — مصلحة التجهيز وتدبير المخزون", W / 2, H - 30);
       }
 
-      const jpegUrl = canvas.toDataURL('image/jpeg', 0.95);
+      const jpegUrl = canvas.toDataURL("image/jpeg", 0.95);
       return jpegDataUrlToPdfBlob(jpegUrl, 595.28, 841.89, W, H);
     };
     window.generateCertificatePdfBlob = generateCertificatePdfBlob;
 
-    // مشاركة الإشهاد عبر الجيميل (Gmail) مع توليد وتنزيل/إرفاق ملف الإشهاد القياسي PDF
     async function triggerGmailShareVoucher() {
       if (!_activeShareVoucherObj) return;
       const v = _activeShareVoucherObj;
       const text = buildVoucherPlainTextSummary(v);
       const subject = `إشهاد تسليم رسمي رقم ${v.id} — ${v.destination}`;
-      const targetEmail = (state.profile?.userProfile?.email || '').trim();
 
       try {
-        showToast('جارٍ تجهيز ملف الإشهاد القياسي (PDF) لإرساله عبر الجيميل...', 'info');
+        showToast("جارٍ تجهيز ملف الإشهاد القياسي (PDF) لإرساله عبر الجيميل...", "info");
         const pdfBlob = await generateCertificatePdfBlob(v);
         const fileName = `إشهاد_تسليم_${v.id}.pdf`;
-        const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+        const pdfFile = new File([pdfBlob], fileName, { type: "application/pdf" });
 
-        // على الهواتف الذكية والأجهزة اللوحية، نافذة المشاركة الأصلية تتيح اختيار تطبيق Gmail مباشرة مع إرفاق ملف الـ PDF تلقائياً
-        const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+        const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
         if (isMobileDevice && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
           await navigator.share({
             files: [pdfFile],
@@ -28181,47 +28078,37 @@ ${itemsText}
             text: text
           });
           closeShareVoucherModal();
-          showToast('تم إرفاق ملف الإشهاد القياسي (PDF) للمشاركة عبر الجيميل ✓', 'success');
+          showToast("تم إرفاق ملف الإشهاد القياسي (PDF) للمشاركة عبر الجيميل ✓", "success");
           return;
         }
 
-        // على الحاسوب، نقوم بتنزيل ملف الـ PDF القياسي تلقائياً وفتح نافذة إنشاء رسالة جديدة في Gmail مباشرة
         const url = URL.createObjectURL(pdfBlob);
-        const a = document.createElement('a');
+        const a = document.createElement("a");
         a.href = url;
         a.download = fileName;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         setTimeout(() => URL.revokeObjectURL(url), 2500);
-        showToast(`تم تنزيل ملف الإشهاد (${fileName}) وفتح الجيميل لإرفاقه وإرساله ✓`, 'success');
+        showToast(`تم تنزيل ملف الإشهاد (${fileName}) وفتح الجيميل لإرفاقه وإرساله ✓`, "success");
       } catch (err) {
-        if (err && err.name === 'AbortError') return;
-        console.warn('Gmail share error:', err);
+        if (err && err.name === "AbortError") return;
+        console.warn("Gmail share error:", err);
       }
 
       const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`;
-      window.open(gmailComposeUrl, '_blank', 'noopener,noreferrer');
+      window.open(gmailComposeUrl, "_blank", "noopener,noreferrer");
       closeShareVoucherModal();
     }
     window.triggerGmailShareVoucher = triggerGmailShareVoucher;
 
-    // =========================================================================
-    // إصلاح شامل ومنسق للمرحلة 1 في عملية التوزيع:
-    // 1) ظهور جميع الأصناف بشكل منظم وواضح دون أي انكماش أو تداخل
-    // 2) عند الضغط على أي صنف تفتح مواده تحته بسلاسة، مع إمكانية تحديد مادة أو عدة مواد من صنف واحد أو عدة أصناف
-    // 3) بعد تحديد المواد، يحدد المستخدم الكمية الخاصة بكل مادة (مع أزرار + و - والنسب المئوية)
-    // 4) الانتقال السلس للمرحلة 2 (تحديد المستفيدين) ثم المرحلة 3 (إنشاء الإشهادات والجدول العام)
-    // =========================================================================
-
-    // نبدأ بجميع الأصناف مطوية بشكل أنيق حتى يضغط المستخدم على الصنف الذي يريده فتظهر مواده
     bulkDistState.expandedCategories = new Set();
 
     function expandOrCollapseAllBulkCategories(expandAll) {
       const allItems = (state.data.items || []).filter(i => i && !i.isDeleted);
       const cats = Array.isArray(state.data.categories) && state.data.categories.length > 0
         ? state.data.categories
-        : [...new Set(allItems.map(i => i.category || 'عام'))];
+        : [...new Set(allItems.map(i => i.category || "عام"))];
       if (!bulkDistState.expandedCategories) bulkDistState.expandedCategories = new Set();
       if (expandAll) {
         cats.forEach(c => bulkDistState.expandedCategories.add(c));
@@ -28231,6 +28118,16 @@ ${itemsText}
       renderBulkMultiSelectList();
     }
     window.expandOrCollapseAllBulkCategories = expandOrCollapseAllBulkCategories;
+
+    // دالة تبديل حالة تحديد المادة عند النقر على صف المادة في الجدول
+    function onBulkCategoryItemRowClick(event, itemId) {
+      if (event && event.target && (event.target.tagName === 'INPUT' || event.target.closest('button'))) {
+        return;
+      }
+      const isCurrentlyStaged = Boolean(bulkDistState.stagedItems && bulkDistState.stagedItems[itemId]);
+      toggleStageBulkItem(itemId, !isCurrentlyStaged);
+    }
+    window.onBulkCategoryItemRowClick = onBulkCategoryItemRowClick;
 
     renderBulkMultiSelectList = function(itemsList) {
       const container = document.getElementById('bulk-cat-multiselect-list');
@@ -28253,14 +28150,14 @@ ${itemsText}
 
       const totalStagedCount = Object.keys(bulkDistState.stagedItems || {}).length;
       let htmlOut = `
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px;padding:6px 10px;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;font-size:0.78rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px;padding:8px 12px;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;font-size:0.79rem;">
           <span style="color:var(--text-secondary);font-weight:700;">
-            اضغط على أي صنف لإظهار مواده وتحديد المواد المعنية بالتوزيع (${catsToRender.length} أصناف متاحة)
+            اضغط على أي صنف لإظهار مواده (اسحب أفقياً لقراءة الأسماء الطويلة بالكامل) — ${catsToRender.length} أصناف
           </span>
-          <div style="display:flex;align-items:center;gap:6px;">
-            ${totalStagedCount > 0 ? `<span class="badge badge-primary tabular-nums" style="font-size:0.74rem;">تم تحديد ${totalStagedCount} مادة</span>` : ''}
-            <button type="button" class="btn btn-outline btn-sm" onclick="expandOrCollapseAllBulkCategories(true)" style="padding:2px 8px;font-size:0.72rem;">فتح كل الأصناف</button>
-            <button type="button" class="btn btn-outline btn-sm" onclick="expandOrCollapseAllBulkCategories(false)" style="padding:2px 8px;font-size:0.72rem;">طي الكل</button>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            ${totalStagedCount > 0 ? `<span class="badge badge-primary tabular-nums" style="font-size:0.75rem;">تم تحديد ${totalStagedCount} مادة</span>` : ''}
+            <button type="button" class="btn btn-outline btn-sm" onclick="expandOrCollapseAllBulkCategories(true)" style="padding:3px 9px;font-size:0.73rem;">فتح كل الأصناف</button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="expandOrCollapseAllBulkCategories(false)" style="padding:3px 9px;font-size:0.73rem;">طي الكل</button>
           </div>
         </div>
       `;
@@ -28282,34 +28179,44 @@ ${itemsText}
         htmlOut += `
           <div class="bulk-cat-acc-card ${isExpanded ? 'expanded' : ''}">
             <div class="bulk-cat-acc-header" onclick="toggleBulkCategoryAccordion('${safeCat}')">
-              <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1;">
+              <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1 1 180px;">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s ease;transform:rotate(${isExpanded ? '180deg' : '0deg'});flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                <span style="font-weight:800;font-size:0.9rem;color:var(--text-main);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${safeCat}</span>
+                <span style="font-weight:800;font-size:0.9rem;color:var(--text-main);line-height:1.35;">${safeCat}</span>
                 <span class="badge badge-subtle tabular-nums" style="font-size:0.72rem;flex-shrink:0;">${catItems.length} مادة</span>
               </div>
-              <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-                ${selectedInCatCount > 0 ? `<span class="badge badge-primary tabular-nums" style="font-size:0.74rem;padding:3px 9px;">محدد: ${selectedInCatCount}</span>` : ''}
-                <span style="font-size:0.75rem;color:#38bdf8;font-weight:700;">${isExpanded ? 'إخفاء المواد ▲' : 'عرض المواد ▼'}</span>
+              <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                ${selectedInCatCount > 0 ? `<span class="badge badge-primary tabular-nums" style="font-size:0.73rem;padding:2px 8px;">محدد: ${selectedInCatCount}</span>` : ''}
+                <span style="font-size:0.74rem;color:#38bdf8;font-weight:700;white-space:nowrap;">${isExpanded ? 'إخفاء ▲' : 'عرض المواد ▼'}</span>
               </div>
             </div>
             <div class="bulk-cat-acc-body">
-              ${catItems.map(it => {
-                const isStaged = Boolean(bulkDistState.stagedItems && bulkDistState.stagedItems[it.id]);
-                const inPool = (bulkDistState.pool || []).find(p => p.itemId === it.id);
-                const st = sanitize(it.stock);
-                return `
-                  <label class="bulk-item-horiz-row ${isStaged ? 'selected' : ''}">
-                    <input type="checkbox" class="bulk-multiselect-cb" value="${escapeHtml(it.id)}" ${isStaged ? 'checked' : ''} onchange="toggleStageBulkItem('${escapeHtml(it.id)}', this.checked)" style="width:17px;height:17px;accent-color:#38bdf8;flex-shrink:0;cursor:pointer;">
-                    <div class="bulk-item-scroll-name" title="${escapeHtml(it.name)}">
-                      ${formatItemDisplayHtml(it.name)}
-                    </div>
-                    <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
-                      ${inPool ? `<span class="badge badge-primary tabular-nums" style="font-size:0.7rem;">في السلة: ${inPool.qty}</span>` : ''}
-                      <span class="badge ${st > 0 ? 'badge-success' : 'badge-warning'} tabular-nums" style="font-size:0.74rem;" title="الرصيد المتوفر بالمخزن">المخزون: ${st}</span>
-                    </div>
-                  </label>
-                `;
-              }).join('')}
+              <table class="bulk-cat-items-scroll-table">
+                <tbody>
+                  ${catItems.map((it, idx) => {
+                    const isStaged = Boolean(bulkDistState.stagedItems && bulkDistState.stagedItems[it.id]);
+                    const inPool = (bulkDistState.pool || []).find(p => p.itemId === it.id);
+                    const st = sanitize(it.stock);
+                    const safeId = escapeHtml(it.id);
+                    return `
+                      <tr class="${isStaged ? 'selected' : ''}" onclick="onBulkCategoryItemRowClick(event, '${safeId}')">
+                        <td style="width:42px;text-align:center;">
+                          <input type="checkbox" class="bulk-multiselect-cb" value="${safeId}" ${isStaged ? 'checked' : ''} onchange="toggleStageBulkItem('${safeId}', this.checked)" style="width:18px;height:18px;accent-color:#38bdf8;cursor:pointer;vertical-align:middle;">
+                        </td>
+                        <td style="width:36px;text-align:center;color:var(--text-muted);font-size:0.76rem;font-weight:700;" class="tabular-nums">${idx + 1}</td>
+                        <td style="min-width:380px;text-align:right;font-weight:800;font-size:0.88rem;color:var(--text-main);direction:rtl;">
+                          <span dir="auto" style="unicode-bidi:plaintext;display:inline-block;">${formatItemDisplayHtml(it.name)}</span>
+                        </td>
+                        <td style="width:130px;text-align:left;">
+                          <div style="display:inline-flex;align-items:center;gap:6px;justify-content:flex-end;">
+                            ${inPool ? `<span class="badge badge-primary tabular-nums" style="font-size:0.72rem;">بالسلة: ${inPool.qty}</span>` : ''}
+                            <span class="badge ${st > 0 ? 'badge-success' : 'badge-warning'} tabular-nums" style="font-size:0.75rem;">المخزون: ${st}</span>
+                          </div>
+                        </td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
             </div>
           </div>
         `;
@@ -28337,6 +28244,7 @@ ${itemsText}
     }
     window.stepStagedItemQty = stepStagedItemQty;
 
+    // عرض المواد المحددة وتحديد كمياتها في جدول منسق يدعم السكرول الأفقي السلس مع عمود واسع وكامل لاسم المادة في الهاتف والتابلت والحاسوب
     renderBulkStagedItemsArea = function() {
       const stagedContainer = document.getElementById('bulk-staged-items-container');
       const singleWrap = document.getElementById('bulk-single-qty-wrap');
@@ -28348,7 +28256,7 @@ ${itemsText}
         stagedContainer.style.display = 'block';
         stagedContainer.innerHTML = `
           <div style="text-align:center;padding:14px 12px;border-radius:8px;background:var(--bg-card);border:1px dashed var(--border-subtle);color:var(--text-muted);font-size:0.84rem;font-weight:700;">
-            اضغط على أي صنف في القائمة أعلاه وحدد مادة أو عدة مواد لتظهر هنا حقول تحديد الكمية الخاصة بكل مادة ونسب التوزيع.
+            اضغط على أي صنف في القائمة أعلاه وحدد مادة أو عدة مواد لتظهر هنا في جدول تحديد الكميات ونسب التوزيع.
           </div>
         `;
         return;
@@ -28360,56 +28268,134 @@ ${itemsText}
       stagedContainer.innerHTML = `
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
           <span style="font-size:0.84rem;font-weight:800;color:#38bdf8;">
-            المواد المحددة للتوزيع (${stagedIds.length} مادة) — حدد الكمية المراد توزيعها لكل مادة:
+            المواد المحددة للتوزيع (${stagedIds.length} مادة) — حدد الكمية لكل مادة (اسحب الجدول أفقياً على الهاتف لرؤية كافة الأعمدة):
           </span>
-          <button type="button" class="btn btn-outline btn-sm" onclick="toggleSelectAllBulkCategoryItems(false)" style="padding:2px 8px;font-size:0.73rem;color:#ef4444;border-color:rgba(239,68,68,0.35);">
+          <button type="button" class="btn btn-outline btn-sm" onclick="toggleSelectAllBulkCategoryItems(false)" style="padding:3px 10px;font-size:0.74rem;color:#ef4444;border-color:rgba(239,68,68,0.35);font-weight:800;">
             إلغاء تحديد كل المواد
           </button>
         </div>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          ${stagedIds.map((id, idx) => {
-            const it = (state.data.items || []).find(i => i.id === id);
-            if (!it) return '';
-            const st = bulkDistState.stagedItems[id] || { baseQty: 0, finalQty: 0, pct: 100 };
-            const stock = sanitize(it.stock);
-            const displayVal = st.finalQty > 0 ? st.finalQty : '';
-            const baseRef = st.baseQty > 0 ? st.baseQty : 0;
-            return `
-              <div style="background:var(--bg-card);border:1.5px solid rgba(56,189,248,0.35);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:10px;">
-                <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-                  <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;">
-                    <span class="badge badge-primary tabular-nums" style="font-size:0.75rem;">${idx + 1}</span>
-                    <strong style="font-size:0.9rem;color:var(--text-main);word-break:break-word;">${formatItemDisplayHtml(it.name)}</strong>
-                    <span class="badge badge-subtle" style="font-size:0.72rem;">${escapeHtml(it.category || 'عام')}</span>
-                    <span class="badge ${stock > 0 ? 'badge-success' : 'badge-warning'} tabular-nums" style="font-size:0.74rem;">المتوفر بالمخزن: ${stock}</span>
-                  </div>
-                  <div style="display:flex;align-items:center;gap:8px;">
-                    <span id="staged-base-badge-${escapeHtml(id)}" class="badge badge-subtle tabular-nums" style="font-size:0.74rem;">الكمية الأساسية: ${baseRef} (${st.pct || 100}%)</span>
-                    <button type="button" class="btn-icon danger" onclick="toggleStageBulkItem('${escapeHtml(id)}', false)" title="إلغاء تحديد هذه المادة" style="width:26px;height:26px;border-radius:6px;">&times;</button>
-                  </div>
-                </div>
-                <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-top:4px;border-top:1px solid var(--border-subtle);">
-                  <div style="display:flex;align-items:center;gap:6px;">
-                    <span style="font-size:0.8rem;font-weight:800;color:var(--text-secondary);">الكمية المراد توزيعها:</span>
-                    <button type="button" class="btn btn-outline btn-sm" onclick="stepStagedItemQty('${escapeHtml(id)}', -1)" style="width:32px;height:36px;padding:0;font-weight:900;font-size:1rem;">-</button>
-                    <input type="number" id="staged-qty-input-${escapeHtml(id)}" class="form-control tabular-nums" min="0" value="${displayVal}" placeholder="أدخل الكمية..." oninput="onStagedItemManualQtyInput('${escapeHtml(id)}', this.value)" style="width:140px;height:36px;text-align:center;font-weight:900;font-size:0.95rem;">
-                    <button type="button" class="btn btn-outline btn-sm" onclick="stepStagedItemQty('${escapeHtml(id)}', 1)" style="width:32px;height:36px;padding:0;font-weight:900;font-size:1rem;">+</button>
-                  </div>
-                  <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
-                    <span style="font-size:0.75rem;color:var(--text-muted);font-weight:700;">نسبة من الكمية المدخلة:</span>
-                    <button type="button" class="btn btn-outline btn-sm" onclick="applyStagedItemPercentage('${escapeHtml(id)}', 25)" style="padding:4px 9px;font-size:0.75rem;font-weight:800;">25%</button>
-                    <button type="button" class="btn btn-outline btn-sm" onclick="applyStagedItemPercentage('${escapeHtml(id)}', 50)" style="padding:4px 9px;font-size:0.75rem;font-weight:800;">50%</button>
-                    <button type="button" class="btn btn-outline btn-sm" onclick="applyStagedItemPercentage('${escapeHtml(id)}', 70)" style="padding:4px 9px;font-size:0.75rem;font-weight:800;">70%</button>
-                    <button type="button" class="btn btn-outline btn-sm" onclick="applyStagedItemPercentage('${escapeHtml(id)}', 80)" style="padding:4px 9px;font-size:0.75rem;font-weight:800;">80%</button>
-                    <button type="button" class="btn btn-outline btn-sm" onclick="applyStagedItemPercentage('${escapeHtml(id)}', 100)" style="padding:4px 9px;font-size:0.75rem;font-weight:800;">100%</button>
-                  </div>
-                </div>
-              </div>
-            `;
-          }).join('')}
+        <div class="table-scroll-wrapper bulk-horiz-scroll-box" style="border:1.5px solid rgba(56,189,248,0.35);border-radius:10px;background:var(--bg-card);">
+          <table class="data-table" style="min-width: 820px; width: 100%; margin: 0;">
+            <thead>
+              <tr>
+                <th style="width: 42px; text-align: center; white-space: nowrap;">#</th>
+                <th style="min-width: 340px; text-align: right; white-space: nowrap;">بيان المادة الكامل والصنف</th>
+                <th style="width: 95px; text-align: center; white-space: nowrap;">المخزون</th>
+                <th style="width: 175px; text-align: center; white-space: nowrap;">الكمية المراد توزيعها</th>
+                <th style="min-width: 240px; text-align: center; white-space: nowrap;">حاسبة النسب المئوية (من الكمية المدخلة)</th>
+                <th style="width: 55px; text-align: center; white-space: nowrap;">إلغاء</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${stagedIds.map((id, idx) => {
+                const it = (state.data.items || []).find(i => i.id === id);
+                if (!it) return '';
+                const st = bulkDistState.stagedItems[id] || { baseQty: 0, finalQty: 0, pct: 100 };
+                const stock = sanitize(it.stock);
+                const displayVal = st.finalQty > 0 ? st.finalQty : '';
+                const baseRef = st.baseQty > 0 ? st.baseQty : 0;
+                const safeId = escapeHtml(id);
+                return `
+                  <tr>
+                    <td style="text-align:center;font-weight:800;" class="tabular-nums">${idx + 1}</td>
+                    <td style="min-width:340px;white-space:nowrap;text-align:right;">
+                      <div style="font-weight:800;font-size:0.9rem;color:var(--text-main);direction:rtl;">
+                        <span dir="auto" style="unicode-bidi:plaintext;display:inline-block;">${formatItemDisplayHtml(it.name)}</span>
+                      </div>
+                      <div style="margin-top:3px;display:flex;align-items:center;gap:6px;">
+                        <span class="badge badge-subtle" style="font-size:0.7rem;">${escapeHtml(it.category || 'عام')}</span>
+                        <span id="staged-base-badge-${safeId}" class="badge badge-subtle tabular-nums" style="font-size:0.7rem;color:#38bdf8;">الكمية الأساسية: ${baseRef} (${st.pct || 100}%)</span>
+                      </div>
+                    </td>
+                    <td style="text-align:center;white-space:nowrap;">
+                      <span class="badge ${stock > 0 ? 'badge-success' : 'badge-warning'} tabular-nums" style="font-size:0.78rem;">${stock}</span>
+                    </td>
+                    <td style="text-align:center;white-space:nowrap;">
+                      <div style="display:inline-flex;align-items:center;gap:5px;justify-content:center;">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="stepStagedItemQty('${safeId}', -1)" style="width:30px;height:34px;padding:0;font-weight:900;font-size:0.95rem;">-</button>
+                        <input type="number" id="staged-qty-input-${safeId}" class="form-control tabular-nums" min="0" value="${displayVal}" placeholder="الكمية..." oninput="onStagedItemManualQtyInput('${safeId}', this.value)" style="width:105px;height:34px;text-align:center;font-weight:900;font-size:0.92rem;">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="stepStagedItemQty('${safeId}', 1)" style="width:30px;height:34px;padding:0;font-weight:900;font-size:0.95rem;">+</button>
+                      </div>
+                    </td>
+                    <td style="text-align:center;white-space:nowrap;">
+                      <div style="display:inline-flex;align-items:center;gap:4px;justify-content:center;">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="applyStagedItemPercentage('${safeId}', 25)" style="padding:3px 7px;font-size:0.73rem;font-weight:800;">25%</button>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="applyStagedItemPercentage('${safeId}', 50)" style="padding:3px 7px;font-size:0.73rem;font-weight:800;">50%</button>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="applyStagedItemPercentage('${safeId}', 70)" style="padding:3px 7px;font-size:0.73rem;font-weight:800;">70%</button>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="applyStagedItemPercentage('${safeId}', 80)" style="padding:3px 7px;font-size:0.73rem;font-weight:800;">80%</button>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="applyStagedItemPercentage('${safeId}', 100)" style="padding:3px 7px;font-size:0.73rem;font-weight:800;">100%</button>
+                      </div>
+                    </td>
+                    <td style="text-align:center;white-space:nowrap;">
+                      <button type="button" class="btn-icon danger square-action-btn" onclick="toggleStageBulkItem('${safeId}', false)" title="إلغاء تحديد هذه المادة" style="width:30px;height:30px;border-radius:6px;">&times;</button>
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
         </div>
       `;
     };
+
+    // تحسين عرض جدول سلة المواد الإجمالية (renderBulkPoolBasket) ليدعم عدم انكسار اسم المادة والتمرير الأفقي السلس
+    renderBulkPoolBasket = function() {
+      const tbody = document.getElementById('bulk-pool-basket-tbody');
+      const summaryLbl = document.getElementById('bulk-basket-summary-label');
+      if (!tbody) return;
+
+      if (!bulkDistState.pool.length) {
+        if (summaryLbl) summaryLbl.textContent = '0 مادة في السلة';
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" style="text-align:center;padding:24px;color:var(--text-muted);">
+              السلة فارغة حالياً — اختر الصنف والمادة أعلاه وحدد الكميات المراد سحبها للتوزيع
+            </td>
+          </tr>`;
+        return;
+      }
+
+      const totalUnits = bulkDistState.pool.reduce((s, p) => s + (Number(p.qty) || 0), 0);
+      if (summaryLbl) summaryLbl.textContent = `${bulkDistState.pool.length} مواد في السلة | إجمالي الرصيد المسحوب: ${totalUnits} قطعة`;
+
+      tbody.innerHTML = bulkDistState.pool.map((p, idx) => {
+        const item = (state.data.items || []).find(i => i.id === p.itemId);
+        if (!item) return '';
+        const maxStock = sanitize(item.stock);
+        const allocated = getBulkItemAllocatedSum(p.itemId);
+        const rem = p.qty - allocated;
+        const remClass = rem === 0 ? 'rem-zero' : (rem > 0 ? 'rem-pos' : 'rem-neg');
+        const remText = rem === 0 ? '0 (مكتمل ✓)' : (rem > 0 ? `${rem} متبقي` : `${Math.abs(rem)} تجاوز!`);
+        return `
+          <tr>
+            <td style="text-align:center;font-weight:800;white-space:nowrap;" class="tabular-nums">${idx + 1}</td>
+            <td style="min-width:310px;white-space:nowrap;text-align:right;font-weight:800;direction:rtl;">
+              <span dir="auto" style="unicode-bidi:plaintext;display:inline-block;">${formatItemDisplayHtml(item.name)}</span>
+            </td>
+            <td style="text-align:center;white-space:nowrap;"><span class="badge badge-subtle">${escapeHtml(item.category)}</span></td>
+            <td style="text-align:center;white-space:nowrap;"><span class="badge ${maxStock > 0 ? 'badge-success' : 'badge-warning'} tabular-nums">${maxStock}</span></td>
+            <td style="text-align:center;white-space:nowrap;">
+              <div style="display:inline-flex;align-items:center;gap:4px;justify-content:center;">
+                <button type="button" class="btn btn-sm btn-outline" style="width:28px;height:30px;padding:0;font-weight:900;" onclick="changeBulkPoolItemQtyStepper('${p.itemId}', -1)">-</button>
+                <input type="number" class="form-control tabular-nums" style="width:80px;height:30px;margin:0 auto;text-align:center;font-weight:900;" min="1" max="9999" value="${p.qty}" onchange="updateBulkPoolItemQty('${p.itemId}', this.value)">
+                <button type="button" class="btn btn-sm btn-outline" style="width:28px;height:30px;padding:0;font-weight:900;" onclick="changeBulkPoolItemQtyStepper('${p.itemId}', 1)">+</button>
+              </div>
+            </td>
+            <td style="text-align:center;font-weight:800;color:#38bdf8;white-space:nowrap;" class="tabular-nums">${allocated}</td>
+            <td style="text-align:center;white-space:nowrap;"><span class="bulk-item-rem-pill ${remClass} tabular-nums">${remText}</span></td>
+            <td style="text-align:center;white-space:nowrap;">
+              <button type="button" class="btn-icon danger square-action-btn" onclick="removeItemFromBulkPool('${p.itemId}')" title="إزالة من السلة" style="width:34px;height:34px;border-radius:8px;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    };
+    window.renderBulkPoolBasket = renderBulkPoolBasket;
 
     // إذا قام المستخدم بتحديد المواد وإدخال كمياتها ثم ضغط مباشرة على "مصفوفة التوزيع (المرحلة 2)"، يتم إضافتها تلقائياً للسلة قبل الانتقال!
     const _v4SetBulkStep = setBulkStep;
