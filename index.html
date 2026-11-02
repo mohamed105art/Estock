@@ -6902,10 +6902,159 @@
       min-width: 820px !important;
       width: 100% !important;
     }
-    #ai-section-simulation table.data-table {
-      min-width: 1060px !important;
-      width: 100% !important;
+    /* إظهار شريط التمرير الأفقي بوضوح وأناقة على الحاسوب مع إبقاء اللمس السلس على الهاتف */
+    @media (min-width: 769px) {
+      .table-scroll-wrapper,
+      .table-responsive,
+      .bulk-matrix-wrap {
+        scrollbar-width: thin !important;
+        scrollbar-color: rgba(56, 189, 248, 0.55) rgba(15, 23, 42, 0.25) !important;
+        -ms-overflow-style: auto !important;
+      }
+      .table-scroll-wrapper::-webkit-scrollbar,
+      .table-responsive::-webkit-scrollbar,
+      .bulk-matrix-wrap::-webkit-scrollbar {
+        display: block !important;
+        height: 8px !important;
+        width: 8px !important;
+      }
+      .table-scroll-wrapper::-webkit-scrollbar-track,
+      .table-responsive::-webkit-scrollbar-track,
+      .bulk-matrix-wrap::-webkit-scrollbar-track {
+        background: rgba(15, 23, 42, 0.2) !important;
+        border-radius: 6px !important;
+      }
+      .table-scroll-wrapper::-webkit-scrollbar-thumb,
+      .table-responsive::-webkit-scrollbar-thumb,
+      .bulk-matrix-wrap::-webkit-scrollbar-thumb {
+        background: rgba(56, 189, 248, 0.55) !important;
+        border-radius: 6px !important;
+      }
+      .table-scroll-wrapper::-webkit-scrollbar-thumb:hover,
+      .table-responsive::-webkit-scrollbar-thumb:hover,
+      .bulk-matrix-wrap::-webkit-scrollbar-thumb:hover {
+        background: #38bdf8 !important;
+      }
     }
+
+    /* تصميم مضغوط ومتناسق لجدول محاكاة الحصص (5 أعمدة متقاربة بخط موحد وصغير) */
+    #ai-section-simulation .table-scroll-wrapper {
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+    #ai-section-simulation table.data-table {
+      min-width: 100% !important;
+      width: 100% !important;
+      border-collapse: collapse !important;
+      table-layout: auto !important;
+    }
+    #ai-section-simulation table.data-table th {
+      padding: 7px 8px !important;
+      font-size: 0.76rem !important;
+      font-weight: 700 !important;
+      white-space: nowrap !important;
+      letter-spacing: 0 !important;
+    }
+    #ai-section-simulation table.data-table td {
+      padding: 6px 8px !important;
+      font-size: 0.78rem !important;
+      font-weight: 500 !important;
+      line-height: 1.25 !important;
+      white-space: nowrap !important;
+      vertical-align: middle !important;
+    }
+    #ai-section-simulation table.data-table tr,
+    #ai-section-simulation table.data-table tr td,
+    #ai-section-simulation table.data-table tr td span {
+      font-weight: 500 !important;
+    }
+    .sim-cons-cell-wrap {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 4px !important;
+    }
+    .sim-cons-avg-btn,
+    .sim-cons-chg-btn {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 3px !important;
+      padding: 2px 7px !important;
+      height: 23px !important;
+      border-radius: 6px !important;
+      font-size: 0.74rem !important;
+      font-weight: 600 !important;
+      cursor: pointer !important;
+      transition: all 0.15s ease !important;
+      border: 1px solid var(--border-subtle) !important;
+      background: var(--bg-muted) !important;
+      color: var(--text-main) !important;
+      font-family: inherit !important;
+    }
+    .sim-cons-avg-btn:hover,
+    .sim-cons-chg-btn:hover {
+      border-color: #38bdf8 !important;
+      background: rgba(56, 189, 248, 0.12) !important;
+      transform: translateY(-1px) !important;
+    }
+    .sim-tech-icon-btn {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 4px !important;
+      padding: 3px 8px !important;
+      height: 24px !important;
+      border-radius: 6px !important;
+      border: 1px solid rgba(56, 189, 248, 0.35) !important;
+      background: rgba(56, 189, 248, 0.08) !important;
+      color: #38bdf8 !important;
+      font-size: 0.72rem !important;
+      font-weight: 600 !important;
+      cursor: pointer !important;
+      transition: all 0.15s ease !important;
+      font-family: inherit !important;
+    }
+    .sim-tech-icon-btn:hover {
+      background: rgba(56, 189, 248, 0.2) !important;
+      border-color: #38bdf8 !important;
+      transform: translateY(-1px) !important;
+    }
+    @media (max-width: 768px) {
+      #ai-section-simulation table.data-table th {
+        padding: 5px 5px !important;
+        font-size: 0.68rem !important;
+      }
+      #ai-section-simulation table.data-table td {
+        padding: 5px 5px !important;
+        font-size: 0.71rem !important;
+      }
+      .sim-cons-avg-btn,
+      .sim-cons-chg-btn {
+        padding: 1px 5px !important;
+        height: 21px !important;
+        font-size: 0.68rem !important;
+      }
+      .sim-tech-icon-btn {
+        padding: 2px 6px !important;
+        height: 22px !important;
+        font-size: 0.67rem !important;
+      }
+      #ai-view .ai-kpi-value {
+        font-size: 1.05rem !important;
+      }
+      #ai-section-simulation .card-title,
+      #ai-section-planning .card-title {
+        font-size: 0.95rem !important;
+      }
+      #ai-section-simulation .card-subtitle,
+      #ai-section-planning .card-subtitle {
+        font-size: 0.72rem !important;
+      }
+    }
+
     table.data-table td strong.inventory-item-name,
     table.data-table td .inventory-item-name {
       white-space: nowrap !important;
@@ -8420,7 +8569,7 @@
                     </span>
                     <span>وحدة التخطيط الاستباقي لحاجيات السنة المقبلة وتحديد الكوطة</span>
                   </h3>
-                  <div class="card-subtitle" style="margin-top: 4px;">نموذج رياضي تنبؤي لتقدير كميات الشراء وتوزيع الحصص التقديرية على المحاكم والموظفين مع هامش الأمان الإداري</div>
+                  <div class="card-subtitle" style="margin-top: 4px;">نموذج رياضي تنبؤي لتقدير كميات الشراء وتوزيع الحصص التقديرية على الجهات والمستفيدين مع هامش الأمان الإداري</div>
                 </div>
                 <button type="button" class="btn btn-primary btn-sm" onclick="printForecastReportA4()" style="padding: 7px 16px; font-size: 0.82rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
@@ -8537,7 +8686,7 @@
                     <thead>
                       <tr>
                         <th style="width: 40px; text-align: center;">#</th>
-                        <th>الجهة المستفيدة (المحكمة / المركز)</th>
+                        <th>الجهة المستفيدة</th>
                         <th style="text-align: center; width: 120px;">الاستهلاك التاريخي</th>
                         <th style="text-align: center; width: 110px;">نسبة الحصة (%)</th>
                         <th style="text-align: center; width: 140px;">الكوطة السنوية المقترحة</th>
@@ -8734,7 +8883,7 @@
                 <div style="background: var(--bg-card); border: 1.5px solid var(--border-subtle); border-radius: 12px; padding: 12px 14px;">
                   <div style="font-size: 0.76rem; color: var(--text-muted); font-weight: 700;">الجهات المشمولة بالتوزيع</div>
                   <div style="font-size: 1.4rem; font-weight: 900; color: var(--primary); margin-top: 4px;" id="sim-quota-metric-entities-count">0</div>
-                  <div style="font-size: 0.72rem; color: var(--text-muted);">محاكم ومصالح معتمدة</div>
+                  <div style="font-size: 0.72rem; color: var(--text-muted);">جهات ومستفيدون معتمدون</div>
                 </div>
               </div>
 
@@ -26937,7 +27086,7 @@ ${itemsText}
               <thead>
                 <tr>
                   <th style="width: 35px;">#</th>
-                  <th>الجهة المستفيدة (المحكمة / المركز)</th>
+                  <th>الجهة المستفيدة</th>
                   <th style="width: 100px;">الاستهلاك السنوي</th>
                   <th style="width: 80px;">النسبة</th>
                   <th style="width: 130px;">الكوطة السنوية الموصى بها</th>
@@ -34612,13 +34761,310 @@ ${itemsText}
     window.addItemToCart = addItemToCart;
 
     // =========================================================================
-    // 4. تطوير "التحليل الذكي -> محاكاة الحصص" (#ai-section-simulation):
-    //    - تحليل منسوب الاستهلاك عبر السنوات (2024، 2025، 2026...) أو الفترات الزمنية
-    //    - رصد الارتفاع أو الانخفاض مع صياغة مبرر تقني ذكي لكل حصة مقترحة
-    //    - طرح سؤال تشخيصي تفاعلي حول تغير حظيرة الأجهزة (زيادة / نقصان / ثبات الأجهزة)
-    //      للكشف عن الأخطاء أو الأعطاب أو التسليمات غير النمطية
+    // 4. التطوير الشامل لصفحة "التحليل الذكي" و"محاكاة الحصص" و"التقرير الإحصائي الذكي" (V7.4):
+    //    - اختيار المادة الأكثر توزيعاً تلقائياً كمعيار أول في التخطيط السنوي ومحاكاة الحصص ولوحة القيادة
+    //    - جدول محاكاة الحصص المضغوط من 5 أعمدة متقاربة فقط بخط موحد وصغير ومناسب للهاتف والحاسوب:
+    //      (1. المستفيد | 2. الاستهلاك [المعدل + نسبة التغيير % التفاعليين] | 3. الحصة المقترحة | 4. نسبة الحصة | 5. التحليل التقني بزر أيقونة خطية)
+    //    - إعادة هندسة شاملة لتقرير الرؤى والتحليل الإحصائي الذكي ليعتمد على الاستهلاك العام والحصص السنوية لجميع المواد
     // =========================================================================
-    function setQuotaDiagnosticAnswer(itemId, entityKey, answerCode) {
+
+    // أ) دالة ترتيب جميع المواد تنازلياً حسب الأكثر توزيعاً في سجل العمليات الفعلي
+    function getItemsRankedByDistribution() {
+      const items = (Array.isArray(state.data.items) ? state.data.items : []).filter(i => i && !i.isDeleted);
+      const txs = (Array.isArray(state.data.transactions) ? state.data.transactions : []).filter(t => t && !t.isDeleted);
+      const distMap = {};
+      const txCountMap = {};
+      items.forEach(it => {
+        distMap[it.id] = 0;
+        txCountMap[it.id] = 0;
+      });
+
+      txs.forEach(t => {
+        (t.items || []).forEach(li => {
+          const q = Math.max(0, sanitize(li.qty));
+          if (q <= 0) return;
+          if (li.id && distMap[li.id] !== undefined) {
+            distMap[li.id] += q;
+            txCountMap[li.id] += 1;
+          } else {
+            const matched = items.find(x => x.name === li.name || (x.shortRef && li.shortRef && x.shortRef === li.shortRef));
+            if (matched) {
+              distMap[matched.id] = (distMap[matched.id] || 0) + q;
+              txCountMap[matched.id] = (txCountMap[matched.id] || 0) + 1;
+            }
+          }
+        });
+      });
+
+      return items.map(it => {
+        const enriched = parseAndEnrichStructuredItem(it);
+        return {
+          ...enriched,
+          distributedQty: distMap[it.id] || 0,
+          txCount: txCountMap[it.id] || 0
+        };
+      }).sort((a, b) => {
+        if (b.distributedQty !== a.distributedQty) return b.distributedQty - a.distributedQty;
+        if (b.txCount !== a.txCount) return b.txCount - a.txCount;
+        return (a.shortRef || a.name || "").localeCompare(b.shortRef || b.name || "", "ar");
+      });
+    }
+    window.getItemsRankedByDistribution = getItemsRankedByDistribution;
+
+    function getTopDistributedItem() {
+      const ranked = getItemsRankedByDistribution();
+      return ranked.length > 0 ? ranked[0] : null;
+    }
+    window.getTopDistributedItem = getTopDistributedItem;
+
+    // تنسيق اسم المستفيد بدون كلمة "المحكمة" وبدون عمود منفصل للمقر
+    function formatCompactBeneficiaryName(recipient, destination, isDirectorate) {
+      if (isDirectorate || isSettatDirectorateName(destination)) {
+        return "المديرية الإقليمية بسطات";
+      }
+      const cleanRecip = String(recipient || "مستفيد").trim();
+      let cleanDest = String(destination || "").trim();
+      if (!cleanDest) return cleanRecip;
+      cleanDest = cleanDest
+        .replace(/^محكمة الاستئناف\s*ب?/i, "استئنافية ")
+        .replace(/^المحكمة الابتدائية\s*ب?/i, "ابتدائية ")
+        .replace(/^المركز القضائي\s*ب?/i, "مركز ")
+        .replace(/^قضاء الأسرة\s*ب?/i, "أسرة ")
+        .replace(/^المحكمة\s*/i, "")
+        .replace(/^محكمة\s*/i, "")
+        .trim();
+      if (!cleanDest || cleanRecip.includes(cleanDest)) return cleanRecip;
+      return `${cleanRecip} — ${cleanDest}`;
+    }
+    window.formatCompactBeneficiaryName = formatCompactBeneficiaryName;
+
+    // ب) تحديث قوائم اختيار المادة في "التخطيط السنوي" و"محاكاة الحصص" لترتب حسب الأكثر توزيعاً وتختار المادة الأولى تلقائياً
+    filterForecastItemSuggestions = function(query) {
+      const list = document.getElementById('forecast-item-autocomplete-list');
+      if (!list) return;
+      const q = (query || '').trim().toLowerCase();
+      const ranked = getItemsRankedByDistribution().filter(i => {
+        if (!q) return true;
+        const hay = `${i.shortRef || ''} ${i.name || ''} ${i.deviceFull || ''} ${i.category || ''}`.toLowerCase();
+        return hay.includes(q);
+      });
+
+      if (ranked.length === 0) {
+        list.innerHTML = `<div style="padding: 10px; font-size: 0.8rem; color: var(--text-muted); text-align: center;">لا توجد مواد مطابقة</div>`;
+        list.style.display = 'block';
+        return;
+      }
+
+      const activeId = document.getElementById('forecast-item-selected-id')?.value;
+      list.innerHTML = ranked.map((it, idx) => {
+        const isSel = it.id === activeId;
+        const dispName = escapeHtml(formatItemDisplayText(it));
+        const catEsc = escapeHtml(it.category || 'عام');
+        const distVal = sanitize(it.distributedQty);
+        const topTag = (idx === 0 && !q) ? `<span class="badge badge-success" style="font-size:0.65rem;margin-right:4px;">الأكثر توزيعاً ★</span>` : '';
+        return `
+          <div class="combobox-suggestion-item ${isSel ? 'active' : ''}" onclick="selectForecastItem('${escapeHtml(it.id)}')">
+            <div>
+              <span style="color: var(--text-main); font-size: 0.81rem; font-weight: 600;">${dispName}</span> ${topTag}
+              <div style="font-size: 0.7rem; color: var(--text-muted);">${catEsc}</div>
+            </div>
+            <span class="badge ${distVal > 0 ? 'badge-primary' : 'badge-subtle'} tabular-nums" style="font-size: 0.7rem;">موزع: ${distVal}</span>
+          </div>
+        `;
+      }).join('');
+      list.style.display = 'block';
+    };
+    window.filterForecastItemSuggestions = filterForecastItemSuggestions;
+
+    selectForecastItem = function(itemId) {
+      const item = (state.data.items || []).find(i => i && i.id === itemId);
+      if (!item) return;
+      state._userPickedForecastItemId = item.id;
+      const st = parseAndEnrichStructuredItem(item);
+      const hiddenInput = document.getElementById('forecast-item-selected-id');
+      const textInput = document.getElementById('forecast-item-search-input');
+      const badge = document.getElementById('forecast-active-item-badge');
+      const list = document.getElementById('forecast-item-autocomplete-list');
+      if (hiddenInput) hiddenInput.value = st.id;
+      if (textInput) {
+        textInput.value = '';
+        textInput.placeholder = `ابحث عن مادة أخرى (المفعلة: ${st.shortRef || st.name})...`;
+      }
+      if (badge) badge.textContent = `المادة المفعلة: ${st.shortRef || st.name}`;
+      if (list) list.style.display = 'none';
+      calculateAndRenderForecast();
+    };
+    window.selectForecastItem = selectForecastItem;
+
+    initAndRenderAnnualForecast = function() {
+      const topItem = getTopDistributedItem();
+      if (!topItem) return;
+      const hiddenInput = document.getElementById('forecast-item-selected-id');
+      const textInput = document.getElementById('forecast-item-search-input');
+      const badge = document.getElementById('forecast-active-item-badge');
+      if (hiddenInput && (!hiddenInput.value || !state._userPickedForecastItemId)) {
+        hiddenInput.value = topItem.id;
+      }
+      const activeId = hiddenInput ? hiddenInput.value : topItem.id;
+      const activeRaw = (state.data.items || []).find(i => i && i.id === activeId) || topItem;
+      const activeItem = parseAndEnrichStructuredItem(activeRaw);
+      if (textInput) {
+        textInput.value = '';
+        textInput.placeholder = `ابحث عن مادة أخرى (المفعلة: ${activeItem.shortRef || activeItem.name})...`;
+      }
+      if (badge) badge.textContent = `المادة المفعلة: ${activeItem.shortRef || activeItem.name}`;
+      calculateAndRenderForecast();
+    };
+    window.initAndRenderAnnualForecast = initAndRenderAnnualForecast;
+
+    const _v6CalculateAndRenderForecast = calculateAndRenderForecast;
+    calculateAndRenderForecast = function() {
+      const topItem = getTopDistributedItem();
+      const hiddenInput = document.getElementById('forecast-item-selected-id');
+      if (hiddenInput && topItem && (!hiddenInput.value || !state._userPickedForecastItemId)) {
+        hiddenInput.value = topItem.id;
+      }
+      _v6CalculateAndRenderForecast();
+      // تنظيف جدول حصص الجهات في التخطيط السنوي من كلمة المحكمة ومن عمود الحصة الربع سنوية
+      const fcEntitiesTable = document.querySelector('#forecast-drill-content-entities table.data-table');
+      if (fcEntitiesTable) {
+        const thRow = fcEntitiesTable.querySelector('thead tr');
+        if (thRow) {
+          thRow.innerHTML = `
+            <th style="width: 40px; text-align: center;">#</th>
+            <th>الجهة المستفيدة</th>
+            <th style="text-align: center; width: 130px;">الاستهلاك السنوي</th>
+            <th style="text-align: center; width: 110px;">نسبة الحصة (%)</th>
+            <th style="text-align: center; width: 140px;">الحصة المقترحة</th>
+            <th>شريط توزيع الحصة</th>
+          `;
+        }
+        const trs = fcEntitiesTable.querySelectorAll('tbody tr');
+        trs.forEach(tr => {
+          if (tr.children.length === 7) {
+            tr.removeChild(tr.children[5]); // إزالة عمود الحصة الربع سنوية
+          }
+        });
+      }
+      const hiddenId = hiddenInput?.value;
+      const rawIt = (state.data.items || []).find(i => i && i.id === hiddenId) || topItem;
+      if (rawIt) {
+        const st = parseAndEnrichStructuredItem(rawIt);
+        const textInput = document.getElementById('forecast-item-search-input');
+        const badge = document.getElementById('forecast-active-item-badge');
+        if (textInput) {
+          textInput.value = '';
+          textInput.placeholder = `ابحث عن مادة أخرى (المفعلة: ${st.shortRef || st.name})...`;
+        }
+        if (badge) badge.textContent = `المادة المفعلة: ${st.shortRef || st.name}`;
+      }
+    };
+    window.calculateAndRenderForecast = calculateAndRenderForecast;
+
+    filterSimQuotaItemSuggestions = function(query) {
+      const list = document.getElementById('sim-quota-item-autocomplete-list');
+      if (!list) return;
+      const q = (query || '').trim().toLowerCase();
+      const ranked = getItemsRankedByDistribution().filter(i => {
+        if (!q) return true;
+        const hay = `${i.shortRef || ''} ${i.name || ''} ${i.deviceFull || ''} ${i.category || ''}`.toLowerCase();
+        return hay.includes(q);
+      });
+
+      if (ranked.length === 0) {
+        list.innerHTML = `<div style="padding: 10px; font-size: 0.8rem; color: var(--text-muted); text-align: center;">لا توجد مواد مطابقة</div>`;
+        list.style.display = 'block';
+        return;
+      }
+
+      const activeId = document.getElementById('sim-quota-item-selected-id')?.value;
+      list.innerHTML = ranked.map((it, idx) => {
+        const isSel = it.id === activeId;
+        const dispName = escapeHtml(formatItemDisplayText(it));
+        const catEsc = escapeHtml(it.category || 'عام');
+        const distVal = sanitize(it.distributedQty);
+        const topTag = (idx === 0 && !q) ? `<span class="badge badge-success" style="font-size:0.65rem;margin-right:4px;">الأكثر توزيعاً ★</span>` : '';
+        return `
+          <div class="combobox-suggestion-item ${isSel ? 'active' : ''}" onclick="selectSimQuotaItem('${escapeHtml(it.id)}')">
+            <div>
+              <span style="color: var(--text-main); font-size: 0.81rem; font-weight: 600;">${dispName}</span> ${topTag}
+              <div style="font-size: 0.7rem; color: var(--text-muted);">${catEsc}</div>
+            </div>
+            <span class="badge ${distVal > 0 ? 'badge-primary' : 'badge-subtle'} tabular-nums" style="font-size: 0.7rem;">موزع: ${distVal}</span>
+          </div>
+        `;
+      }).join('');
+      list.style.display = 'block';
+    };
+    window.filterSimQuotaItemSuggestions = filterSimQuotaItemSuggestions;
+
+    selectSimQuotaItem = function(itemId) {
+      const item = (state.data.items || []).find(i => i && i.id === itemId);
+      if (!item) return;
+      state._userPickedSimQuotaItemId = item.id;
+      const st = parseAndEnrichStructuredItem(item);
+      const hiddenInput = document.getElementById('sim-quota-item-selected-id');
+      const textInput = document.getElementById('sim-quota-item-search-input');
+      const badge = document.getElementById('sim-quota-active-item-badge');
+      const list = document.getElementById('sim-quota-item-autocomplete-list');
+      if (hiddenInput) hiddenInput.value = st.id;
+      if (textInput) {
+        textInput.value = '';
+        textInput.placeholder = `ابحث عن مادة أخرى (المفعلة: ${st.shortRef || st.name})...`;
+      }
+      if (badge) badge.textContent = `المادة المفعلة: ${st.shortRef || st.name}`;
+      if (list) list.style.display = 'none';
+      calculateAndRenderSimulatedQuota();
+    };
+    window.selectSimQuotaItem = selectSimQuotaItem;
+
+    initAndRenderSimulatedQuota = function() {
+      const topItem = getTopDistributedItem();
+      if (!topItem) return;
+      const hiddenInput = document.getElementById('sim-quota-item-selected-id');
+      if (hiddenInput && (!hiddenInput.value || !state._userPickedSimQuotaItemId)) {
+        hiddenInput.value = topItem.id;
+      }
+      calculateAndRenderSimulatedQuota();
+    };
+    window.initAndRenderSimulatedQuota = initAndRenderSimulatedQuota;
+
+    // ج) نافذة التفاصيل التفاعلية لجدول محاكاة الحصص (تفصيل المعدل السنوي / تفصيل نسبة التغيير / التحليل التقني)
+    window._lastSimulatedQuotaRows = [];
+    window._lastSimulatedQuotaContext = null;
+
+    function ensureSimQuotaInteractiveModalExists() {
+      if (document.getElementById('sim-quota-interactive-modal')) return;
+      const modal = document.createElement('div');
+      modal.id = 'sim-quota-interactive-modal';
+      modal.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,0.62);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:10050;align-items:center;justify-content:center;padding:14px;';
+      modal.onclick = function(e) {
+        if (e.target === modal) closeSimQuotaDetailModal();
+      };
+      modal.innerHTML = `
+        <div style="background:var(--bg-card);border:1.5px solid var(--border-subtle);border-radius:14px;width:100%;max-width:460px;box-shadow:0 20px 45px rgba(0,0,0,0.45);overflow:hidden;direction:rtl;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border-subtle);background:var(--bg-muted);">
+            <h3 id="sim-quota-modal-title" style="margin:0;font-size:0.94rem;font-weight:700;color:var(--text-main);display:flex;align-items:center;gap:7px;"></h3>
+            <button type="button" class="btn-icon square-action-btn" onclick="closeSimQuotaDetailModal()" style="border:none;background:transparent;cursor:pointer;color:var(--text-muted);width:28px;height:28px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div id="sim-quota-modal-body" style="padding:14px 16px;font-size:0.82rem;color:var(--text-main);line-height:1.55;"></div>
+          <div style="padding:10px 16px;border-top:1px solid var(--border-subtle);background:var(--bg-muted);display:flex;justify-content:flex-end;">
+            <button type="button" class="btn btn-primary btn-sm" onclick="closeSimQuotaDetailModal()" style="padding:5px 16px;font-size:0.78rem;">إغلاق</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    function closeSimQuotaDetailModal() {
+      const m = document.getElementById('sim-quota-interactive-modal');
+      if (m) m.style.display = 'none';
+    }
+    window.closeSimQuotaDetailModal = closeSimQuotaDetailModal;
+
+    function setQuotaDiagnosticAnswer(itemId, entityKey, answerCode, rowIdx) {
       if (!state.data.quotaDiagnostics) state.data.quotaDiagnostics = {};
       const diagKey = `${itemId}__${entityKey}`;
       if (state.data.quotaDiagnostics[diagKey] === answerCode) {
@@ -34628,41 +35074,187 @@ ${itemsText}
       }
       persistAll();
       calculateAndRenderSimulatedQuota();
+      if (typeof rowIdx === 'number' && !isNaN(rowIdx)) {
+        openSimQuotaDetailModal(rowIdx, 'tech');
+      }
     }
     window.setQuotaDiagnosticAnswer = setQuotaDiagnosticAnswer;
 
-    function promptEditMultiYearArchiveForEntity(itemId, entityKey, entityLabel, y2024Cur, y2025Cur) {
-      openAppPromptModal(
-        `إدخال / تعديل أرشيف السنوات السابقة (2024 - 2025)`,
-        `أدخل استهلاك "${entityLabel}" في سنتي 2024 و 2025 مفصولين بعلامة "/" (مثال: 50 / 30) ليتم احتساب منحنى التراجع أو الارتفاع متعدد السنوات بدقة:`,
-        `${y2024Cur} / ${y2025Cur}`,
-        (val) => {
-          if (val === null || val === undefined) return;
-          const parts = String(val).split(/[\/,\-،]+/).map(s => parseInt(s.trim(), 10));
-          const v24 = !isNaN(parts[0]) && parts[0] >= 0 ? parts[0] : 0;
-          const v25 = !isNaN(parts[1]) && parts[1] >= 0 ? parts[1] : 0;
-          if (!state.data.customMultiYearHistory) state.data.customMultiYearHistory = {};
-          state.data.customMultiYearHistory[`${itemId}__${entityKey}`] = { y2024: v24, y2025: v25 };
-          persistAll();
-          calculateAndRenderSimulatedQuota();
-          showToast(`تم تحديث سجل سنتي 2024 (${v24}) و2025 (${v25}) لـ "${entityLabel}" وإعادة حساب الحصة التقديرية ✓`, "success");
-        }
-      );
-    }
-    window.promptEditMultiYearArchiveForEntity = promptEditMultiYearArchiveForEntity;
+    function openSimQuotaDetailModal(rowIdx, mode) {
+      ensureSimQuotaInteractiveModalExists();
+      const rows = window._lastSimulatedQuotaRows || [];
+      const ctx = window._lastSimulatedQuotaContext || {};
+      const row = rows[rowIdx];
+      if (!row) return;
 
+      const modal = document.getElementById('sim-quota-interactive-modal');
+      const titleEl = document.getElementById('sim-quota-modal-title');
+      const bodyEl = document.getElementById('sim-quota-modal-body');
+      if (!modal || !titleEl || !bodyEl) return;
+
+      const itemLabel = escapeHtml(ctx.itemShortName || 'المادة المختارة');
+      const benLabel = escapeHtml(row.beneficiaryDisplay);
+
+      if (mode === 'avg') {
+        titleEl.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span>تفاصيل معدل الاستهلاك السنوي</span>
+        `;
+        const yearsRowsHtml = row.yearlyBreakdown.map(yb => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:7px;">
+            <span style="color:var(--text-secondary);">سنة <strong>${escapeHtml(yb.year)}</strong> (${yb.opsCount} تسليم):</span>
+            <span class="tabular-nums" style="font-weight:700;color:var(--text-main);">${yb.qty} وحدة</span>
+          </div>
+        `).join('');
+
+        bodyEl.innerHTML = `
+          <div style="margin-bottom:10px;padding:8px 10px;border-radius:8px;background:var(--bg-muted);border:1px solid var(--border-subtle);">
+            <div style="font-size:0.74rem;color:var(--text-muted);">المستفيد: <span style="color:var(--text-main);font-weight:600;">${benLabel}</span></div>
+            <div style="font-size:0.74rem;color:var(--text-muted);margin-top:2px;">المادة: <span style="color:#38bdf8;font-weight:600;">${itemLabel}</span></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-radius:8px;background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.3);margin-bottom:10px;">
+            <span>المعدل السنوي المعتمد (${row.yearsCount === 1 ? 'سنة واحدة متوفرة' : row.yearsCount + ' سنوات'}):</span>
+            <span class="tabular-nums" style="font-size:1rem;font-weight:700;color:#38bdf8;">${row.avgAnnual}</span>
+          </div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:6px;">تفصيل الاستهلاك حسب السنوات المتوفرة:</div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            ${yearsRowsHtml}
+          </div>
+        `;
+      } else if (mode === 'change') {
+        titleEl.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          <span>تفاصيل نسبة التغيير في الاستهلاك</span>
+        `;
+        let transitionsHtml = '';
+        if (row.yearsCount <= 1) {
+          transitionsHtml = `
+            <div style="padding:10px 12px;border-radius:8px;background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-secondary);font-size:0.79rem;">
+              المتوفر حالياً في قاعدة البيانات هو سجل سنة <strong>${escapeHtml(row.yearlyBreakdown[0]?.year || '2026')}</strong> فقط؛ لذلك فإن نسبة التغيير السنوي هي <strong class="tabular-nums">0%</strong>.
+              <div style="margin-top:6px;font-size:0.73rem;color:var(--text-muted);">
+                عند إضافة إشهادات لسنوات أخرى، سيظهر هنا تلقائياً تفصيل نسبة الزيادة أو النقصان بين كل سنة وأخرى.
+              </div>
+            </div>
+          `;
+        } else {
+          transitionsHtml = row.yearTransitions.map(tr => {
+            const cColor = tr.diffPct > 0 ? '#38bdf8' : (tr.diffPct < 0 ? '#f59e0b' : '#10b981');
+            const sign = tr.diffPct > 0 ? '+' : '';
+            const verb = tr.diffPct > 0 ? 'زاد بـ' : (tr.diffPct < 0 ? 'نقص بـ' : 'استقر عند');
+            return `
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:7px;">
+                <span>بين <strong>${tr.fromYear}</strong> (${tr.fromQty}) و <strong>${tr.toYear}</strong> (${tr.toQty}):</span>
+                <span class="tabular-nums" style="font-weight:700;color:${cColor};">${verb} ${sign}${tr.diffPct}%</span>
+              </div>
+            `;
+          }).join('');
+        }
+
+        const chgSign = row.changePct > 0 ? '+' : '';
+        bodyEl.innerHTML = `
+          <div style="margin-bottom:10px;padding:8px 10px;border-radius:8px;background:var(--bg-muted);border:1px solid var(--border-subtle);">
+            <div style="font-size:0.74rem;color:var(--text-muted);">المستفيد: <span style="color:var(--text-main);font-weight:600;">${benLabel}</span></div>
+            <div style="font-size:0.74rem;color:var(--text-muted);margin-top:2px;">المادة: <span style="color:#10b981;font-weight:600;">${itemLabel}</span></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-radius:8px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.3);margin-bottom:10px;">
+            <span>معدل التغيير السنوي:</span>
+            <span class="tabular-nums" style="font-size:1rem;font-weight:700;color:#10b981;">${chgSign}${row.changePct}%</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            ${transitionsHtml}
+          </div>
+        `;
+      } else {
+        // mode === 'tech' (التحليل التقني المختصر والمباشر)
+        titleEl.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          <span>التحليل التقني للحصة المقترحة</span>
+        `;
+        const safeItemId = escapeHtml(ctx.itemId || '');
+        const safeEntityKey = escapeHtml(row.entityKey || '');
+        const pct = (row.ratio * 100).toFixed(1);
+        const chgSign = row.changePct > 0 ? '+' : '';
+
+        let diagNoteHtml = '';
+        if (row.diagAnswer === 'devices_increased') {
+          diagNoteHtml = `<div style="margin-top:6px;font-size:0.74rem;color:#10b981;">✓ تم اعتماد زيادة عدد الأجهزة كمبرر تقني للحصة.</div>`;
+        } else if (row.diagAnswer === 'devices_decreased') {
+          diagNoteHtml = `<div style="margin-top:6px;font-size:0.74rem;color:#f59e0b;">✓ تم اعتماد نقصان عدد الأجهزة كمبرر تقني لتخفيض الحصة.</div>`;
+        } else if (row.diagAnswer === 'devices_unchanged') {
+          diagNoteHtml = `<div style="margin-top:6px;font-size:0.74rem;color:#ef4444;">✓ عدد الأجهزة ثابت؛ تم ضبط الحصة عند السقف المعياري (${row.quotaAnnual}).</div>`;
+        }
+
+        bodyEl.innerHTML = `
+          <div style="margin-bottom:10px;padding:8px 10px;border-radius:8px;background:var(--bg-muted);border:1px solid var(--border-subtle);">
+            <div style="font-size:0.74rem;color:var(--text-muted);">المستفيد: <span style="color:var(--text-main);font-weight:600;">${benLabel}</span></div>
+            <div style="font-size:0.74rem;color:var(--text-muted);margin-top:2px;">المادة: <span style="color:#38bdf8;font-weight:600;">${itemLabel}</span></div>
+          </div>
+
+          <div style="padding:10px 12px;border-radius:8px;background:${row.techBgColor};border:1px solid ${row.techBorderColor};margin-bottom:10px;">
+            <div style="font-weight:700;font-size:0.82rem;color:${row.techTextColor};margin-bottom:3px;">${escapeHtml(row.shortStateTitle)}</div>
+            <div style="font-size:0.79rem;color:var(--text-main);">${escapeHtml(row.shortTechPhrase)}</div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:10px;font-size:0.75rem;">
+            <div style="padding:6px 8px;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:6px;display:flex;justify-content:space-between;">
+              <span style="color:var(--text-muted);">المعدل السنوي:</span>
+              <span class="tabular-nums" style="font-weight:600;">${row.avgAnnual}</span>
+            </div>
+            <div style="padding:6px 8px;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:6px;display:flex;justify-content:space-between;">
+              <span style="color:var(--text-muted);">نسبة التغيير:</span>
+              <span class="tabular-nums" style="font-weight:600;">${chgSign}${row.changePct}%</span>
+            </div>
+            <div style="padding:6px 8px;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:6px;display:flex;justify-content:space-between;">
+              <span style="color:var(--text-muted);">هامش الأمان:</span>
+              <span class="tabular-nums" style="font-weight:600;">+${ctx.marginPct || 15}%</span>
+            </div>
+            <div style="padding:6px 8px;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:6px;display:flex;justify-content:space-between;">
+              <span style="color:var(--text-muted);">الحصة المقترحة:</span>
+              <span class="tabular-nums" style="font-weight:700;color:#10b981;">${row.quotaAnnual} (${pct}%)</span>
+            </div>
+          </div>
+
+          <div style="padding:8px 10px;border-radius:8px;background:var(--bg-muted);border:1px dashed var(--border-subtle);">
+            <div style="font-size:0.74rem;color:var(--text-secondary);margin-bottom:6px;">معايرة اختيارية حسب تغير عدد الأجهزة المرتبطة بالمادة:</div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;">
+              <button type="button" class="btn btn-sm ${row.diagAnswer === 'devices_unchanged' ? 'btn-primary' : 'btn-outline'}"
+                      onclick="setQuotaDiagnosticAnswer('${safeItemId}', '${safeEntityKey}', 'devices_unchanged', ${rowIdx})"
+                      style="padding:2px 8px;font-size:0.71rem;">
+                عدد الأجهزة ثابت
+              </button>
+              <button type="button" class="btn btn-sm ${row.diagAnswer === 'devices_increased' ? 'btn-primary' : 'btn-outline'}"
+                      onclick="setQuotaDiagnosticAnswer('${safeItemId}', '${safeEntityKey}', 'devices_increased', ${rowIdx})"
+                      style="padding:2px 8px;font-size:0.71rem;">
+                زيادة في الأجهزة
+              </button>
+              <button type="button" class="btn btn-sm ${row.diagAnswer === 'devices_decreased' ? 'btn-primary' : 'btn-outline'}"
+                      onclick="setQuotaDiagnosticAnswer('${safeItemId}', '${safeEntityKey}', 'devices_decreased', ${rowIdx})"
+                      style="padding:2px 8px;font-size:0.71rem;">
+                نقصان في الأجهزة
+              </button>
+            </div>
+            ${diagNoteHtml}
+          </div>
+        `;
+      }
+
+      modal.style.display = 'flex';
+    }
+    window.openSimQuotaDetailModal = openSimQuotaDetailModal;
+
+    // د) الدالة الرئيسية لبناء جدول محاكاة الحصص المضغوط ذي الأعمدة الخمسة المتقاربة
     calculateAndRenderSimulatedQuota = function() {
       try {
         const hiddenInput = document.getElementById('sim-quota-item-selected-id');
         const textInput = document.getElementById('sim-quota-item-search-input');
         const badge = document.getElementById('sim-quota-active-item-badge');
-        const items = (Array.isArray(state.data.items) ? state.data.items : []).filter(i => i && !i.isDeleted);
-        if (!items.length) return;
+        const rankedItems = getItemsRankedByDistribution();
+        if (!rankedItems.length) return;
 
         let selectedItemId = hiddenInput ? hiddenInput.value : null;
-        let selectedItem = items.find(i => i.id === selectedItemId);
-        if (!selectedItem) {
-          selectedItem = items[0];
+        let selectedItem = rankedItems.find(i => i.id === selectedItemId);
+        if (!selectedItem || !state._userPickedSimQuotaItemId) {
+          if (!selectedItem) selectedItem = rankedItems[0];
           if (hiddenInput) hiddenInput.value = selectedItem.id;
         }
         selectedItem = parseAndEnrichStructuredItem(selectedItem);
@@ -34673,77 +35265,81 @@ ${itemsText}
         }
         if (badge) badge.textContent = `المادة المفعلة: ${selectedItem.shortRef || selectedItem.name}`;
 
+        // تحديث النص الفرعي لبطاقة الجهات لإزالة كلمة "محاكم"
+        const entitiesCountEl = document.getElementById('sim-quota-metric-entities-count');
+        if (entitiesCountEl && entitiesCountEl.nextElementSibling) {
+          entitiesCountEl.nextElementSibling.textContent = 'جهات ومستفيدون معتمدون';
+        }
+
         const marginSelect = document.getElementById('sim-quota-safety-margin');
         const marginPct = marginSelect ? parseInt(marginSelect.value, 10) : 15;
 
         const txsSource = Array.isArray(state.data.transactions) ? state.data.transactions.filter(t => t && !t.isDeleted) : [];
 
-        // تجميع الاستهلاك حسب الجهة/المستفيد وحسب السنوات (2024، 2025، 2026) وكذلك النصف الأول والنصف الثاني من السنة الحالية
-        const entityStats = {}; // key -> { entityLabel, workplace, isDirectorate, y2024, y2025, y2026, h1_2026, h2_2026, total }
+        // اكتشاف جميع السنوات المتوفرة فعلياً في قاعدة البيانات
+        const globalYearsSet = new Set();
+        txsSource.forEach(t => {
+          const sortKey = getTransactionDeliverySortKey(t);
+          const yr = sortKey.slice(0, 4);
+          if (/^\d{4}$/.test(yr) && yr !== "1970") globalYearsSet.add(yr);
+        });
+        if (globalYearsSet.size === 0) globalYearsSet.add("2026");
+        const availableYears = Array.from(globalYearsSet).sort(); // تصاعدياً مثلاً ['2026'] أو ['2024','2025','2026']
+        const yearsCount = availableYears.length;
 
-        function ensureEntityRecord(eKey, label, wp, isDir) {
+        // تجميع الاستهلاك الفعلي لكل مستفيد حسب السنوات المتوفرة فقط
+        const entityStats = {};
+
+        function ensureEntityRecord(eKey, recip, dest, isDir) {
           if (!entityStats[eKey]) {
+            const yearMap = {};
+            const yearOps = {};
+            availableYears.forEach(y => {
+              yearMap[y] = 0;
+              yearOps[y] = 0;
+            });
             entityStats[eKey] = {
               entityKey: eKey,
-              entityLabel: label,
-              workplace: wp,
+              entityLabel: recip,
+              workplace: dest,
               isDirectorate: isDir,
-              y2024: 0,
-              y2025: 0,
-              y2026: 0,
-              h1_2026: 0,
-              h2_2026: 0,
+              beneficiaryDisplay: formatCompactBeneficiaryName(recip, dest, isDir),
+              yearMap,
+              yearOps,
               total: 0
             };
           }
           return entityStats[eKey];
         }
 
-        ensureEntityRecord("DIR_SETTAT", "المديرية الإقليمية للعدل بسطات", "المديرية الإقليمية", true);
+        ensureEntityRecord("DIR_SETTAT", "المديرية الإقليمية بسطات", "المديرية الإقليمية", true);
 
         txsSource.forEach(t => {
           const dest = t.destination || '';
           const recip = (t.recipient || 'غير محدد').trim();
           const sortKey = getTransactionDeliverySortKey(t);
-          const yr = sortKey.slice(0, 4);
-          const monthNum = parseInt(sortKey.slice(5, 7), 10) || 1;
+          const yr = availableYears.includes(sortKey.slice(0, 4)) ? sortKey.slice(0, 4) : availableYears[availableYears.length - 1];
 
           (t.items || []).forEach(it => {
             if (it.id === selectedItem.id || it.name === selectedItem.name || (it.shortRef && it.shortRef === selectedItem.shortRef)) {
               const q = Math.max(0, sanitize(it.qty));
+              if (q <= 0) return;
               const isDir = isSettatDirectorateName(dest);
               const eKey = isDir ? "DIR_SETTAT" : `${recip}___${dest}`;
               const rec = ensureEntityRecord(
                 eKey,
-                isDir ? "المديرية الإقليمية للعدل بسطات" : recip,
+                isDir ? "المديرية الإقليمية بسطات" : recip,
                 isDir ? "المديرية الإقليمية" : dest,
                 isDir
               );
-              if (yr === "2024" || yr === "2023") rec.y2024 += q;
-              else if (yr === "2025") rec.y2025 += q;
-              else {
-                rec.y2026 += q;
-                if (monthNum <= 5) rec.h1_2026 += q;
-                else rec.h2_2026 += q;
-              }
+              rec.yearMap[yr] = (rec.yearMap[yr] || 0) + q;
+              rec.yearOps[yr] = (rec.yearOps[yr] || 0) + 1;
               rec.total += q;
             }
           });
         });
 
-        // دمج أي بيانات أرشيف سنوات سابقة (2024 / 2025) أدخلها المستخدم يدوياً للمقارنة متعددة السنوات
-        const customHistMap = state.data.customMultiYearHistory || {};
-        Object.keys(entityStats).forEach(eKey => {
-          const rec = entityStats[eKey];
-          const customEntry = customHistMap[`${selectedItem.id}__${eKey}`];
-          if (customEntry) {
-            rec.y2024 = sanitize(customEntry.y2024);
-            rec.y2025 = sanitize(customEntry.y2025);
-            rec.total = rec.y2024 + rec.y2025 + rec.y2026;
-          }
-        });
-
-        // إذا لم تكن هناك جهات محاكم مسجلة لهذه المادة بعد، ندرج المحاكم الرئيسية
+        // إذا لم يكن للمادة سحب سابق لدى باقي المستفيدين، ندرج المستفيدين الرئيسيين للجهات
         const allDestKeys = Object.keys(state.data.destinations || {});
         if (Object.keys(entityStats).length <= 1) {
           allDestKeys.forEach(d => {
@@ -34751,116 +35347,150 @@ ${itemsText}
               const recs = state.data.destinations[d] || ['رئيس كتابة الضبط'];
               recs.slice(0, 2).forEach(r => {
                 const eKey = `${r}___${d}`;
-                const rec = ensureEntityRecord(eKey, r, d, false);
-                const customEntry = customHistMap[`${selectedItem.id}__${eKey}`];
-                if (customEntry) {
-                  rec.y2024 = sanitize(customEntry.y2024);
-                  rec.y2025 = sanitize(customEntry.y2025);
-                  rec.total = rec.y2024 + rec.y2025 + rec.y2026;
-                }
+                ensureEntityRecord(eKey, r, d, false);
               });
             }
           });
         }
 
-        // تحليل المسار الزمني لكل جهة واحتساب الحصة المقترحة بناءً على المنسوب والاتجاه والتشخيص التفاعلي
         const diagMap = state.data.quotaDiagnostics || {};
         const quotaRows = [];
-        let totalConsumedAll = 0;
+        let totalAvgAnnualAll = 0;
         let totalSimulatedQuota = 0;
 
         Object.values(entityStats).forEach(rec => {
-          totalConsumedAll += rec.total;
-          const hasMultiYear = (rec.y2024 > 0 || rec.y2025 > 0);
-          let trendType = "stable"; // 'up' | 'down' | 'stable'
+          const yearlyBreakdown = availableYears.map(y => ({
+            year: y,
+            qty: rec.yearMap[y] || 0,
+            opsCount: rec.yearOps[y] || 0
+          }));
+
+          // المعدل السنوي للاستهلاك
+          const avgAnnual = yearsCount === 1
+            ? (rec.yearMap[availableYears[0]] || 0)
+            : Math.round((rec.total / yearsCount) * 10) / 10;
+          const avgAnnualRounded = Math.round(avgAnnual);
+          totalAvgAnnualAll += avgAnnualRounded;
+
+          // حساب نسبة التغيير السنوي: إذا كانت هناك سنة واحدة فقط فنسبة التغيير = 0%
           let changePct = 0;
-          let baselineAnnual = rec.y2026;
-          let trajectorySummary = "";
-
-          if (hasMultiYear) {
-            const series = [];
-            if (rec.y2024 > 0) series.push({ lbl: "2024", val: rec.y2024 });
-            if (rec.y2025 > 0 || rec.y2024 > 0) series.push({ lbl: "2025", val: rec.y2025 });
-            series.push({ lbl: "2026", val: rec.y2026 });
-            trajectorySummary = series.map(s => `${s.lbl}: ${s.val}`).join(" ⬅ ");
-
-            const prevRef = rec.y2025 > 0 ? rec.y2025 : rec.y2024;
-            const latestVal = rec.y2026;
-            if (prevRef > 0) {
-              changePct = Math.round(((latestVal - prevRef) / prevRef) * 100);
-            } else if (latestVal > 0) {
-              changePct = 100;
-            }
-
-            if (changePct <= -25) {
-              trendType = "down";
-              // وزن أعلى للسنة الأحدث عند انخفاض المنسوب (مثلاً 50 -> 30 -> 10 يقترح ~13 بدل 30)
-              baselineAnnual = Math.max(1, Math.round(latestVal * 0.75 + prevRef * 0.25));
-            } else if (changePct >= 25) {
-              trendType = "up";
-              baselineAnnual = Math.max(1, Math.round(latestVal * 0.8 + prevRef * 0.2));
-            } else {
-              trendType = "stable";
-              const avgVal = series.reduce((s, x) => s + x.val, 0) / series.length;
-              baselineAnnual = Math.round(avgVal);
-            }
-          } else {
-            // في حال توفر سنة 2026 فقط، نقارن النصف الأول (يناير-ماي) بالنصف الثاني (يونيو-أكتوبر) لرصد التسارع أو التراجع الحديث
-            trajectorySummary = `سجل 2026: ${rec.y2026} ق (ش1: ${rec.h1_2026} | ش2: ${rec.h2_2026})`;
-            if (rec.y2026 >= 4) {
-              if (rec.h1_2026 > 0 && rec.h2_2026 === 0) {
-                trendType = "down";
-                changePct = -50;
-                baselineAnnual = Math.max(1, Math.round(rec.y2026 * 0.85));
-              } else if (rec.h2_2026 >= rec.h1_2026 * 1.5 && rec.h2_2026 >= 4) {
-                trendType = "up";
-                changePct = Math.round(((rec.h2_2026 - Math.max(1, rec.h1_2026)) / Math.max(1, rec.h1_2026)) * 100);
-                baselineAnnual = Math.round(rec.y2026 * 1.1);
-              } else {
-                trendType = "stable";
-                baselineAnnual = rec.y2026;
+          const yearTransitions = [];
+          if (yearsCount > 1) {
+            for (let i = 1; i < availableYears.length; i++) {
+              const yPrev = availableYears[i - 1];
+              const yCurr = availableYears[i];
+              const qPrev = rec.yearMap[yPrev] || 0;
+              const qCurr = rec.yearMap[yCurr] || 0;
+              let diffPct = 0;
+              if (qPrev > 0) {
+                diffPct = Math.round(((qCurr - qPrev) / qPrev) * 100);
+              } else if (qCurr > 0) {
+                diffPct = 100;
               }
-            } else {
-              trendType = "stable";
-              baselineAnnual = rec.y2026;
+              yearTransitions.push({ fromYear: yPrev, toYear: yCurr, fromQty: qPrev, toQty: qCurr, diffPct });
+            }
+            if (yearTransitions.length > 0) {
+              changePct = yearTransitions[yearTransitions.length - 1].diffPct;
             }
           }
 
           const diagAnswer = diagMap[`${selectedItem.id}__${rec.entityKey}`] || "";
-          let proposedAnnual = Math.round(baselineAnnual * (1 + marginPct / 100));
-
-          // إذا أجاب المستخدم بأن عدد الأجهزة لم يتغير رغم الارتفاع السريع، نثبت الحصة عند السقف المعياري المعتدل لمنع الهدر
-          if (trendType === "up" && diagAnswer === "devices_unchanged") {
-            const moderateBase = hasMultiYear && (rec.y2025 > 0 || rec.y2024 > 0)
-              ? Math.round((rec.y2024 + rec.y2025 + rec.y2026) / ((rec.y2024 > 0 ? 1 : 0) + (rec.y2025 > 0 ? 1 : 0) + 1))
-              : Math.max(1, Math.round(rec.y2026 * 0.8));
-            proposedAnnual = Math.round(moderateBase * (1 + marginPct / 100));
+          let baseForQuota = avgAnnualRounded;
+          if (yearsCount > 1) {
+            const latestQty = rec.yearMap[availableYears[availableYears.length - 1]] || 0;
+            if (changePct >= 15) {
+              baseForQuota = Math.max(avgAnnualRounded, latestQty);
+            } else if (changePct <= -15) {
+              baseForQuota = Math.min(avgAnnualRounded, Math.round(latestQty * 0.75 + avgAnnualRounded * 0.25));
+            }
           }
 
-          const proposedQuarterly = Math.max(0, Math.round(proposedAnnual / 4));
+          if (diagAnswer === "devices_increased") {
+            baseForQuota = Math.max(1, Math.round(baseForQuota * 1.2));
+          } else if (diagAnswer === "devices_decreased") {
+            baseForQuota = Math.max(0, Math.round(baseForQuota * 0.8));
+          } else if (diagAnswer === "devices_unchanged" && changePct > 15) {
+            baseForQuota = avgAnnualRounded;
+          }
+
+          const proposedAnnual = Math.round(baseForQuota * (1 + marginPct / 100));
           totalSimulatedQuota += proposedAnnual;
+
+          // صياغة العبارة التقنية المختصرة والمباشرة حسب الحالة
+          let shortStateTitle = "استقرار";
+          let shortTechPhrase = "";
+          let techBgColor = "rgba(16, 185, 129, 0.08)";
+          let techBorderColor = "rgba(16, 185, 129, 0.3)";
+          let techTextColor = "#10b981";
+          let iconStrokeColor = "#10b981";
+
+          if (avgAnnualRounded === 0 && proposedAnnual === 0) {
+            shortStateTitle = "استهلاك منعدم (0)";
+            shortTechPhrase = "لم يسجل استهلاك لهذه المادة؛ الحصة المقترحة (0).";
+            techBgColor = "rgba(148, 163, 184, 0.08)";
+            techBorderColor = "rgba(148, 163, 184, 0.3)";
+            techTextColor = "#94a3b8";
+            iconStrokeColor = "#94a3b8";
+          } else if (changePct >= 15) {
+            shortStateTitle = `ارتفاع متصاعد (+${changePct}%)`;
+            shortTechPhrase = `ارتفاع متصاعد (+${changePct}%)؛ ونتيجة لذلك تم اقتراح حصة (${proposedAnnual}).`;
+            techBgColor = "rgba(56, 189, 248, 0.08)";
+            techBorderColor = "rgba(56, 189, 248, 0.35)";
+            techTextColor = "#38bdf8";
+            iconStrokeColor = "#38bdf8";
+          } else if (changePct > 0) {
+            shortStateTitle = `زيادة طفيفة (+${changePct}%)`;
+            shortTechPhrase = `زيادة طفيفة (+${changePct}%)؛ ونتيجة لذلك تم اقتراح حصة (${proposedAnnual}).`;
+            techBgColor = "rgba(56, 189, 248, 0.08)";
+            techBorderColor = "rgba(56, 189, 248, 0.35)";
+            techTextColor = "#38bdf8";
+            iconStrokeColor = "#38bdf8";
+          } else if (changePct <= -15) {
+            shortStateTitle = `تراجع في الاستهلاك (${changePct}%)`;
+            shortTechPhrase = `تراجع في الاستهلاك (${changePct}%)؛ ونتيجة لذلك تم اقتراح حصة مخفضة (${proposedAnnual}).`;
+            techBgColor = "rgba(245, 158, 11, 0.08)";
+            techBorderColor = "rgba(245, 158, 11, 0.35)";
+            techTextColor = "#f59e0b";
+            iconStrokeColor = "#f59e0b";
+          } else if (changePct < 0) {
+            shortStateTitle = `انخفاض طفيف (${changePct}%)`;
+            shortTechPhrase = `انخفاض طفيف (${changePct}%)؛ ونتيجة لذلك تم اقتراح حصة (${proposedAnnual}).`;
+            techBgColor = "rgba(245, 158, 11, 0.08)";
+            techBorderColor = "rgba(245, 158, 11, 0.35)";
+            techTextColor = "#f59e0b";
+            iconStrokeColor = "#f59e0b";
+          } else {
+            shortStateTitle = "استقرار في الاستهلاك";
+            shortTechPhrase = `الحفاظ على الاستقرار (معدل: ${avgAnnualRounded})؛ تم اقتراح حصة (${proposedAnnual}) مع هامش الأمان (+${marginPct}%).`;
+          }
 
           quotaRows.push({
             ...rec,
-            hasMultiYear,
-            trajectorySummary,
-            trendType,
+            yearsCount,
+            yearlyBreakdown,
+            yearTransitions,
+            avgAnnual: avgAnnualRounded,
             changePct,
             diagAnswer,
             quotaAnnual: proposedAnnual,
-            quotaQuarterly: proposedQuarterly
+            shortStateTitle,
+            shortTechPhrase,
+            techBgColor,
+            techBorderColor,
+            techTextColor,
+            iconStrokeColor
           });
         });
 
-        // إذا كان إجمالي الاستهلاك التاريخي للمادة 0، نوزع حصة مرجعية أولية
-        if (totalConsumedAll === 0) {
+        if (totalAvgAnnualAll === 0) {
           const fallbackTotal = Math.max(20, sanitize(selectedItem.stock));
           totalSimulatedQuota = Math.round(fallbackTotal * (1 + marginPct / 100));
           quotaRows.forEach(r => {
             const ratio = r.isDirectorate ? 0.25 : (0.75 / Math.max(1, quotaRows.length - 1));
             r.ratio = ratio;
             r.quotaAnnual = Math.round(totalSimulatedQuota * ratio);
-            r.quotaQuarterly = Math.round(r.quotaAnnual / 4);
+            r.shortStateTitle = "حصة تأسيسية";
+            r.shortTechPhrase = `مادة بدون سحب سابق؛ تم اقتراح حصة تأسيسية (${r.quotaAnnual}).`;
           });
         } else {
           quotaRows.forEach(r => {
@@ -34874,154 +35504,72 @@ ${itemsText}
           return b.quotaAnnual - a.quotaAnnual;
         });
 
+        window._lastSimulatedQuotaRows = quotaRows;
+        window._lastSimulatedQuotaContext = {
+          itemId: selectedItem.id,
+          itemShortName: selectedItem.shortRef || selectedItem.name,
+          marginPct
+        };
+
         const elName = document.getElementById('sim-quota-metric-item-name');
         if (elName) elName.textContent = selectedItem.shortRef || selectedItem.name;
         const elStock = document.getElementById('sim-quota-metric-item-stock');
-        if (elStock) elStock.textContent = `الرصيد الفعلي: ${sanitize(selectedItem.stock)} قطعة`;
+        if (elStock) elStock.textContent = `الرصيد الحالي: ${sanitize(selectedItem.stock)}`;
         const elBurn = document.getElementById('sim-quota-metric-burn');
-        if (elBurn) elBurn.textContent = sanitize(totalConsumedAll);
+        if (elBurn) elBurn.textContent = sanitize(totalAvgAnnualAll);
         const elTotal = document.getElementById('sim-quota-metric-total');
         if (elTotal) elTotal.textContent = sanitize(totalSimulatedQuota);
         const elMargin = document.getElementById('sim-quota-metric-margin-label');
-        if (elMargin) elMargin.textContent = `+${marginPct}% هامش أمان معتمد`;
+        if (elMargin) elMargin.textContent = `+${marginPct}% هامش أمان`;
         const elCount = document.getElementById('sim-quota-metric-entities-count');
         if (elCount) elCount.textContent = quotaRows.length;
 
         const tbody = document.getElementById('sim-quota-tbody');
         if (!tbody) return;
 
-        // تحديث ترويسة جدول محاكاة الحصص لتشمل عمود السلسلة الزمنية وعمود المبرر التقني والتشخيص التفاعلي
+        // ترويسة الأعمدة الخمسة المختصرة والمباشرة فقط
         const theadTr = tbody.closest('table')?.querySelector('thead tr');
         if (theadTr) {
           theadTr.innerHTML = `
-            <th style="width: 38px; text-align: center; white-space: nowrap;">#</th>
-            <th style="min-width: 210px; white-space: nowrap;">الجهة المستفيدة أو المستفيد</th>
-            <th style="min-width: 140px; white-space: nowrap;">المقر / المحكمة</th>
-            <th style="text-align: center; min-width: 165px; white-space: nowrap;">مسار الاستهلاك السنوي (2024–2026)</th>
-            <th style="text-align: center; width: 95px; white-space: nowrap;">نسبة الحصة</th>
-            <th style="text-align: center; width: 120px; white-space: nowrap;">الحصة السنوية المقترحة</th>
-            <th style="text-align: center; width: 110px; white-space: nowrap;">الحصة الربع سنوية</th>
-            <th style="min-width: 340px; text-align: right;">التحليل التقني للمنسوب والتشخيص التفاعلي للأجهزة</th>
+            <th style="text-align: right;">المستفيد</th>
+            <th style="text-align: center;">الاستهلاك</th>
+            <th style="text-align: center;">الحصة المقترحة</th>
+            <th style="text-align: center;">نسبة الحصة</th>
+            <th style="text-align: center;">التحليل التقني</th>
           `;
         }
 
         tbody.innerHTML = quotaRows.map((row, idx) => {
           const pct = (row.ratio * 100).toFixed(1);
-          const palette = VERTICAL_BAR_PALETTES[idx % VERTICAL_BAR_PALETTES.length];
-          const highlightBg = row.isDirectorate ? 'background: rgba(16, 185, 129, 0.05); font-weight: 800;' : '';
-          const tagBadge = row.isDirectorate
-            ? `<span class="badge badge-success" style="font-size: 0.7rem; margin-left: 6px;">كيان موحد</span>`
-            : `<span class="badge badge-subtle" style="font-size: 0.7rem; margin-left: 6px;">محكمة / مركز</span>`;
-
-          // بناء نص المبرر التقني + السؤال التشخيصي التفاعلي
-          let trendBadgeHtml = "";
-          let reasonTextHtml = "";
-          let interactiveDiagHtml = "";
-          const safeItemId = escapeHtml(selectedItem.id);
-          const safeEntityKey = escapeHtml(row.entityKey);
-          const safeEntityLbl = escapeHtml(row.entityLabel);
-
-          if (row.trendType === "down") {
-            trendBadgeHtml = `<span class="badge" style="background:rgba(245,158,11,0.16);color:#f59e0b;border:1px solid rgba(245,158,11,0.4);font-size:0.72rem;">📉 تراجع المنسوب (${row.changePct}%)</span>`;
-            reasonTextHtml = `<div style="font-size:0.78rem;color:var(--text-secondary);margin-top:4px;line-height:1.45;">شهدت المادة انخفاضاً ملحوظاً في منسوب الاستهلاك مؤخراً؛ لذا اُقترحت الحصة (<strong>${row.quotaAnnual} ق</strong>) وفق المنسوب المنخفض الحديث لتفادي تجميد الفائض.</div>`;
-
-            let diagOutcomeHtml = "";
-            if (row.diagAnswer === "devices_decreased") {
-              diagOutcomeHtml = `<div style="margin-top:6px;padding:6px 8px;border-radius:6px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.35);font-size:0.75rem;color:#10b981;font-weight:700;">✅ تشخيص معتمد: تراجع الاستهلاك مبرر تقنياً بنقصان أو سحب بعض الأجهزة المرتبطة بهذه المادة.</div>`;
-            } else if (row.diagAnswer === "devices_unchanged") {
-              diagOutcomeHtml = `<div style="margin-top:6px;padding:6px 8px;border-radius:6px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.4);font-size:0.75rem;color:#ef4444;font-weight:700;">⚠️ مفارقة تستوجب الفحص: انخفاض حاد في السحب رغم ثبات عدد الأجهزة! يُحتمل وجود إشهادات غير مدرجة أو توقف جهاز عن العمل.</div>`;
-            }
-
-            interactiveDiagHtml = `
-              <div style="margin-top:6px;padding:7px 10px;border-radius:8px;background:var(--bg-muted);border:1px dashed rgba(245,158,11,0.45);">
-                <div style="font-size:0.75rem;font-weight:800;color:#f59e0b;margin-bottom:5px;">
-                  ❓ سؤال تشخيصي: هل وقع نقصان أو سحب لأجهزة مرتبطة بهذه المادة لدى هذه الجهة؟
-                </div>
-                <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                  <button type="button" class="btn btn-sm ${row.diagAnswer === 'devices_decreased' ? 'btn-primary' : 'btn-outline'}"
-                          onclick="setQuotaDiagnosticAnswer('${safeItemId}', '${safeEntityKey}', 'devices_decreased')"
-                          style="padding:2px 8px;font-size:0.72rem;font-weight:800;">
-                    نعم، نقصان في الأجهزة
-                  </button>
-                  <button type="button" class="btn btn-sm ${row.diagAnswer === 'devices_unchanged' ? 'btn-danger' : 'btn-outline'}"
-                          onclick="setQuotaDiagnosticAnswer('${safeItemId}', '${safeEntityKey}', 'devices_unchanged')"
-                          style="padding:2px 8px;font-size:0.72rem;font-weight:800;">
-                    لا، عدد الأجهزة ثابت
-                  </button>
-                </div>
-                ${diagOutcomeHtml}
-              </div>
-            `;
-          } else if (row.trendType === "up") {
-            trendBadgeHtml = `<span class="badge" style="background:rgba(56,189,248,0.16);color:#38bdf8;border:1px solid rgba(56,189,248,0.4);font-size:0.72rem;">📈 ارتفاع المنسوب (+${Math.abs(row.changePct)}%)</span>`;
-            reasonTextHtml = `<div style="font-size:0.78rem;color:var(--text-secondary);margin-top:4px;line-height:1.45;">لوحظ ارتفاع متصاعد في معدل الطلب مؤخراً؛ لذا اُقترحت الحصة (<strong>${row.quotaAnnual} ق</strong>) لمواكبة وتيرة الاستهلاك الحديثة.</div>`;
-
-            let diagOutcomeHtml = "";
-            if (row.diagAnswer === "devices_increased") {
-              diagOutcomeHtml = `<div style="margin-top:6px;padding:6px 8px;border-radius:6px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.35);font-size:0.75rem;color:#10b981;font-weight:700;">✅ تشخيص معتمد: الزيادة مبررة تقنياً بتوسع حظيرة الأجهزة المرتبطة بهذه المادة لدى الجهة.</div>`;
-            } else if (row.diagAnswer === "devices_unchanged") {
-              diagOutcomeHtml = `<div style="margin-top:6px;padding:6px 8px;border-radius:6px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.4);font-size:0.75rem;color:#ef4444;font-weight:700;">⚠️ إشكالية تستوجب التدقيق: زيادة غير مبررة بتوسع الأجهزة! يُحتمل وجود خطأ في التوزيع أو هدر/عطب تقني بالجهاز (تم ضبط الحصة عند السقف المعياري ${row.quotaAnnual} ق).</div>`;
-            }
-
-            interactiveDiagHtml = `
-              <div style="margin-top:6px;padding:7px 10px;border-radius:8px;background:var(--bg-muted);border:1px dashed rgba(56,189,248,0.45);">
-                <div style="font-size:0.75rem;font-weight:800;color:#38bdf8;margin-bottom:5px;">
-                  ❓ سؤال تشخيصي: هل طرأت زيادة في عدد الأجهزة المرتبطة بهذه المادة لدى هذه الجهة؟
-                </div>
-                <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                  <button type="button" class="btn btn-sm ${row.diagAnswer === 'devices_increased' ? 'btn-primary' : 'btn-outline'}"
-                          onclick="setQuotaDiagnosticAnswer('${safeItemId}', '${safeEntityKey}', 'devices_increased')"
-                          style="padding:2px 8px;font-size:0.72rem;font-weight:800;">
-                    نعم، زيادة في الأجهزة
-                  </button>
-                  <button type="button" class="btn btn-sm ${row.diagAnswer === 'devices_unchanged' ? 'btn-danger' : 'btn-outline'}"
-                          onclick="setQuotaDiagnosticAnswer('${safeItemId}', '${safeEntityKey}', 'devices_unchanged')"
-                          style="padding:2px 8px;font-size:0.72rem;font-weight:800;">
-                    لا، عدد الأجهزة ثابت
-                  </button>
-                </div>
-                ${diagOutcomeHtml}
-              </div>
-            `;
-          } else {
-            trendBadgeHtml = `<span class="badge badge-success" style="font-size:0.72rem;">⚖️ منسوب اعتيادي مستقر</span>`;
-            reasonTextHtml = `<div style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;line-height:1.4;">استهلاك منتظم ومتوازن دون تراجع حاد أو طفرة مفاجئة؛ بُنيت الحصة على المعدل المرجعي المعتاد.</div>`;
-          }
+          const chgSign = row.changePct > 0 ? '+' : '';
+          const chgColor = row.changePct > 0 ? '#38bdf8' : (row.changePct < 0 ? '#f59e0b' : 'var(--text-muted)');
 
           return `
-            <tr style="${highlightBg}">
-              <td style="text-align: center; font-weight: 700; color: var(--text-muted); white-space: nowrap;">${idx + 1}</td>
-              <td style="white-space: nowrap;">
-                <div style="display: flex; align-items: center;">
-                  ${tagBadge}
-                  <strong style="color: var(--text-main); font-size: 0.86rem;">${safeEntityLbl}</strong>
-                </div>
+            <tr>
+              <td style="text-align: right;">
+                <span style="color: var(--text-main);">${escapeHtml(row.beneficiaryDisplay)}</span>
               </td>
-              <td style="white-space: nowrap;"><span style="color: var(--text-secondary); font-size: 0.81rem;">${escapeHtml(row.workplace)}</span></td>
-              <td style="text-align: center; white-space: nowrap;">
-                <div style="font-weight: 800; font-size: 0.82rem; color: var(--text-main);" class="tabular-nums">${row.total} قطعة إجمالاً</div>
-                <div style="font-size: 0.73rem; color: var(--text-muted); margin-top: 2px; display: inline-flex; align-items: center; gap: 6px;">
-                  <span class="tabular-nums">${escapeHtml(row.trajectorySummary)}</span>
-                  <button type="button" class="btn btn-outline btn-sm"
-                          onclick="promptEditMultiYearArchiveForEntity('${safeItemId}', '${safeEntityKey}', '${safeEntityLbl}', ${row.y2024}, ${row.y2025})"
-                          title="إدخال أو محاكاة استهلاك سنتي 2024 و 2025 لهذه الجهة (مثلاً 50 / 30)"
-                          style="padding: 1px 6px; font-size: 0.68rem; height: 22px; line-height: 1;">
-                    📅 أرشيف 24/25
+              <td style="text-align: center;">
+                <div class="sim-cons-cell-wrap">
+                  <button type="button" class="sim-cons-avg-btn tabular-nums" onclick="openSimQuotaDetailModal(${idx}, 'avg')" title="اضغط لعرض تفاصيل معدل الاستهلاك السنوي">
+                    <span>${row.avgAnnual}</span>
+                  </button>
+                  <button type="button" class="sim-cons-chg-btn tabular-nums" onclick="openSimQuotaDetailModal(${idx}, 'change')" title="اضغط لعرض تفاصيل نسبة التغيير بين السنوات" style="color: ${chgColor} !important;">
+                    <span dir="ltr">${chgSign}${row.changePct}%</span>
                   </button>
                 </div>
               </td>
-              <td style="text-align: center; white-space: nowrap;">
-                <span class="badge badge-subtle tabular-nums">${pct}%</span>
-                <div style="height: 6px; width: 70px; margin: 4px auto 0; background: var(--bg-muted); border-radius: 999px; overflow: hidden;">
-                  <div style="width: ${Math.min(100, Math.max(5, pct))}%; height: 100%; background: linear-gradient(90deg, ${palette.from}, ${palette.to});"></div>
-                </div>
+              <td style="text-align: center;">
+                <span class="tabular-nums" style="color: #10b981;">${row.quotaAnnual}</span>
               </td>
-              <td style="text-align: center; white-space: nowrap;"><strong style="color: ${palette.text}; font-size: 0.96rem;" class="tabular-nums">${row.quotaAnnual} قطعة</strong></td>
-              <td style="text-align: center; color: var(--text-muted); font-size: 0.82rem; white-space: nowrap;" class="tabular-nums">${row.quotaQuarterly} ق / 3 أشهر</td>
-              <td style="min-width: 340px; white-space: normal; padding: 10px 12px;">
-                <div>${trendBadgeHtml}</div>
-                ${reasonTextHtml}
-                ${interactiveDiagHtml}
+              <td style="text-align: center;">
+                <span class="tabular-nums" style="color: var(--text-secondary);">${pct}%</span>
+              </td>
+              <td style="text-align: center;">
+                <button type="button" class="sim-tech-icon-btn" onclick="openSimQuotaDetailModal(${idx}, 'tech')" title="اضغط لعرض التحليل التقني للحصة المقترحة" style="color: ${row.iconStrokeColor} !important; border-color: ${row.techBorderColor} !important; background: ${row.techBgColor} !important;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                  <span>تحليل</span>
+                </button>
               </td>
             </tr>
           `;
@@ -35031,6 +35579,530 @@ ${itemsText}
       }
     };
     window.calculateAndRenderSimulatedQuota = calculateAndRenderSimulatedQuota;
+
+    // هـ) بناء المصفوفة الإحصائية الذكية الشاملة لجميع المواد (للتقرير الإحصائي العام وتدبير الصفقة القادمة)
+    function buildComprehensiveProcurementAnalytics(safetyMarginPct = 15) {
+      const items = (Array.isArray(state.data.items) ? state.data.items : []).filter(i => i && !i.isDeleted);
+      const txs = (Array.isArray(state.data.transactions) ? state.data.transactions : []).filter(t => t && !t.isDeleted);
+
+      const globalYearsSet = new Set();
+      txs.forEach(t => {
+        const yr = getTransactionDeliverySortKey(t).slice(0, 4);
+        if (/^\d{4}$/.test(yr) && yr !== "1970") globalYearsSet.add(yr);
+      });
+      if (globalYearsSet.size === 0) globalYearsSet.add("2026");
+      const availableYears = Array.from(globalYearsSet).sort();
+      const yearsCount = availableYears.length;
+
+      const itemMap = {};
+      const catTotals = {};
+      let grandTotalUnits = 0;
+
+      items.forEach(rawIt => {
+        const st = parseAndEnrichStructuredItem(rawIt);
+        const yMap = {};
+        availableYears.forEach(y => { yMap[y] = 0; });
+        itemMap[st.id] = {
+          ...st,
+          stock: sanitize(st.stock),
+          totalUnits: 0,
+          txCount: 0,
+          yearMap: yMap
+        };
+        catTotals[st.category] = 0;
+      });
+
+      txs.forEach(t => {
+        const yr = availableYears.includes(getTransactionDeliverySortKey(t).slice(0, 4))
+          ? getTransactionDeliverySortKey(t).slice(0, 4)
+          : availableYears[availableYears.length - 1];
+        (t.items || []).forEach(li => {
+          const q = Math.max(0, sanitize(li.qty));
+          if (q <= 0) return;
+          let rec = li.id ? itemMap[li.id] : null;
+          if (!rec) {
+            rec = Object.values(itemMap).find(x => x.name === li.name || (x.shortRef && li.shortRef && x.shortRef === li.shortRef));
+          }
+          if (rec) {
+            rec.totalUnits += q;
+            rec.txCount += 1;
+            rec.yearMap[yr] = (rec.yearMap[yr] || 0) + q;
+            catTotals[rec.category] = (catTotals[rec.category] || 0) + q;
+            grandTotalUnits += q;
+          }
+        });
+      });
+
+      const sortedList = Object.values(itemMap).sort((a, b) => {
+        if (b.totalUnits !== a.totalUnits) return b.totalUnits - a.totalUnits;
+        if (b.txCount !== a.txCount) return b.txCount - a.txCount;
+        return (a.shortRef || a.name || "").localeCompare(b.shortRef || b.name || "", "ar");
+      });
+
+      let cumulativeUnits = 0;
+      let totalProposedDealUnits = 0;
+      let activeItemsCount = 0;
+      let unusedItemsCount = 0;
+      let classACount = 0;
+
+      const enrichedRows = sortedList.map((rec, idx) => {
+        const avgAnnual = yearsCount === 1 ? rec.totalUnits : Math.round((rec.totalUnits / yearsCount) * 10) / 10;
+        const avgAnnualRounded = Math.round(avgAnnual);
+        const globalSharePct = grandTotalUnits > 0 ? ((rec.totalUnits / grandTotalUnits) * 100) : 0;
+        const catTotal = catTotals[rec.category] || 0;
+        const catSharePct = catTotal > 0 ? ((rec.totalUnits / catTotal) * 100) : 0;
+
+        let changePct = 0;
+        if (yearsCount > 1) {
+          const prevY = availableYears[availableYears.length - 2];
+          const currY = availableYears[availableYears.length - 1];
+          const prevQ = rec.yearMap[prevY] || 0;
+          const currQ = rec.yearMap[currY] || 0;
+          if (prevQ > 0) changePct = Math.round(((currQ - prevQ) / prevQ) * 100);
+          else if (currQ > 0) changePct = 100;
+        }
+
+        cumulativeUnits += rec.totalUnits;
+        const cumShare = grandTotalUnits > 0 ? (cumulativeUnits / grandTotalUnits) : 1;
+
+        let demandClass = "D"; // 'A' | 'B' | 'C' | 'D' (unused)
+        let statusLabel = "";
+        let procurementDecision = "";
+        let decisionColor = "#64748b";
+        let decisionBg = "#f1f5f9";
+        let proposedQuota = 0;
+
+        if (rec.totalUnits === 0) {
+          unusedItemsCount++;
+          demandClass = "D";
+          statusLabel = "مادة غير مستعملة (0)";
+          procurementDecision = "عدم البرمجة بالصفقة (استهلاك منعدم)";
+          decisionColor = "#64748b";
+          decisionBg = "#f8fafc";
+          proposedQuota = 0;
+        } else {
+          activeItemsCount++;
+          proposedQuota = Math.max(1, Math.round(avgAnnualRounded * (1 + safetyMarginPct / 100)));
+          totalProposedDealUnits += proposedQuota;
+
+          if (cumShare <= 0.75 || globalSharePct >= 5) {
+            classACount++;
+            demandClass = "A";
+            statusLabel = "استهلاك كثيف (فئة A)";
+            procurementDecision = `أولوية قصوى — برمجة (${proposedQuota}) بالصفقة`;
+            decisionColor = "#0284c7";
+            decisionBg = "#e0f2fe";
+          } else if (rec.totalUnits >= 6) {
+            demandClass = "B";
+            statusLabel = "استهلاك متوسط (فئة B)";
+            procurementDecision = `طلب اعتيادي — برمجة (${proposedQuota}) بالصفقة`;
+            decisionColor = "#059669";
+            decisionBg = "#d1fae5";
+          } else {
+            demandClass = "C";
+            statusLabel = "استهلاك قليل (فئة C)";
+            procurementDecision = `طلب نادر — تقليص الكمية إلى (${proposedQuota})`;
+            decisionColor = "#d97706";
+            decisionBg = "#fef3c7";
+          }
+        }
+
+        return {
+          ...rec,
+          rank: idx + 1,
+          avgAnnual: avgAnnualRounded,
+          globalSharePct: Number(globalSharePct.toFixed(1)),
+          catSharePct: Number(catSharePct.toFixed(1)),
+          changePct,
+          demandClass,
+          statusLabel,
+          procurementDecision,
+          decisionColor,
+          decisionBg,
+          proposedQuota
+        };
+      });
+
+      // ملخص الأصناف
+      const categorySummary = (state.data.categories || []).map(catName => {
+        const catItems = enrichedRows.filter(r => r.category === catName);
+        const activeInCat = catItems.filter(r => r.totalUnits > 0).length;
+        const consumedInCat = catItems.reduce((s, r) => s + r.totalUnits, 0);
+        const proposedInCat = catItems.reduce((s, r) => s + r.proposedQuota, 0);
+        const sharePct = grandTotalUnits > 0 ? Number(((consumedInCat / grandTotalUnits) * 100).toFixed(1)) : 0;
+        return {
+          category: catName,
+          totalItemsCount: catItems.length,
+          activeItemsCount: activeInCat,
+          unusedItemsCount: catItems.length - activeInCat,
+          consumedUnits: consumedInCat,
+          sharePct,
+          proposedQuota: proposedInCat
+        };
+      }).sort((a, b) => b.consumedUnits - a.consumedUnits);
+
+      return {
+        availableYears,
+        yearsCount,
+        totalTransactions: txs.length,
+        grandTotalUnits,
+        totalItemsCount: items.length,
+        activeItemsCount,
+        unusedItemsCount,
+        classACount,
+        totalProposedDealUnits,
+        safetyMarginPct,
+        rows: enrichedRows,
+        categorySummary
+      };
+    }
+    window.buildComprehensiveProcurementAnalytics = buildComprehensiveProcurementAnalytics;
+
+    // و) ترقية بطاقات وجداول صفحة التحليل الذكي لتعتمد على الاستهلاك الفعلي بدل المخزون الصفري
+    const _v6RenderAiInsightsView = renderAiInsightsView;
+    renderAiInsightsView = function() {
+      _v6RenderAiInsightsView();
+      const analytics = buildComprehensiveProcurementAnalytics(15);
+      const elRiskVal = document.getElementById('ai-kpi-risk-val');
+      const elRiskSub = document.getElementById('ai-kpi-risk-sub');
+      const elRiskBadge = document.getElementById('ai-kpi-risk-badge');
+      if (elRiskVal) elRiskVal.textContent = sanitize(analytics.activeItemsCount);
+      if (elRiskSub) elRiskSub.textContent = `مادة مستهلكة (${analytics.unusedItemsCount} مادة غير مستعملة)`;
+      if (elRiskBadge) elRiskBadge.textContent = `${analytics.classACount} فئة A`;
+
+      const topItem = getTopDistributedItem();
+      const elItemName = document.getElementById('ai-kpi-top-item-name');
+      const elItemSub = document.getElementById('ai-kpi-top-item-sub');
+      if (topItem && elItemName) {
+        elItemName.textContent = topItem.shortRef || topItem.name;
+        elItemName.title = formatItemDisplayText(topItem);
+      }
+      if (topItem && elItemSub) {
+        const share = analytics.grandTotalUnits > 0 ? ((topItem.distributedQty / analytics.grandTotalUnits) * 100).toFixed(1) : 0;
+        elItemSub.textContent = `${topItem.distributedQty} قطعة (${share}% من الاستهلاك العام)`;
+      }
+    };
+    window.renderAiInsightsView = renderAiInsightsView;
+
+    renderAiForecastTable = function() {
+      const tbody = document.getElementById('ai-forecast-tbody');
+      if (!tbody) return;
+      const analytics = buildComprehensiveProcurementAnalytics(15);
+      const search = (document.getElementById('ai-forecast-search')?.value || '').trim().toLowerCase();
+
+      const theadTr = tbody.closest('table')?.querySelector('thead tr');
+      if (theadTr) {
+        theadTr.innerHTML = `
+          <th style="width: 38px; text-align: center;">#</th>
+          <th>المادة والمواصفات</th>
+          <th>الصنف</th>
+          <th style="text-align: center;">المعدل السنوي</th>
+          <th style="text-align: center;">نسبة الاستهلاك العام</th>
+          <th style="text-align: center;">نسبة التغيير</th>
+          <th style="text-align: center;">الحصة المقترحة للصفقة</th>
+          <th style="text-align: center;">قرار تدبير الصفقة القادمة</th>
+        `;
+      }
+
+      let list = analytics.rows;
+      if (search) {
+        list = list.filter(r => {
+          const hay = `${r.shortRef || ''} ${r.name || ''} ${r.deviceFull || ''} ${r.category || ''}`.toLowerCase();
+          return hay.includes(search);
+        });
+      }
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 24px; color: var(--text-muted);">لا توجد مواد مطابقة لشرط البحث</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map((r, idx) => {
+        const chgSign = r.changePct > 0 ? '+' : '';
+        const badgeCls = r.demandClass === 'A' ? 'badge-primary' : (r.demandClass === 'B' ? 'badge-success' : (r.demandClass === 'C' ? 'badge-warning' : 'badge-subtle'));
+        return `
+          <tr>
+            <td style="text-align: center; font-size: 0.75rem;" class="tabular-nums">${idx + 1}</td>
+            <td>${formatItemDisplayHtml(r)}</td>
+            <td><span class="badge badge-subtle" style="font-size: 0.72rem;">${escapeHtml(r.category)}</span></td>
+            <td style="text-align: center;" class="tabular-nums"><strong>${r.avgAnnual}</strong></td>
+            <td style="text-align: center;" class="tabular-nums"><span class="badge badge-subtle">${r.globalSharePct}%</span></td>
+            <td style="text-align: center;" class="tabular-nums">${chgSign}${r.changePct}%</td>
+            <td style="text-align: center;" class="tabular-nums"><strong style="color: #10b981;">${r.proposedQuota}</strong></td>
+            <td style="text-align: center;"><span class="badge ${badgeCls}" style="font-size: 0.72rem;">${escapeHtml(r.procurementDecision)}</span></td>
+          </tr>
+        `;
+      }).join('');
+    };
+    window.renderAiForecastTable = renderAiForecastTable;
+
+    // ز) إعادة هندسة شاملة لـ "تقرير الرؤى والتحليل الإحصائي الذكي للمخزون والتوزيع" (printAiAnalysisReport)
+    window.filterAiPrintableReportRows = function(filterMode) {
+      const rows = document.querySelectorAll('.ai-report-item-row');
+      rows.forEach(tr => {
+        const cls = tr.getAttribute('data-demand-class');
+        if (filterMode === 'all') tr.style.display = '';
+        else if (filterMode === 'active') tr.style.display = (cls !== 'D') ? '' : 'none';
+        else if (filterMode === 'unused') tr.style.display = (cls === 'D') ? '' : 'none';
+      });
+      ['all', 'active', 'unused'].forEach(m => {
+        const btn = document.getElementById(`btn-ai-rep-filter-${m}`);
+        if (btn) {
+          btn.style.background = (m === filterMode) ? '#0284c7' : '#ffffff';
+          btn.style.color = (m === filterMode) ? '#ffffff' : '#0f172a';
+        }
+      });
+    };
+
+    printAiAnalysisReport = function() {
+      const marginSelect = document.getElementById('sim-quota-safety-margin') || document.getElementById('forecast-safety-margin');
+      const safetyMarginPct = marginSelect ? parseInt(marginSelect.value, 10) : 15;
+      const analytics = buildComprehensiveProcurementAnalytics(safetyMarginPct);
+      const headerSrc = escapeHtml(getBrandingAssetSrc('header') || './en_tete.png');
+      const footerSrc = escapeHtml(getBrandingAssetSrc('footer') || './en_pied.png');
+      const todayStr = new Date().toLocaleDateString('ar-MA');
+      const yearsLabel = analytics.availableYears.join(' - ');
+
+      const catRowsHtml = analytics.categorySummary.map((c, idx) => `
+        <tr>
+          <td style="text-align:center;border:1px solid #cbd5e1;padding:5px;">${idx + 1}</td>
+          <td style="border:1px solid #cbd5e1;padding:5px;font-weight:700;">${escapeHtml(c.category)}</td>
+          <td style="text-align:center;border:1px solid #cbd5e1;padding:5px;">${c.activeItemsCount} نشطة / ${c.totalItemsCount} إجمالاً</td>
+          <td style="text-align:center;border:1px solid #cbd5e1;padding:5px;font-weight:700;">${c.consumedUnits}</td>
+          <td style="text-align:center;border:1px solid #cbd5e1;padding:5px;font-weight:700;color:#0284c7;">${c.sharePct}%</td>
+          <td style="text-align:center;border:1px solid #cbd5e1;padding:5px;font-weight:700;color:#059669;">${c.proposedQuota}</td>
+        </tr>
+      `).join('');
+
+      const itemRowsHtml = analytics.rows.map((r, idx) => {
+        const chgSign = r.changePct > 0 ? '+' : '';
+        const itemCleanText = escapeHtml(formatItemDisplayText(r));
+        return `
+          <tr class="ai-report-item-row" data-demand-class="${r.demandClass}" style="background:${r.demandClass === 'D' ? '#fafafa' : '#ffffff'};">
+            <td style="text-align:center;border:1px solid #cbd5e1;padding:5px;">${idx + 1}</td>
+            <td style="border:1px solid #cbd5e1;padding:5px;font-weight:600;text-align:right;" dir="auto">${itemCleanText}</td>
+            <td style="border:1px solid #cbd5e1;padding:5px;font-size:8pt;">${escapeHtml(r.category)}</td>
+            <td style="text-align:center;border:1px solid #cbd5e1;padding:5px;font-weight:700;">${r.avgAnnual}</td>
+            <td style="text-align:center;border:1px solid #cbd5e1;padding:5px;font-weight:700;color:#0284c7;">${r.globalSharePct}%</td>
+            <td style="text-align:center;border:1px solid #cbd5e1;padding:5px;">${r.catSharePct}%</td>
+            <td style="text-align:center;border:1px solid #cbd5e1;padding:5px;" dir="ltr">${chgSign}${r.changePct}%</td>
+            <td style="text-align:center;border:1px solid #cbd5e1;padding:5px;font-weight:800;color:#059669;">${r.proposedQuota}</td>
+            <td style="text-align:center;border:1px solid #cbd5e1;padding:5px;background:${r.decisionBg};color:${r.decisionColor};font-weight:700;font-size:8pt;">
+              ${escapeHtml(r.procurementDecision)}
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      const html = `
+        <div class="official-cert-page" style="padding: 18px; font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif; direction: rtl; color: #0f172a; background: #ffffff;">
+          <div style="text-align: center; margin-bottom: 10px;">
+            <img src="${headerSrc}" style="width: 100%; max-height: 95px; object-fit: contain;" alt="En-tête" />
+          </div>
+
+          <div style="text-align: center; border: 2px solid #0f172a; padding: 8px 14px; border-radius: 8px; margin: 10px 0 14px 0; background: #f8fafc;">
+            <h2 style="margin: 0; font-size: 13.5pt; color: #0f172a;">تقرير الرؤى والتحليل الإحصائي الذكي للاستهلاك العام وتدبير الصفقة القادمة</h2>
+            <div style="font-size: 9pt; color: #475569; margin-top: 3px;">السنوات المرجعية المحللة: (${yearsLabel}) — هامش الأمان المعتمد: (+${safetyMarginPct}%) — تاريخ التقرير: ${todayStr}</div>
+          </div>
+
+          <!-- بطاقات المؤشرات الاستراتيجية العامة -->
+          <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 14px; text-align: center;">
+            <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 7px; background: #f8fafc;">
+              <div style="font-size: 7.5pt; color: #475569; font-weight: 700;">إجمالي الاستهلاك العام</div>
+              <div style="font-size: 13pt; font-weight: 900; color: #0f172a;">${analytics.grandTotalUnits}</div>
+              <div style="font-size: 7pt; color: #64748b;">في ${analytics.totalTransactions} عملية تسليم</div>
+            </div>
+            <div style="border: 1px solid #0284c7; border-radius: 6px; padding: 7px; background: #f0f9ff;">
+              <div style="font-size: 7.5pt; color: #0369a1; font-weight: 700;">المواد النشطة المستعملة</div>
+              <div style="font-size: 13pt; font-weight: 900; color: #0284c7;">${analytics.activeItemsCount}</div>
+              <div style="font-size: 7pt; color: #0369a1;">من أصل ${analytics.totalItemsCount} مادة مسجلة</div>
+            </div>
+            <div style="border: 1px solid #059669; border-radius: 6px; padding: 7px; background: #ecfdf5;">
+              <div style="font-size: 7.5pt; color: #047857; font-weight: 700;">مواد الأولوية القصوى (فئة A)</div>
+              <div style="font-size: 13pt; font-weight: 900; color: #059669;">${analytics.classACount}</div>
+              <div style="font-size: 7pt; color: #047857;">تمثل عصب الاستهلاك العام</div>
+            </div>
+            <div style="border: 1px solid #94a3b8; border-radius: 6px; padding: 7px; background: #f8fafc;">
+              <div style="font-size: 7.5pt; color: #475569; font-weight: 700;">مواد غير مستعملة (0 سحب)</div>
+              <div style="font-size: 13pt; font-weight: 900; color: #64748b;">${analytics.unusedItemsCount}</div>
+              <div style="font-size: 7pt; color: #64748b;">يُوصى باستبعادها من الصفقة</div>
+            </div>
+            <div style="border: 1px solid #10b981; border-radius: 6px; padding: 7px; background: #f0fdf4;">
+              <div style="font-size: 7.5pt; color: #15803d; font-weight: 700;">إجمالي الحاجيات للصفقة</div>
+              <div style="font-size: 13pt; font-weight: 900; color: #15803d;">${analytics.totalProposedDealUnits}</div>
+              <div style="font-size: 7pt; color: #15803d;">وحدة مقترحة للشراء السنوي</div>
+            </div>
+          </div>
+
+          <!-- أولاً: خلاصة الاستهلاك والحاجيات حسب الأصناف -->
+          <h3 style="font-size: 10pt; border-bottom: 1.5px solid #0f172a; padding-bottom: 3px; margin: 10px 0 6px 0;">أولاً: توزيع الاستهلاك العام والحصص السنوية المقترحة حسب الأصناف</h3>
+          <table style="width: 100%; font-size: 8pt; border-collapse: collapse; margin-bottom: 14px;">
+            <thead>
+              <tr style="background: #e2e8f0;">
+                <th style="width: 5%; border: 1px solid #94a3b8; padding: 5px;">#</th>
+                <th style="width: 33%; border: 1px solid #94a3b8; padding: 5px;">الصنف</th>
+                <th style="width: 18%; border: 1px solid #94a3b8; padding: 5px;">عدد المواد (النشطة / الكل)</th>
+                <th style="width: 14%; border: 1px solid #94a3b8; padding: 5px;">الكمية المستهلكة</th>
+                <th style="width: 15%; border: 1px solid #94a3b8; padding: 5px;">نسبته من الاستهلاك العام</th>
+                <th style="width: 15%; border: 1px solid #94a3b8; padding: 5px;">الحصة المقترحة للصفقة</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${catRowsHtml}
+            </tbody>
+          </table>
+
+          <!-- شريط تصفية تفاعلي قبل الطباعة -->
+          <div class="no-print" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin:10px 0 6px 0;padding:8px 10px;background:#f1f5f9;border-radius:6px;border:1px solid #cbd5e1;">
+            <span style="font-size:8.5pt;font-weight:700;color:#0f172a;">تصفية جدول المواد في التقرير:</span>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <button type="button" id="btn-ai-rep-filter-all" onclick="filterAiPrintableReportRows('all')" style="padding:4px 10px;border-radius:5px;border:1px solid #0284c7;background:#0284c7;color:#fff;font-size:8pt;font-weight:700;cursor:pointer;">
+                كافة المواد المسجلة (${analytics.totalItemsCount})
+              </button>
+              <button type="button" id="btn-ai-rep-filter-active" onclick="filterAiPrintableReportRows('active')" style="padding:4px 10px;border-radius:5px;border:1px solid #0284c7;background:#fff;color:#0f172a;font-size:8pt;font-weight:700;cursor:pointer;">
+                المواد النشطة المطلوبة للصفقة فقط (${analytics.activeItemsCount})
+              </button>
+              <button type="button" id="btn-ai-rep-filter-unused" onclick="filterAiPrintableReportRows('unused')" style="padding:4px 10px;border-radius:5px;border:1px solid #0284c7;background:#fff;color:#0f172a;font-size:8pt;font-weight:700;cursor:pointer;">
+                المواد غير المستعملة / استهلاك 0 (${analytics.unusedItemsCount})
+              </button>
+            </div>
+          </div>
+
+          <!-- ثانياً: المصفوفة التفصيلية الشاملة لجميع المواد -->
+          <h3 style="font-size: 10pt; border-bottom: 1.5px solid #0f172a; padding-bottom: 3px; margin: 8px 0 6px 0;">ثانياً: بيان نسب الاستهلاك العام والحصص السنوية المقترحة للصفقة القادمة (لكل مادة)</h3>
+          <table style="width: 100%; font-size: 7.8pt; border-collapse: collapse; margin-bottom: 18px;">
+            <thead>
+              <tr style="background: #e2e8f0;">
+                <th style="width: 4%; border: 1px solid #94a3b8; padding: 5px;">#</th>
+                <th style="width: 31%; border: 1px solid #94a3b8; padding: 5px;">المادة (المرجع / الجهاز أو المواصفة)</th>
+                <th style="width: 14%; border: 1px solid #94a3b8; padding: 5px;">الصنف</th>
+                <th style="width: 7%; border: 1px solid #94a3b8; padding: 5px;">المعدل السنوي</th>
+                <th style="width: 8%; border: 1px solid #94a3b8; padding: 5px;">نسبتها من العام</th>
+                <th style="width: 7%; border: 1px solid #94a3b8; padding: 5px;">نسبتها بالصنف</th>
+                <th style="width: 6%; border: 1px solid #94a3b8; padding: 5px;">التغيير</th>
+                <th style="width: 8%; border: 1px solid #94a3b8; padding: 5px;">الحصة المقترحة</th>
+                <th style="width: 15%; border: 1px solid #94a3b8; padding: 5px;">قرار تدبير الصفقة القادمة</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemRowsHtml}
+            </tbody>
+          </table>
+
+          <div style="text-align: center; margin-top: 20px;">
+            <img src="${footerSrc}" style="width: 100%; max-height: 65px; object-fit: contain;" alt="Pied" />
+          </div>
+        </div>
+      `;
+
+      openDocPreviewModal(`تقرير التحليل الإحصائي الذكي وتدبير الصفقة — ${todayStr}`, html);
+    };
+    window.printAiAnalysisReport = printAiAnalysisReport;
+
+    // تحديث تصدير CSV ليشمل كافة المؤشرات الاستراتيجية
+    exportAiReportCSV = function() {
+      const analytics = buildComprehensiveProcurementAnalytics(15);
+      const headers = [
+        "الترتيب",
+        "المادة",
+        "الصنف",
+        "المعدل السنوي للاستهلاك",
+        "نسبة الاستهلاك العام (%)",
+        "نسبة المادة داخل صنفها (%)",
+        "نسبة التغيير السنوي (%)",
+        "الحصة السنوية المقترحة للصفقة",
+        "تصنيف الطلب",
+        "قرار تدبير الصفقة القادمة"
+      ];
+      const rows = analytics.rows.map(r => [
+        `"${r.rank}"`,
+        `"${formatItemDisplayText(r).replace(/"/g, '""')}"`,
+        `"${(r.category || '').replace(/"/g, '""')}"`,
+        `"${r.avgAnnual}"`,
+        `"${r.globalSharePct}%"`,
+        `"${r.catSharePct}%"`,
+        `"${r.changePct}%"`,
+        `"${r.proposedQuota}"`,
+        `"${r.statusLabel}"`,
+        `"${r.procurementDecision}"`
+      ].join(','));
+
+      const csvContent = "\uFEFF" + [headers.join(','), ...rows].join('\r\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `تقرير_الاستهلاك_العام_وتدبير_الصفقة_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      showToast('تم تصدير مصفوفة الاستهلاك العام وتدبير الصفقة بصيغة CSV بنجاح ✓', 'success');
+    };
+    window.exportAiReportCSV = exportAiReportCSV;
+
+    // ح) تحديث طباعة جدول محاكاة الحصص (printSimulatedQuotaTable) وبطاقة التوقعات (printForecastReportA4)
+    //    لتوافق الهيكلة المختصرة ذات الـ 5 أعمدة بدون عمود الحصة الربع سنوية وبدون كلمة "المحكمة"
+    printSimulatedQuotaTable = function() {
+      calculateAndRenderSimulatedQuota();
+      const rows = window._lastSimulatedQuotaRows || [];
+      const ctx = window._lastSimulatedQuotaContext || {};
+      const headerSrc = escapeHtml(getBrandingAssetSrc('header') || './en_tete.png');
+      const footerSrc = escapeHtml(getBrandingAssetSrc('footer') || './en_pied.png');
+      const todayStr = new Date().toLocaleDateString('ar-MA');
+      const totalQuota = rows.reduce((s, r) => s + (r.quotaAnnual || 0), 0);
+      const totalAvg = rows.reduce((s, r) => s + (r.avgAnnual || 0), 0);
+
+      const trsHtml = rows.map((r, idx) => {
+        const pct = (r.ratio * 100).toFixed(1);
+        const chgSign = r.changePct > 0 ? '+' : '';
+        return `
+          <tr>
+            <td style="border:1px solid #cbd5e1;padding:6px 8px;text-align:right;">${escapeHtml(r.beneficiaryDisplay)}</td>
+            <td style="border:1px solid #cbd5e1;padding:6px 8px;text-align:center;" dir="ltr">${r.avgAnnual} (${chgSign}${r.changePct}%)</td>
+            <td style="border:1px solid #cbd5e1;padding:6px 8px;text-align:center;font-weight:700;color:#059669;">${r.quotaAnnual}</td>
+            <td style="border:1px solid #cbd5e1;padding:6px 8px;text-align:center;">${pct}%</td>
+            <td style="border:1px solid #cbd5e1;padding:6px 8px;text-align:right;font-size:8pt;">${escapeHtml(r.shortTechPhrase)}</td>
+          </tr>
+        `;
+      }).join('');
+
+      const html = `
+        <div class="official-cert-page" style="padding: 18px; font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif; direction: rtl; color: #0f172a; background: #ffffff;">
+          <div style="text-align: center; margin-bottom: 10px;">
+            <img src="${headerSrc}" style="width: 100%; max-height: 95px; object-fit: contain;" alt="En-tête" />
+          </div>
+          <div style="text-align: center; border: 2px solid #0f172a; padding: 8px 14px; border-radius: 8px; margin: 10px 0 14px 0; background: #f8fafc;">
+            <h2 style="margin: 0; font-size: 13.5pt; color: #0f172a;">جدول محاكاة توزيع الحصص السنوية المقترحة</h2>
+            <div style="font-size: 9.5pt; color: #0284c7; font-weight: 700; margin-top: 3px;">المادة: ${escapeHtml(ctx.itemShortName || '—')} | إجمالي الاستهلاك السنوي: ${totalAvg} | إجمالي الحصص المقترحة (+${ctx.marginPct || 15}%): ${totalQuota}</div>
+          </div>
+          <table style="width: 100%; font-size: 8.5pt; border-collapse: collapse; margin-bottom: 18px;">
+            <thead>
+              <tr style="background: #e2e8f0;">
+                <th style="width: 26%; border: 1px solid #94a3b8; padding: 6px; text-align: right;">المستفيد</th>
+                <th style="width: 14%; border: 1px solid #94a3b8; padding: 6px; text-align: center;">الاستهلاك</th>
+                <th style="width: 12%; border: 1px solid #94a3b8; padding: 6px; text-align: center;">الحصة المقترحة</th>
+                <th style="width: 10%; border: 1px solid #94a3b8; padding: 6px; text-align: center;">نسبة الحصة</th>
+                <th style="width: 38%; border: 1px solid #94a3b8; padding: 6px; text-align: right;">التحليل التقني</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${trsHtml}
+            </tbody>
+          </table>
+          <div style="text-align: center; margin-top: 20px;">
+            <img src="${footerSrc}" style="width: 100%; max-height: 65px; object-fit: contain;" alt="Pied" />
+          </div>
+        </div>
+      `;
+      openDocPreviewModal(`جدول محاكاة الحصص السنوية — ${escapeHtml(ctx.itemShortName || '')} — ${todayStr}`, html);
+    };
+    window.printSimulatedQuotaTable = printSimulatedQuotaTable;
+
+    printForecastReportA4 = function() {
+      printSimulatedQuotaTable();
+    };
+    window.printForecastReportA4 = printForecastReportA4;
 
     // =========================================================================
     // 5. حقن الفلاتر المنسقة + تبويب "10. إعداد وصياغة الإشهاد" في مركز الإعدادات
@@ -36208,6 +37280,8 @@ ${itemsText}
         populateBulkDeviceSelectDropdown();
         onCategoryFilterChanged(true);
         populateCertConfigSettingsUI();
+        initAndRenderAnnualForecast();
+        initAndRenderSimulatedQuota();
       }, 120);
     });
 
