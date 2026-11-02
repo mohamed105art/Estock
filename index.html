@@ -6747,6 +6747,176 @@
       border-radius: 999px;
     }
 
+
+    /* =========================================================================
+       تعديلات هندسية شاملة V7.2:
+       1) توحيد الارتفاع والعرض والأبعاد والترتيب العمودي لحقول "إضافة مادة إلى سلة الإشهاد"
+       2) قوائم البحث الفوري والاختيار المتعدد (Multi-Select) للمواد والألوان
+       3) توسيع أعمدة جداول إدارة الأصناف وإدارة المواد وجرد المخزون مع سكرول أفقي سلس
+       ========================================================================= */
+    .issuance-vertical-stack {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 12px !important;
+      width: 100% !important;
+    }
+    .issuance-uniform-group {
+      margin-bottom: 0 !important;
+      width: 100% !important;
+    }
+    .issuance-uniform-group .form-label {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      margin-bottom: 6px !important;
+      font-size: 0.84rem !important;
+      font-weight: 800 !important;
+      color: var(--text-main) !important;
+    }
+    .issuance-uniform-control,
+    #cart-quick-ref-search,
+    #cart-cat-filter,
+    #cart-device-filter,
+    #cart-item-multiselect-btn,
+    #cart-item-notes {
+      width: 100% !important;
+      height: 42px !important;
+      min-height: 42px !important;
+      max-height: 42px !important;
+      padding: 0 12px !important;
+      font-size: 0.86rem !important;
+      font-weight: 700 !important;
+      border-radius: 10px !important;
+      box-sizing: border-box !important;
+      line-height: 40px !important;
+    }
+    .issuance-multiselect-trigger {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      cursor: pointer !important;
+      background: var(--bg-input, var(--bg-card)) !important;
+      border: 1px solid var(--border-subtle) !important;
+      color: var(--text-main) !important;
+      text-align: right !important;
+    }
+    .issuance-multiselect-trigger:hover,
+    .issuance-multiselect-trigger.active {
+      border-color: #38bdf8 !important;
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.15) !important;
+    }
+    .issuance-uniform-stepper {
+      width: 100% !important;
+      height: 42px !important;
+      min-height: 42px !important;
+      max-height: 42px !important;
+      display: flex !important;
+      align-items: stretch !important;
+      border-radius: 10px !important;
+      overflow: hidden !important;
+      box-sizing: border-box !important;
+    }
+    .issuance-uniform-stepper .stepper-btn {
+      width: 48px !important;
+      height: 42px !important;
+      font-size: 1.1rem !important;
+      font-weight: 900 !important;
+      flex-shrink: 0 !important;
+    }
+    .issuance-uniform-stepper .stepper-input {
+      flex: 1 1 auto !important;
+      height: 42px !important;
+      min-height: 42px !important;
+      font-size: 0.95rem !important;
+      font-weight: 900 !important;
+      text-align: center !important;
+    }
+    /* القوائم المنسدلة التفاعلية للبحث الفوري والاختيار المتعدد للمواد */
+    .issuance-dropdown-panel {
+      position: absolute !important;
+      top: calc(100% + 4px) !important;
+      right: 0 !important;
+      left: 0 !important;
+      z-index: 250 !important;
+      background: var(--bg-card) !important;
+      border: 1.5px solid #38bdf8 !important;
+      border-radius: 12px !important;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45) !important;
+      max-height: 310px !important;
+      overflow-y: auto !important;
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+    }
+    .issuance-dd-header {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 5 !important;
+      background: var(--bg-muted) !important;
+      border-bottom: 1px solid var(--border-subtle) !important;
+      padding: 8px 12px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      flex-wrap: wrap !important;
+      gap: 8px !important;
+      font-size: 0.78rem !important;
+      font-weight: 800 !important;
+    }
+    .issuance-dd-row {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 10px !important;
+      padding: 9px 12px !important;
+      border-bottom: 1px solid var(--border-subtle) !important;
+      cursor: pointer !important;
+      transition: background 0.15s ease !important;
+      white-space: nowrap !important;
+      min-width: max-content !important;
+    }
+    .issuance-dd-row:last-child {
+      border-bottom: none !important;
+    }
+    .issuance-dd-row:hover {
+      background: rgba(56, 189, 248, 0.1) !important;
+    }
+    .issuance-dd-row.is-checked {
+      background: rgba(56, 189, 248, 0.18) !important;
+    }
+
+    /* منع تضييق أو انكسار أسماء المواد والأصناف في جداول المخزون والإعدادات وتفعيل السكرول الأفقي السلس */
+    #inventory-view .table-scroll-wrapper,
+    #settings-pane-cats .table-scroll-wrapper,
+    #settings-pane-items .table-scroll-wrapper {
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      width: 100% !important;
+      padding-bottom: 6px !important;
+    }
+    #settings-pane-cats table.data-table {
+      min-width: 780px !important;
+      width: 100% !important;
+    }
+    #settings-pane-items table.data-table,
+    #inventory-view table.data-table {
+      min-width: 820px !important;
+      width: 100% !important;
+    }
+    table.data-table td strong.inventory-item-name,
+    table.data-table td .inventory-item-name {
+      white-space: nowrap !important;
+      min-width: 390px !important;
+      display: inline-block !important;
+    }
+    #settings-pane-cats table.data-table th,
+    #settings-pane-cats table.data-table td,
+    #settings-pane-items table.data-table th,
+    #settings-pane-items table.data-table td,
+    #inventory-view table.data-table th,
+    #inventory-view table.data-table td {
+      white-space: nowrap !important;
+    }
+
   </style>
 </head>
 <body>
@@ -7360,12 +7530,137 @@
                 </div>
               </div>
 
-              <!-- تفاصيل اختيارية (مخفية في طية قابلة للتوسيع) -->
-              <div class="accordion-box">
+              <!-- قسم إضافة المواد إلى سلة الإشهاد (مرتب عمودياً بالكامل وبنفس الحجم والارتفاع لكل الحقول) -->
+              <div class="cart-add-panel">
+                <div style="font-weight: 800; font-size: 0.96rem; color: var(--text-main); margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                  <span>إضافة مادة إلى سلة الإشهاد</span>
+                  <span class="badge badge-subtle" id="cart-summary-badge">0 مادة بالسلة</span>
+                </div>
+
+                <div class="issuance-vertical-stack">
+                  <!-- 1. أولاً: بحث فوري (مع قائمة نتائج منسدلة تدعم النقر المباشر للتعبئة التلقائية أو التحديد المتعدد) -->
+                  <div class="form-group issuance-uniform-group" style="position: relative;">
+                    <label class="form-label" for="cart-quick-ref-search">
+                      <span>بحث فوري</span>
+                      <span class="badge badge-subtle" id="cart-instant-search-badge" style="display:none;font-size:0.72rem;color:#38bdf8;"></span>
+                    </label>
+                    <div style="position: relative; width: 100%;">
+                      <input type="text" id="cart-quick-ref-search" class="form-control issuance-uniform-control"
+                             placeholder="اكتب الريفرونس أو اسم المادة أو الطابعة (مثال: 057H أو 415A أو C3510)..."
+                             autocomplete="off"
+                             onfocus="onIssuanceQuickSearchInput(this.value, true)"
+                             oninput="onIssuanceQuickSearchInput(this.value, true)" />
+                      <button type="button" id="btn-clear-issuance-search" onclick="clearIssuanceQuickSearch()"
+                              style="display:none;position:absolute;left:10px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-size:1.05rem;line-height:1;padding:4px;"
+                              title="مسح البحث">&times;</button>
+                    </div>
+                    <!-- القائمة المنسدلة الفورية لنتائج البحث -->
+                    <div id="cart-instant-search-dropdown" class="issuance-dropdown-panel" style="display: none;"></div>
+                  </div>
+
+                  <!-- 2. ثانياً: تصفية بالصنف -->
+                  <div class="form-group issuance-uniform-group">
+                    <label class="form-label" for="cart-cat-filter">
+                      <span>تصفية بالصنف</span>
+                      <span class="badge badge-subtle" id="cat-count-badge">12 صنفاً</span>
+                    </label>
+                    <select id="cart-cat-filter" class="form-control issuance-uniform-control" onchange="onCategoryFilterChanged(false)">
+                      <option value="">-- كافة الأصناف --</option>
+                    </select>
+                  </div>
+
+                  <!-- 3. ثالثاً: الأجهزة المرتبطة بالصنف (يظهر للأصناف المرتبطة بأجهزة ويعرض أجهزة الصنف المختار فقط) -->
+                  <div class="form-group issuance-uniform-group" id="cart-device-filter-group">
+                    <label class="form-label" for="cart-device-filter">
+                      <span id="cart-device-filter-label">الأجهزة المرتبطة بالصنف</span>
+                      <span class="badge badge-subtle" id="cart-device-count-badge">36 جهازاً</span>
+                    </label>
+                    <select id="cart-device-filter" class="form-control issuance-uniform-control" onchange="onIssuanceDeviceFilterChanged()">
+                      <option value="">-- كافة الأجهزة المرتبطة --</option>
+                    </select>
+                  </div>
+
+                  <!-- 4. رابعاً: المادة والمواصفات (قائمة منسدلة موحدة تدعم الاختيار المفرد والاختيار المتعدد مثل الأربع ألوان) -->
+                  <div class="form-group issuance-uniform-group" style="position: relative;">
+                    <label class="form-label" for="cart-item-multiselect-btn">
+                      <span>المادة والمواصفات</span>
+                      <div style="display:inline-flex;align-items:center;gap:6px;">
+                        <span class="badge badge-subtle" id="items-in-cat-badge">85 مادة متاحة</span>
+                      </div>
+                    </label>
+                    <!-- زر القائمة المنسدلة الموحد بنفس ارتفاع وأبعاد باقي الحقول (42px) -->
+                    <button type="button" id="cart-item-multiselect-btn" class="form-control issuance-uniform-control issuance-multiselect-trigger" onclick="toggleIssuanceItemMultiSelectDropdown(event)">
+                      <span id="cart-item-multiselect-label" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;text-align:right;">-- اختر مادة أو عدة مواد من المخزون --</span>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="flex-shrink:0;margin-right:8px;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                    <!-- القائمة المنسدلة للاختيار المفرد والمتعدد -->
+                    <div id="cart-item-multiselect-dropdown" class="issuance-dropdown-panel" style="display: none;"></div>
+                    <!-- الحقل المرجعي المتوافق مع الدوال البرمجية -->
+                    <select id="cart-item-select" class="form-control" onchange="onItemSelectChanged()" style="display: none;">
+                      <option value="">-- اختر مادة من المخزون --</option>
+                    </select>
+                  </div>
+
+                  <!-- 5. خامساً: الكمية المطلوبة -->
+                  <div class="form-group issuance-uniform-group">
+                    <label class="form-label" for="cart-item-qty">
+                      <span>الكمية المطلوبة (لكل مادة محددة)</span>
+                      <span id="cart-stock-hint" class="stock-badge">المتوفر: —</span>
+                    </label>
+                    <div class="qty-stepper-wrap issuance-uniform-stepper">
+                      <button type="button" class="stepper-btn" onclick="stepCartQty(-1)" title="إنقاص الكمية">-</button>
+                      <input type="number" id="cart-item-qty" class="form-control stepper-input tabular-nums" min="1" value="1" oninput="validateCartQty()" />
+                      <button type="button" class="stepper-btn" onclick="stepCartQty(1)" title="زيادة الكمية">+</button>
+                    </div>
+                  </div>
+
+                  <!-- 6. سادساً: ملاحظات سريعة -->
+                  <div class="form-group issuance-uniform-group">
+                    <label class="form-label" for="cart-item-notes">ملاحظات سريعة</label>
+                    <input type="text" id="cart-item-notes" class="form-control issuance-uniform-control" placeholder="اكتب ملاحظة أو اختر من الكبسولات..." />
+                    <div class="preset-chips-wrap" id="preset-chips-container">
+                      <!-- يملأ ديناميكياً بأبرز الملاحظات النشطة -->
+                    </div>
+                  </div>
+                </div>
+
+                <button type="button" class="btn btn-primary w-full" onclick="addItemToCart()" style="margin-top: 14px; height: 44px; font-weight: 800; font-size: 0.92rem;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  <span id="btn-add-to-cart-label">إضافة للسلة</span>
+                </button>
+              </div>
+
+              <!-- جدول سلة المواد الحالية -->
+              <div>
+                <div class="table-scroll-wrapper" style="max-height: 280px; overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                  <table class="data-table" style="min-width: 720px; width: 100%;">
+                    <thead>
+                      <tr>
+                        <th style="width: 40px; text-align: center; white-space: nowrap;">#</th>
+                        <th style="min-width: 360px; text-align: right; white-space: nowrap;">بيان المادة والمواصفات</th>
+                        <th style="min-width: 140px; white-space: nowrap;">الصنف</th>
+                        <th style="text-align: center; width: 95px; white-space: nowrap;">الكمية</th>
+                        <th style="min-width: 120px; white-space: nowrap;">ملاحظات</th>
+                        <th style="width: 60px; text-align: center; white-space: nowrap;">حذف</th>
+                      </tr>
+                    </thead>
+                    <tbody id="cart-table-body">
+                      <tr>
+                        <td colspan="6" style="text-align: center; padding: 24px; color: var(--text-muted);">
+                          السلة فارغة. يرجى اختيار المواد والكميات وإضافتها للسلة أعلاه.
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- تفاصيل اختيارية (تقع في الأسفل بعد اختيار المواد وقبل أزرار اعتماد الإشهاد مباشرة) -->
+              <div class="accordion-box" style="margin-top: 4px;">
                 <button type="button" class="accordion-header-btn" onclick="toggleOrderContextAccordion()">
                   <span style="display: flex; align-items: center; gap: 8px;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                    تفاصيل اختيارية
+                    <span>تفاصيل اختيارية (سبب التوزيع، قناة التوصل، مراجع الطلب)</span>
                   </span>
                   <svg class="chevron" id="order-context-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                 </button>
@@ -7408,90 +7703,6 @@
                       <input type="text" id="voucher-order-ref" class="form-control" placeholder="مثال: إرسالية رقم 42 بتاريخ 15/09/2026" />
                     </div>
                   </div>
-                </div>
-              </div>
-
-              <!-- قسم إضافة المواد إلى سلة الإشهاد -->
-              <div class="cart-add-panel">
-                <div style="font-weight: 800; font-size: 0.95rem; color: var(--text-main); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
-                  <span>إضافة مادة إلى سلة الإشهاد</span>
-                  <span class="badge badge-subtle" id="cart-summary-badge">0 مادة بالسلة</span>
-                </div>
-
-                <!-- السطر الأول: تصفية بالصنف + المادة والمواصفات جنباً إلى جنب على الحاسوب -->
-                <div class="issuance-cart-grid-row">
-                  <div class="form-group" style="margin-bottom: 0;">
-                    <label class="form-label" for="cart-cat-filter">
-                      <span>تصفية بالصنف</span>
-                      <span class="badge badge-subtle" id="cat-count-badge">11 صنفاً</span>
-                    </label>
-                    <select id="cart-cat-filter" class="form-control" onchange="onCategoryFilterChanged()">
-                      <option value="">-- كافة الأصناف --</option>
-                    </select>
-                  </div>
-
-                  <div class="form-group" style="margin-bottom: 0;">
-                    <label class="form-label" for="cart-item-select">
-                      <span>المادة والمواصفات</span>
-                      <span class="badge badge-subtle" id="items-in-cat-badge">0 مادة متاحة</span>
-                    </label>
-                    <select id="cart-item-select" class="form-control" onchange="onItemSelectChanged()">
-                      <option value="">-- اختر مادة من المخزون --</option>
-                    </select>
-                  </div>
-                </div>
-
-                <!-- السطر الثاني: الكمية المطلوبة + ملاحظات سريعة جنباً إلى جنب على الحاسوب -->
-                <div class="issuance-cart-grid-row">
-                  <div class="form-group" style="margin-bottom: 0;">
-                    <label class="form-label" for="cart-item-qty">
-                      <span>الكمية المطلوبة</span>
-                      <span id="cart-stock-hint" class="stock-badge">المتوفر: —</span>
-                    </label>
-                    <div class="qty-stepper-wrap">
-                      <button type="button" class="stepper-btn" onclick="stepCartQty(-1)" title="إنقاص الكمية">-</button>
-                      <input type="number" id="cart-item-qty" class="form-control stepper-input tabular-nums" min="1" value="1" oninput="validateCartQty()" />
-                      <button type="button" class="stepper-btn" onclick="stepCartQty(1)" title="زيادة الكمية">+</button>
-                    </div>
-                  </div>
-
-                  <div class="form-group" style="margin-bottom: 0;">
-                    <label class="form-label" for="cart-item-notes">ملاحظات سريعة</label>
-                    <input type="text" id="cart-item-notes" class="form-control" placeholder="اكتب ملاحظة أو اختر من الكبسولات..." />
-                    <div class="preset-chips-wrap" id="preset-chips-container">
-                      <!-- يملأ ديناميكياً بأبرز 3 إلى 5 ملاحظات نشطة وبألوان باستيل ناعمة -->
-                    </div>
-                  </div>
-                </div>
-
-                <button type="button" class="btn btn-primary w-full" onclick="addItemToCart()" style="margin-top: 10px;">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                  <span>إضافة للسلة</span>
-                </button>
-              </div>
-
-              <!-- جدول سلة المواد الحالية -->
-              <div>
-                <div class="table-scroll-wrapper" style="max-height: 250px;">
-                  <table class="data-table">
-                    <thead>
-                      <tr>
-                        <th style="width: 36px; text-align: center;">#</th>
-                        <th>بيان المادة والمواصفات</th>
-                        <th>الصنف</th>
-                        <th style="text-align: center; width: 100px;">الكمية</th>
-                        <th>ملاحظات</th>
-                        <th style="width: 60px; text-align: center;">حذف</th>
-                      </tr>
-                    </thead>
-                    <tbody id="cart-table-body">
-                      <tr>
-                        <td colspan="6" style="text-align: center; padding: 24px; color: var(--text-muted);">
-                          السلة فارغة. يرجى اختيار المواد والكميات وإضافتها للسلة أعلاه.
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
                 </div>
               </div>
 
@@ -11269,7 +11480,7 @@
             },
             {
                   "id": "9499210e",
-                  "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn",
+                  "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn - Noir",
                   "category": "طونير طابعات",
                   "stock": 0,
                   "criticalThreshold": 10,
@@ -11278,7 +11489,7 @@
                   "deviceType": "Imprimante",
                   "deviceModel": "HP LaserJet Pro 4003dn",
                   "deviceFull": "Imprimante HP LaserJet Pro 4003dn",
-                  "colorTag": "",
+                  "colorTag": "Noir",
                   "specDetail": ""
             },
             {
@@ -11794,10 +12005,10 @@
                   "abundantThreshold": 60,
                   "shortRef": "Câble USB pour imprimante",
                   "deviceType": "",
-                  "deviceModel": "1.8m",
-                  "deviceFull": "1.8m",
+                  "deviceModel": "",
+                  "deviceFull": "",
                   "colorTag": "",
-                  "specDetail": ""
+                  "specDetail": "1.8m"
             },
             {
                   "id": "b802776a",
@@ -12206,7 +12417,7 @@
                   "items": [
                         {
                               "id": "9499210e",
-                              "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn",
+                              "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn - Noir",
                               "category": "طونير طابعات",
                               "qty": 10,
                               "notes": "",
@@ -12214,7 +12425,7 @@
                               "deviceType": "Imprimante",
                               "deviceModel": "HP LaserJet Pro 4003dn",
                               "deviceFull": "Imprimante HP LaserJet Pro 4003dn",
-                              "colorTag": "",
+                              "colorTag": "Noir",
                               "specDetail": ""
                         },
                         {
@@ -12409,7 +12620,7 @@
                         },
                         {
                               "id": "9499210e",
-                              "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn",
+                              "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn - Noir",
                               "category": "طونير طابعات",
                               "qty": 5,
                               "notes": "",
@@ -12417,7 +12628,7 @@
                               "deviceType": "Imprimante",
                               "deviceModel": "HP LaserJet Pro 4003dn",
                               "deviceFull": "Imprimante HP LaserJet Pro 4003dn",
-                              "colorTag": "",
+                              "colorTag": "Noir",
                               "specDetail": ""
                         }
                   ],
@@ -12549,7 +12760,7 @@
                   "items": [
                         {
                               "id": "9499210e",
-                              "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn",
+                              "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn - Noir",
                               "category": "طونير طابعات",
                               "qty": 5,
                               "notes": "",
@@ -12557,7 +12768,7 @@
                               "deviceType": "Imprimante",
                               "deviceModel": "HP LaserJet Pro 4003dn",
                               "deviceFull": "Imprimante HP LaserJet Pro 4003dn",
-                              "colorTag": "",
+                              "colorTag": "Noir",
                               "specDetail": ""
                         }
                   ],
@@ -12583,10 +12794,10 @@
                               "notes": "",
                               "shortRef": "Câble USB pour imprimante",
                               "deviceType": "",
-                              "deviceModel": "1.8m",
-                              "deviceFull": "1.8m",
+                              "deviceModel": "",
+                              "deviceFull": "",
                               "colorTag": "",
-                              "specDetail": ""
+                              "specDetail": "1.8m"
                         }
                   ],
                   "secretCode": "CERT-2026-0216-3814"
@@ -12674,7 +12885,7 @@
                   "items": [
                         {
                               "id": "9499210e",
-                              "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn",
+                              "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn - Noir",
                               "category": "طونير طابعات",
                               "qty": 2,
                               "notes": "",
@@ -12682,7 +12893,7 @@
                               "deviceType": "Imprimante",
                               "deviceModel": "HP LaserJet Pro 4003dn",
                               "deviceFull": "Imprimante HP LaserJet Pro 4003dn",
-                              "colorTag": "",
+                              "colorTag": "Noir",
                               "specDetail": ""
                         }
                   ],
@@ -12825,7 +13036,7 @@
                         },
                         {
                               "id": "9499210e",
-                              "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn",
+                              "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn - Noir",
                               "category": "طونير طابعات",
                               "qty": 6,
                               "notes": "",
@@ -12833,7 +13044,7 @@
                               "deviceType": "Imprimante",
                               "deviceModel": "HP LaserJet Pro 4003dn",
                               "deviceFull": "Imprimante HP LaserJet Pro 4003dn",
-                              "colorTag": "",
+                              "colorTag": "Noir",
                               "specDetail": ""
                         }
                   ],
@@ -12963,7 +13174,7 @@
                   "items": [
                         {
                               "id": "9499210e",
-                              "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn",
+                              "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn - Noir",
                               "category": "طونير طابعات",
                               "qty": 2,
                               "notes": "",
@@ -12971,7 +13182,7 @@
                               "deviceType": "Imprimante",
                               "deviceModel": "HP LaserJet Pro 4003dn",
                               "deviceFull": "Imprimante HP LaserJet Pro 4003dn",
-                              "colorTag": "",
+                              "colorTag": "Noir",
                               "specDetail": ""
                         },
                         {
@@ -13127,7 +13338,7 @@
                         },
                         {
                               "id": "9499210e",
-                              "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn",
+                              "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn - Noir",
                               "category": "طونير طابعات",
                               "qty": 6,
                               "notes": "",
@@ -13135,7 +13346,7 @@
                               "deviceType": "Imprimante",
                               "deviceModel": "HP LaserJet Pro 4003dn",
                               "deviceFull": "Imprimante HP LaserJet Pro 4003dn",
-                              "colorTag": "",
+                              "colorTag": "Noir",
                               "specDetail": ""
                         }
                   ],
@@ -13347,7 +13558,7 @@
                         },
                         {
                               "id": "9499210e",
-                              "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn",
+                              "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn - Noir",
                               "category": "طونير طابعات",
                               "qty": 3,
                               "notes": "",
@@ -13355,7 +13566,7 @@
                               "deviceType": "Imprimante",
                               "deviceModel": "HP LaserJet Pro 4003dn",
                               "deviceFull": "Imprimante HP LaserJet Pro 4003dn",
-                              "colorTag": "",
+                              "colorTag": "Noir",
                               "specDetail": ""
                         }
                   ],
@@ -13535,7 +13746,7 @@
                         },
                         {
                               "id": "9499210e",
-                              "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn",
+                              "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn - Noir",
                               "category": "طونير طابعات",
                               "qty": 4,
                               "notes": "",
@@ -13543,7 +13754,7 @@
                               "deviceType": "Imprimante",
                               "deviceModel": "HP LaserJet Pro 4003dn",
                               "deviceFull": "Imprimante HP LaserJet Pro 4003dn",
-                              "colorTag": "",
+                              "colorTag": "Noir",
                               "specDetail": ""
                         },
                         {
@@ -13783,7 +13994,7 @@
                   "items": [
                         {
                               "id": "9499210e",
-                              "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn",
+                              "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn - Noir",
                               "category": "طونير طابعات",
                               "qty": 4,
                               "notes": "",
@@ -13791,7 +14002,7 @@
                               "deviceType": "Imprimante",
                               "deviceModel": "HP LaserJet Pro 4003dn",
                               "deviceFull": "Imprimante HP LaserJet Pro 4003dn",
-                              "colorTag": "",
+                              "colorTag": "Noir",
                               "specDetail": ""
                         },
                         {
@@ -14177,7 +14388,7 @@
                         },
                         {
                               "id": "9499210e",
-                              "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn",
+                              "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn - Noir",
                               "category": "طونير طابعات",
                               "qty": 8,
                               "notes": "",
@@ -14185,7 +14396,7 @@
                               "deviceType": "Imprimante",
                               "deviceModel": "HP LaserJet Pro 4003dn",
                               "deviceFull": "Imprimante HP LaserJet Pro 4003dn",
-                              "colorTag": "",
+                              "colorTag": "Noir",
                               "specDetail": ""
                         }
                   ],
@@ -14655,7 +14866,7 @@
                         },
                         {
                               "id": "9499210e",
-                              "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn",
+                              "name": "HP 151A/151X (W1510A/W1510X) - Imprimante HP LaserJet Pro 4003dn - Noir",
                               "category": "طونير طابعات",
                               "systemStock": 85,
                               "physicalStock": 85,
@@ -14664,7 +14875,7 @@
                               "deviceType": "Imprimante",
                               "deviceModel": "HP LaserJet Pro 4003dn",
                               "deviceFull": "Imprimante HP LaserJet Pro 4003dn",
-                              "colorTag": "",
+                              "colorTag": "Noir",
                               "specDetail": ""
                         },
                         {
@@ -15121,7 +15332,7 @@
                   "tertiaryLabel": ""
             }
       },
-      "_schemaVersion": "V2_STRUCTURED_2026_11_02"
+      "_schemaVersion": "V2_STRUCTURED_2026_11_02_R2"
 };
 
     // ألوان متميزة ومتناسقة للجهات
@@ -32611,15 +32822,14 @@ ${itemsText}
 
 
     /* ============================================================================
-       ترقية شاملة V7: الهيكلة الذكية المقسمة للمواد والأصناف (Structured Multi-Part Architecture V2)
+       ترقية شاملة V7.2: الهيكلة الذكية المقسمة للمواد والأصناف (Structured Multi-Part Architecture V2)
        - فصل الريفرونس (shortRef) عن الجهاز المرتبط (deviceFull / deviceModel) واللون (colorTag) والمواصفة (specDetail)
-       - تصفية واختيار فوري للمواد انطلاقاً من الجهاز المرتبط (الطابعة / الناسخة / الفاكس) أو الريفرونس في جميع الواجهات
-       - تنسيق خانة "المادة" في الإشهادات الرسمية (القديمة والحديثة) بالصيغة المعتمدة:
-         (الصنف) الريفرونس / الجهاز المرتبط / اللون
-       - إدارة هيكل الأصناف والمواد المقسمة من مركز الإعدادات والمزامنة السحابية التلقائية مع Firebase (estock105)
+       - منع تصنيف الكابلات (مثل 1.8m) كأجهزة، وقصر الأجهزة على الأصناف المرتبطة بأجهزة
+       - ترتيب عمودي موحد الأبعاد في "إضافة مادة إلى سلة الإشهاد" يبدأ بـ "بحث فوري" ثم "تصفية بالصنف" ثم "الأجهزة المرتبطة" ثم "المادة والمواصفات (اختيار مفرد ومتعدد)"
+       - تنسيق خانة "المادة" في الإشهادات الرسمية بالصيغة المعتمدة: (الصنف) الريفرونس / الجهاز المرتبط / اللون
        ============================================================================ */
 
-    const V2_STRUCTURED_SCHEMA_VERSION = "V2_STRUCTURED_2026_11_02";
+    const V2_STRUCTURED_SCHEMA_VERSION = "V2_STRUCTURED_2026_11_02_R2";
 
     const DEFAULT_CATEGORY_SCHEMAS = {
       "طونير طابعات": { mode: "device", primaryLabel: "الريفرونس (Référence)", secondaryLabel: "الطابعة المرتبطة (Imprimante)", tertiaryLabel: "اللون" },
@@ -32658,12 +32868,13 @@ ${itemsText}
     }
     window.getCategorySchemaV2 = getCategorySchemaV2;
 
-    // دالة تحليل وتقسيم أي مادة إلى حقولها المهيكلة (shortRef, deviceType, deviceModel, deviceFull, colorTag, specDetail)
+    // دالة تحليل وتقسيم أي مادة إلى حقولها المهيكلة بدقة صارمة تمنع تصنيف الكابلات (1.8m) كأجهزة
     function parseAndEnrichStructuredItem(itemOrName, categoryHint = "") {
       const isObj = itemOrName && typeof itemOrName === "object";
       const rawName = String(isObj ? (itemOrName.name || itemOrName.designation || "") : (itemOrName || "")).replace(/\s+/g, " ").trim();
       const cat = normalizeCategoryNameV2(isObj ? (itemOrName.category || itemOrName.cat || categoryHint) : categoryHint);
       const schema = getCategorySchemaV2(cat);
+      const isDeviceMode = (schema.mode === "device");
 
       // تنظيف تكرار مفاتيح USB مثل Clé USB 64 Go - 64go
       const usbMatch = rawName.match(/^(Clé\s+USB\s+\d+\s*Go)\s*-\s*\d+\s*go$/i);
@@ -32682,97 +32893,88 @@ ${itemsText}
         return isObj ? Object.assign({}, itemOrName, res) : res;
       }
 
-      // إذا كانت الحقول المقسمة موجودة مسبقاً ومتسقة، نستخدمها مع ضمان نظافة الاسم
-      if (isObj && itemOrName.shortRef && (itemOrName.deviceFull !== undefined || itemOrName.specDetail !== undefined)) {
-        const sr = String(itemOrName.shortRef || "").trim();
-        const dt = String(itemOrName.deviceType || "").trim();
-        const dm = String(itemOrName.deviceModel || "").trim();
-        const df = String(itemOrName.deviceFull || (dt && dm ? `${dt} ${dm}` : dm)).trim();
-        const ct = String(itemOrName.colorTag || "").trim();
-        const sd = String(itemOrName.specDetail || "").trim();
-        let canon = sr;
-        if (df) {
-          canon = ct ? `${sr} - ${df} - ${ct}` : `${sr} - ${df}`;
-        } else if (sd) {
-          canon = `${sr} - ${sd}`;
-        } else if (ct) {
-          canon = `${sr} - ${ct}`;
+      // إذا لم يكن الصنف مرتبطاً بجهاز (مثل الكابلات أو الأدوات المعلوماتية أو التخزين)، نمنع بتاتاً وجود deviceFull مثل "1.8m"
+      if (!isDeviceMode) {
+        const rawSegments = rawName.split(" - ").map(p => p.trim()).filter(Boolean);
+        let shortRef = rawName;
+        let specDetail = "";
+        if (rawSegments.length >= 2) {
+          shortRef = rawSegments[0];
+          specDetail = rawSegments.slice(1).join(" - ").trim();
+        } else if (isObj && itemOrName.shortRef) {
+          shortRef = String(itemOrName.shortRef).trim();
+          specDetail = String(itemOrName.specDetail || itemOrName.deviceModel || "").trim();
         }
-        return Object.assign({}, itemOrName, {
-          name: canon || rawName,
+        const canonName = specDetail ? `${shortRef} - ${specDetail}` : shortRef;
+        const cleanNonDev = {
+          name: canonName,
           category: cat,
-          shortRef: sr || rawName,
-          deviceType: dt,
-          deviceModel: dm,
-          deviceFull: df,
-          colorTag: ct,
-          specDetail: sd
-        });
+          shortRef: shortRef,
+          deviceType: "",
+          deviceModel: "",
+          deviceFull: "",
+          colorTag: "",
+          specDetail: specDetail
+        };
+        return isObj ? Object.assign({}, itemOrName, cleanNonDev) : cleanNonDev;
       }
 
-      const parts = rawName.split(/\s+-\s+|\s+\/\s+/).map(p => p.trim()).filter(Boolean);
+      // في حالة الأصناف المرتبطة بجهاز (طونير / دروم):
       const rawSegments = rawName.split(" - ").map(p => p.trim()).filter(Boolean);
       const colorMap = { noir: "Noir", cyan: "Cyan", jaune: "Jaune", magenta: "Magenta" };
-      const isDeviceMode = schema.mode === "device" || /\b(Imprimante|Photocopieur|FAX)\b/i.test(rawName);
 
       let shortRef = rawName;
       let deviceType = "";
       let deviceModel = "";
       let deviceFull = "";
       let colorTag = "";
-      let specDetail = "";
 
-      if (isDeviceMode) {
-        if (rawSegments.length >= 3) {
-          shortRef = rawSegments[0];
-          const lastLow = rawSegments[rawSegments.length - 1].toLowerCase();
-          if (colorMap[lastLow]) {
-            colorTag = colorMap[lastLow];
-            deviceFull = rawSegments.slice(1, -1).join(" - ").trim();
-          } else {
-            deviceFull = rawSegments.slice(1).join(" - ").trim();
-          }
-        } else if (rawSegments.length === 2) {
-          shortRef = rawSegments[0];
-          const secondLow = rawSegments[1].toLowerCase();
-          if (colorMap[secondLow]) {
-            colorTag = colorMap[secondLow];
-          } else {
-            deviceFull = rawSegments[1];
-          }
+      if (rawSegments.length >= 3) {
+        shortRef = rawSegments[0];
+        const lastLow = rawSegments[rawSegments.length - 1].toLowerCase();
+        if (colorMap[lastLow]) {
+          colorTag = colorMap[lastLow];
+          deviceFull = rawSegments.slice(1, -1).join(" - ").trim();
         } else {
-          shortRef = rawSegments[0] || rawName;
+          deviceFull = rawSegments.slice(1).join(" - ").trim();
         }
+      } else if (rawSegments.length === 2) {
+        shortRef = rawSegments[0];
+        const secondLow = rawSegments[1].toLowerCase();
+        if (colorMap[secondLow]) {
+          colorTag = colorMap[secondLow];
+        } else {
+          deviceFull = rawSegments[1];
+        }
+      } else if (isObj && itemOrName.shortRef) {
+        shortRef = String(itemOrName.shortRef).trim();
+        deviceFull = String(itemOrName.deviceFull || itemOrName.deviceModel || "").trim();
+        colorTag = String(itemOrName.colorTag || "").trim();
+      }
 
-        if (deviceFull) {
-          const mDev = deviceFull.match(/^(Photocopieur\s+multifonction|Photocopieur|Imprimante|FAX)\s+(.+)$/i);
-          if (mDev) {
-            const dRaw = mDev[1].trim();
-            if (/^photocopieur\s+multifonction/i.test(dRaw)) deviceType = "Photocopieur multifonction";
-            else if (/^photocopieur/i.test(dRaw)) deviceType = "Photocopieur";
-            else if (/^imprimante/i.test(dRaw)) deviceType = "Imprimante";
-            else if (/^fax/i.test(dRaw)) deviceType = "FAX";
-            else deviceType = dRaw;
-            deviceModel = mDev[2].trim();
-            deviceFull = `${deviceType} ${deviceModel}`;
-          } else {
-            deviceModel = deviceFull;
-          }
-        }
-      } else {
-        if (rawSegments.length >= 2) {
-          shortRef = rawSegments[0];
-          specDetail = rawSegments.slice(1).join(" - ").trim();
+      if (!colorTag && (cat === "طونير طابعات" || cat === "طونير آلات النسخ" || cat === "طونير فاكس")) {
+        colorTag = "Noir";
+      }
+
+      if (deviceFull) {
+        const mDev = deviceFull.match(/^(Photocopieur\s+multifonction|Photocopieur|Imprimante|FAX)\s+(.+)$/i);
+        if (mDev) {
+          const dRaw = mDev[1].trim();
+          if (/^photocopieur\s+multifonction/i.test(dRaw)) deviceType = "Photocopieur multifonction";
+          else if (/^photocopieur/i.test(dRaw)) deviceType = "Photocopieur";
+          else if (/^imprimante/i.test(dRaw)) deviceType = "Imprimante";
+          else if (/^fax/i.test(dRaw)) deviceType = "FAX";
+          else deviceType = dRaw;
+          deviceModel = mDev[2].trim();
+          deviceFull = `${deviceType} ${deviceModel}`;
         } else {
-          shortRef = rawName;
+          deviceModel = deviceFull;
         }
       }
 
       let canonName = shortRef;
       if (deviceFull) {
         canonName = colorTag ? `${shortRef} - ${deviceFull} - ${colorTag}` : `${shortRef} - ${deviceFull}`;
-      } else if (specDetail) {
-        canonName = `${shortRef} - ${specDetail}`;
       } else if (colorTag) {
         canonName = `${shortRef} - ${colorTag}`;
       }
@@ -32785,13 +32987,12 @@ ${itemsText}
         deviceModel: deviceModel,
         deviceFull: deviceFull,
         colorTag: colorTag,
-        specDetail: specDetail
+        specDetail: ""
       };
       return isObj ? Object.assign({}, itemOrName, structured) : structured;
     }
     window.parseAndEnrichStructuredItem = parseAndEnrichStructuredItem;
 
-    // البحث عن المادة في المخزون لإثراء عناصر الإشهادات القديمة أو الحديثة
     function resolveStructuredItemForCertificate(rawLineItem) {
       if (!rawLineItem) return parseAndEnrichStructuredItem("—", "عام");
       const allItems = (state && state.data && Array.isArray(state.data.items)) ? state.data.items : [];
@@ -32817,8 +33018,7 @@ ${itemsText}
     }
     window.resolveStructuredItemForCertificate = resolveStructuredItemForCertificate;
 
-    // الصيغة الرسمية المعتمدة لخانة "المادة" في الإشهادات (HTML):
-    // (الصنف) الريفرونس / الجهاز المرتبط / اللون  أو  (الصنف) الاسم الأساسي / المواصفة
+    // الصيغة الرسمية المعتمدة لخانة "المادة" في الإشهادات: (الصنف) الريفرونس / الجهاز المرتبط / اللون
     function formatCertificateItemCellHtml(rawLineItem) {
       const st = resolveStructuredItemForCertificate(rawLineItem);
       const catStr = safeText(st.category, "");
@@ -32843,7 +33043,6 @@ ${itemsText}
     }
     window.formatCertificateItemCellHtml = formatCertificateItemCellHtml;
 
-    // الصيغة الرسمية النصية لخانة "المادة" في ملف الـ PDF المرسوم على Canvas وفي ملخصات المشاركة النصية
     function formatCertificateItemCellPlainText(rawLineItem) {
       const st = resolveStructuredItemForCertificate(rawLineItem);
       const catStr = safeText(st.category, "");
@@ -32865,22 +33064,27 @@ ${itemsText}
     }
     window.formatCertificateItemCellPlainText = formatCertificateItemCellPlainText;
 
-    // استخراج قائمة الأجهزة الفريدة (الطابعات، آلات النسخ، الفاكس) للفلترة الذكية السريعة
+    // استخراج قائمة الأجهزة الحقيقية فقط (الطابعات، آلات النسخ، الفاكس) دون أي كابلات أو أطوال (مثل 1.8m)
     function getUniqueLinkedDevicesList(categoryFilter = "") {
       const normCat = categoryFilter && categoryFilter !== "all" ? normalizeCategoryNameV2(categoryFilter) : "";
+      if (normCat && getCategorySchemaV2(normCat).mode !== "device") {
+        return [];
+      }
       const items = (state && state.data && Array.isArray(state.data.items)) ? state.data.items : [];
       const devMap = new Map();
       items.forEach(rawIt => {
         if (!rawIt || rawIt.isDeleted) return;
         const it = parseAndEnrichStructuredItem(rawIt);
+        if (getCategorySchemaV2(it.category).mode !== "device") return;
         if (normCat && it.category !== normCat) return;
-        if (it.deviceFull) {
+        if (it.deviceFull && !/^\d+(\.\d+)?\s*m$/i.test(it.deviceFull.trim())) {
           const key = it.deviceFull;
           if (!devMap.has(key)) {
             devMap.set(key, {
               deviceFull: it.deviceFull,
               deviceType: it.deviceType || "",
               deviceModel: it.deviceModel || it.deviceFull,
+              category: it.category,
               itemsCount: 0,
               itemIds: []
             });
@@ -32890,11 +33094,11 @@ ${itemsText}
           entry.itemIds.push(it.id);
         }
       });
-      return Array.from(devMap.values()).sort((a, b) => a.deviceFull.localeCompare(b.deviceFull));
+      return Array.from(devMap.values()).sort((a, b) => a.deviceModel.localeCompare(b.deviceModel));
     }
     window.getUniqueLinkedDevicesList = getUniqueLinkedDevicesList;
 
-    // تنسيق البطاقة البصرية للمادة المقسمة داخل جداول التطبيق
+    // تنسيق البطاقة البصرية للمادة المقسمة على سطر واحد متسع (white-space: nowrap)
     function formatStructuredItemBadgeHtml(itemOrName) {
       const it = typeof itemOrName === "object" && itemOrName !== null
         ? parseAndEnrichStructuredItem(itemOrName)
@@ -32902,22 +33106,21 @@ ${itemsText}
       const colorHexMap = { Noir: "#111827", Cyan: "#06b6d4", Jaune: "#eab308", Magenta: "#ec4899" };
       const dotHex = colorHexMap[it.colorTag] || "";
       const colorBadge = it.colorTag
-        ? `<span class="color-dot-badge" dir="ltr" style="margin-right:4px;"><span class="color-dot-circle" style="background:${dotHex || '#64748b'};"></span><span>${escapeHtml(it.colorTag)}</span></span>`
+        ? `<span class="color-dot-badge" dir="ltr" style="margin-right:4px;flex-shrink:0;"><span class="color-dot-circle" style="background:${dotHex || '#64748b'};"></span><span>${escapeHtml(it.colorTag)}</span></span>`
         : "";
       const devIcon = /photocopieur/i.test(it.deviceType) ? "📠" : (/imprimante/i.test(it.deviceType) ? "🖨️" : (/fax/i.test(it.deviceType) ? "📠" : ""));
       const middlePart = it.deviceFull
-        ? `<span style="color:var(--text-secondary);font-weight:700;" dir="ltr">${devIcon ? devIcon + " " : ""}${escapeHtml(it.deviceModel || it.deviceFull)}</span>`
-        : (it.specDetail ? `<span style="color:var(--text-secondary);font-weight:700;" dir="auto">${escapeHtml(it.specDetail)}</span>` : "");
+        ? `<span style="color:var(--text-secondary);font-weight:700;white-space:nowrap;" dir="ltr">${devIcon ? devIcon + " " : ""}${escapeHtml(it.deviceModel || it.deviceFull)}</span>`
+        : (it.specDetail ? `<span style="color:var(--text-secondary);font-weight:700;white-space:nowrap;" dir="auto">${escapeHtml(it.specDetail)}</span>` : "");
 
-      const segments = [`<strong style="color:var(--text-main);font-weight:900;" dir="ltr">${escapeHtml(it.shortRef || it.name)}</strong>`];
+      const segments = [`<strong style="color:var(--text-main);font-weight:900;white-space:nowrap;" dir="ltr">${escapeHtml(it.shortRef || it.name)}</strong>`];
       if (middlePart) segments.push(middlePart);
       if (colorBadge) segments.push(colorBadge);
 
-      return `<span dir="auto" style="unicode-bidi:isolate;display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;">${segments.join('<span style="color:#38bdf8;font-weight:900;margin:0 2px;">/</span>')}</span>`;
+      return `<span dir="auto" style="unicode-bidi:isolate;display:inline-flex;align-items:center;gap:6px;flex-wrap:nowrap;white-space:nowrap;">${segments.join('<span style="color:#38bdf8;font-weight:900;margin:0 3px;">/</span>')}</span>`;
     }
     window.formatStructuredItemBadgeHtml = formatStructuredItemBadgeHtml;
 
-    // تحديث formatItemDisplayHtml و formatItemDisplayText ليعرضا المكونات المقسمة بـ " / " بوضوح وأناقة
     formatItemDisplayHtml = function(rawNameOrItem) {
       if (!rawNameOrItem) return "—";
       const allItems = (state && state.data && Array.isArray(state.data.items)) ? state.data.items : [];
@@ -32935,7 +33138,7 @@ ${itemsText}
         if (st.deviceFull) plainParts.push(st.deviceFull);
         else if (st.specDetail) plainParts.push(st.specDetail);
         if (st.colorTag) plainParts.push(st.colorTag);
-        return `<span dir="auto" style="unicode-bidi:isolate;">${escapeHtml(plainParts.filter(Boolean).join(" / "))}</span>`;
+        return `<span dir="auto" style="unicode-bidi:isolate;white-space:nowrap;">${escapeHtml(plainParts.filter(Boolean).join(" / "))}</span>`;
       }
       return formatStructuredItemBadgeHtml(st);
     };
@@ -32961,7 +33164,6 @@ ${itemsText}
     };
     window.formatItemDisplayText = formatItemDisplayText;
 
-    // للرسوم البيانية والمبيانات: إرجاع الاسم المختصر النظيف (shortRef + اللون عند الحاجة) لمنع ازدحام المحاور
     function getChartShortItemLabel(itemOrName) {
       const st = typeof itemOrName === "object"
         ? parseAndEnrichStructuredItem(itemOrName)
@@ -32973,7 +33175,7 @@ ${itemsText}
     }
     window.getChartShortItemLabel = getChartShortItemLabel;
 
-    // ترقية migrateAndNormalizeData لتقسيم وتطبيع جميع المواد والأصناف والشهادات تلقائياً (سواء من LocalStorage أو Firebase أو JSON)
+    // ترقية migrateAndNormalizeData لتقسيم وتطبيع جميع المواد والأصناف والشهادات وإزالة أي التباس بين الكابلات والأجهزة
     const _v6MigrateAndNormalizeData = migrateAndNormalizeData;
     migrateAndNormalizeData = function(rawData, rawProfile, forceNonAdmin = false) {
       const res = _v6MigrateAndNormalizeData(rawData, rawProfile, forceNonAdmin);
@@ -32981,7 +33183,6 @@ ${itemsText}
       const profObj = res.profile;
       const isNonAdmin = Boolean(forceNonAdmin || (dataObj && dataObj._isNonAdminZeroState));
 
-      // 1. ترقية الأصناف وتحويل Banderole إلى "المطبوعات، الكتب واللافتات"
       if (Array.isArray(dataObj.categories)) {
         const cleanCats = [];
         dataObj.categories.forEach(c => {
@@ -33004,7 +33205,6 @@ ${itemsText}
         });
       }
 
-      // 2. ترقية المواد وإزالة التكرار (dcf4c5ee -> dcb4c5ee) وتوليد الحقول المقسمة
       if (Array.isArray(dataObj.items)) {
         const seenKeys = new Map();
         const enrichedItems = [];
@@ -33050,7 +33250,6 @@ ${itemsText}
         return copy;
       }
 
-      // 3. ترقية معاملات الإشهادات وإزالة الازدواجية مع الحفاظ الكامل على الأرشيف
       if (Array.isArray(dataObj.transactions)) {
         const seenTxIds = new Set();
         const cleanTxs = [];
@@ -33122,7 +33321,6 @@ ${itemsText}
     // =========================================================================
     // تحديث خانة "المادة" في الإشهادات الرسمية (HTML & PDF Canvas & PlainText)
     // لتصبح بالصيغة المطلوبة: (الصنف) الريفرونس / الجهاز المرتبط / اللون
-    // مع الحفاظ التام على الأعمدة الأربعة: #, المادة, الكمية, الملاحظات
     // =========================================================================
     generateVoucherA4Html = function(voucher) {
       const headerSrc = escapeHtml(getBrandingAssetSrc('header') || './en_tete.png');
@@ -33199,7 +33397,6 @@ ${itemsText}
     };
     window.generateVoucherA4Html = generateVoucherA4Html;
 
-    // تحديث توليد ملف PDF للإشهاد ليعرض (الصنف) الريفرونس / الجهاز / اللون في خانة المادة
     generateCertificatePdfBlob = async function(voucher) {
       const W = 1240;
       const H = 1754;
@@ -33440,7 +33637,6 @@ ${itemsText}
     };
     window.generateCertificatePdfBlob = generateCertificatePdfBlob;
 
-    // تحديث نص المشاركة ليستخدم التنسيق الجديد (الصنف) الريفرونس / الجهاز / اللون
     buildVoucherPlainTextSummary = function(v) {
       if (!v) return "";
       const itemsLines = (v.items || []).map((it, idx) =>
@@ -33461,65 +33657,617 @@ ${itemsText}
     window.buildVoucherPlainTextSummary = buildVoucherPlainTextSummary;
 
     // =========================================================================
-    // 1. حقن محددات التصفية الذكية بالجهاز المرتبط أو الريفرونس في:
-    //    أ) صفحة تسليم جديد (#issuance-view) + زر إضافة طقم ألوان الجهاز كاملاً بنقرة واحدة
-    //    ب) صفحة التوزيع الجماعي (#bulk-distribution-view) + زر تحديد كل مواد الجهاز
-    //    ج) صفحة جرد المخزون (#inventory-view)
+    // المنطق التفاعلي الذكي لإضافة المواد في "تسليم جديد" (#issuance-view):
+    // 1. بحث فوري (مع تعبئة تلقائية للصنف والجهاز والمادة عند النقر + اختيار متعدد)
+    // 2. تصفية بالصنف -> 3. الأجهزة المرتبطة بالصنف -> 4. المادة والمواصفات (اختيار مفرد ومتعدد)
     // =========================================================================
-    function injectStructuredFiltersAndModalsUI() {
-      // أ) في تسليم جديد (#issuance-view)
-      const cartCatFilter = document.getElementById("cart-cat-filter");
-      if (cartCatFilter && !document.getElementById("cart-device-filter")) {
-        const gridRow = cartCatFilter.closest(".issuance-cart-grid-row");
-        if (gridRow) {
-          const devBar = document.createElement("div");
-          devBar.id = "issuance-structured-device-bar";
-          devBar.style.cssText = "display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:10px;padding:10px 12px;background:var(--bg-card);border:1px solid rgba(56,189,248,0.3);border-radius:10px;";
-          devBar.innerHTML = `
-            <div class="form-group" style="margin-bottom:0;">
-              <label class="form-label" for="cart-device-filter" style="display:flex;align-items:center;justify-content:space-between;font-size:0.79rem;">
-                <span>🖨️ اختيار سريع حسب الجهاز (طابعة / ناسخة / فاكس)</span>
-                <span class="badge badge-subtle" id="cart-device-count-badge" style="font-size:0.68rem;">كافة الأجهزة</span>
-              </label>
-              <select id="cart-device-filter" class="form-control" onchange="onIssuanceDeviceFilterChanged()" style="height:36px;font-size:0.82rem;">
-                <option value="">-- كافة الأجهزة المرتبطة --</option>
-              </select>
-            </div>
-            <div class="form-group" style="margin-bottom:0;">
-              <label class="form-label" for="cart-quick-ref-search" style="display:flex;align-items:center;justify-content:space-between;font-size:0.79rem;">
-                <span>🔍 بحث فوري بالريفرونس أو الموديل أو اللون</span>
-                <button type="button" id="btn-add-all-device-kit" class="btn btn-outline btn-sm" onclick="addAllDeviceItemsToCart()" style="display:none;padding:2px 8px;font-size:0.71rem;color:#38bdf8;border-color:#38bdf8;font-weight:800;">
-                  + إضافة كل مواد هذا الجهاز للسلة
-                </button>
-              </label>
-              <input type="text" id="cart-quick-ref-search" class="form-control" placeholder="اكتب مثال: 057H أو LBP 226 أو C3510 أو Noir..." oninput="onCategoryFilterChanged()" style="height:36px;font-size:0.82rem;" />
-            </div>
-          `;
-          gridRow.parentNode.insertBefore(devBar, gridRow);
+    state.issuanceMultiSelectedIds = new Set();
+
+    function syncIssuanceMultiSelectTriggerUI() {
+      const triggerBtn = document.getElementById("cart-item-multiselect-btn");
+      const labelEl = document.getElementById("cart-item-multiselect-label");
+      const hiddenSelect = document.getElementById("cart-item-select");
+      const hintEl = document.getElementById("cart-stock-hint");
+      const addBtnLbl = document.getElementById("btn-add-to-cart-label");
+
+      if (!state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds = new Set();
+      const selectedIds = Array.from(state.issuanceMultiSelectedIds);
+      const allItems = (state.data.items || []).filter(i => i && !i.isDeleted);
+      const selectedObjs = selectedIds.map(id => allItems.find(i => i.id === id)).filter(Boolean).map(i => parseAndEnrichStructuredItem(i));
+
+      if (selectedObjs.length === 0) {
+        if (labelEl) labelEl.textContent = "-- اختر مادة أو عدة مواد من المخزون --";
+        if (hiddenSelect) hiddenSelect.value = "";
+        if (hintEl) {
+          hintEl.textContent = "المتوفر: —";
+          hintEl.className = "stock-badge";
+        }
+        if (addBtnLbl) addBtnLbl.textContent = "إضافة للسلة";
+      } else if (selectedObjs.length === 1) {
+        const one = selectedObjs[0];
+        if (labelEl) labelEl.textContent = `${formatItemDisplayText(one)} (المتوفر: ${sanitize(one.stock)})`;
+        if (hiddenSelect) hiddenSelect.value = one.id;
+        onItemSelectChanged();
+        if (addBtnLbl) addBtnLbl.textContent = "إضافة المادة للسلة";
+      } else {
+        const refsPreview = selectedObjs.map(o => o.colorTag ? `${o.shortRef} (${o.colorTag})` : o.shortRef).join(" + ");
+        if (labelEl) labelEl.textContent = `✓ تم تحديد (${selectedObjs.length}) مواد: ${refsPreview}`;
+        if (hiddenSelect) hiddenSelect.value = selectedObjs[0].id;
+        const totalAvail = selectedObjs.reduce((s, o) => s + sanitize(o.stock), 0);
+        if (hintEl) {
+          hintEl.textContent = `محدد: ${selectedObjs.length} مواد (إجمالي المتوفر: ${totalAvail})`;
+          hintEl.className = "stock-badge available";
+        }
+        if (addBtnLbl) addBtnLbl.textContent = `إضافة المواد المحددة (${selectedObjs.length}) للسلة`;
+      }
+      if (triggerBtn) {
+        triggerBtn.classList.toggle("active", selectedObjs.length > 0);
+      }
+    }
+    window.syncIssuanceMultiSelectTriggerUI = syncIssuanceMultiSelectTriggerUI;
+
+    function getFilteredIssuanceItemsList() {
+      const selCat = document.getElementById("cart-cat-filter")?.value || "";
+      const selDev = document.getElementById("cart-device-filter")?.value || "";
+      return (state.data.items || [])
+        .filter(rawIt => rawIt && !rawIt.isDeleted)
+        .map(rawIt => parseAndEnrichStructuredItem(rawIt))
+        .filter(it => {
+          if (selCat && it.category !== selCat) return false;
+          if (selDev && it.deviceFull !== selDev) return false;
+          return true;
+        });
+    }
+
+    function renderIssuanceItemMultiSelectDropdown() {
+      const dd = document.getElementById("cart-item-multiselect-dropdown");
+      if (!dd) return;
+      const filtered = getFilteredIssuanceItemsList();
+      if (!state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds = new Set();
+
+      if (filtered.length === 0) {
+        dd.innerHTML = `<div style="padding:16px;text-align:center;color:var(--text-muted);font-size:0.84rem;">لا توجد مواد مطابقة للتصفية الحالية</div>`;
+        return;
+      }
+
+      const checkedInFilteredCount = filtered.filter(it => state.issuanceMultiSelectedIds.has(it.id)).length;
+
+      dd.innerHTML = `
+        <div class="issuance-dd-header">
+          <span style="color:var(--text-secondary);">المواد المتاحة (${filtered.length} مادة) — انقر على المادة لاختيارها أو حدد عدة مربعات:</span>
+          <div style="display:inline-flex;gap:6px;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="toggleSelectAllIssuanceDropdownItems(true, event)" style="padding:2px 8px;font-size:0.74rem;color:#38bdf8;border-color:rgba(56,189,248,0.45);font-weight:800;">
+              ✓ تحديد الكل (${filtered.length})
+            </button>
+            ${checkedInFilteredCount > 0 ? `
+              <button type="button" class="btn btn-outline btn-sm" onclick="toggleSelectAllIssuanceDropdownItems(false, event)" style="padding:2px 8px;font-size:0.74rem;color:#ef4444;border-color:rgba(239,68,68,0.4);">
+                إلغاء التحديد
+              </button>
+            ` : ""}
+          </div>
+        </div>
+        <div>
+          ${filtered.map(it => {
+            const isChecked = state.issuanceMultiSelectedIds.has(it.id);
+            const st = sanitize(it.stock);
+            const safeId = escapeHtml(it.id);
+            return `
+              <div class="issuance-dd-row ${isChecked ? 'is-checked' : ''}" onclick="onIssuanceMultiSelectRowClick(event, '${safeId}')">
+                <div style="display:inline-flex;align-items:center;gap:10px;min-width:0;">
+                  <input type="checkbox" value="${safeId}" ${isChecked ? 'checked' : ''}
+                         onchange="onIssuanceMultiSelectCheckboxChange(event, '${safeId}', this.checked)"
+                         onclick="event.stopPropagation();"
+                         style="width:18px;height:18px;accent-color:#38bdf8;cursor:pointer;flex-shrink:0;" />
+                  <div>${formatItemDisplayHtml(it)}</div>
+                </div>
+                <div style="display:inline-flex;align-items:center;gap:6px;flex-shrink:0;">
+                  <span class="badge badge-subtle" style="font-size:0.7rem;">${escapeHtml(it.category)}</span>
+                  <span class="badge ${st > 0 ? 'badge-success' : 'badge-warning'} tabular-nums" style="font-size:0.74rem;">المتوفر: ${st}</span>
+                </div>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      `;
+    }
+    window.renderIssuanceItemMultiSelectDropdown = renderIssuanceItemMultiSelectDropdown;
+
+    function toggleIssuanceItemMultiSelectDropdown(event) {
+      if (event) event.stopPropagation();
+      const dd = document.getElementById("cart-item-multiselect-dropdown");
+      const searchDd = document.getElementById("cart-instant-search-dropdown");
+      if (searchDd) searchDd.style.display = "none";
+      if (!dd) return;
+      const isOpen = dd.style.display === "block";
+      if (isOpen) {
+        dd.style.display = "none";
+      } else {
+        renderIssuanceItemMultiSelectDropdown();
+        dd.style.display = "block";
+      }
+    }
+    window.toggleIssuanceItemMultiSelectDropdown = toggleIssuanceItemMultiSelectDropdown;
+
+    function onIssuanceMultiSelectCheckboxChange(event, itemId, isChecked) {
+      if (event) event.stopPropagation();
+      if (!state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds = new Set();
+      if (isChecked) {
+        state.issuanceMultiSelectedIds.add(itemId);
+      } else {
+        state.issuanceMultiSelectedIds.delete(itemId);
+      }
+      renderIssuanceItemMultiSelectDropdown();
+      syncIssuanceMultiSelectTriggerUI();
+    }
+    window.onIssuanceMultiSelectCheckboxChange = onIssuanceMultiSelectCheckboxChange;
+
+    // عند النقر المباشر على سطر المادة في القائمة المنسدلة: إذا كان هناك تحديد متعدد نشط يبدل حالة المربع، وإلا يختار المادة مباشرة ويغلق القائمة
+    function onIssuanceMultiSelectRowClick(event, itemId) {
+      if (event) event.stopPropagation();
+      if (!state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds = new Set();
+      if (state.issuanceMultiSelectedIds.size > 1 || (state.issuanceMultiSelectedIds.size === 1 && !state.issuanceMultiSelectedIds.has(itemId))) {
+        if (state.issuanceMultiSelectedIds.has(itemId)) {
+          state.issuanceMultiSelectedIds.delete(itemId);
+        } else {
+          state.issuanceMultiSelectedIds.add(itemId);
+        }
+        renderIssuanceItemMultiSelectDropdown();
+        syncIssuanceMultiSelectTriggerUI();
+      } else {
+        state.issuanceMultiSelectedIds.clear();
+        state.issuanceMultiSelectedIds.add(itemId);
+        syncIssuanceMultiSelectTriggerUI();
+        const dd = document.getElementById("cart-item-multiselect-dropdown");
+        if (dd) dd.style.display = "none";
+      }
+    }
+    window.onIssuanceMultiSelectRowClick = onIssuanceMultiSelectRowClick;
+
+    function toggleSelectAllIssuanceDropdownItems(selectAll, event) {
+      if (event) event.stopPropagation();
+      if (!state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds = new Set();
+      const filtered = getFilteredIssuanceItemsList();
+      if (selectAll) {
+        filtered.forEach(it => state.issuanceMultiSelectedIds.add(it.id));
+      } else {
+        filtered.forEach(it => state.issuanceMultiSelectedIds.delete(it.id));
+      }
+      renderIssuanceItemMultiSelectDropdown();
+      syncIssuanceMultiSelectTriggerUI();
+    }
+    window.toggleSelectAllIssuanceDropdownItems = toggleSelectAllIssuanceDropdownItems;
+
+    // 1. البحث الفوري (#cart-quick-ref-search): يبحث في كل المخزون وعند النقر على نتيجة يملأ الصنف والجهاز والمادة تلقائياً، ويدعم التحديد المتعدد (مثل 415A للأربع ألوان)
+    function onIssuanceQuickSearchInput(rawQuery, showDropdown = true) {
+      const q = String(rawQuery || "").trim().toLowerCase();
+      const clearBtn = document.getElementById("btn-clear-issuance-search");
+      const searchDd = document.getElementById("cart-instant-search-dropdown");
+      const searchBadge = document.getElementById("cart-instant-search-badge");
+
+      if (clearBtn) clearBtn.style.display = q ? "block" : "none";
+      if (!q) {
+        if (searchDd) searchDd.style.display = "none";
+        if (searchBadge) searchBadge.style.display = "none";
+        return;
+      }
+
+      const matches = (state.data.items || [])
+        .filter(rawIt => rawIt && !rawIt.isDeleted)
+        .map(rawIt => parseAndEnrichStructuredItem(rawIt))
+        .filter(it => {
+          const hay = `${it.shortRef} ${it.deviceModel} ${it.deviceFull} ${it.colorTag} ${it.specDetail} ${it.category} ${it.name}`.toLowerCase();
+          return hay.includes(q);
+        });
+
+      if (searchBadge) {
+        searchBadge.style.display = "inline-flex";
+        searchBadge.textContent = `${matches.length} نتيجة مطابقة`;
+      }
+
+      if (!searchDd || !showDropdown) return;
+
+      if (matches.length === 0) {
+        searchDd.innerHTML = `<div style="padding:14px;text-align:center;color:var(--text-muted);font-size:0.84rem;">لا توجد مادة مطابقة لـ "${escapeHtml(rawQuery)}"</div>`;
+        searchDd.style.display = "block";
+        return;
+      }
+
+      if (!state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds = new Set();
+
+      searchDd.innerHTML = `
+        <div class="issuance-dd-header">
+          <span style="color:#38bdf8;">نتائج البحث الفوري (${matches.length} مادة) — اضغط على المادة لتعبئة الخانات تلقائياً أو حدد عدة مواد:</span>
+          ${matches.length > 1 ? `
+            <button type="button" class="btn btn-outline btn-sm" onclick="selectAllQuickSearchResults(event)" style="padding:2px 9px;font-size:0.74rem;color:#38bdf8;border-color:#38bdf8;font-weight:800;">
+              ✓ تحديد كل النتائج (${matches.length})
+            </button>
+          ` : ""}
+        </div>
+        <div>
+          ${matches.map(it => {
+            const isChecked = state.issuanceMultiSelectedIds.has(it.id);
+            const st = sanitize(it.stock);
+            const safeId = escapeHtml(it.id);
+            return `
+              <div class="issuance-dd-row ${isChecked ? 'is-checked' : ''}" onclick="pickSingleItemFromQuickSearch('${safeId}', event)">
+                <div style="display:inline-flex;align-items:center;gap:10px;min-width:0;">
+                  <input type="checkbox" value="${safeId}" ${isChecked ? 'checked' : ''}
+                         onchange="toggleItemFromQuickSearchCheckbox('${safeId}', this.checked, event)"
+                         onclick="event.stopPropagation();"
+                         style="width:18px;height:18px;accent-color:#38bdf8;cursor:pointer;flex-shrink:0;" />
+                  <div>${formatItemDisplayHtml(it)}</div>
+                </div>
+                <div style="display:inline-flex;align-items:center;gap:6px;flex-shrink:0;">
+                  <span class="badge badge-subtle" style="font-size:0.7rem;">${escapeHtml(it.category)}</span>
+                  <span class="badge ${st > 0 ? 'badge-success' : 'badge-warning'} tabular-nums" style="font-size:0.74rem;">المتوفر: ${st}</span>
+                </div>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      `;
+      searchDd.style.display = "block";
+    }
+    window.onIssuanceQuickSearchInput = onIssuanceQuickSearchInput;
+
+    // عند النقر على مادة من نتائج "بحث فوري": تُملأ خانة الصنف + خانة الجهاز المرتبط + خانة المادة تلقائياً!
+    function pickSingleItemFromQuickSearch(itemId, event) {
+      if (event) event.stopPropagation();
+      const rawIt = (state.data.items || []).find(i => i && i.id === itemId);
+      if (!rawIt) return;
+      const it = parseAndEnrichStructuredItem(rawIt);
+
+      const catSelect = document.getElementById("cart-cat-filter");
+      if (catSelect) catSelect.value = it.category;
+
+      populateIssuanceDeviceFilterDropdown();
+      const devSelect = document.getElementById("cart-device-filter");
+      if (devSelect) {
+        devSelect.value = it.deviceFull || "";
+      }
+
+      onCategoryFilterChanged(true);
+
+      if (!state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds = new Set();
+      state.issuanceMultiSelectedIds.clear();
+      state.issuanceMultiSelectedIds.add(it.id);
+      syncIssuanceMultiSelectTriggerUI();
+
+      const searchDd = document.getElementById("cart-instant-search-dropdown");
+      if (searchDd) searchDd.style.display = "none";
+    }
+    window.pickSingleItemFromQuickSearch = pickSingleItemFromQuickSearch;
+
+    function toggleItemFromQuickSearchCheckbox(itemId, isChecked, event) {
+      if (event) event.stopPropagation();
+      const rawIt = (state.data.items || []).find(i => i && i.id === itemId);
+      if (!rawIt) return;
+      const it = parseAndEnrichStructuredItem(rawIt);
+
+      if (!state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds = new Set();
+      if (isChecked) {
+        state.issuanceMultiSelectedIds.add(itemId);
+        // ملء الصنف والجهاز تلقائياً ليطابق المادة المختارة
+        const catSelect = document.getElementById("cart-cat-filter");
+        if (catSelect && !catSelect.value) {
+          catSelect.value = it.category;
+          populateIssuanceDeviceFilterDropdown();
+        }
+        const devSelect = document.getElementById("cart-device-filter");
+        if (devSelect && it.deviceFull && !devSelect.value) {
+          devSelect.value = it.deviceFull;
+        }
+        onCategoryFilterChanged(true);
+      } else {
+        state.issuanceMultiSelectedIds.delete(itemId);
+      }
+
+      const searchInput = document.getElementById("cart-quick-ref-search");
+      onIssuanceQuickSearchInput(searchInput?.value || "", true);
+      syncIssuanceMultiSelectTriggerUI();
+    }
+    window.toggleItemFromQuickSearchCheckbox = toggleItemFromQuickSearchCheckbox;
+
+    function selectAllQuickSearchResults(event) {
+      if (event) event.stopPropagation();
+      const q = String(document.getElementById("cart-quick-ref-search")?.value || "").trim().toLowerCase();
+      if (!q) return;
+      const matches = (state.data.items || [])
+        .filter(rawIt => rawIt && !rawIt.isDeleted)
+        .map(rawIt => parseAndEnrichStructuredItem(rawIt))
+        .filter(it => {
+          const hay = `${it.shortRef} ${it.deviceModel} ${it.deviceFull} ${it.colorTag} ${it.specDetail} ${it.category} ${it.name}`.toLowerCase();
+          return hay.includes(q);
+        });
+      if (matches.length === 0) return;
+
+      if (!state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds = new Set();
+      state.issuanceMultiSelectedIds.clear();
+      matches.forEach(m => state.issuanceMultiSelectedIds.add(m.id));
+
+      const first = matches[0];
+      const allSameCat = matches.every(m => m.category === first.category);
+      const allSameDev = matches.every(m => m.deviceFull === first.deviceFull);
+
+      const catSelect = document.getElementById("cart-cat-filter");
+      if (catSelect && allSameCat) {
+        catSelect.value = first.category;
+      }
+      populateIssuanceDeviceFilterDropdown();
+      const devSelect = document.getElementById("cart-device-filter");
+      if (devSelect && allSameDev && first.deviceFull) {
+        devSelect.value = first.deviceFull;
+      }
+      onCategoryFilterChanged(true);
+      syncIssuanceMultiSelectTriggerUI();
+
+      const searchDd = document.getElementById("cart-instant-search-dropdown");
+      if (searchDd) searchDd.style.display = "none";
+      showToast(`✓ تم تحديد ${matches.length} مواد مطابقة للبحث وتعبئة بياناتها تلقائياً`, "info");
+    }
+    window.selectAllQuickSearchResults = selectAllQuickSearchResults;
+
+    function clearIssuanceQuickSearch() {
+      const inp = document.getElementById("cart-quick-ref-search");
+      const clearBtn = document.getElementById("btn-clear-issuance-search");
+      const searchDd = document.getElementById("cart-instant-search-dropdown");
+      const searchBadge = document.getElementById("cart-instant-search-badge");
+      if (inp) inp.value = "";
+      if (clearBtn) clearBtn.style.display = "none";
+      if (searchDd) searchDd.style.display = "none";
+      if (searchBadge) searchBadge.style.display = "none";
+    }
+    window.clearIssuanceQuickSearch = clearIssuanceQuickSearch;
+
+    // إغلاق القوائم المنسدلة عند النقر خارجها
+    document.addEventListener("click", (e) => {
+      const multiselectBtn = document.getElementById("cart-item-multiselect-btn");
+      const multiselectDd = document.getElementById("cart-item-multiselect-dropdown");
+      if (multiselectDd && multiselectDd.style.display === "block") {
+        if (!multiselectDd.contains(e.target) && (!multiselectBtn || !multiselectBtn.contains(e.target))) {
+          multiselectDd.style.display = "none";
+        }
+      }
+      const searchInp = document.getElementById("cart-quick-ref-search");
+      const searchDd = document.getElementById("cart-instant-search-dropdown");
+      if (searchDd && searchDd.style.display === "block") {
+        if (!searchDd.contains(e.target) && (!searchInp || !searchInp.contains(e.target))) {
+          searchDd.style.display = "none";
+        }
+      }
+    });
+
+    // 2. تحديث قائمة الأجهزة المرتبطة بالصنف المختار (#cart-device-filter)
+    function populateIssuanceDeviceFilterDropdown() {
+      const devGroup = document.getElementById("cart-device-filter-group");
+      const devSelect = document.getElementById("cart-device-filter");
+      const devLabel = document.getElementById("cart-device-filter-label");
+      const devBadge = document.getElementById("cart-device-count-badge");
+      if (!devSelect) return;
+
+      const catVal = document.getElementById("cart-cat-filter")?.value || "";
+      const schema = catVal ? getCategorySchemaV2(catVal) : { mode: "device" };
+
+      // إذا اختار المستخدم صنفاً غير مرتبط بأجهزة (مثل كابلات أو أدوات التخزين أو المطبوعات)، نخفي خانة الجهاز المرتبط لعدم الحاجة إليها
+      if (catVal && schema.mode !== "device") {
+        if (devGroup) devGroup.style.display = "none";
+        devSelect.value = "";
+        return;
+      }
+
+      if (devGroup) devGroup.style.display = "block";
+      const prevDev = devSelect.value;
+      const devices = getUniqueLinkedDevicesList(catVal);
+
+      if (devLabel) {
+        if (/طابعات/.test(catVal)) devLabel.textContent = "الطابعات المرتبطة بهذا الصنف";
+        else if (/نسخ/.test(catVal)) devLabel.textContent = "آلات النسخ المرتبطة بهذا الصنف";
+        else if (/فاكس/.test(catVal)) devLabel.textContent = "أجهزة الفاكس المرتبطة بهذا الصنف";
+        else devLabel.textContent = "الأجهزة المرتبطة بالصنف (طابعة / ناسخة / فاكس)";
+      }
+
+      devSelect.innerHTML = `<option value="">-- كافة الأجهزة المرتبطة (${devices.length} جهاز) --</option>` +
+        devices.map(d => `<option value="${escapeHtml(d.deviceFull)}">${escapeHtml(d.deviceModel)} (${d.itemsCount} مادة)</option>`).join("");
+
+      if (prevDev && devices.some(d => d.deviceFull === prevDev)) {
+        devSelect.value = prevDev;
+      } else {
+        devSelect.value = "";
+      }
+
+      if (devBadge) {
+        devBadge.textContent = devSelect.value ? "جهاز محدد" : `${devices.length} جهازاً`;
+      }
+    }
+    window.populateIssuanceDeviceFilterDropdown = populateIssuanceDeviceFilterDropdown;
+
+    // عند اختيار جهاز معين (مثل طابعة بالألوان أو طابعة عادية): تملأ المواد المرتبطة بهذا الجهاز مباشرة وتفتح للاختيار المتعدد!
+    function onIssuanceDeviceFilterChanged() {
+      const devVal = document.getElementById("cart-device-filter")?.value || "";
+      const catSelect = document.getElementById("cart-cat-filter");
+
+      if (devVal) {
+        const matchingItems = (state.data.items || [])
+          .filter(rawIt => rawIt && !rawIt.isDeleted)
+          .map(rawIt => parseAndEnrichStructuredItem(rawIt))
+          .filter(it => it.deviceFull === devVal && (!catSelect?.value || it.category === catSelect.value));
+
+        // إذا لم يكن الصنف محدداً وكانت كل مواد الجهاز تنتمي لصنف واحد، نحدد الصنف تلقائياً
+        if (catSelect && !catSelect.value && matchingItems.length > 0) {
+          const firstCat = matchingItems[0].category;
+          if (matchingItems.every(m => m.category === firstCat)) {
+            catSelect.value = firstCat;
+          }
+        }
+
+        onCategoryFilterChanged(true);
+
+        if (!state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds = new Set();
+        state.issuanceMultiSelectedIds.clear();
+        matchingItems.forEach(m => state.issuanceMultiSelectedIds.add(m.id));
+        syncIssuanceMultiSelectTriggerUI();
+
+        // إذا كان للجهاز عدة مواد (مثل الأربع ألوان في طابعة ملونة)، نفتح قائمة الاختيار المتعدد تلقائياً ليرى المستخدم الأربع ألوان محددة أمامه ويتحكم فيها!
+        const dd = document.getElementById("cart-item-multiselect-dropdown");
+        if (matchingItems.length > 1 && dd) {
+          renderIssuanceItemMultiSelectDropdown();
+          dd.style.display = "block";
+        } else if (dd) {
+          dd.style.display = "none";
+        }
+      } else {
+        if (state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds.clear();
+        onCategoryFilterChanged(true);
+        syncIssuanceMultiSelectTriggerUI();
+      }
+    }
+    window.onIssuanceDeviceFilterChanged = onIssuanceDeviceFilterChanged;
+
+    onCategoryFilterChanged = function(keepDeviceSelection = false) {
+      const catSelect = document.getElementById("cart-cat-filter");
+      const itemSelect = document.getElementById("cart-item-select");
+      const itemsInCatBadge = document.getElementById("items-in-cat-badge");
+      if (!itemSelect) return;
+
+      if (!keepDeviceSelection) {
+        if (state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds.clear();
+        populateIssuanceDeviceFilterDropdown();
+      } else {
+        const devBadge = document.getElementById("cart-device-count-badge");
+        const devSelect = document.getElementById("cart-device-filter");
+        if (devBadge && devSelect && devSelect.value) {
+          devBadge.textContent = "جهاز محدد";
         }
       }
 
-      // ب) في عملية التوزيع (#bulk-distribution-view المرحلة 1)
+      const filtered = getFilteredIssuanceItemsList();
+      if (itemsInCatBadge) {
+        itemsInCatBadge.textContent = `${filtered.length} مادة متاحة`;
+      }
+
+      itemSelect.innerHTML = '<option value="">-- اختر مادة من المخزون --</option>';
+      filtered.forEach(it => {
+        const opt = document.createElement("option");
+        opt.value = it.id;
+        const curStock = sanitize(it.stock);
+        opt.textContent = `${formatItemDisplayText(it)} (المتوفر: ${curStock})`;
+        opt.title = formatCertificateItemCellPlainText(it);
+        itemSelect.appendChild(opt);
+      });
+
+      if (filtered.length === 1 && (!state.issuanceMultiSelectedIds || state.issuanceMultiSelectedIds.size === 0)) {
+        if (!state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds = new Set();
+        state.issuanceMultiSelectedIds.add(filtered[0].id);
+      }
+
+      renderIssuanceItemMultiSelectDropdown();
+      syncIssuanceMultiSelectTriggerUI();
+    };
+    window.onCategoryFilterChanged = onCategoryFilterChanged;
+
+    // ترقية addItemToCart لإضافة مادة مفردة أو عدة مواد محددة (مثل الأربع ألوان) دفعة واحدة للسلة
+    addItemToCart = function() {
+      const itemSelect = document.getElementById("cart-item-select");
+      const qtyInput = document.getElementById("cart-item-qty");
+      const notesInput = document.getElementById("cart-item-notes");
+
+      const selectedIds = (state.issuanceMultiSelectedIds && state.issuanceMultiSelectedIds.size > 0)
+        ? Array.from(state.issuanceMultiSelectedIds)
+        : (itemSelect && itemSelect.value ? [itemSelect.value] : []);
+
+      if (selectedIds.length === 0) {
+        showToast("يرجى اختيار مادة أو عدة مواد من المخزون أولاً", "warning");
+        return;
+      }
+
+      const qty = parseInt(qtyInput?.value, 10);
+      if (isNaN(qty) || qty <= 0) {
+        showToast("الكمية المطلوبة يجب أن تكون رقماً أكبر من صفر", "warning");
+        return;
+      }
+
+      const noteVal = (notesInput?.value || "").trim();
+      if (noteVal && typeof registerQuickNoteUsage === "function") {
+        registerQuickNoteUsage(noteVal);
+      }
+
+      let addedCount = 0;
+      let lastAddedName = "";
+
+      selectedIds.forEach(id => {
+        const rawItem = (state.data.items || []).find(i => i && i.id === id);
+        if (!rawItem) return;
+        const item = parseAndEnrichStructuredItem(rawItem);
+        lastAddedName = item.shortRef || item.name;
+
+        const existingInCart = state.cart.find(c => c.id === item.id);
+        if (existingInCart) {
+          existingInCart.qty += qty;
+          if (noteVal) {
+            existingInCart.notes = existingInCart.notes ? `${existingInCart.notes} / ${noteVal}` : noteVal;
+          }
+        } else {
+          state.cart.push({
+            id: item.id,
+            name: item.name,
+            category: item.category,
+            shortRef: item.shortRef,
+            deviceType: item.deviceType,
+            deviceModel: item.deviceModel,
+            deviceFull: item.deviceFull,
+            colorTag: item.colorTag,
+            specDetail: item.specDetail,
+            qty: qty,
+            notes: noteVal
+          });
+        }
+        addedCount++;
+      });
+
+      if (notesInput) notesInput.value = "";
+      if (qtyInput) qtyInput.value = 1;
+      if (state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds.clear();
+      clearIssuanceQuickSearch();
+      syncIssuanceMultiSelectTriggerUI();
+      const dd = document.getElementById("cart-item-multiselect-dropdown");
+      if (dd) dd.style.display = "none";
+
+      renderCartTable();
+
+      if (addedCount === 1) {
+        showCenterToast(`✓ تمت إضافة ${qty} قطعة من "${lastAddedName}" إلى السلة بنجاح`);
+      } else if (addedCount > 1) {
+        showCenterToast(`✓ تمت إضافة (${addedCount}) مواد محددة (${qty} قطعة لكل مادة) إلى السلة بنجاح`);
+      }
+    };
+    window.addItemToCart = addItemToCart;
+
+    // =========================================================================
+    // حقن الفلاتر المنسقة في عملية التوزيع وجرد المخزون وإدارة المواد والأصناف
+    // =========================================================================
+    function injectStructuredFiltersAndModalsUI() {
+      // أ) في عملية التوزيع (#bulk-distribution-view المرحلة 1)
       const bulkCatSelect = document.getElementById("bulk-pool-cat-select");
       if (bulkCatSelect && !document.getElementById("bulk-pool-device-select")) {
         const catGroup = bulkCatSelect.closest(".form-group");
         if (catGroup) {
           const bulkDevWrap = document.createElement("div");
-          bulkDevWrap.style.cssText = "display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:8px;padding:10px 12px;background:var(--bg-card);border:1px solid rgba(56,189,248,0.28);border-radius:10px;";
+          bulkDevWrap.id = "bulk-pool-device-filter-wrap";
+          bulkDevWrap.style.cssText = "display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:10px;padding:10px 12px;background:var(--bg-card);border:1px solid rgba(56,189,248,0.28);border-radius:10px;";
           bulkDevWrap.innerHTML = `
             <div>
-              <label class="form-label" for="bulk-pool-device-select" style="font-weight:800;font-size:0.79rem;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;">
-                <span>🖨️ تصفية المواد بالجهاز المرتبط (طابعة / ناسخة / فاكس):</span>
+              <label class="form-label" for="bulk-pool-device-select" style="font-weight:800;font-size:0.8rem;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;">
+                <span>🖨️ تصفية بالأجهزة المرتبطة (طابعة / ناسخة / فاكس):</span>
               </label>
-              <select id="bulk-pool-device-select" class="form-control" onchange="onBulkDeviceFilterChange()" style="height:36px;font-size:0.82rem;">
+              <select id="bulk-pool-device-select" class="form-control" onchange="onBulkDeviceFilterChange()" style="height:38px;font-size:0.83rem;">
                 <option value="">-- كافة الأجهزة والموديلات --</option>
               </select>
             </div>
             <div style="display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap;">
-              <button type="button" id="btn-bulk-select-device-kit" class="btn btn-outline btn-sm" onclick="selectAllItemsOfSelectedBulkDevice()" style="height:36px;font-size:0.78rem;font-weight:800;color:#38bdf8;border-color:rgba(56,189,248,0.45);display:none;">
+              <button type="button" id="btn-bulk-select-device-kit" class="btn btn-outline btn-sm" onclick="selectAllItemsOfSelectedBulkDevice()" style="height:38px;font-size:0.79rem;font-weight:800;color:#38bdf8;border-color:rgba(56,189,248,0.45);display:none;">
                 ✓ تحديد جميع مواد هذا الجهاز (طقم الألوان/الدروم)
               </button>
-              <button type="button" class="btn btn-outline btn-sm" onclick="resetBulkDeviceAndSearchFilters()" style="height:36px;font-size:0.76rem;">
+              <button type="button" class="btn btn-outline btn-sm" onclick="resetBulkDeviceAndSearchFilters()" style="height:38px;font-size:0.78rem;">
                 إظهار كل المواد
               </button>
             </div>
@@ -33528,51 +34276,61 @@ ${itemsText}
         }
       }
 
-      // ج) في صفحة جرد المخزون (#inventory-view)
+      // ب) في صفحة جرد المخزون (#inventory-view): وضع فلتر الجهاز في form-group مستقل ومتناسق الأبعاد
       const invCatFilter = document.getElementById("inventory-cat-filter");
       if (invCatFilter && !document.getElementById("inventory-device-filter")) {
-        const devSelect = document.createElement("select");
-        devSelect.id = "inventory-device-filter";
-        devSelect.className = "form-control";
-        devSelect.style.cssText = "max-width:230px;height:36px;font-size:0.82rem;";
-        devSelect.innerHTML = '<option value="">-- كافة الأجهزة المرتبطة --</option>';
-        devSelect.onchange = function() { renderInventoryTable(); };
-        invCatFilter.parentNode.insertBefore(devSelect, invCatFilter.nextSibling);
+        const catFormGroup = invCatFilter.closest(".form-group");
+        if (catFormGroup && catFormGroup.parentNode) {
+          const devFormGroup = document.createElement("div");
+          devFormGroup.className = "form-group";
+          devFormGroup.id = "inventory-device-filter-group";
+          devFormGroup.style.marginBottom = "0";
+          devFormGroup.innerHTML = `
+            <label class="form-label" for="inventory-device-filter" style="font-size: 0.78rem; margin-bottom: 4px;">تصفية بالجهاز المرتبط</label>
+            <select id="inventory-device-filter" class="form-control" onchange="renderInventoryTable()">
+              <option value="">كافة الأجهزة المرتبطة</option>
+            </select>
+          `;
+          catFormGroup.parentNode.insertBefore(devFormGroup, catFormGroup.nextSibling);
+        }
       }
 
-      // د) في الإعدادات -> 2. إدارة المواد (#settings-pane-items)
+      // ج) في الإعدادات -> 2. إدارة المواد (#settings-pane-items)
       const setItemsCatFilter = document.getElementById("settings-items-cat-filter");
       if (setItemsCatFilter && !document.getElementById("settings-items-device-filter")) {
         const setDevSel = document.createElement("select");
         setDevSel.id = "settings-items-device-filter";
         setDevSel.className = "form-control";
-        setDevSel.style.cssText = "flex: 1 1 200px; min-width: 150px;";
+        setDevSel.style.cssText = "flex: 1 1 220px; min-width: 180px;";
         setDevSel.innerHTML = '<option value="">-- كافة الأجهزة المرتبطة --</option>';
         setDevSel.onchange = function() { renderSettingsItemsTable(); };
         setItemsCatFilter.parentNode.insertBefore(setDevSel, setItemsCatFilter.nextSibling);
       }
 
-      // هـ) في الإعدادات -> 1. إدارة الأصناف (#settings-pane-cats): إضافة محدد نمط هيكلة الصنف الجديد
+      // د) في الإعدادات -> 1. إدارة الأصناف (#settings-pane-cats): توسيع محدد نمط هيكلة الصنف الجديد ليظهر كاملاً بدون اقتطاع
       const newCatInput = document.getElementById("new-category-name-input");
       if (newCatInput && !document.getElementById("new-category-schema-mode")) {
+        const parentBar = newCatInput.parentNode;
+        if (parentBar) {
+          parentBar.style.maxWidth = "820px";
+          parentBar.style.flexWrap = "wrap";
+        }
         const modeSelect = document.createElement("select");
         modeSelect.id = "new-category-schema-mode";
         modeSelect.className = "form-control";
-        modeSelect.style.cssText = "max-width:230px;font-size:0.8rem;";
+        modeSelect.style.cssText = "flex: 1 1 300px; min-width: 280px; font-size: 0.83rem; height: 38px;";
         modeSelect.innerHTML = `
-          <option value="device">نمط جهاز (ريفرونس + جهاز + لون)</option>
-          <option value="spec">نمط مواصفة/موضوع (اسم + مواصفة)</option>
-          <option value="simple">نمط بسيط (اسم المادة فقط)</option>
+          <option value="device">🖨️ نمط جهاز (ريفرونس + جهاز + لون)</option>
+          <option value="spec">📋 نمط مواصفة أو موضوع (اسم + مواصفة)</option>
+          <option value="simple">📦 نمط بسيط (اسم المادة فقط)</option>
         `;
         newCatInput.parentNode.insertBefore(modeSelect, newCatInput.nextSibling);
       }
 
-      // و) ترقية نافذة إضافة مادة جديدة (#new-item-modal) ونافذة تعديل مادة (#edit-item-modal) بالحقول المقسمة الثلاثة
       upgradeItemModalsWithStructuredFields();
     }
 
     function upgradeItemModalsWithStructuredFields() {
-      // DataList مشترك لجميع الأجهزة المسجلة في مخزون سطات للإكمال التلقائي السريع
       if (!document.getElementById("structured-devices-datalist")) {
         const dl = document.createElement("datalist");
         dl.id = "structured-devices-datalist";
@@ -33912,152 +34670,21 @@ ${itemsText}
     window.saveEditedItem = saveEditedItem;
 
     // =========================================================================
-    // 2. تصفية واختيار المواد في "تسليم جديد" (#issuance-view) بالجهاز أو الريفرونس
-    // =========================================================================
-    function populateIssuanceDeviceFilterDropdown() {
-      injectStructuredFiltersAndModalsUI();
-      const devSelect = document.getElementById("cart-device-filter");
-      if (!devSelect) return;
-      const catVal = document.getElementById("cart-cat-filter")?.value || "";
-      const prevDev = devSelect.value;
-      const devices = getUniqueLinkedDevicesList(catVal);
-      devSelect.innerHTML = `<option value="">-- كافة الأجهزة المرتبطة (${devices.length} جهاز) --</option>` +
-        devices.map(d => `<option value="${escapeHtml(d.deviceFull)}">${escapeHtml(d.deviceModel)} (${d.itemsCount} مادة)</option>`).join("");
-      if (prevDev && devices.some(d => d.deviceFull === prevDev)) {
-        devSelect.value = prevDev;
-      } else {
-        devSelect.value = "";
-      }
-      const badge = document.getElementById("cart-device-count-badge");
-      if (badge) {
-        badge.textContent = devSelect.value ? `جهاز محدد` : `${devices.length} جهاز مرتبط`;
-      }
-      const kitBtn = document.getElementById("btn-add-all-device-kit");
-      if (kitBtn) {
-        const selectedDevObj = devices.find(d => d.deviceFull === devSelect.value);
-        kitBtn.style.display = (selectedDevObj && selectedDevObj.itemsCount >= 1) ? "inline-flex" : "none";
-      }
-    }
-
-    function onIssuanceDeviceFilterChanged() {
-      onCategoryFilterChanged(true);
-    }
-    window.onIssuanceDeviceFilterChanged = onIssuanceDeviceFilterChanged;
-
-    onCategoryFilterChanged = function(keepDeviceSelection = false) {
-      injectStructuredFiltersAndModalsUI();
-      const catSelect = document.getElementById("cart-cat-filter");
-      const itemSelect = document.getElementById("cart-item-select");
-      const itemsInCatBadge = document.getElementById("items-in-cat-badge");
-      if (!itemSelect) return;
-
-      if (!keepDeviceSelection) {
-        populateIssuanceDeviceFilterDropdown();
-      } else {
-        const devSelect = document.getElementById("cart-device-filter");
-        const kitBtn = document.getElementById("btn-add-all-device-kit");
-        if (devSelect && kitBtn) {
-          kitBtn.style.display = devSelect.value ? "inline-flex" : "none";
-        }
-      }
-
-      const selCat = catSelect ? catSelect.value : "";
-      const selDev = document.getElementById("cart-device-filter")?.value || "";
-      const searchQ = (document.getElementById("cart-quick-ref-search")?.value || "").trim().toLowerCase();
-
-      itemSelect.innerHTML = '<option value="">-- اختر مادة من المخزون (الريفرونس / الجهاز / اللون) --</option>';
-
-      const filtered = (state.data.items || []).filter(rawIt => {
-        if (!rawIt || rawIt.isDeleted) return false;
-        const it = parseAndEnrichStructuredItem(rawIt);
-        if (selCat && it.category !== selCat) return false;
-        if (selDev && it.deviceFull !== selDev) return false;
-        if (searchQ) {
-          const hay = `${it.shortRef} ${it.deviceFull} ${it.deviceModel} ${it.colorTag} ${it.specDetail} ${it.category} ${it.name}`.toLowerCase();
-          if (!hay.includes(searchQ)) return false;
-        }
-        return true;
-      });
-
-      if (itemsInCatBadge) {
-        itemsInCatBadge.textContent = `${filtered.length} مادة متاحة`;
-      }
-
-      filtered.forEach(rawIt => {
-        const it = parseAndEnrichStructuredItem(rawIt);
-        const opt = document.createElement("option");
-        opt.value = it.id;
-        const curStock = sanitize(it.stock);
-        opt.textContent = `${formatItemDisplayText(it)} (المتوفر: ${curStock})`;
-        opt.title = formatCertificateItemCellPlainText(it);
-        itemSelect.appendChild(opt);
-      });
-
-      if (filtered.length === 1) {
-        itemSelect.value = filtered[0].id;
-      }
-
-      onItemSelectChanged();
-    };
-    window.onCategoryFilterChanged = onCategoryFilterChanged;
-
-    // إضافة جميع المواد المرتبطة بالجهاز المختار (طقم الألوان الكامل أو الطونير + الدروم) بنقرة واحدة إلى سلة الإشهاد
-    function addAllDeviceItemsToCart() {
-      const selDev = document.getElementById("cart-device-filter")?.value || "";
-      if (!selDev) {
-        showToast("يرجى اختيار الجهاز المرتبط أولاً من قائمة الأجهزة", "warning");
-        return;
-      }
-      const qtyInput = document.getElementById("cart-item-qty");
-      const notesInput = document.getElementById("cart-item-notes");
-      const qty = Math.max(1, parseInt(qtyInput?.value, 10) || 1);
-      const noteText = (notesInput?.value || "").trim();
-
-      const matching = (state.data.items || []).filter(rawIt => {
-        if (!rawIt || rawIt.isDeleted) return false;
-        const it = parseAndEnrichStructuredItem(rawIt);
-        return it.deviceFull === selDev;
-      });
-
-      if (matching.length === 0) return;
-
-      matching.forEach(rawIt => {
-        const item = parseAndEnrichStructuredItem(rawIt);
-        const existingInCart = state.cart.find(c => c.id === item.id);
-        if (existingInCart) {
-          existingInCart.qty += qty;
-        } else {
-          state.cart.push({
-            id: item.id,
-            name: item.name,
-            category: item.category,
-            shortRef: item.shortRef,
-            deviceType: item.deviceType,
-            deviceModel: item.deviceModel,
-            deviceFull: item.deviceFull,
-            colorTag: item.colorTag,
-            specDetail: item.specDetail,
-            qty: qty,
-            notes: noteText
-          });
-        }
-      });
-
-      renderCartTable();
-      showCenterToast(`✓ تمت إضافة ${matching.length} مواد مرتبطة بالجهاز "${selDev}" (${qty} لكل مادة) إلى السلة`);
-    }
-    window.addAllDeviceItemsToCart = addAllDeviceItemsToCart;
-
-    // =========================================================================
     // 3. ترقية المرحلة 1 من عملية التوزيع (#bulk-distribution-view)
-    //    لدعم التصفية بالجهاز المرتبط وعرض الأعمدة المقسمة (الريفرونس | الجهاز/المواصفة | اللون | المخزون)
     // =========================================================================
     function populateBulkDeviceSelectDropdown() {
       injectStructuredFiltersAndModalsUI();
+      const devWrap = document.getElementById("bulk-pool-device-filter-wrap");
       const devSel = document.getElementById("bulk-pool-device-select");
       if (!devSel) return;
       const catSel = document.getElementById("bulk-pool-cat-select");
       const selectedCat = catSel ? catSel.value : "all";
+      if (selectedCat !== "all" && getCategorySchemaV2(selectedCat).mode !== "device") {
+        if (devWrap) devWrap.style.display = "none";
+        devSel.value = "";
+        return;
+      }
+      if (devWrap) devWrap.style.display = "grid";
       const prevVal = devSel.value;
       const devices = getUniqueLinkedDevicesList(selectedCat === "all" ? "" : selectedCat);
       devSel.innerHTML = `<option value="">-- كافة الأجهزة والموديلات (${devices.length} جهاز) --</option>` +
@@ -34254,27 +34881,35 @@ ${itemsText}
 
     // =========================================================================
     // 4. ترقية جدول جرد المخزون (#inventory-view) وإدارة المواد والأصناف بالإعدادات
+    //    مع توسيع الأعمدة وتفعيل السكرول الأفقي السلس في الهاتف والتابلت والحاسوب
     // =========================================================================
     const _v6RenderInventoryTable = renderInventoryTable;
     renderInventoryTable = function() {
       injectStructuredFiltersAndModalsUI();
+      const devGroup = document.getElementById("inventory-device-filter-group");
       const devSelect = document.getElementById("inventory-device-filter");
       const catFilterVal = document.getElementById("inventory-cat-filter")?.value || "";
+
       if (devSelect) {
-        const prevDev = devSelect.value;
-        const devs = getUniqueLinkedDevicesList(catFilterVal);
-        devSelect.innerHTML = `<option value="">-- كافة الأجهزة المرتبطة (${devs.length}) --</option>` +
-          devs.map(d => `<option value="${escapeHtml(d.deviceFull)}">${escapeHtml(d.deviceModel)} (${d.itemsCount})</option>`).join("");
-        if (prevDev && devs.some(d => d.deviceFull === prevDev)) {
-          devSelect.value = prevDev;
-        } else {
+        if (catFilterVal && getCategorySchemaV2(catFilterVal).mode !== "device") {
+          if (devGroup) devGroup.style.display = "none";
           devSelect.value = "";
+        } else {
+          if (devGroup) devGroup.style.display = "block";
+          const prevDev = devSelect.value;
+          const devs = getUniqueLinkedDevicesList(catFilterVal);
+          devSelect.innerHTML = `<option value="">كافة الأجهزة المرتبطة (${devs.length})</option>` +
+            devs.map(d => `<option value="${escapeHtml(d.deviceFull)}">${escapeHtml(d.deviceModel)} (${d.itemsCount})</option>`).join("");
+          if (prevDev && devs.some(d => d.deviceFull === prevDev)) {
+            devSelect.value = prevDev;
+          } else {
+            devSelect.value = "";
+          }
         }
       }
 
       _v6RenderInventoryTable();
 
-      // إذا كان فلتر الجهاز مفعلاً في جرد المخزون، نصفي الصفوف المعروضة حسب الجهاز المرتبط
       const activeDev = devSelect ? devSelect.value : "";
       if (activeDev) {
         const tbody = document.getElementById("inventory-table-body");
@@ -34297,12 +34932,12 @@ ${itemsText}
                 : (level === 'good' ? `<span class="badge badge-success">متوفر بوفرة (&gt; ${aMin})</span>` : `<span class="badge badge-warning">رصيد عادي</span>`);
               return `
                 <tr>
-                  <td style="text-align:center;" class="tabular-nums">${idx + 1}</td>
-                  <td><strong class="inventory-item-name" onclick="openEditItemModal('${escapeHtml(item.id)}')" style="cursor:pointer;">${formatItemDisplayHtml(item)}</strong></td>
-                  <td><span class="badge badge-subtle">${escapeHtml(item.category)}</span></td>
-                  <td style="text-align:center;"><strong class="tabular-nums font-bold">${curStock}</strong></td>
-                  <td style="text-align:center;">${statusBadge}</td>
-                  <td style="text-align:center;">
+                  <td style="text-align:center;white-space:nowrap;" class="tabular-nums">${idx + 1}</td>
+                  <td style="min-width:410px;white-space:nowrap;"><strong class="inventory-item-name" onclick="openEditItemModal('${escapeHtml(item.id)}')" style="cursor:pointer;">${formatItemDisplayHtml(item)}</strong></td>
+                  <td style="min-width:150px;white-space:nowrap;"><span class="badge badge-subtle">${escapeHtml(item.category)}</span></td>
+                  <td style="text-align:center;white-space:nowrap;"><strong class="tabular-nums font-bold">${curStock}</strong></td>
+                  <td style="text-align:center;white-space:nowrap;">${statusBadge}</td>
+                  <td style="text-align:center;white-space:nowrap;">
                     <button type="button" class="btn-icon" style="width:30px;height:30px;" onclick="openEditItemModal('${escapeHtml(item.id)}')" title="تعديل المادة">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     </button>
@@ -34316,20 +34951,20 @@ ${itemsText}
     };
     window.renderInventoryTable = renderInventoryTable;
 
-    // ترقية جدول إدارة الأصناف في الإعدادات ليعرض نمط الهيكلة (مرتبط بجهاز / مرتبط بمواصفة أو موضوع / بسيط) مع إمكانية تغييره فوراً
+    // ترقية جدول إدارة الأصناف في الإعدادات (#settings-pane-cats) مع توسيع عمود نمط هيكلة المواد بالصنف ليظهر كاملاً
     renderSettingsCatsTable = function() {
       injectStructuredFiltersAndModalsUI();
       const tbody = document.getElementById('settings-cats-table-body');
       if (!tbody) return;
 
       const theadTr = tbody.closest('table')?.querySelector('thead tr');
-      if (theadTr && theadTr.children.length === 4) {
+      if (theadTr) {
         theadTr.innerHTML = `
-          <th style="width: 40px; text-align: center;">#</th>
-          <th>اسم الصنف</th>
-          <th style="width: 240px; text-align: center;">نمط هيكلة المواد بالصنف</th>
-          <th style="text-align: center; width: 130px;">عدد المواد</th>
-          <th style="text-align: center; width: 120px;">الإجراءات</th>
+          <th style="width: 48px; text-align: center; white-space: nowrap;">#</th>
+          <th style="min-width: 220px; text-align: right; white-space: nowrap;">اسم الصنف</th>
+          <th style="min-width: 340px; text-align: center; white-space: nowrap;">نمط هيكلة المواد بالصنف</th>
+          <th style="text-align: center; min-width: 120px; white-space: nowrap;">عدد المواد</th>
+          <th style="text-align: center; min-width: 110px; white-space: nowrap;">الإجراءات</th>
         `;
       }
 
@@ -34340,20 +34975,20 @@ ${itemsText}
         const curMode = schema.mode || 'spec';
         return `
           <tr>
-            <td style="text-align: center;" class="tabular-nums">${idx + 1}</td>
-            <td><strong>${cEsc}</strong></td>
-            <td style="text-align: center;">
-              <select class="form-control" style="height:30px;font-size:0.76rem;padding:2px 8px;" onchange="updateCategorySchemaMode('${cEsc}', this.value)">
+            <td style="text-align: center; white-space: nowrap;" class="tabular-nums">${idx + 1}</td>
+            <td style="min-width: 220px; white-space: nowrap;"><strong style="font-size: 0.9rem;">${cEsc}</strong></td>
+            <td style="min-width: 340px; text-align: center; white-space: nowrap;">
+              <select class="form-control" style="min-width: 320px; width: 100%; height: 38px; font-size: 0.83rem; padding: 4px 12px; font-weight: 700;" onchange="updateCategorySchemaMode('${cEsc}', this.value)">
                 <option value="device" ${curMode === 'device' ? 'selected' : ''}>🖨️ مرتبط بجهاز (ريفرونس / جهاز / لون)</option>
                 <option value="spec" ${curMode === 'spec' ? 'selected' : ''}>📋 مرتبط بمواصفة أو موضوع (اسم / مواصفة)</option>
                 <option value="simple" ${curMode === 'simple' ? 'selected' : ''}>📦 مادة بسيطة (اسم مباشر)</option>
               </select>
             </td>
-            <td style="text-align: center;">
-              <span class="badge badge-subtle" style="cursor: pointer;" onclick="jumpToCategoryItems('${cEsc}')" title="عرض مواد هذا الصنف">${count} مادة</span>
+            <td style="text-align: center; white-space: nowrap;">
+              <span class="badge badge-subtle" style="cursor: pointer; font-size: 0.8rem; padding: 4px 10px;" onclick="jumpToCategoryItems('${cEsc}')" title="عرض مواد هذا الصنف">${count} مادة</span>
             </td>
-            <td style="text-align: center;">
-              <div style="display: inline-flex; gap: 4px;">
+            <td style="text-align: center; white-space: nowrap;">
+              <div style="display: inline-flex; gap: 6px;">
                 <button type="button" class="btn-icon" onclick="editCategory('${cEsc}')" title="تعديل اسم الصنف" aria-label="تعديل اسم الصنف">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                 </button>
@@ -34409,7 +35044,7 @@ ${itemsText}
     };
     window.addNewCategory = addNewCategory;
 
-    // ترقية جدول إدارة المواد في الإعدادات (#settings-pane-items) لدعم الفلترة بالجهاز والبحث بالريفرونس
+    // ترقية جدول إدارة المواد في الإعدادات (#settings-pane-items) مع توسيع عمود اسم المادة ومواصفاتها ومنع انكساره
     renderSettingsItemsTable = function() {
       injectStructuredFiltersAndModalsUI();
       const tbody = document.getElementById('settings-items-table-body');
@@ -34418,6 +35053,17 @@ ${itemsText}
       const countBadge = document.getElementById('settings-items-count-badge');
       const search = (document.getElementById('settings-items-search')?.value || '').trim().toLowerCase();
       if (!tbody) return;
+
+      const theadTr = tbody.closest('table')?.querySelector('thead tr');
+      if (theadTr) {
+        theadTr.innerHTML = `
+          <th style="width: 45px; text-align: center; white-space: nowrap;">#</th>
+          <th style="min-width: 420px; text-align: right; white-space: nowrap;">بيان المادة والمواصفات</th>
+          <th style="min-width: 160px; white-space: nowrap;">الصنف</th>
+          <th style="text-align: center; min-width: 110px; white-space: nowrap;">الرصيد بالمستودع</th>
+          <th style="text-align: center; min-width: 110px; white-space: nowrap;">الإجراءات</th>
+        `;
+      }
 
       if (catFilterEl) {
         const prevCat = catFilterEl.value;
@@ -34430,14 +35076,20 @@ ${itemsText}
 
       const selectedCat = catFilterEl ? catFilterEl.value : '';
       if (devFilterEl) {
-        const prevDev = devFilterEl.value;
-        const devs = getUniqueLinkedDevicesList(selectedCat);
-        devFilterEl.innerHTML = `<option value="">-- كافة الأجهزة المرتبطة (${devs.length}) --</option>` +
-          devs.map(d => `<option value="${escapeHtml(d.deviceFull)}">${escapeHtml(d.deviceModel)} (${d.itemsCount})</option>`).join('');
-        if (prevDev && devs.some(d => d.deviceFull === prevDev)) {
-          devFilterEl.value = prevDev;
-        } else {
+        if (selectedCat && getCategorySchemaV2(selectedCat).mode !== 'device') {
+          devFilterEl.style.display = 'none';
           devFilterEl.value = '';
+        } else {
+          devFilterEl.style.display = 'block';
+          const prevDev = devFilterEl.value;
+          const devs = getUniqueLinkedDevicesList(selectedCat);
+          devFilterEl.innerHTML = `<option value="">-- كافة الأجهزة المرتبطة (${devs.length}) --</option>` +
+            devs.map(d => `<option value="${escapeHtml(d.deviceFull)}">${escapeHtml(d.deviceModel)} (${d.itemsCount})</option>`).join('');
+          if (prevDev && devs.some(d => d.deviceFull === prevDev)) {
+            devFilterEl.value = prevDev;
+          } else {
+            devFilterEl.value = '';
+          }
         }
       }
       const selectedDev = devFilterEl ? devFilterEl.value : '';
@@ -34473,12 +35125,12 @@ ${itemsText}
         const rowClass = level === 'critical' ? 'inv-row-critical' : (level === 'good' ? 'inv-row-abundant' : 'inv-row-normal');
         return `
         <tr class="${rowClass}">
-          <td style="text-align: center; font-size: 0.75rem;" class="tabular-nums">${idx + 1}</td>
-          <td><strong class="inventory-item-name" onclick="openEditItemModal('${escapeHtml(it.id)}')" title="${nameEsc} (اضغط لتعديل المكونات المقسمة والرصيد)">${smartDisplayHtml}</strong></td>
-          <td><span class="inventory-item-cat">${catEsc}</span></td>
-          <td style="text-align: center;"><strong class="tabular-nums font-bold" style="font-size: 0.84rem;">${stockVal}</strong></td>
-          <td style="text-align: center;">
-            <div style="display: inline-flex; gap: 4px;">
+          <td style="text-align: center; font-size: 0.78rem; white-space: nowrap;" class="tabular-nums">${idx + 1}</td>
+          <td style="min-width: 420px; white-space: nowrap;"><strong class="inventory-item-name" onclick="openEditItemModal('${escapeHtml(it.id)}')" title="${nameEsc} (اضغط لتعديل المكونات المقسمة والرصيد)">${smartDisplayHtml}</strong></td>
+          <td style="min-width: 160px; white-space: nowrap;"><span class="inventory-item-cat">${catEsc}</span></td>
+          <td style="text-align: center; white-space: nowrap;"><strong class="tabular-nums font-bold" style="font-size: 0.86rem;">${stockVal}</strong></td>
+          <td style="text-align: center; white-space: nowrap;">
+            <div style="display: inline-flex; gap: 6px;">
               <button type="button" class="btn-icon" style="width: 28px; height: 28px;" onclick="openEditItemModal('${escapeHtml(it.id)}')" title="تعديل المادة" aria-label="تعديل المادة">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
               </button>
@@ -34492,7 +35144,6 @@ ${itemsText}
     };
     window.renderSettingsItemsTable = renderSettingsItemsTable;
 
-    // دالة ترقية ومزامنة البنية المقسمة V2 مع قاعدة بيانات Firebase السحابية (estock105) بنقرة واحدة أو تلقائياً
     async function forceUpgradeAndSyncStructuredV2ToCloud(showNotification = true) {
       const migrated = migrateAndNormalizeData(state.data, state.profile, false);
       state.data = migrated.data;
@@ -34515,7 +35166,6 @@ ${itemsText}
     }
     window.forceUpgradeAndSyncStructuredV2ToCloud = forceUpgradeAndSyncStructuredV2ToCloud;
 
-    // تفعيل الحقول والفلاتر المهيكلة فور تحميل الصفحة ومزامنة الهيكلة الجديدة
     window.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => {
         injectStructuredFiltersAndModalsUI();
@@ -34679,7 +35329,7 @@ ${itemsText}
               const parsedProfile = JSON.parse(cloudDoc.profileJson);
               const isNonAdmin = !isPrincipalAdminEmail(docKey);
               if (isNonAdmin) parsedData._isNonAdminZeroState = true;
-              const hadOldSchema = (parsedData._schemaVersion !== 'V2_STRUCTURED_2026_11_02');
+              const hadOldSchema = (parsedData._schemaVersion !== 'V2_STRUCTURED_2026_11_02_R2');
               const migrated = migrateAndNormalizeData(parsedData, parsedProfile, isNonAdmin);
               state.data = migrated.data;
               state.profile = migrated.profile;
