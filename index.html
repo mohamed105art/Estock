@@ -29669,7 +29669,24 @@
                   "tertiaryLabel": ""
             }
       },
-      "_schemaVersion": "V2_STRUCTURED_2026_11_03_ARCHIVE_2024_2025"
+      "_schemaVersion": "V2_STRUCTURED_2026_11_03_ANALYTICS_SCOPE",
+      "analyticsScope": {
+            "excludedCategories": [
+                  "المطبوعات، الكتب واللافتات"
+            ],
+            "excludedItemIds": [
+                  "item_1792663374502",
+                  "arch_pb_01",
+                  "arch_pb_02",
+                  "arch_pb_03",
+                  "arch_pb_04",
+                  "arch_pb_05",
+                  "arch_pb_06",
+                  "arch_pb_07",
+                  "arch_pb_08",
+                  "arch_pb_09"
+            ]
+      }
 };
 
     // ألوان متميزة ومتناسقة للجهات
@@ -47167,7 +47184,7 @@ ${itemsText}
        5. صفحة إعدادات مستقلة "10. إعداد وصياغة الإشهاد" لتخصيص عبارات وعناوين الإشهاد الرسمي مع معاينة حية
        ============================================================================ */
 
-    const V2_STRUCTURED_SCHEMA_VERSION = "V2_STRUCTURED_2026_11_03_ARCHIVE_2024_2025";
+    const V2_STRUCTURED_SCHEMA_VERSION = "V2_STRUCTURED_2026_11_03_ANALYTICS_SCOPE";
 
     const DEFAULT_CATEGORY_SCHEMAS = {
       "طونير طابعات": { mode: "device", primaryLabel: "المرجع", secondaryLabel: "الطابعة المرتبطة (Imprimante)", tertiaryLabel: "اللون" },
@@ -47614,15 +47631,19 @@ ${itemsText}
     window.formatCertificateItemCellPlainText = formatCertificateItemCellPlainText;
 
     // استخراج قائمة الأجهزة الحقيقية فقط (الطابعات، آلات النسخ، الفاكس) دون أي كابلات أو أطوال (مثل 1.8m)
-    function getUniqueLinkedDevicesList(categoryFilter = "") {
+    function getUniqueLinkedDevicesList(categoryFilter = "", onlyActiveInAnalytics = false) {
       const normCat = categoryFilter && categoryFilter !== "all" ? normalizeCategoryNameV2(categoryFilter) : "";
       if (normCat && getCategorySchemaV2(normCat).mode !== "device") {
+        return [];
+      }
+      if (onlyActiveInAnalytics && normCat && typeof isCategoryIncludedInAnalytics === "function" && !isCategoryIncludedInAnalytics(normCat)) {
         return [];
       }
       const items = (state && state.data && Array.isArray(state.data.items)) ? state.data.items : [];
       const devMap = new Map();
       items.forEach(rawIt => {
         if (!rawIt || rawIt.isDeleted) return;
+        if (onlyActiveInAnalytics && typeof isItemIncludedInAnalytics === "function" && !isItemIncludedInAnalytics(rawIt)) return;
         const it = parseAndEnrichStructuredItem(rawIt);
         if (getCategorySchemaV2(it.category).mode !== "device") return;
         if (normCat && it.category !== normCat) return;
@@ -47950,6 +47971,33 @@ ${itemsText}
       }
       if (!dataObj.customMultiYearHistory || typeof dataObj.customMultiYearHistory !== "object") {
         dataObj.customMultiYearHistory = {};
+      }
+
+      const defaultExcludedCat = "المطبوعات، الكتب واللافتات";
+      if (!dataObj.analyticsScope || typeof dataObj.analyticsScope !== "object") {
+        const pubIds = (dataObj.items || [])
+          .filter(i => i && i.category === defaultExcludedCat)
+          .map(i => i.id);
+        dataObj.analyticsScope = {
+          excludedCategories: [defaultExcludedCat],
+          excludedItemIds: pubIds
+        };
+      } else {
+        if (!Array.isArray(dataObj.analyticsScope.excludedCategories)) {
+          dataObj.analyticsScope.excludedCategories = [defaultExcludedCat];
+        }
+        if (!Array.isArray(dataObj.analyticsScope.excludedItemIds)) {
+          dataObj.analyticsScope.excludedItemIds = [];
+        }
+        // Ensure any item belonging to an excludedCategory is also in excludedItemIds
+        const exCatSet = new Set(dataObj.analyticsScope.excludedCategories);
+        const exIdSet = new Set(dataObj.analyticsScope.excludedItemIds);
+        (dataObj.items || []).forEach(it => {
+          if (it && exCatSet.has(it.category)) {
+            exIdSet.add(it.id);
+          }
+        });
+        dataObj.analyticsScope.excludedItemIds = Array.from(exIdSet);
       }
 
       dataObj._schemaVersion = V2_STRUCTURED_SCHEMA_VERSION;
@@ -49177,9 +49225,11 @@ ${itemsText}
     //    - إضافة مؤشر "مواد غير مستعملة (0 استهلاك)" في البطاقات العلوية والتوصيات وسرعة النفاد
     // =========================================================================
 
-    function getItemsRankedByDistribution() {
-      const items = (Array.isArray(state.data.items) ? state.data.items : []).filter(i => i && !i.isDeleted);
-      const txs = (Array.isArray(state.data.transactions) ? state.data.transactions : []).filter(t => t && !t.isDeleted);
+    function getItemsRankedByDistribution(includeExcluded = false) {
+      const rawItems = (Array.isArray(state.data.items) ? state.data.items : []).filter(i => i && !i.isDeleted);
+      const items = includeExcluded ? rawItems : rawItems.filter(i => typeof isItemIncludedInAnalytics === "function" ? isItemIncludedInAnalytics(i) : true);
+      const rawTxs = (Array.isArray(state.data.transactions) ? state.data.transactions : []).filter(t => t && !t.isDeleted);
+      const txs = includeExcluded ? rawTxs : (typeof filterTransactionsByAnalyticsScope === "function" ? filterTransactionsByAnalyticsScope(rawTxs) : rawTxs);
       const distMap = {};
       const txCountMap = {};
       items.forEach(it => {
@@ -50125,10 +50175,15 @@ ${itemsText}
     window.calculateAndRenderSimulatedQuota = calculateAndRenderSimulatedQuota;
 
     function buildComprehensiveProcurementAnalytics(safetyMarginPct = 15, filteredTxsOverride = null) {
-      const items = (Array.isArray(state.data.items) ? state.data.items : []).filter(i => i && !i.isDeleted);
-      const txs = Array.isArray(filteredTxsOverride)
+      const items = (Array.isArray(state.data.items) ? state.data.items : [])
+        .filter(i => i && !i.isDeleted)
+        .filter(i => typeof isItemIncludedInAnalytics === "function" ? isItemIncludedInAnalytics(i) : true);
+      const baseTxs = Array.isArray(filteredTxsOverride)
         ? filteredTxsOverride
         : (Array.isArray(state.data.transactions) ? state.data.transactions : []).filter(t => t && !t.isDeleted);
+      const txs = typeof filterTransactionsByAnalyticsScope === "function"
+        ? filterTransactionsByAnalyticsScope(baseTxs)
+        : baseTxs;
 
       const globalYearsSet = new Set();
       txs.forEach(t => {
@@ -50283,7 +50338,8 @@ ${itemsText}
         };
       });
 
-      const categorySummary = (state.data.categories || []).map(catName => {
+      const activeCategoriesList = (state.data.categories || []).filter(catName => typeof isCategoryIncludedInAnalytics === "function" ? isCategoryIncludedInAnalytics(catName) : true);
+      const categorySummary = activeCategoriesList.map(catName => {
         const catItems = enrichedRows.filter(r => r.category === catName);
         const activeInCat = catItems.filter(r => r.totalUnits > 0).length;
         const consumedInCat = catItems.reduce((s, r) => s + r.totalUnits, 0);
@@ -50339,7 +50395,8 @@ ${itemsText}
       const benVal = document.getElementById('ai-filter-destination')?.value || 'all';
 
       const now = new Date(2026, 10, 2);
-      let txs = Array.isArray(state.data.transactions) ? state.data.transactions.filter(t => t && !t.isDeleted) : [];
+      let rawTxs = Array.isArray(state.data.transactions) ? state.data.transactions.filter(t => t && !t.isDeleted) : [];
+      let txs = typeof filterTransactionsByAnalyticsScope === "function" ? filterTransactionsByAnalyticsScope(rawTxs) : rawTxs;
 
       if (tfVal !== 'all') {
         txs = txs.filter(t => {
@@ -50388,13 +50445,16 @@ ${itemsText}
         if (subBtnEntities) subBtnEntities.textContent = 'سلوك المستفيدين';
 
         const catSelect = document.getElementById('ai-filter-category');
-        if (catSelect && catSelect.options.length <= 1) {
-          (state.data.categories || []).forEach(c => {
-            const opt = document.createElement('option');
-            opt.value = c;
-            opt.textContent = c;
-            catSelect.appendChild(opt);
-          });
+        if (catSelect) {
+          const prevCat = catSelect.value || 'all';
+          const activeCats = (state.data.categories || []).filter(c => typeof isCategoryIncludedInAnalytics === "function" ? isCategoryIncludedInAnalytics(c) : true);
+          catSelect.innerHTML = '<option value="all">كافة الأصناف النشطة (' + activeCats.length + ')</option>' +
+            activeCats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+          if (prevCat !== 'all' && activeCats.includes(prevCat)) {
+            catSelect.value = prevCat;
+          } else {
+            catSelect.value = 'all';
+          }
         }
 
         const benSelect = document.getElementById('ai-filter-destination');
@@ -52732,6 +52792,1191 @@ ${itemsText}
     };
     window.renderSettingsItemsTable = renderSettingsItemsTable;
 
+
+    // =========================================================================
+    // 11. محرك "نطاق الإحصائيات والمواد النشطة" (Analytics & Active Items Scope V7.7)
+    //     - يستبعد افتراضياً صنف "المطبوعات، الكتب واللافتات" ومواده من الإحصائيات والتحليل الذكي والتوزيع
+    //     - يفعل باقي الأصناف الـ 11 وموادها كمواد نشطة، مع إمكانية التخصيص الكامل من الإعدادات (تبويب 11)
+    // =========================================================================
+    state.showExcludedItemsInIssuance = false;
+    state.analyticsScopeExpandedCats = new Set();
+    state.analyticsScopeFilterMode = "all"; // all | active | excluded
+
+    function ensureAnalyticsScopeInitialized() {
+      if (!state || !state.data) return { excludedCategories: ["المطبوعات، الكتب واللافتات"], excludedItemIds: [] };
+      const defaultExcludedCat = "المطبوعات، الكتب واللافتات";
+      if (!state.data.analyticsScope || typeof state.data.analyticsScope !== "object") {
+        const pubIds = (state.data.items || [])
+          .filter(i => i && !i.isDeleted && i.category === defaultExcludedCat)
+          .map(i => i.id);
+        state.data.analyticsScope = {
+          excludedCategories: [defaultExcludedCat],
+          excludedItemIds: pubIds
+        };
+      }
+      if (!Array.isArray(state.data.analyticsScope.excludedCategories)) {
+        state.data.analyticsScope.excludedCategories = [defaultExcludedCat];
+      }
+      if (!Array.isArray(state.data.analyticsScope.excludedItemIds)) {
+        state.data.analyticsScope.excludedItemIds = [];
+      }
+      return state.data.analyticsScope;
+    }
+    window.ensureAnalyticsScopeInitialized = ensureAnalyticsScopeInitialized;
+
+    function isCategoryIncludedInAnalytics(catName) {
+      const c = String(catName || "").trim();
+      if (!c) return false;
+      const scope = ensureAnalyticsScopeInitialized();
+      if (scope.excludedCategories.includes(c)) return false;
+      const catItems = (state.data.items || []).filter(i => i && !i.isDeleted && i.category === c);
+      if (catItems.length > 0) {
+        const exIds = new Set(scope.excludedItemIds || []);
+        const hasAnyActive = catItems.some(i => !exIds.has(i.id));
+        if (!hasAnyActive) return false;
+      }
+      return true;
+    }
+    window.isCategoryIncludedInAnalytics = isCategoryIncludedInAnalytics;
+
+    function isItemIncludedInAnalytics(itemOrLineItem) {
+      if (!itemOrLineItem) return false;
+      const scope = ensureAnalyticsScopeInitialized();
+      const exCats = new Set(scope.excludedCategories || []);
+      const exIds = new Set(scope.excludedItemIds || []);
+
+      const allItems = (state.data && Array.isArray(state.data.items)) ? state.data.items : [];
+      let matched = null;
+      if (typeof itemOrLineItem === "object") {
+        if (itemOrLineItem.id) {
+          matched = allItems.find(x => x && x.id === itemOrLineItem.id);
+        }
+        if (!matched && itemOrLineItem.name) {
+          matched = allItems.find(x => x && x.name === itemOrLineItem.name);
+        }
+        const cat = (matched && matched.category) || itemOrLineItem.category || "";
+        const id = (matched && matched.id) || itemOrLineItem.id || "";
+        if (cat && exCats.has(cat)) return false;
+        if (id && exIds.has(id)) return false;
+        return true;
+      } else {
+        const nameStr = String(itemOrLineItem).trim();
+        matched = allItems.find(x => x && (x.id === nameStr || x.name === nameStr || x.shortRef === nameStr));
+        if (matched) {
+          if (exCats.has(matched.category)) return false;
+          if (exIds.has(matched.id)) return false;
+        }
+        return true;
+      }
+    }
+    window.isItemIncludedInAnalytics = isItemIncludedInAnalytics;
+
+    function filterTransactionsByAnalyticsScope(txsList) {
+      if (!Array.isArray(txsList)) return [];
+      const out = [];
+      txsList.forEach(t => {
+        if (!t || t.isDeleted) return;
+        const activeItems = (Array.isArray(t.items) ? t.items : []).filter(li => isItemIncludedInAnalytics(li));
+        if (activeItems.length > 0) {
+          out.push(Object.assign({}, t, { items: activeItems }));
+        }
+      });
+      return out;
+    }
+    window.filterTransactionsByAnalyticsScope = filterTransactionsByAnalyticsScope;
+
+    function getActiveCategoriesForAnalytics() {
+      return (state.data.categories || []).filter(c => isCategoryIncludedInAnalytics(c));
+    }
+    window.getActiveCategoriesForAnalytics = getActiveCategoriesForAnalytics;
+
+    function getActiveItemsForAnalytics(categoryFilter = "") {
+      const normCat = categoryFilter && categoryFilter !== "all" ? categoryFilter : "";
+      return (state.data.items || [])
+        .filter(i => i && !i.isDeleted && isItemIncludedInAnalytics(i))
+        .filter(i => !normCat || i.category === normCat);
+    }
+    window.getActiveItemsForAnalytics = getActiveItemsForAnalytics;
+
+    // --- ترقية دوال لوحة القيادة (الصفحة الأولى #dashboard-view) لتعتمد حصراً على الأصناف والمواد النشطة ---
+    renderDashboard = function() {
+      ensureAnalyticsScopeInitialized();
+      const rawTxsSource = Array.isArray(state.data.transactions) ? state.data.transactions.filter(t => t && !t.isDeleted) : [];
+      const scopedTxsSource = filterTransactionsByAnalyticsScope(rawTxsSource);
+      const filteredTxs = filterTransactionsByTimeframe(scopedTxsSource);
+      const totalVouchers = sanitize(filteredTxs.length);
+      let totalDistributed = 0;
+      filteredTxs.forEach(t => {
+        if (!t || !Array.isArray(t.items)) return;
+        t.items.forEach(i => {
+          totalDistributed += Math.max(0, sanitize(i && i.qty !== undefined ? i.qty : 1));
+        });
+      });
+
+      const activeItems = getActiveItemsForAnalytics();
+      let abundantItemsCount = 0;
+      let lowStock = 0;
+      activeItems.forEach(it => {
+        const lvl = getItemAvailabilityLevel(it);
+        if (lvl === "critical") lowStock++;
+        else if (lvl === "good") abundantItemsCount++;
+      });
+
+      const totalDests = sanitize(Object.keys(state.data.destinations || {}).length);
+      const activeCats = getActiveCategoriesForAnalytics();
+      const totalCats = sanitize(activeCats.length);
+      const pendingOrdersCount = (state.data.orders || []).filter(o => !o.status || o.status === "pending").length;
+
+      const elVouchers = document.getElementById("kpi-total-vouchers");
+      if (elVouchers) elVouchers.textContent = sanitize(totalVouchers);
+
+      const elDistributed = document.getElementById("kpi-total-distributed");
+      if (elDistributed) elDistributed.textContent = sanitize(totalDistributed);
+
+      const elStock = document.getElementById("kpi-total-stock");
+      if (elStock) elStock.textContent = sanitize(abundantItemsCount);
+
+      const elLowStock = document.getElementById("kpi-low-stock");
+      if (elLowStock) elLowStock.textContent = sanitize(lowStock);
+
+      const elDests = document.getElementById("kpi-total-destinations");
+      if (elDests) elDests.textContent = sanitize(totalDests);
+
+      const elCats = document.getElementById("kpi-total-categories");
+      if (elCats) elCats.textContent = sanitize(totalCats);
+
+      const elOrders = document.getElementById("kpi-pending-orders-dash");
+      if (elOrders) elOrders.textContent = sanitize(pendingOrdersCount);
+
+      if (typeof updateDashboardDualCardsMetrics === "function") updateDashboardDualCardsMetrics();
+      if (typeof updateDynamicWelcomeAndRoleUI === "function") updateDynamicWelcomeAndRoleUI();
+      if (typeof updatePendingOrdersBell === "function") updatePendingOrdersBell();
+
+      renderDestChart(filteredTxs);
+      renderTopItemsChart(filteredTxs);
+      renderRecipientsChart(filteredTxs);
+      renderCategoriesChart(filteredTxs);
+      if (typeof renderItemConsumptionChart === "function") renderItemConsumptionChart();
+      renderRecentTransactions(filteredTxs);
+      renderRecentOrders();
+    };
+    window.renderDashboard = renderDashboard;
+
+    updateDashboardDualCardsMetrics = function() {
+      try {
+        ensureAnalyticsScopeInitialized();
+        const rawTxsSource = Array.isArray(state.data.transactions) ? state.data.transactions.filter(t => t && !t.isDeleted) : [];
+        const txsSource = filterTransactionsByAnalyticsScope(rawTxsSource);
+        const filteredTxs = typeof filterTransactionsByTimeframe === "function" ? filterTransactionsByTimeframe(txsSource) : txsSource;
+        const items = getActiveItemsForAnalytics();
+        const totalItemsCount = items.length || 1;
+        const orders = Array.isArray(state.data.orders) ? state.data.orders : [];
+        const pendingOrders = orders.filter(o => !o.status || o.status === "pending");
+        const destKeys = Object.keys(state.data.destinations || {});
+        const cats = getActiveCategoriesForAnalytics();
+
+        let totalDistributedUnits = 0;
+        filteredTxs.forEach(t => {
+          (t.items || []).forEach(i => {
+            totalDistributedUnits += Math.max(0, sanitize(i && i.qty !== undefined ? i.qty : 1));
+          });
+        });
+
+        let criticalItemsCount = 0;
+        let abundantItemsCount = 0;
+        items.forEach(it => {
+          const lvl = getItemAvailabilityLevel(it);
+          if (lvl === "critical") criticalItemsCount++;
+          else if (lvl === "good") abundantItemsCount++;
+        });
+
+        const elConsVal = document.getElementById("kpi-consumption-rate");
+        const elConsTitle = document.getElementById("kpi-consumption-title");
+        const elConsSub = document.getElementById("kpi-consumption-sub");
+        if (elConsVal) {
+          if (_consumptionDisplayMode === "monthly") {
+            const monthlyAvg = Math.round(totalDistributedUnits / 12) || totalDistributedUnits;
+            elConsVal.textContent = sanitize(monthlyAvg);
+            if (elConsTitle) elConsTitle.textContent = "متوسط الاستهلاك الشهري";
+            if (elConsSub) elConsSub.textContent = "قطعة / شهر";
+          } else if (_consumptionDisplayMode === "total") {
+            elConsVal.textContent = sanitize(totalDistributedUnits);
+            if (elConsTitle) elConsTitle.textContent = "إجمالي المسحوب بالفترة";
+            if (elConsSub) elConsSub.textContent = "قطعة إجمالية (نشطة)";
+          } else {
+            elConsVal.textContent = sanitize(totalDistributedUnits);
+            if (elConsTitle) elConsTitle.textContent = "معدل الاستهلاك السنوي";
+            if (elConsSub) elConsSub.textContent = "قطعة / سنة";
+          }
+        }
+
+        const elEntVal = document.getElementById("kpi-total-destinations");
+        const elEntTitle = document.getElementById("kpi-entities-title");
+        const elEntSub = document.getElementById("kpi-entities-sub");
+        if (elEntVal) {
+          if (_entitiesDisplayMode === "categories") {
+            elEntVal.textContent = sanitize(cats.length);
+            if (elEntTitle) elEntTitle.textContent = "الأصناف المشمولة بالإحصائيات";
+          } else {
+            elEntVal.textContent = sanitize(destKeys.length);
+            if (elEntTitle) elEntTitle.textContent = "عدد الجهات المستفيدة";
+          }
+        }
+        if (elEntSub) {
+          elEntSub.textContent = `الأصناف النشطة: ${cats.length} | المواد النشطة: ${items.length}`;
+        }
+
+        const elLowSub = document.getElementById("kpi-low-stock-sub");
+        if (elLowSub) elLowSub.textContent = `بلغت الحد الأدنى (${criticalItemsCount} مادة نشطة)`;
+
+        const elStockSub = document.getElementById("kpi-total-stock-sub");
+        if (elStockSub) elStockSub.textContent = `مادة بوفرة (${abundantItemsCount} مادة نشطة)`;
+
+        const badgeVouchers = document.getElementById("kpi-trend-vouchers");
+        if (badgeVouchers) {
+          const pct = txsSource.length > 0 ? Math.round((filteredTxs.length / txsSource.length) * 100) : 100;
+          badgeVouchers.innerHTML = `<span>${pct}% نشط</span>`;
+        }
+
+        const badgeOrders = document.getElementById("kpi-trend-orders");
+        if (badgeOrders) {
+          const ordPct = orders.length > 0 ? Math.round((pendingOrders.length / orders.length) * 100) : 0;
+          badgeOrders.innerHTML = `<span>${ordPct}% معلق</span>`;
+        }
+
+        const badgeCons = document.getElementById("kpi-trend-consumption");
+        if (badgeCons) {
+          badgeCons.innerHTML = `<span>مواد نشطة</span>`;
+        }
+
+        const badgeLow = document.getElementById("kpi-trend-lowstock");
+        if (badgeLow) {
+          const lowPct = Math.round((criticalItemsCount / totalItemsCount) * 100);
+          badgeLow.innerHTML = `<span>${lowPct}% من النشط</span>`;
+        }
+
+        const badgeStock = document.getElementById("kpi-trend-stock");
+        if (badgeStock) {
+          const goodPct = Math.round((abundantItemsCount / totalItemsCount) * 100);
+          badgeStock.innerHTML = `<span>${goodPct}% بوفرة</span>`;
+        }
+
+        const badgeDest = document.getElementById("kpi-trend-destinations");
+        if (badgeDest) {
+          const activeDestsInTxs = new Set(filteredTxs.map(t => t.destination)).size;
+          const destPct = destKeys.length > 0 ? Math.round((activeDestsInTxs / destKeys.length) * 100) : 100;
+          badgeDest.innerHTML = `<span>${destPct}% مستفيدة</span>`;
+        }
+      } catch (err) {
+        console.error("updateDashboardDualCardsMetrics error:", err);
+      }
+    };
+    window.updateDashboardDualCardsMetrics = updateDashboardDualCardsMetrics;
+
+    const _origRenderDestChart = renderDestChart;
+    renderDestChart = function(txsList) {
+      const base = txsList || filterTransactionsByTimeframe(state.data.transactions);
+      return _origRenderDestChart(filterTransactionsByAnalyticsScope(base));
+    };
+    window.renderDestChart = renderDestChart;
+
+    const _origRenderTopItemsChart = renderTopItemsChart;
+    renderTopItemsChart = function(txsList) {
+      const base = txsList || filterTransactionsByTimeframe(state.data.transactions);
+      return _origRenderTopItemsChart(filterTransactionsByAnalyticsScope(base));
+    };
+    window.renderTopItemsChart = renderTopItemsChart;
+
+    const _origRenderRecipientsChart = renderRecipientsChart;
+    renderRecipientsChart = function(txsList) {
+      const base = txsList || filterTransactionsByTimeframe(state.data.transactions);
+      return _origRenderRecipientsChart(filterTransactionsByAnalyticsScope(base));
+    };
+    window.renderRecipientsChart = renderRecipientsChart;
+
+    const _origRenderCategoriesChart = renderCategoriesChart;
+    renderCategoriesChart = function(txsList) {
+      const base = txsList || filterTransactionsByTimeframe(state.data.transactions);
+      return _origRenderCategoriesChart(filterTransactionsByAnalyticsScope(base));
+    };
+    window.renderCategoriesChart = renderCategoriesChart;
+
+    // ترقية مخطط تحليل استهلاك المادة الفردية في لوحة القيادة ليقتصر على المواد والأصناف النشطة
+    const _origOpenItemConsumptionSuperModal = openItemConsumptionSuperModal;
+    openItemConsumptionSuperModal = function() {
+      _origOpenItemConsumptionSuperModal();
+      const catSel = document.getElementById("item-consumption-modal-cat-select");
+      if (catSel) {
+        const prev = catSel.value || "all";
+        const activeCats = getActiveCategoriesForAnalytics();
+        catSel.innerHTML = `<option value="all">-- جميع الأصناف النشطة (${activeCats.length}) --</option>` +
+          activeCats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+        if ([...catSel.options].some(o => o.value === prev)) catSel.value = prev;
+      }
+    };
+    window.openItemConsumptionSuperModal = openItemConsumptionSuperModal;
+
+    filterItemConsumptionSuggestions = function(query) {
+      const list = document.getElementById("item-consumption-autocomplete-list");
+      if (!list) return;
+      const catVal = document.getElementById("item-consumption-modal-cat-select")?.value || "all";
+      const q = (query || "").trim().toLowerCase();
+      const items = getActiveItemsForAnalytics(catVal === "all" ? "" : catVal)
+        .map(i => parseAndEnrichStructuredItem(i))
+        .filter(it => {
+          if (!q) return true;
+          const hay = `${it.shortRef || ""} ${it.name || ""} ${it.deviceFull || ""} ${it.category || ""}`.toLowerCase();
+          return hay.includes(q);
+        })
+        .sort((a, b) => (a.name || "").localeCompare(b.name || "", "ar"));
+
+      if (items.length === 0) {
+        list.innerHTML = `<div style="padding: 10px; font-size: 0.8rem; color: var(--text-muted); text-align: center;">لا توجد مواد نشطة مطابقة</div>`;
+        list.style.display = "block";
+        return;
+      }
+
+      const activeId = document.getElementById("item-consumption-selected-id")?.value;
+      list.innerHTML = items.map(it => {
+        const isSel = it.id === activeId;
+        const dispName = escapeHtml(formatItemDisplayText(it));
+        const catEsc = escapeHtml(it.category || "عام");
+        const stockVal = sanitize(it.stock);
+        return `
+          <div class="combobox-option ${isSel ? "active" : ""}" onclick="selectItemConsumptionOption('${escapeHtml(it.id)}')" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; cursor: pointer; border-bottom: 1px solid var(--border-subtle); font-size: 0.81rem;">
+            <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0;">
+              <span style="font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${dispName}</span>
+              <span style="font-size: 0.7rem; color: var(--text-muted);">${catEsc}</span>
+            </div>
+            <span class="badge ${stockVal > 0 ? "badge-success" : "badge-warning"} tabular-nums" style="flex-shrink: 0; font-size: 0.72rem;">${stockVal} قطعة</span>
+          </div>
+        `;
+      }).join("");
+      list.style.display = "block";
+    };
+    window.filterItemConsumptionSuggestions = filterItemConsumptionSuggestions;
+
+    const _origRenderItemConsumptionChart = renderItemConsumptionChart;
+    renderItemConsumptionChart = function() {
+      const hiddenInput = document.getElementById("item-consumption-selected-id");
+      const activeItems = getActiveItemsForAnalytics();
+      if (hiddenInput && hiddenInput.value) {
+        const stillActive = activeItems.some(i => i.id === hiddenInput.value);
+        if (!stillActive) {
+          const topActive = getTopDistributedItem();
+          hiddenInput.value = topActive ? topActive.id : (activeItems[0]?.id || "");
+        }
+      } else if (hiddenInput && !hiddenInput.value) {
+        const topActive = getTopDistributedItem();
+        if (topActive) hiddenInput.value = topActive.id;
+      }
+      return _origRenderItemConsumptionChart();
+    };
+    window.renderItemConsumptionChart = renderItemConsumptionChart;
+
+    populateDefaultDashboardItemSelect = function() {
+      const sel = document.getElementById("setting-default-dashboard-item");
+      if (!sel) return;
+      const items = getActiveItemsForAnalytics();
+      const cur = state.defaultDashboardItemId || "auto";
+      sel.innerHTML = `<option value="auto">تلقائي (المادة النشطة الأكثر استهلاكاً)</option>` +
+        items.map(it => `<option value="${escapeHtml(it.id)}" ${it.id === cur ? "selected" : ""}>${escapeHtml(formatItemDisplayText(it))}</option>`).join("");
+    };
+    window.populateDefaultDashboardItemSelect = populateDefaultDashboardItemSelect;
+
+    // --- ترقية "عملية التوزيع" (#bulk-distribution-view) لتعرض فقط الأصناف والمواد النشطة المفعلة ---
+    populateBulkCategorySelect = function() {
+      const sel = document.getElementById("bulk-pool-cat-select");
+      if (!sel) return;
+      const prevVal = sel.value || "all";
+      const cats = getActiveCategoriesForAnalytics();
+      sel.innerHTML = `<option value="all">-- جميع الأصناف النشطة (${cats.length}) --</option>` +
+        cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+      if ([...sel.options].some(o => o.value === prevVal)) {
+        sel.value = prevVal;
+      } else {
+        sel.value = "all";
+      }
+    };
+    window.populateBulkCategorySelect = populateBulkCategorySelect;
+
+    populateBulkDeviceSelectDropdown = function() {
+      injectStructuredFiltersAndModalsUI();
+      const devWrap = document.getElementById("bulk-pool-device-filter-wrap");
+      const devSel = document.getElementById("bulk-pool-device-select");
+      if (!devSel) return;
+      const catSel = document.getElementById("bulk-pool-cat-select");
+      const selectedCat = catSel ? catSel.value : "all";
+      if (selectedCat !== "all" && getCategorySchemaV2(selectedCat).mode !== "device") {
+        if (devWrap) devWrap.style.display = "none";
+        devSel.value = "";
+        return;
+      }
+      if (devWrap) devWrap.style.display = "grid";
+      const prevVal = devSel.value;
+      const devices = getUniqueLinkedDevicesList(selectedCat === "all" ? "" : selectedCat, true);
+      devSel.innerHTML = `<option value="">-- كافة الأجهزة والموديلات النشطة (${devices.length} جهاز) --</option>` +
+        devices.map(d => `<option value="${escapeHtml(d.deviceFull)}">${escapeHtml(d.deviceModel)} (${d.itemsCount} مادة)</option>`).join("");
+      if (prevVal && devices.some(d => d.deviceFull === prevVal)) {
+        devSel.value = prevVal;
+      } else {
+        devSel.value = "";
+      }
+      const kitBtn = document.getElementById("btn-bulk-select-device-kit");
+      if (kitBtn) {
+        kitBtn.style.display = devSel.value ? "inline-flex" : "none";
+      }
+    };
+    window.populateBulkDeviceSelectDropdown = populateBulkDeviceSelectDropdown;
+
+    selectAllItemsOfSelectedBulkDevice = function() {
+      const devVal = document.getElementById("bulk-pool-device-select")?.value || "";
+      if (!devVal) return;
+      if (!bulkDistState.stagedItems) bulkDistState.stagedItems = {};
+      let count = 0;
+      getActiveItemsForAnalytics().forEach(rawIt => {
+        const it = parseAndEnrichStructuredItem(rawIt);
+        if (it.deviceFull === devVal) {
+          if (!bulkDistState.stagedItems[it.id]) {
+            bulkDistState.stagedItems[it.id] = { baseQty: 0, finalQty: 0, pct: 100 };
+          }
+          count++;
+        }
+      });
+      renderBulkMultiSelectList();
+      renderBulkStagedItemsArea();
+      showToast(`✓ تم تحديد ${count} مواد نشطة مرتبطة بالجهاز "${devVal}"`, "info");
+    };
+    window.selectAllItemsOfSelectedBulkDevice = selectAllItemsOfSelectedBulkDevice;
+
+    onBulkCategoryChange = function() {
+      populateBulkDeviceSelectDropdown();
+      const catSel = document.getElementById("bulk-pool-cat-select");
+      const itemSel = document.getElementById("bulk-pool-item-select");
+      const selectedCat = catSel ? catSel.value : "all";
+      const items = getActiveItemsForAnalytics(selectedCat === "all" ? "" : selectedCat);
+
+      if (itemSel) {
+        const prevVal = itemSel.value;
+        itemSel.innerHTML = `<option value="">-- اختر المادة النشطة (${items.length} مادة) --</option>` +
+          items.map(it => {
+            const st = sanitize(it.stock);
+            const hint = st <= 0 ? " [الرصيد: 0 — متاح للإشهاد والتوزيع]" : ` [الرصيد المتاح: ${st}]`;
+            return `<option value="${escapeHtml(it.id)}">${escapeHtml(it.name)} —${hint}</option>`;
+          }).join("");
+        if (prevVal && items.some(it => it.id === prevVal)) {
+          itemSel.value = prevVal;
+        } else {
+          itemSel.value = "";
+        }
+      }
+      onBulkItemSelectChange();
+      renderBulkCategoryQuickPicker(items);
+      renderBulkMultiSelectList(items);
+    };
+    window.onBulkCategoryChange = onBulkCategoryChange;
+
+    refreshBulkQuickPickerTable = function() {
+      const catSel = document.getElementById("bulk-pool-cat-select");
+      const selectedCat = catSel ? catSel.value : "all";
+      const items = getActiveItemsForAnalytics(selectedCat === "all" ? "" : selectedCat);
+      renderBulkCategoryQuickPicker(items);
+    };
+    window.refreshBulkQuickPickerTable = refreshBulkQuickPickerTable;
+
+    const _v76RenderBulkMultiSelectList = renderBulkMultiSelectList;
+    renderBulkMultiSelectList = function(itemsList) {
+      injectStructuredFiltersAndModalsUI();
+      const container = document.getElementById("bulk-cat-multiselect-list");
+      if (!container) return;
+      const searchQ = (document.getElementById("bulk-multiselect-search")?.value || "").trim().toLowerCase();
+      const catSel = document.getElementById("bulk-pool-cat-select");
+      const selectedCat = catSel ? catSel.value : "all";
+      const selectedDev = document.getElementById("bulk-pool-device-select")?.value || "";
+
+      const allItems = getActiveItemsForAnalytics().map(i => parseAndEnrichStructuredItem(i));
+      const allCategoriesList = getActiveCategoriesForAnalytics();
+      const catsToRender = selectedCat === "all" ? allCategoriesList : [selectedCat].filter(c => allCategoriesList.includes(c));
+
+      if (!bulkDistState.expandedCategories) bulkDistState.expandedCategories = new Set();
+      if (selectedCat !== "all" || selectedDev) {
+        catsToRender.forEach(c => bulkDistState.expandedCategories.add(c));
+      }
+
+      const totalStagedCount = Object.keys(bulkDistState.stagedItems || {}).length;
+      let htmlOut = `
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px;padding:8px 12px;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;font-size:0.79rem;">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span style="color:var(--text-secondary);font-weight:700;">
+              الأصناف والمواد النشطة المعتمدة (${catsToRender.length} أصناف / ${allItems.length} مادة نشطة)
+            </span>
+            <button type="button" class="btn btn-outline btn-sm" onclick="switchTab('settings-view'); setTimeout(() => switchSettingsSubTab('scope'), 60);" style="padding:2px 8px;font-size:0.71rem;color:#38bdf8;border-color:rgba(56,189,248,0.4);">
+              ⚙️ تعديل نطاق الأصناف والمواد النشطة
+            </button>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            ${totalStagedCount > 0 ? `<span class="badge badge-primary tabular-nums" style="font-size:0.75rem;">تم تحديد ${totalStagedCount} مادة</span>` : ""}
+            <button type="button" class="btn btn-outline btn-sm" onclick="expandOrCollapseAllBulkCategories(true)" style="padding:3px 9px;font-size:0.73rem;">فتح كل الأصناف</button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="expandOrCollapseAllBulkCategories(false)" style="padding:3px 9px;font-size:0.73rem;">طي الكل</button>
+          </div>
+        </div>
+      `;
+
+      let totalMatchedItems = 0;
+
+      catsToRender.forEach((catName) => {
+        const catItems = allItems
+          .filter(it => (it.category || "عام") === catName)
+          .filter(it => !selectedDev || it.deviceFull === selectedDev)
+          .filter(it => {
+            if (!searchQ) return true;
+            const hay = `${it.shortRef} ${it.deviceFull} ${it.deviceModel} ${it.colorTag} ${it.specDetail} ${it.category} ${it.name}`.toLowerCase();
+            return hay.includes(searchQ);
+          });
+
+        if (catItems.length === 0) return;
+        totalMatchedItems += catItems.length;
+
+        const isExpanded = Boolean(searchQ) || Boolean(selectedDev) || selectedCat !== "all" || bulkDistState.expandedCategories.has(catName);
+        const selectedInCatCount = catItems.filter(it => bulkDistState.stagedItems && bulkDistState.stagedItems[it.id]).length;
+        const safeCat = escapeHtml(catName);
+        const schema = getCategorySchemaV2(catName);
+
+        htmlOut += `
+          <div class="bulk-cat-acc-card ${isExpanded ? "expanded" : ""}">
+            <div class="bulk-cat-acc-header" onclick="toggleBulkCategoryAccordion('${safeCat}')">
+              <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1 1 180px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s ease;transform:rotate(${isExpanded ? "180deg" : "0deg"});flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                <span style="font-weight:800;font-size:0.9rem;color:var(--text-main);line-height:1.35;">${safeCat}</span>
+                <span class="badge badge-subtle tabular-nums" style="font-size:0.72rem;flex-shrink:0;">${catItems.length} مادة نشطة</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                ${selectedInCatCount > 0 ? `<span class="badge badge-primary tabular-nums" style="font-size:0.73rem;padding:2px 8px;">محدد: ${selectedInCatCount}</span>` : ""}
+                <span style="font-size:0.74rem;color:#38bdf8;font-weight:700;white-space:nowrap;">${isExpanded ? "إخفاء ▲" : "عرض المواد ▼"}</span>
+              </div>
+            </div>
+            <div class="bulk-cat-acc-body">
+              <table class="bulk-cat-items-scroll-table">
+                <thead>
+                  <tr style="background:rgba(15,23,42,0.45);font-size:0.74rem;color:var(--text-muted);">
+                    <th style="width:42px;text-align:center;padding:6px 8px;">تحديد</th>
+                    <th style="width:36px;text-align:center;padding:6px 8px;">#</th>
+                    <th style="min-width:190px;text-align:right;padding:6px 10px;">${escapeHtml(schema.primaryLabel || "المرجع / المادة")}</th>
+                    <th style="min-width:210px;text-align:right;padding:6px 10px;">${escapeHtml(schema.secondaryLabel || "الجهاز المرتبط / المواصفة")}</th>
+                    ${schema.mode === "device" ? '<th style="width:110px;text-align:center;padding:6px 8px;">اللون</th>' : ""}
+                    <th style="width:130px;text-align:left;padding:6px 10px;">الرصيد بالمخزن</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${catItems.map((it, idx) => {
+                    const isStaged = Boolean(bulkDistState.stagedItems && bulkDistState.stagedItems[it.id]);
+                    const inPool = (bulkDistState.pool || []).find(p => p.itemId === it.id);
+                    const st = sanitize(it.stock);
+                    const safeId = escapeHtml(it.id);
+                    const colorHexMap = { Noir: "#111827", Cyan: "#06b6d4", Jaune: "#eab308", Magenta: "#ec4899" };
+                    const dotHex = colorHexMap[it.colorTag] || "";
+                    const colorCellHtml = it.colorTag
+                      ? `<span class="color-dot-badge" dir="ltr"><span class="color-dot-circle" style="background:${dotHex};"></span><span>${escapeHtml(it.colorTag)}</span></span>`
+                      : '<span style="color:var(--text-muted);font-size:0.75rem;">—</span>';
+                    const secondaryText = it.deviceFull || it.specDetail || "—";
+
+                    return `
+                      <tr class="${isStaged ? "selected" : ""}" onclick="onBulkCategoryItemRowClick(event, '${safeId}')">
+                        <td style="width:42px;text-align:center;">
+                          <input type="checkbox" class="bulk-multiselect-cb" value="${safeId}" ${isStaged ? "checked" : ""} onchange="toggleStageBulkItem('${safeId}', this.checked)" style="width:18px;height:18px;accent-color:#38bdf8;cursor:pointer;vertical-align:middle;">
+                        </td>
+                        <td style="width:36px;text-align:center;color:var(--text-muted);font-size:0.76rem;font-weight:700;" class="tabular-nums">${idx + 1}</td>
+                        <td style="min-width:190px;text-align:right;font-weight:900;font-size:0.88rem;color:var(--text-main);" dir="ltr">
+                          ${escapeHtml(it.shortRef || it.name)}
+                        </td>
+                        <td style="min-width:210px;text-align:right;font-weight:700;font-size:0.83rem;color:var(--text-secondary);" dir="auto">
+                          ${escapeHtml(secondaryText)}
+                        </td>
+                        ${schema.mode === "device" ? `<td style="width:110px;text-align:center;">${colorCellHtml}</td>` : ""}
+                        <td style="width:130px;text-align:left;">
+                          <div style="display:inline-flex;align-items:center;gap:6px;justify-content:flex-end;">
+                            ${inPool ? `<span class="badge badge-primary tabular-nums" style="font-size:0.72rem;">بالسلة: ${inPool.qty}</span>` : ""}
+                            <span class="badge ${st > 0 ? "badge-success" : "badge-warning"} tabular-nums" style="font-size:0.75rem;">المخزون: ${st}</span>
+                          </div>
+                        </td>
+                      </tr>
+                    `;
+                  }).join("")}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      });
+
+      if (totalMatchedItems === 0) {
+        container.innerHTML = `<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:0.83rem;">لا توجد مواد نشطة مطابقة لشرط البحث</div>`;
+      } else {
+        container.innerHTML = htmlOut;
+      }
+    };
+    window.renderBulkMultiSelectList = renderBulkMultiSelectList;
+
+    // --- ترقية "تسليم جديد" (#issuance-view) ليعرض افتراضياً الأصناف والمواد النشطة فقط مع خيار إظهار المستبعدة عند الحاجة ---
+    const _origPopulateIssuanceFields = populateIssuanceFields;
+    populateIssuanceFields = function() {
+      _origPopulateIssuanceFields();
+      syncIssuanceScopeCategoryOptions();
+    };
+    window.populateIssuanceFields = populateIssuanceFields;
+
+    function syncIssuanceScopeCategoryOptions() {
+      const catSelect = document.getElementById("cart-cat-filter");
+      if (!catSelect) return;
+      const curCat = catSelect.value;
+      const cats = state.showExcludedItemsInIssuance ? (state.data.categories || []) : getActiveCategoriesForAnalytics();
+      catSelect.innerHTML = '<option value="">-- كافة الأصناف النشطة --</option>';
+      cats.forEach(cat => {
+        const opt = document.createElement("option");
+        opt.value = cat;
+        opt.textContent = cat;
+        catSelect.appendChild(opt);
+      });
+      if (curCat && cats.includes(curCat)) {
+        catSelect.value = curCat;
+      } else {
+        catSelect.value = "";
+      }
+      const catCountBadge = document.getElementById("cat-count-badge");
+      if (catCountBadge) {
+        catCountBadge.textContent = `${cats.length} صنفاً نشطاً`;
+      }
+    }
+    window.syncIssuanceScopeCategoryOptions = syncIssuanceScopeCategoryOptions;
+
+    getFilteredIssuanceItemsList = function() {
+      const selCat = document.getElementById("cart-cat-filter")?.value || "";
+      const selDev = document.getElementById("cart-device-filter")?.value || "";
+      return (state.data.items || [])
+        .filter(rawIt => rawIt && !rawIt.isDeleted)
+        .filter(rawIt => state.showExcludedItemsInIssuance || isItemIncludedInAnalytics(rawIt))
+        .map(rawIt => parseAndEnrichStructuredItem(rawIt))
+        .filter(it => {
+          if (selCat && it.category !== selCat) return false;
+          if (selDev && it.deviceFull !== selDev) return false;
+          return true;
+        });
+    };
+    window.getFilteredIssuanceItemsList = getFilteredIssuanceItemsList;
+
+    const _v76PopulateIssuanceDeviceFilterDropdown = populateIssuanceDeviceFilterDropdown;
+    populateIssuanceDeviceFilterDropdown = function() {
+      const devGroup = document.getElementById("cart-device-filter-group");
+      const devSelect = document.getElementById("cart-device-filter");
+      const devLabel = document.getElementById("cart-device-filter-label");
+      const devBadge = document.getElementById("cart-device-count-badge");
+      if (!devSelect) return;
+
+      const catVal = document.getElementById("cart-cat-filter")?.value || "";
+      const schema = catVal ? getCategorySchemaV2(catVal) : { mode: "device" };
+
+      if (catVal && schema.mode !== "device") {
+        if (devGroup) devGroup.style.display = "none";
+        devSelect.value = "";
+        return;
+      }
+
+      if (devGroup) devGroup.style.display = "block";
+      const prevDev = devSelect.value;
+      const devices = getUniqueLinkedDevicesList(catVal, !state.showExcludedItemsInIssuance);
+
+      if (devLabel) {
+        if (/طابعات/.test(catVal)) devLabel.textContent = "الطابعات المرتبطة بهذا الصنف";
+        else if (/نسخ/.test(catVal)) devLabel.textContent = "آلات النسخ المرتبطة بهذا الصنف";
+        else if (/فاكس/.test(catVal)) devLabel.textContent = "أجهزة الفاكس المرتبطة بهذا الصنف";
+        else devLabel.textContent = "الأجهزة المرتبطة بالصنف (طابعة / ناسخة / فاكس)";
+      }
+
+      devSelect.innerHTML = `<option value="">-- كافة الأجهزة النشطة المرتبطة (${devices.length} جهاز) --</option>` +
+        devices.map(d => `<option value="${escapeHtml(d.deviceFull)}">${escapeHtml(d.deviceModel)} (${d.itemsCount} مادة)</option>`).join("");
+
+      if (prevDev && devices.some(d => d.deviceFull === prevDev)) {
+        devSelect.value = prevDev;
+      } else {
+        devSelect.value = "";
+      }
+
+      if (devBadge) {
+        devBadge.textContent = devSelect.value ? "جهاز محدد" : `${devices.length} جهازاً`;
+      }
+    };
+    window.populateIssuanceDeviceFilterDropdown = populateIssuanceDeviceFilterDropdown;
+
+    const _v76OnIssuanceQuickSearchInput = onIssuanceQuickSearchInput;
+    onIssuanceQuickSearchInput = function(rawQuery, showDropdown = true) {
+      const q = String(rawQuery || "").trim().toLowerCase();
+      const clearBtn = document.getElementById("btn-clear-issuance-search");
+      const searchDd = document.getElementById("cart-instant-search-dropdown");
+      const searchBadge = document.getElementById("cart-instant-search-badge");
+
+      if (clearBtn) clearBtn.style.display = q ? "block" : "none";
+      if (!q) {
+        if (searchDd) searchDd.style.display = "none";
+        if (searchBadge) searchBadge.style.display = "none";
+        return;
+      }
+
+      const matches = (state.data.items || [])
+        .filter(rawIt => rawIt && !rawIt.isDeleted)
+        .filter(rawIt => state.showExcludedItemsInIssuance || isItemIncludedInAnalytics(rawIt))
+        .map(rawIt => parseAndEnrichStructuredItem(rawIt))
+        .filter(it => {
+          const hay = `${it.shortRef} ${it.deviceModel} ${it.deviceFull} ${it.colorTag} ${it.specDetail} ${it.category} ${it.name}`.toLowerCase();
+          return hay.includes(q);
+        });
+
+      if (searchBadge) {
+        searchBadge.style.display = "inline-flex";
+        searchBadge.textContent = `${matches.length} نتيجة نشطة`;
+      }
+
+      if (!searchDd || !showDropdown) return;
+
+      if (matches.length === 0) {
+        searchDd.innerHTML = `<div style="padding:14px;text-align:center;color:var(--text-muted);font-size:0.84rem;">لا توجد مادة نشطة مطابقة لـ "${escapeHtml(rawQuery)}"</div>`;
+        searchDd.style.display = "block";
+        return;
+      }
+
+      if (!state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds = new Set();
+
+      searchDd.innerHTML = `
+        <div class="issuance-dd-header">
+          <span style="color:#38bdf8;">نتائج البحث الفوري في المواد النشطة (${matches.length} مادة):</span>
+          ${matches.length > 1 ? `
+            <button type="button" class="btn btn-outline btn-sm" onclick="selectAllQuickSearchResults(event)" style="padding:2px 9px;font-size:0.74rem;color:#38bdf8;border-color:#38bdf8;font-weight:800;">
+              ✓ تحديد كل النتائج (${matches.length})
+            </button>
+          ` : ""}
+        </div>
+        <div>
+          ${matches.map(it => {
+            const isChecked = state.issuanceMultiSelectedIds.has(it.id);
+            const st = sanitize(it.stock);
+            const safeId = escapeHtml(it.id);
+            return `
+              <div class="issuance-dd-row ${isChecked ? "is-checked" : ""}" onclick="pickSingleItemFromQuickSearch('${safeId}', event)">
+                <div style="display:inline-flex;align-items:center;gap:10px;min-width:0;">
+                  <input type="checkbox" value="${safeId}" ${isChecked ? "checked" : ""}
+                         onchange="toggleItemFromQuickSearchCheckbox('${safeId}', this.checked, event)"
+                         onclick="event.stopPropagation();"
+                         style="width:18px;height:18px;accent-color:#38bdf8;cursor:pointer;flex-shrink:0;" />
+                  <div>${formatItemDisplayHtml(it)}</div>
+                </div>
+                <div style="display:inline-flex;align-items:center;gap:6px;flex-shrink:0;">
+                  <span class="badge badge-subtle" style="font-size:0.7rem;">${escapeHtml(it.category)}</span>
+                  <span class="badge ${st > 0 ? "badge-success" : "badge-warning"} tabular-nums" style="font-size:0.74rem;">المتوفر: ${st}</span>
+                </div>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      `;
+      searchDd.style.display = "block";
+    };
+    window.onIssuanceQuickSearchInput = onIssuanceQuickSearchInput;
+
+    // --- واجهة الإعدادات الجديدة: "11. نطاق الإحصائيات والمواد النشطة" (#settings-sub-tab-scope & #settings-pane-scope) ---
+    function injectAnalyticsScopeSettingsPane() {
+      const navList = document.querySelector(".settings-nav-list");
+      const contentArea = document.querySelector(".settings-content-area");
+      if (!navList || !contentArea) return;
+
+      let navBtn = document.getElementById("settings-sub-tab-scope");
+      if (!navBtn) {
+        navBtn = document.createElement("button");
+        navBtn.type = "button";
+        navBtn.className = "settings-nav-item";
+        navBtn.id = "settings-sub-tab-scope";
+        navBtn.setAttribute("onclick", "switchSettingsSubTab('scope')");
+        navList.appendChild(navBtn);
+      }
+      navBtn.innerHTML = `
+        <span class="settings-nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg>
+        </span>
+        <div class="settings-nav-info">
+          <div class="settings-nav-title">11. نطاق الإحصائيات والمواد النشطة</div>
+          <div class="settings-nav-desc">تحديد الأصناف والمواد المشمولة في لوحة القيادة والتحليل الذكي والتوزيع</div>
+        </div>
+      `;
+
+      let pane = document.getElementById("settings-pane-scope");
+      if (!pane) {
+        pane = document.createElement("div");
+        pane.id = "settings-pane-scope";
+        pane.className = "settings-pane";
+        pane.style.display = "none";
+        contentArea.appendChild(pane);
+      }
+
+      if (pane.getAttribute("data-scope-initialized") === "1") return;
+      pane.setAttribute("data-scope-initialized", "1");
+
+      pane.innerHTML = `
+        <div class="card" style="margin-bottom: 0;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:14px;">
+            <div>
+              <h3 class="card-title">إعداد نطاق الإحصائيات والتحليل الذكي والمواد النشطة</h3>
+              <div class="card-subtitle">
+                حدد الأصناف والمواد النشطة التي تدخل في حسابات <strong>لوحة القيادة (الصفحة الأولى)</strong>، و<strong>التحليل الذكي ومحاكاة الحصص</strong>، و<strong>عملية التوزيع</strong>. يمكنك استبعاد أي صنف بأكمله (مثل <code>المطبوعات، الكتب واللافتات</code> المستبعد افتراضياً) أو إلغاء تحديد أي مادة متوقفة أو استثنائية حتى لا تشوش على الإحصائيات وقوائم الاختيار.
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button type="button" class="btn btn-primary btn-sm" onclick="resetAnalyticsScopeToStandardDefault()" style="font-weight:800;">
+                🎯 الوضع المعياري (تفعيل الكل باستثناء المطبوعات)
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="setAllAnalyticsScopeItems(true)">
+                ✓ تفعيل جميع الأصناف والمواد
+              </button>
+            </div>
+          </div>
+
+          <!-- شريط المؤشرات الملخصة للنطاق الحالي -->
+          <div id="analytics-scope-summary-kpis" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:14px;"></div>
+
+          <!-- شريط البحث والتصفية السريعة داخل النطاق -->
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;padding:10px 12px;background:var(--bg-muted);border:1px solid var(--border-subtle);border-radius:10px;">
+            <div style="flex:1 1 260px;position:relative;">
+              <input type="text" id="analytics-scope-search-input" class="form-control" placeholder="ابحث بالمرجع أو اسم المادة أو الجهاز أو الصنف..." oninput="renderAnalyticsScopeCategoriesAndItems()" style="height:38px;font-size:0.84rem;padding-right:12px;" />
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+              <button type="button" id="btn-scope-filter-all" class="btn btn-primary btn-sm" onclick="setAnalyticsScopeFilterMode('all')" style="font-size:0.75rem;padding:4px 10px;">كافة المواد</button>
+              <button type="button" id="btn-scope-filter-active" class="btn btn-outline btn-sm" onclick="setAnalyticsScopeFilterMode('active')" style="font-size:0.75rem;padding:4px 10px;">المواد النشطة فقط ✓</button>
+              <button type="button" id="btn-scope-filter-excluded" class="btn btn-outline btn-sm" onclick="setAnalyticsScopeFilterMode('excluded')" style="font-size:0.75rem;padding:4px 10px;">المستبعدة فقط ✕</button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="expandOrCollapseAllAnalyticsScopeCats(true)" style="font-size:0.74rem;padding:4px 9px;">توسيع الكل</button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="expandOrCollapseAllAnalyticsScopeCats(false)" style="font-size:0.74rem;padding:4px 9px;">طي الكل</button>
+            </div>
+          </div>
+
+          <!-- قائمة الأصناف والمواد التابعة لكل صنف -->
+          <div id="analytics-scope-categories-container" style="display:flex;flex-direction:column;gap:10px;"></div>
+        </div>
+      `;
+    }
+    window.injectAnalyticsScopeSettingsPane = injectAnalyticsScopeSettingsPane;
+
+    function setAnalyticsScopeFilterMode(mode) {
+      state.analyticsScopeFilterMode = mode || "all";
+      ["all", "active", "excluded"].forEach(m => {
+        const btn = document.getElementById(`btn-scope-filter-${m}`);
+        if (btn) {
+          btn.className = (m === state.analyticsScopeFilterMode) ? "btn btn-primary btn-sm" : "btn btn-outline btn-sm";
+        }
+      });
+      renderAnalyticsScopeCategoriesAndItems();
+    }
+    window.setAnalyticsScopeFilterMode = setAnalyticsScopeFilterMode;
+
+    function expandOrCollapseAllAnalyticsScopeCats(expand) {
+      if (!state.analyticsScopeExpandedCats) state.analyticsScopeExpandedCats = new Set();
+      if (expand) {
+        (state.data.categories || []).forEach(c => state.analyticsScopeExpandedCats.add(c));
+      } else {
+        state.analyticsScopeExpandedCats.clear();
+      }
+      renderAnalyticsScopeCategoriesAndItems();
+    }
+    window.expandOrCollapseAllAnalyticsScopeCats = expandOrCollapseAllAnalyticsScopeCats;
+
+    function toggleAnalyticsScopeCatAccordion(catName, event) {
+      if (event) event.stopPropagation();
+      if (!state.analyticsScopeExpandedCats) state.analyticsScopeExpandedCats = new Set();
+      if (state.analyticsScopeExpandedCats.has(catName)) {
+        state.analyticsScopeExpandedCats.delete(catName);
+      } else {
+        state.analyticsScopeExpandedCats.add(catName);
+      }
+      renderAnalyticsScopeCategoriesAndItems();
+    }
+    window.toggleAnalyticsScopeCatAccordion = toggleAnalyticsScopeCatAccordion;
+
+    function applyAnalyticsScopeChangesAndRefresh(toastMsg = "") {
+      persistAll(true);
+      renderAnalyticsScopeCategoriesAndItems();
+      syncIssuanceScopeCategoryOptions();
+      populateIssuanceDeviceFilterDropdown();
+      onCategoryFilterChanged(true);
+      populateBulkCategorySelect();
+      populateBulkDeviceSelectDropdown();
+      if (typeof renderDashboard === "function") renderDashboard();
+      if (state.currentTab === "ai-view") {
+        initAndRenderAnnualForecast();
+        initAndRenderSimulatedQuota();
+        renderAiInsightsView();
+      } else if (state.currentTab === "bulk-distribution-view") {
+        renderBulkMultiSelectList();
+      }
+      if (toastMsg) showToast(toastMsg, "success");
+    }
+    window.applyAnalyticsScopeChangesAndRefresh = applyAnalyticsScopeChangesAndRefresh;
+
+    function toggleAnalyticsScopeCategory(catName, isChecked, event) {
+      if (event) event.stopPropagation();
+      const scope = ensureAnalyticsScopeInitialized();
+      const exCats = new Set(scope.excludedCategories || []);
+      const exIds = new Set(scope.excludedItemIds || []);
+      const catItems = (state.data.items || []).filter(i => i && !i.isDeleted && i.category === catName);
+
+      if (isChecked) {
+        exCats.delete(catName);
+        catItems.forEach(it => exIds.delete(it.id));
+      } else {
+        exCats.add(catName);
+        catItems.forEach(it => exIds.add(it.id));
+      }
+
+      scope.excludedCategories = Array.from(exCats);
+      scope.excludedItemIds = Array.from(exIds);
+      applyAnalyticsScopeChangesAndRefresh(
+        isChecked
+          ? `✓ تم تفعيل صنف "${catName}" وكافة مواده (${catItems.length}) في الإحصائيات والتحليل الذكي`
+          : `تم استبعاد صنف "${catName}" بالكامل من الإحصائيات والتحليل الذكي والتوزيع`
+      );
+    }
+    window.toggleAnalyticsScopeCategory = toggleAnalyticsScopeCategory;
+
+    function toggleAnalyticsScopeItem(itemId, catName, isChecked, event) {
+      if (event) event.stopPropagation();
+      const scope = ensureAnalyticsScopeInitialized();
+      const exCats = new Set(scope.excludedCategories || []);
+      const exIds = new Set(scope.excludedItemIds || []);
+      const catItems = (state.data.items || []).filter(i => i && !i.isDeleted && i.category === catName);
+      const targetItem = (state.data.items || []).find(i => i && i.id === itemId);
+
+      if (isChecked) {
+        exIds.delete(itemId);
+        exCats.delete(catName);
+      } else {
+        exIds.add(itemId);
+        const allCatItemsExcluded = catItems.length > 0 && catItems.every(i => exIds.has(i.id));
+        if (allCatItemsExcluded) {
+          exCats.add(catName);
+        }
+      }
+
+      scope.excludedCategories = Array.from(exCats);
+      scope.excludedItemIds = Array.from(exIds);
+      const label = targetItem ? (targetItem.shortRef || targetItem.name) : "";
+      applyAnalyticsScopeChangesAndRefresh(
+        isChecked
+          ? `✓ تم تفعيل المادة "${label}" ضمن المواد النشطة`
+          : `تم استبعاد المادة "${label}" من الإحصائيات والتحليل الذكي والتوزيع`
+      );
+    }
+    window.toggleAnalyticsScopeItem = toggleAnalyticsScopeItem;
+
+    function resetAnalyticsScopeToStandardDefault() {
+      const defaultExcludedCat = "المطبوعات، الكتب واللافتات";
+      const pubIds = (state.data.items || [])
+        .filter(i => i && !i.isDeleted && i.category === defaultExcludedCat)
+        .map(i => i.id);
+      state.data.analyticsScope = {
+        excludedCategories: [defaultExcludedCat],
+        excludedItemIds: pubIds
+      };
+      applyAnalyticsScopeChangesAndRefresh("✓ تم تطبيق الوضع المعياري: استبعاد صنف المطبوعات وتفعيل باقي الأصناف الـ 11 وكافة موادها");
+    }
+    window.resetAnalyticsScopeToStandardDefault = resetAnalyticsScopeToStandardDefault;
+
+    function setAllAnalyticsScopeItems(enableAll) {
+      if (enableAll) {
+        state.data.analyticsScope = {
+          excludedCategories: [],
+          excludedItemIds: []
+        };
+        applyAnalyticsScopeChangesAndRefresh("✓ تم تفعيل جميع الأصناف وجميع المواد في الإحصائيات والتحليل الذكي");
+      } else {
+        resetAnalyticsScopeToStandardDefault();
+      }
+    }
+    window.setAllAnalyticsScopeItems = setAllAnalyticsScopeItems;
+
+    function renderAnalyticsScopeCategoriesAndItems() {
+      injectAnalyticsScopeSettingsPane();
+      ensureAnalyticsScopeInitialized();
+      const summaryEl = document.getElementById("analytics-scope-summary-kpis");
+      const container = document.getElementById("analytics-scope-categories-container");
+      if (!container) return;
+
+      const allCats = Array.isArray(state.data.categories) ? state.data.categories : [];
+      const allItems = (Array.isArray(state.data.items) ? state.data.items : []).filter(i => i && !i.isDeleted);
+      const rankedAll = getItemsRankedByDistribution(true);
+      const distById = {};
+      rankedAll.forEach(r => { distById[r.id] = r.distributedQty || 0; });
+
+      const activeCatsCount = allCats.filter(c => isCategoryIncludedInAnalytics(c)).length;
+      const excludedCatsCount = allCats.length - activeCatsCount;
+      const activeItemsCount = allItems.filter(i => isItemIncludedInAnalytics(i)).length;
+      const excludedItemsCount = allItems.length - activeItemsCount;
+
+      if (summaryEl) {
+        summaryEl.innerHTML = `
+          <div style="padding:10px 14px;border-radius:10px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <div style="font-size:0.75rem;color:var(--text-muted);font-weight:700;">الأصناف المشمولة بالإحصائيات</div>
+              <div style="font-size:1.15rem;font-weight:900;color:#10b981;" class="tabular-nums">${activeCatsCount} <span style="font-size:0.8rem;color:var(--text-secondary);">من ${allCats.length} صنف</span></div>
+            </div>
+            <span class="badge badge-success">نشطة ✓</span>
+          </div>
+          <div style="padding:10px 14px;border-radius:10px;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.3);display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <div style="font-size:0.75rem;color:var(--text-muted);font-weight:700;">المواد النشطة (في الإحصائيات والتوزيع)</div>
+              <div style="font-size:1.15rem;font-weight:900;color:#38bdf8;" class="tabular-nums">${activeItemsCount} <span style="font-size:0.8rem;color:var(--text-secondary);">من ${allItems.length} مادة</span></div>
+            </div>
+            <span class="badge badge-primary">مفعلة ✓</span>
+          </div>
+          <div style="padding:10px 14px;border-radius:10px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.28);display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <div style="font-size:0.75rem;color:var(--text-muted);font-weight:700;">الأصناف والمواد المستبعدة</div>
+              <div style="font-size:1.15rem;font-weight:900;color:#ef4444;" class="tabular-nums">${excludedCatsCount} صنف / ${excludedItemsCount} مادة</div>
+            </div>
+            <span class="badge badge-warning">مستبعدة ✕</span>
+          </div>
+        `;
+      }
+
+      const searchQ = (document.getElementById("analytics-scope-search-input")?.value || "").trim().toLowerCase();
+      const filterMode = state.analyticsScopeFilterMode || "all";
+      if (!state.analyticsScopeExpandedCats) state.analyticsScopeExpandedCats = new Set();
+
+      let htmlOut = "";
+      allCats.forEach(catName => {
+        const catItemsAll = allItems
+          .filter(i => i.category === catName)
+          .map(i => parseAndEnrichStructuredItem(i));
+        const activeInCatCount = catItemsAll.filter(i => isItemIncludedInAnalytics(i)).length;
+        const isCatActive = isCategoryIncludedInAnalytics(catName);
+
+        const filteredCatItems = catItemsAll.filter(it => {
+          const itemActive = isItemIncludedInAnalytics(it);
+          if (filterMode === "active" && !itemActive) return false;
+          if (filterMode === "excluded" && itemActive) return false;
+          if (!searchQ) return true;
+          const hay = `${it.shortRef} ${it.deviceFull} ${it.deviceModel} ${it.colorTag} ${it.specDetail} ${it.category} ${it.name}`.toLowerCase();
+          return hay.includes(searchQ);
+        });
+
+        if ((searchQ || filterMode !== "all") && filteredCatItems.length === 0) return;
+
+        const isExpanded = Boolean(searchQ) || filterMode !== "all" || state.analyticsScopeExpandedCats.has(catName);
+        const safeCat = escapeHtml(catName);
+        const schema = getCategorySchemaV2(catName);
+
+        htmlOut += `
+          <div style="border:1.5px solid ${isCatActive ? "rgba(56,189,248,0.35)" : "rgba(239,68,68,0.3)"};border-radius:10px;background:var(--bg-card);overflow:hidden;">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:10px 14px;background:${isCatActive ? "rgba(15,23,42,0.35)" : "rgba(239,68,68,0.06)"};cursor:pointer;" onclick="toggleAnalyticsScopeCatAccordion('${safeCat}', event)">
+              <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+                <input type="checkbox" ${isCatActive ? "checked" : ""}
+                       onchange="toggleAnalyticsScopeCategory('${safeCat}', this.checked, event)"
+                       onclick="event.stopPropagation();"
+                       style="width:19px;height:19px;accent-color:#10b981;cursor:pointer;flex-shrink:0;"
+                       title="تفعيل أو استبعاد الصنف بالكامل" />
+                <span style="font-weight:900;font-size:0.95rem;color:${isCatActive ? "var(--text-main)" : "var(--text-muted)"};text-decoration:${isCatActive ? "none" : "line-through"};">
+                  ${safeCat}
+                </span>
+                <span class="badge ${isCatActive ? "badge-success" : "badge-warning"} tabular-nums" style="font-size:0.73rem;">
+                  ${isCatActive ? `مشمول بالإحصائيات (${activeInCatCount}/${catItemsAll.length} مادة نشطة) ✓` : `مستبعد من الإحصائيات والتحليل الذكي (0/${catItemsAll.length}) ✕`}
+                </span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;" onclick="event.stopPropagation();">
+                <button type="button" class="btn btn-outline btn-sm" onclick="toggleAnalyticsScopeCategory('${safeCat}', true, event)" style="padding:2px 8px;font-size:0.72rem;color:#10b981;border-color:rgba(16,185,129,0.35);">
+                  ✓ تفعيل كل مواد الصنف
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="toggleAnalyticsScopeCategory('${safeCat}', false, event)" style="padding:2px 8px;font-size:0.72rem;color:#ef4444;border-color:rgba(239,68,68,0.35);">
+                  ✕ استبعاد الصنف
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="toggleAnalyticsScopeCatAccordion('${safeCat}', event)" style="padding:2px 9px;font-size:0.73rem;color:#38bdf8;">
+                  ${isExpanded ? "إخفاء المواد ▲" : `تخصيص المواد (${catItemsAll.length}) ▼`}
+                </button>
+              </div>
+            </div>
+            ${isExpanded ? `
+              <div style="padding:8px 12px;border-top:1px solid var(--border-subtle);overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;font-size:0.81rem;">
+                  <thead>
+                    <tr style="background:rgba(15,23,42,0.4);color:var(--text-muted);font-size:0.74rem;">
+                      <th style="width:52px;text-align:center;padding:6px;">نشطة؟</th>
+                      <th style="width:38px;text-align:center;padding:6px;">#</th>
+                      <th style="text-align:right;padding:6px 10px;">${escapeHtml(schema.primaryLabel || "المرجع / المادة")}</th>
+                      <th style="text-align:right;padding:6px 10px;">${escapeHtml(schema.secondaryLabel || "الجهاز المرتبط / المواصفة")}</th>
+                      ${schema.mode === "device" ? '<th style="width:95px;text-align:center;padding:6px;">اللون</th>' : ""}
+                      <th style="width:120px;text-align:center;padding:6px;">إجمالي المسحوب (2024–2026)</th>
+                      <th style="width:110px;text-align:center;padding:6px;">الحالة بالإحصائيات</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${filteredCatItems.map((it, idx) => {
+                      const itemActive = isItemIncludedInAnalytics(it);
+                      const safeId = escapeHtml(it.id);
+                      const distQty = distById[it.id] || 0;
+                      const secondaryText = it.deviceFull || it.specDetail || "—";
+                      const colorHexMap = { Noir: "#111827", Cyan: "#06b6d4", Jaune: "#eab308", Magenta: "#ec4899" };
+                      const dotHex = colorHexMap[it.colorTag] || "";
+                      const colorCellHtml = it.colorTag
+                        ? `<span class="color-dot-badge" dir="ltr"><span class="color-dot-circle" style="background:${dotHex};"></span><span>${escapeHtml(it.colorTag)}</span></span>`
+                        : '<span style="color:var(--text-muted);font-size:0.75rem;">—</span>';
+
+                      return `
+                        <tr style="border-bottom:1px solid var(--border-subtle);background:${itemActive ? "transparent" : "rgba(239,68,68,0.05)"};cursor:pointer;"
+                            onclick="toggleAnalyticsScopeItem('${safeId}', '${safeCat}', ${!itemActive}, event)">
+                          <td style="text-align:center;padding:6px;" onclick="event.stopPropagation();">
+                            <input type="checkbox" ${itemActive ? "checked" : ""}
+                                   onchange="toggleAnalyticsScopeItem('${safeId}', '${safeCat}', this.checked, event)"
+                                   style="width:17px;height:17px;accent-color:#10b981;cursor:pointer;" />
+                          </td>
+                          <td style="text-align:center;padding:6px;color:var(--text-muted);font-weight:700;" class="tabular-nums">${idx + 1}</td>
+                          <td style="text-align:right;padding:6px 10px;font-weight:800;color:${itemActive ? "var(--text-main)" : "var(--text-muted)"};text-decoration:${itemActive ? "none" : "line-through"};" dir="ltr">
+                            ${escapeHtml(it.shortRef || it.name)}
+                          </td>
+                          <td style="text-align:right;padding:6px 10px;font-weight:700;color:var(--text-secondary);" dir="auto">
+                            ${escapeHtml(secondaryText)}
+                          </td>
+                          ${schema.mode === "device" ? `<td style="text-align:center;padding:6px;">${colorCellHtml}</td>` : ""}
+                          <td style="text-align:center;padding:6px;" class="tabular-nums">
+                            <span class="badge ${distQty > 0 ? "badge-subtle" : "badge-warning"}" style="font-size:0.73rem;">
+                              ${distQty > 0 ? `${distQty} وحدة` : "0 (غير مستعملة)"}
+                            </span>
+                          </td>
+                          <td style="text-align:center;padding:6px;">
+                            <span class="badge ${itemActive ? "badge-success" : "badge-warning"}" style="font-size:0.72rem;">
+                              ${itemActive ? "نشطة ✓" : "مستبعدة ✕"}
+                            </span>
+                          </td>
+                        </tr>
+                      `;
+                    }).join("")}
+                  </tbody>
+                </table>
+              </div>
+            ` : ""}
+          </div>
+        `;
+      });
+
+      container.innerHTML = htmlOut || `<div style="padding:20px;text-align:center;color:var(--text-muted);">لا توجد أصناف أو مواد مطابقة للبحث</div>`;
+    }
+    window.renderAnalyticsScopeCategoriesAndItems = renderAnalyticsScopeCategoriesAndItems;
+
+    const _v76SwitchSettingsSubTab = switchSettingsSubTab;
+    switchSettingsSubTab = function(tab) {
+      injectAnalyticsScopeSettingsPane();
+      _v76SwitchSettingsSubTab(tab);
+      const scopePane = document.getElementById("settings-pane-scope");
+      const scopeBtn = document.getElementById("settings-sub-tab-scope");
+      if (scopePane) scopePane.style.display = tab === "scope" ? "block" : "none";
+      if (scopeBtn) scopeBtn.classList.toggle("active", tab === "scope");
+      if (tab === "scope") {
+        renderAnalyticsScopeCategoriesAndItems();
+      }
+    };
+    window.switchSettingsSubTab = switchSettingsSubTab;
+
     async function forceUpgradeAndSyncStructuredV2ToCloud(showNotification = true) {
       const migrated = migrateAndNormalizeData(state.data, state.profile, false);
       state.data = migrated.data;
@@ -52764,7 +54009,11 @@ ${itemsText}
         populateIssuanceDeviceFilterDropdown();
         populateBulkDeviceSelectDropdown();
         onCategoryFilterChanged(true);
+        injectAnalyticsScopeSettingsPane();
+        syncIssuanceScopeCategoryOptions();
+        populateBulkCategorySelect();
         populateCertConfigSettingsUI();
+        if (typeof renderDashboard === "function") renderDashboard();
         initAndRenderAnnualForecast();
         initAndRenderSimulatedQuota();
       }, 120);
