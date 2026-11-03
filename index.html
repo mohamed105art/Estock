@@ -33020,35 +33020,189 @@ ${itemsText}
       introMiddle: "، أشهد أنا الموقع (ة) أسفله، السيد (ة)",
       partyConnector: "ب",
       introSuffix: "، أني تسلمت المواد والمعدات المبينة أسفله:",
+      showCategoryInParens: true,
+      partsSeparator: " / ",
+      hideIndexIfSingleItem: false,
+      signatureText: "توقيع المستلم",
+      signatureSubName: "",
+      showSecondSignature: false,
+      secondSignatureText: "مسؤول تدبير المخزون",
+      secondSignatureSubName: "",
+      columns: [
+        { key: "index", enabled: true, title: "#", widthPct: 6 },
+        { key: "item", enabled: true, title: "المادة", widthPct: 64 },
+        { key: "qty", enabled: true, title: "الكمية", widthPct: 10 },
+        { key: "notes", enabled: true, title: "الملاحظات", widthPct: 20 },
+        { key: "extra", enabled: false, title: "الصنف", sourceField: "category", widthPct: 0 }
+      ],
       col1Title: "#",
       col2Title: "المادة",
       col3Title: "الكمية",
-      col4Title: "الملاحظات",
-      showCategoryInParens: true,
-      partsSeparator: " / ",
-      signatureText: "توقيع المستلم"
+      col4Title: "الملاحظات"
     };
+
+    const DEFAULT_INV_REPORT_CONFIG = {
+      titleText: "محضر الجرد الدوري والرقابة المادية للمخزون",
+      subtitleText: "بيان الرصيد المسجل بالنظام والمطابقة الميدانية لمواد ومعدات المستودع",
+      columns: [
+        { key: "index", enabled: true, title: "#", widthPct: 6 },
+        { key: "item", enabled: true, title: "بيان المادة والمواصفات", widthPct: 38 },
+        { key: "category", enabled: true, title: "الصنف", widthPct: 16 },
+        { key: "sysStock", enabled: true, title: "الرصيد بالنظام", widthPct: 10 },
+        { key: "physStock", enabled: true, title: "الجرد الفعلي", widthPct: 10 },
+        { key: "diff", enabled: true, title: "الفارق", widthPct: 8 },
+        { key: "notes", enabled: true, title: "الملاحظات", widthPct: 12 }
+      ],
+      signers: [
+        { enabled: true, title: "المكلف بتدبير المخزون", name: "" },
+        { enabled: true, title: "لجنة الجرد والمراقبة", name: "" },
+        { enabled: true, title: "السيد المدير الإقليمي", name: "" }
+      ]
+    };
+
+    const DEFAULT_STATS_REPORT_CONFIG = {
+      titleText: "تقرير الرؤى والتحليل الإحصائي الذكي للاستهلاك العام وتدبير الصفقة القادمة",
+      quotaTitleText: "جدول محاكاة توزيع الحصص السنوية المقترحة للمستفيدين",
+      showExecutiveCards: true,
+      showCategoryTable: true,
+      columns: [
+        { key: "index", enabled: true, title: "#", widthPct: 5 },
+        { key: "item", enabled: true, title: "المادة (المرجع / الجهاز أو المواصفة)", widthPct: 31 },
+        { key: "category", enabled: true, title: "الصنف", widthPct: 14 },
+        { key: "avgAnnual", enabled: true, title: "المعدل السنوي", widthPct: 8 },
+        { key: "globalShare", enabled: true, title: "نسبتها من العام", widthPct: 8 },
+        { key: "catShare", enabled: true, title: "نسبتها بالصنف", widthPct: 7 },
+        { key: "changePct", enabled: true, title: "التغيير", widthPct: 6 },
+        { key: "proposedQuota", enabled: true, title: "الحصة المقترحة", widthPct: 8 },
+        { key: "decision", enabled: true, title: "قرار تدبير الصفقة القادمة", widthPct: 13 }
+      ],
+      signers: [
+        { enabled: true, title: "مسؤول تدبير المخزون", name: "" },
+        { enabled: false, title: "رئيس مصلحة الميزانية والصفقات", name: "" },
+        { enabled: true, title: "السيد المدير الإقليمي", name: "" }
+      ]
+    };
+
+    function normalizeColumnsWidthTo100(colsArray) {
+      const cols = Array.isArray(colsArray) ? colsArray.map(c => Object.assign({}, c)) : [];
+      const enabledCols = cols.filter(c => c.enabled);
+      if (enabledCols.length === 0 && cols.length > 0) {
+        const itemCol = cols.find(c => c.key === "item") || cols[0];
+        itemCol.enabled = true;
+        itemCol.widthPct = 100;
+        return cols;
+      }
+      cols.forEach(c => {
+        if (!c.enabled) c.widthPct = 0;
+        else c.widthPct = Math.max(1, Math.round(Number(c.widthPct) || 10));
+      });
+      const sum = enabledCols.reduce((s, c) => s + c.widthPct, 0);
+      if (sum !== 100 && sum > 0) {
+        let running = 0;
+        enabledCols.forEach((c, idx) => {
+          if (idx === enabledCols.length - 1) {
+            c.widthPct = Math.max(1, 100 - running);
+          } else {
+            c.widthPct = Math.max(1, Math.round((c.widthPct / sum) * 100));
+            running += c.widthPct;
+          }
+        });
+      }
+      return cols;
+    }
+    window.normalizeColumnsWidthTo100 = normalizeColumnsWidthTo100;
 
     function getCertConfig() {
       const saved = (state && state.profile && state.profile.certConfig && typeof state.profile.certConfig === "object")
         ? state.profile.certConfig
         : {};
+      let cols = Array.isArray(saved.columns) && saved.columns.length >= 4
+        ? saved.columns.map(c => Object.assign({}, c))
+        : JSON.parse(JSON.stringify(DEFAULT_CERT_CONFIG.columns));
+
+      if (!Array.isArray(saved.columns)) {
+        if (saved.col1Title) cols[0].title = saved.col1Title;
+        if (saved.col2Title) cols[1].title = saved.col2Title;
+        if (saved.col3Title) cols[2].title = saved.col3Title;
+        if (saved.col4Title) cols[3].title = saved.col4Title;
+      }
+      cols = normalizeColumnsWidthTo100(cols);
+
       return {
         titleText: safeText(saved.titleText, DEFAULT_CERT_CONFIG.titleText),
         introPrefix: saved.introPrefix !== undefined ? String(saved.introPrefix) : DEFAULT_CERT_CONFIG.introPrefix,
         introMiddle: saved.introMiddle !== undefined ? String(saved.introMiddle) : DEFAULT_CERT_CONFIG.introMiddle,
         partyConnector: saved.partyConnector !== undefined ? String(saved.partyConnector) : DEFAULT_CERT_CONFIG.partyConnector,
         introSuffix: saved.introSuffix !== undefined ? String(saved.introSuffix) : DEFAULT_CERT_CONFIG.introSuffix,
-        col1Title: safeText(saved.col1Title, DEFAULT_CERT_CONFIG.col1Title),
-        col2Title: safeText(saved.col2Title, DEFAULT_CERT_CONFIG.col2Title),
-        col3Title: safeText(saved.col3Title, DEFAULT_CERT_CONFIG.col3Title),
-        col4Title: safeText(saved.col4Title, DEFAULT_CERT_CONFIG.col4Title),
         showCategoryInParens: saved.showCategoryInParens !== false,
         partsSeparator: saved.partsSeparator !== undefined ? String(saved.partsSeparator) : DEFAULT_CERT_CONFIG.partsSeparator,
-        signatureText: safeText(saved.signatureText, DEFAULT_CERT_CONFIG.signatureText)
+        hideIndexIfSingleItem: Boolean(saved.hideIndexIfSingleItem),
+        signatureText: safeText(saved.signatureText, DEFAULT_CERT_CONFIG.signatureText),
+        signatureSubName: saved.signatureSubName !== undefined ? String(saved.signatureSubName) : "",
+        showSecondSignature: Boolean(saved.showSecondSignature),
+        secondSignatureText: safeText(saved.secondSignatureText, DEFAULT_CERT_CONFIG.secondSignatureText),
+        secondSignatureSubName: saved.secondSignatureSubName !== undefined ? String(saved.secondSignatureSubName) : "",
+        columns: cols,
+        col1Title: cols[0]?.title || "#",
+        col2Title: cols[1]?.title || "المادة",
+        col3Title: cols[2]?.title || "الكمية",
+        col4Title: cols[3]?.title || "الملاحظات"
       };
     }
     window.getCertConfig = getCertConfig;
+
+    function getInvReportConfig() {
+      const saved = (state && state.profile && state.profile.invReportConfig && typeof state.profile.invReportConfig === "object")
+        ? state.profile.invReportConfig
+        : {};
+      const cols = Array.isArray(saved.columns) && saved.columns.length
+        ? normalizeColumnsWidthTo100(saved.columns)
+        : JSON.parse(JSON.stringify(DEFAULT_INV_REPORT_CONFIG.columns));
+      const signers = Array.isArray(saved.signers) && saved.signers.length === 3
+        ? saved.signers.map(s => Object.assign({}, s))
+        : JSON.parse(JSON.stringify(DEFAULT_INV_REPORT_CONFIG.signers));
+      return {
+        titleText: safeText(saved.titleText, DEFAULT_INV_REPORT_CONFIG.titleText),
+        subtitleText: safeText(saved.subtitleText, DEFAULT_INV_REPORT_CONFIG.subtitleText),
+        columns: cols,
+        signers
+      };
+    }
+    window.getInvReportConfig = getInvReportConfig;
+
+    function getStatsReportConfig() {
+      const saved = (state && state.profile && state.profile.statsReportConfig && typeof state.profile.statsReportConfig === "object")
+        ? state.profile.statsReportConfig
+        : {};
+      const cols = Array.isArray(saved.columns) && saved.columns.length
+        ? normalizeColumnsWidthTo100(saved.columns)
+        : JSON.parse(JSON.stringify(DEFAULT_STATS_REPORT_CONFIG.columns));
+      const signers = Array.isArray(saved.signers) && saved.signers.length === 3
+        ? saved.signers.map(s => Object.assign({}, s))
+        : JSON.parse(JSON.stringify(DEFAULT_STATS_REPORT_CONFIG.signers));
+      return {
+        titleText: safeText(saved.titleText, DEFAULT_STATS_REPORT_CONFIG.titleText),
+        quotaTitleText: safeText(saved.quotaTitleText, DEFAULT_STATS_REPORT_CONFIG.quotaTitleText),
+        showExecutiveCards: saved.showExecutiveCards !== false,
+        showCategoryTable: saved.showCategoryTable !== false,
+        columns: cols,
+        signers
+      };
+    }
+    window.getStatsReportConfig = getStatsReportConfig;
+
+    function getActiveCertColumnsForVoucher(voucher, cfgOverride) {
+      const cfg = cfgOverride || getCertConfig();
+      const itemsCount = Array.isArray(voucher?.items) ? voucher.items.length : 2;
+      let cols = (cfg.columns || []).map(c => Object.assign({}, c));
+      if (cfg.hideIndexIfSingleItem && itemsCount <= 1) {
+        const idxCol = cols.find(c => c.key === "index");
+        if (idxCol) idxCol.enabled = false;
+      }
+      cols = normalizeColumnsWidthTo100(cols);
+      return cols.filter(c => c.enabled);
+    }
+    window.getActiveCertColumnsForVoucher = getActiveCertColumnsForVoucher;
 
     function normalizeCategoryNameV2(rawCat) {
       const c = String(rawCat || "").trim();
@@ -33854,30 +34008,83 @@ ${itemsText}
     }
     window.buildOfficialIntroPlainText = buildOfficialIntroPlainText;
 
+    function getCertCellContentForColumn(colKey, colObj, item, idx, forPlainText = false) {
+      const st = parseAndEnrichStructuredItem(item || {});
+      if (colKey === "index") {
+        return String(idx + 1);
+      }
+      if (colKey === "item") {
+        return forPlainText ? formatCertificateItemCellPlainText(item) : formatCertificateItemCellHtml(item);
+      }
+      if (colKey === "qty") {
+        return String(Math.max(1, sanitize(item?.qty !== undefined ? item.qty : 1)));
+      }
+      if (colKey === "notes") {
+        const rawNotes = (item?.notes === undefined || item?.notes === null || String(item.notes) === "undefined")
+          ? ""
+          : String(item.notes).trim();
+        return forPlainText ? rawNotes : escapeHtml(rawNotes);
+      }
+      if (colKey === "extra") {
+        const sf = colObj?.sourceField || "category";
+        let val = "";
+        if (sf === "category") val = st.category || "";
+        else if (sf === "shortRef") val = st.shortRef || "";
+        else if (sf === "device") val = st.deviceFull || st.specDetail || "";
+        else val = "";
+        return forPlainText ? val : escapeHtml(val);
+      }
+      return "";
+    }
+
     generateVoucherA4Html = function(voucher) {
       const cfg = getCertConfig();
+      const activeCols = getActiveCertColumnsForVoucher(voucher, cfg);
       const headerSrc = escapeHtml(getBrandingAssetSrc('header') || './en_tete.png');
       const footerSrc = escapeHtml(getBrandingAssetSrc('footer') || './en_pied.png');
       const secretCode = escapeHtml(generateCertSecretCode(voucher));
       const introHtml = buildOfficialIntroLine(voucher);
 
-      const itemsRows = (voucher.items || []).map((item, idx) => {
-        const itemLabelHtml = formatCertificateItemCellHtml(item);
-        const qtyVal = Math.max(1, sanitize(item?.qty !== undefined ? item.qty : 1));
-        const rawNotes = (item?.notes === undefined || item?.notes === null || String(item.notes) === 'undefined')
-          ? ''
-          : String(item.notes).trim();
-        const notesHtml = rawNotes ? escapeHtml(rawNotes) : '';
+      const theadCellsHtml = activeCols.map(col => `
+        <th style="width: ${col.widthPct}%; text-align: center;">${escapeHtml(col.title)}</th>
+      `).join('');
 
-        return `
-          <tr>
-            <td style="width: 6%; text-align: center; font-weight: 700; font-size: 8.4pt;" class="tabular-nums">${idx + 1}</td>
-            <td style="width: 52%; text-align: right; font-size: 8.5pt; line-height: 1.35;">${itemLabelHtml}</td>
-            <td style="width: 14%; text-align: center; font-weight: 800; font-size: 8.8pt;" class="tabular-nums">${qtyVal}</td>
-            <td style="width: 28%; text-align: center; font-size: 8.2pt; line-height: 1.3;">${notesHtml}</td>
-          </tr>
-        `;
+      const itemsRows = (voucher.items || []).map((item, idx) => {
+        const tdsHtml = activeCols.map(col => {
+          const cellVal = getCertCellContentForColumn(col.key, col, item, idx, false);
+          if (col.key === "index") {
+            return `<td style="width: ${col.widthPct}%; text-align: center; font-weight: 700; font-size: 8.4pt;" class="tabular-nums">${cellVal}</td>`;
+          }
+          if (col.key === "item") {
+            return `<td style="width: ${col.widthPct}%; text-align: right; font-size: 8.5pt; line-height: 1.35;">${cellVal}</td>`;
+          }
+          if (col.key === "qty") {
+            return `<td style="width: ${col.widthPct}%; text-align: center; font-weight: 800; font-size: 8.8pt;" class="tabular-nums">${cellVal}</td>`;
+          }
+          return `<td style="width: ${col.widthPct}%; text-align: center; font-size: 8.2pt; line-height: 1.3;">${cellVal}</td>`;
+        }).join('');
+        return `<tr>${tdsHtml}</tr>`;
       }).join('');
+
+      const signatureBlockHtml = cfg.showSecondSignature
+        ? `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-top: 18px; padding: 0 8%; font-weight: 800; font-size: 10.5pt; color: #000;">
+            <div style="text-align: center;">
+              <div>${escapeHtml(cfg.secondSignatureText)}</div>
+              ${cfg.secondSignatureSubName ? `<div style="font-size: 9pt; font-weight: 600; margin-top: 3px;">${escapeHtml(cfg.secondSignatureSubName)}</div>` : ''}
+            </div>
+            <div style="text-align: center;">
+              <div>${escapeHtml(cfg.signatureText)}</div>
+              ${cfg.signatureSubName ? `<div style="font-size: 9pt; font-weight: 600; margin-top: 3px;">${escapeHtml(cfg.signatureSubName)}</div>` : ''}
+            </div>
+          </div>
+        `
+        : `
+          <div class="cert-signature-block">
+            <div>${escapeHtml(cfg.signatureText)}</div>
+            ${cfg.signatureSubName ? `<div style="font-size: 9pt; font-weight: 600; margin-top: 3px;">${escapeHtml(cfg.signatureSubName)}</div>` : ''}
+          </div>
+        `;
 
       return `
         <div class="official-cert-page" data-voucher-id="${escapeHtml(voucher.id || '')}" data-secret-code="${secretCode}">
@@ -33900,10 +34107,7 @@ ${itemsText}
             <table class="cert-official-table">
               <thead>
                 <tr>
-                  <th style="width: 6%;">${escapeHtml(cfg.col1Title)}</th>
-                  <th style="width: 52%;">${escapeHtml(cfg.col2Title)}</th>
-                  <th style="width: 14%;">${escapeHtml(cfg.col3Title)}</th>
-                  <th style="width: 28%;">${escapeHtml(cfg.col4Title)}</th>
+                  ${theadCellsHtml}
                 </tr>
               </thead>
               <tbody>
@@ -33911,9 +34115,7 @@ ${itemsText}
               </tbody>
             </table>
 
-            <div class="cert-signature-block">
-              ${escapeHtml(cfg.signatureText)}
-            </div>
+            ${signatureBlockHtml}
           </div>
 
           <div class="cert-bottom-section">
@@ -33932,6 +34134,7 @@ ${itemsText}
 
     generateCertificatePdfBlob = async function(voucher) {
       const cfg = getCertConfig();
+      const activeCols = getActiveCertColumnsForVoucher(voucher, cfg);
       const W = 1240;
       const H = 1754;
       const canvas = document.createElement("canvas");
@@ -34015,18 +34218,18 @@ ${itemsText}
 
       y += 10;
 
-      const colWidths = [
-        Math.round(contentW * 0.06),
-        Math.round(contentW * 0.52),
-        Math.round(contentW * 0.14),
-        contentW - Math.round(contentW * 0.06) - Math.round(contentW * 0.52) - Math.round(contentW * 0.14)
-      ];
-      const headers = [cfg.col1Title, cfg.col2Title, cfg.col3Title, cfg.col4Title];
-      const thH = 44;
+      let usedW = 0;
+      const colWidths = activeCols.map((col, i) => {
+        if (i === activeCols.length - 1) return Math.max(40, contentW - usedW);
+        const w = Math.round(contentW * (col.widthPct / 100));
+        usedW += w;
+        return w;
+      });
 
+      const thH = 44;
       ctx.save();
       let colRightX = W - padX;
-      headers.forEach((hTitle, cIdx) => {
+      activeCols.forEach((col, cIdx) => {
         const cw = colWidths[cIdx];
         const cellLeftX = colRightX - cw;
         ctx.fillStyle = "#efefef";
@@ -34039,7 +34242,7 @@ ${itemsText}
         ctx.font = "800 20px Tajawal, Arial, sans-serif";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText(hTitle, cellLeftX + cw / 2, y + thH / 2 + 1);
+        ctx.fillText(col.title, cellLeftX + cw / 2, y + thH / 2 + 1);
         colRightX -= cw;
       });
       ctx.restore();
@@ -34047,74 +34250,47 @@ ${itemsText}
 
       const items = Array.isArray(voucher?.items) ? voucher.items : [];
       items.forEach((item, idx) => {
-        const fullItemText = formatCertificateItemCellPlainText(item);
-        const qtyVal = String(Math.max(1, sanitize(item?.qty !== undefined ? item.qty : 1)));
-        const rawNotes = (item?.notes === undefined || item?.notes === null || String(item.notes) === "undefined")
-          ? ""
-          : String(item.notes).trim();
+        const wrappedCells = activeCols.map((col, cIdx) => {
+          const textVal = getCertCellContentForColumn(col.key, col, item, idx, true);
+          ctx.font = col.key === "qty" ? "800 20px Tajawal, Arial, sans-serif" : (col.key === "item" ? "700 18.5px Tajawal, Arial, sans-serif" : "600 18px Tajawal, Arial, sans-serif");
+          const lines = wrapCanvasTextLines(ctx, textVal, Math.max(30, colWidths[cIdx] - 18));
+          return { col, lines };
+        });
 
-        ctx.font = "700 18.5px Tajawal, Arial, sans-serif";
-        const itemLines = wrapCanvasTextLines(ctx, fullItemText, colWidths[1] - 20);
-        ctx.font = "600 18px Tajawal, Arial, sans-serif";
-        const noteLines = wrapCanvasTextLines(ctx, rawNotes, colWidths[3] - 18);
-
-        const maxLines = Math.max(1, itemLines.length, noteLines.length);
+        const maxLines = wrappedCells.reduce((m, wc) => Math.max(m, wc.lines.length), 1);
         const lineHeight = 26;
         const rowH = Math.max(40, maxLines * lineHeight + 14);
 
         let rRightX = W - padX;
-        const w0 = colWidths[0];
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(rRightX - w0, y, w0, rowH);
-        ctx.lineWidth = 1.6;
-        ctx.strokeStyle = "#000000";
-        ctx.strokeRect(rRightX - w0, y, w0, rowH);
-        ctx.fillStyle = "#000000";
-        ctx.font = "700 19px Tajawal, Arial, sans-serif";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(String(idx + 1), rRightX - w0 / 2, y + rowH / 2 + 1);
-        rRightX -= w0;
+        wrappedCells.forEach((wc, cIdx) => {
+          const cw = colWidths[cIdx];
+          const cellLeftX = rRightX - cw;
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(cellLeftX, y, cw, rowH);
+          ctx.lineWidth = 1.6;
+          ctx.strokeStyle = "#000000";
+          ctx.strokeRect(cellLeftX, y, cw, rowH);
 
-        const w1 = colWidths[1];
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(rRightX - w1, y, w1, rowH);
-        ctx.strokeRect(rRightX - w1, y, w1, rowH);
-        ctx.fillStyle = "#000000";
-        ctx.font = "700 18.5px Tajawal, Arial, sans-serif";
-        ctx.textAlign = "right";
-        ctx.textBaseline = "top";
-        const startItemY = y + (rowH - itemLines.length * lineHeight) / 2;
-        itemLines.forEach((ln, lIdx) => {
-          ctx.fillText(ln, rRightX - 10, startItemY + lIdx * lineHeight);
-        });
-        rRightX -= w1;
-
-        const w2 = colWidths[2];
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(rRightX - w2, y, w2, rowH);
-        ctx.strokeRect(rRightX - w2, y, w2, rowH);
-        ctx.fillStyle = "#000000";
-        ctx.font = "800 20px Tajawal, Arial, sans-serif";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(qtyVal, rRightX - w2 / 2, y + rowH / 2 + 1);
-        rRightX -= w2;
-
-        const w3 = colWidths[3];
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(rRightX - w3, y, w3, rowH);
-        ctx.strokeRect(rRightX - w3, y, w3, rowH);
-        if (rawNotes) {
           ctx.fillStyle = "#000000";
-          ctx.font = "600 18px Tajawal, Arial, sans-serif";
-          ctx.textAlign = "center";
-          ctx.textBaseline = "top";
-          const startNoteY = y + (rowH - noteLines.length * lineHeight) / 2;
-          noteLines.forEach((ln, lIdx) => {
-            ctx.fillText(ln, rRightX - w3 / 2, startNoteY + lIdx * lineHeight);
-          });
-        }
+          if (wc.col.key === "item") {
+            ctx.font = "700 18.5px Tajawal, Arial, sans-serif";
+            ctx.textAlign = "right";
+            ctx.textBaseline = "top";
+            const startY = y + (rowH - wc.lines.length * lineHeight) / 2;
+            wc.lines.forEach((ln, lIdx) => {
+              ctx.fillText(ln, rRightX - 10, startY + lIdx * lineHeight);
+            });
+          } else {
+            ctx.font = wc.col.key === "qty" ? "800 20px Tajawal, Arial, sans-serif" : "700 18.5px Tajawal, Arial, sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "top";
+            const startY = y + (rowH - wc.lines.length * lineHeight) / 2;
+            wc.lines.forEach((ln, lIdx) => {
+              ctx.fillText(ln, cellLeftX + cw / 2, startY + lIdx * lineHeight);
+            });
+          }
+          rRightX -= cw;
+        });
 
         y += rowH;
       });
@@ -34123,9 +34299,21 @@ ${itemsText}
       ctx.save();
       ctx.fillStyle = "#000000";
       ctx.font = "800 22px Tajawal, Arial, sans-serif";
-      ctx.textAlign = "left";
+      ctx.textAlign = "center";
       ctx.textBaseline = "top";
       ctx.fillText(cfg.signatureText, padX + Math.round(contentW * 0.16), y);
+      if (cfg.signatureSubName) {
+        ctx.font = "600 17px Tajawal, Arial, sans-serif";
+        ctx.fillText(cfg.signatureSubName, padX + Math.round(contentW * 0.16), y + 30);
+      }
+      if (cfg.showSecondSignature) {
+        ctx.font = "800 22px Tajawal, Arial, sans-serif";
+        ctx.fillText(cfg.secondSignatureText, W - padX - Math.round(contentW * 0.16), y);
+        if (cfg.secondSignatureSubName) {
+          ctx.font = "600 17px Tajawal, Arial, sans-serif";
+          ctx.fillText(cfg.secondSignatureSubName, W - padX - Math.round(contentW * 0.16), y + 30);
+        }
+      }
       ctx.restore();
 
       let footerDrawH = 0;
@@ -34761,14 +34949,13 @@ ${itemsText}
     window.addItemToCart = addItemToCart;
 
     // =========================================================================
-    // 4. التطوير الشامل لصفحة "التحليل الذكي" و"محاكاة الحصص" و"التقرير الإحصائي الذكي" (V7.4):
-    //    - اختيار المادة الأكثر توزيعاً تلقائياً كمعيار أول في التخطيط السنوي ومحاكاة الحصص ولوحة القيادة
-    //    - جدول محاكاة الحصص المضغوط من 5 أعمدة متقاربة فقط بخط موحد وصغير ومناسب للهاتف والحاسوب:
-    //      (1. المستفيد | 2. الاستهلاك [المعدل + نسبة التغيير % التفاعليين] | 3. الحصة المقترحة | 4. نسبة الحصة | 5. التحليل التقني بزر أيقونة خطية)
-    //    - إعادة هندسة شاملة لتقرير الرؤى والتحليل الإحصائي الذكي ليعتمد على الاستهلاك العام والحصص السنوية لجميع المواد
+    // 4. التطوير الشامل لصفحة "التحليل الذكي" (V7.5):
+    //    - إصلاح جذري لحساب نسبة التغيير (0% عند غياب استهلاك سابق > 0، وبدء الحساب من أول سنة ذات استهلاك فعلي)
+    //    - جعل الحصة المقترحة مطابقة لاستهلاك السنة الحالية عند 0% تغيير و 0% هامش أمان افتراضي
+    //    - تحويل المؤشرات والفلاتر والسلوك من "الجهات" إلى "المستفيدين"
+    //    - إضافة مؤشر "مواد غير مستعملة (0 استهلاك)" في البطاقات العلوية والتوصيات وسرعة النفاد
     // =========================================================================
 
-    // أ) دالة ترتيب جميع المواد تنازلياً حسب الأكثر توزيعاً في سجل العمليات الفعلي
     function getItemsRankedByDistribution() {
       const items = (Array.isArray(state.data.items) ? state.data.items : []).filter(i => i && !i.isDeleted);
       const txs = (Array.isArray(state.data.transactions) ? state.data.transactions : []).filter(t => t && !t.isDeleted);
@@ -34817,7 +35004,6 @@ ${itemsText}
     }
     window.getTopDistributedItem = getTopDistributedItem;
 
-    // تنسيق اسم المستفيد بدون كلمة "المحكمة" وبدون عمود منفصل للمقر
     function formatCompactBeneficiaryName(recipient, destination, isDirectorate) {
       if (isDirectorate || isSettatDirectorateName(destination)) {
         return "المديرية الإقليمية بسطات";
@@ -34838,7 +35024,86 @@ ${itemsText}
     }
     window.formatCompactBeneficiaryName = formatCompactBeneficiaryName;
 
-    // ب) تحديث قوائم اختيار المادة في "التخطيط السنوي" و"محاكاة الحصص" لترتب حسب الأكثر توزيعاً وتختار المادة الأولى تلقائياً
+    function getCanonicalBeneficiaryKeyAndLabel(txOrRecip, destName) {
+      const dest = typeof txOrRecip === "object" ? (txOrRecip?.destination || "") : (destName || "");
+      const recip = typeof txOrRecip === "object" ? (txOrRecip?.recipient || "غير محدد").trim() : String(txOrRecip || "غير محدد").trim();
+      const isDir = isSettatDirectorateName(dest);
+      const key = isDir ? "DIR_SETTAT" : `${recip}___${dest}`;
+      const label = formatCompactBeneficiaryName(recip, dest, isDir);
+      return { key, label, recip: isDir ? "المديرية الإقليمية بسطات" : recip, dest: isDir ? "المديرية الإقليمية" : dest, isDir };
+    }
+    window.getCanonicalBeneficiaryKeyAndLabel = getCanonicalBeneficiaryKeyAndLabel;
+
+    // دالة رياضية صارمة لحساب المعدل السنوي ونسبة التغيير بدءاً من أول سنة ذات استهلاك فعلي (> 0)
+    // إذا كانت السنوات السابقة = 0 فلا تدخل في القسمة ولا تنتج +100% أبداً!
+    function computeActiveYearlyMetrics(yearMap, yearOps, allSortedYears) {
+      const firstActiveIdx = allSortedYears.findIndex(y => (yearMap[y] || 0) > 0);
+      if (firstActiveIdx === -1) {
+        const latestY = allSortedYears[allSortedYears.length - 1] || "2026";
+        return {
+          activeYears: [latestY],
+          activeYearsCount: 1,
+          yearlyBreakdown: [{ year: latestY, qty: 0, opsCount: 0 }],
+          yearTransitions: [],
+          avgAnnual: 0,
+          latestYearQty: 0,
+          changePct: 0
+        };
+      }
+
+      // نبدأ الحساب حصراً من أول سنة سُجّل فيها استهلاك فعلي (> 0)
+      const activeYears = allSortedYears.slice(firstActiveIdx);
+      const activeYearsCount = activeYears.length;
+      const yearlyBreakdown = activeYears.map(y => ({
+        year: y,
+        qty: yearMap[y] || 0,
+        opsCount: (yearOps && yearOps[y]) || 0
+      }));
+
+      const totalActiveQty = yearlyBreakdown.reduce((s, x) => s + x.qty, 0);
+      const latestYearQty = yearlyBreakdown[yearlyBreakdown.length - 1].qty;
+      const avgAnnual = activeYearsCount === 1
+        ? latestYearQty
+        : Math.round(totalActiveQty / activeYearsCount);
+
+      let changePct = 0;
+      const yearTransitions = [];
+
+      if (activeYearsCount > 1) {
+        for (let i = 1; i < yearlyBreakdown.length; i++) {
+          const prev = yearlyBreakdown[i - 1];
+          const curr = yearlyBreakdown[i];
+          let diffPct = 0;
+          if (prev.qty > 0) {
+            diffPct = Math.round(((curr.qty - prev.qty) / prev.qty) * 100);
+          } else {
+            diffPct = 0;
+          }
+          yearTransitions.push({
+            fromYear: prev.year,
+            toYear: curr.year,
+            fromQty: prev.qty,
+            toQty: curr.qty,
+            diffPct
+          });
+        }
+        if (yearTransitions.length > 0) {
+          changePct = yearTransitions[yearTransitions.length - 1].diffPct;
+        }
+      }
+
+      return {
+        activeYears,
+        activeYearsCount,
+        yearlyBreakdown,
+        yearTransitions,
+        avgAnnual,
+        latestYearQty,
+        changePct
+      };
+    }
+    window.computeActiveYearlyMetrics = computeActiveYearlyMetrics;
+
     filterForecastItemSuggestions = function(query) {
       const list = document.getElementById('forecast-item-autocomplete-list');
       if (!list) return;
@@ -34925,14 +35190,80 @@ ${itemsText}
         hiddenInput.value = topItem.id;
       }
       _v6CalculateAndRenderForecast();
-      // تنظيف جدول حصص الجهات في التخطيط السنوي من كلمة المحكمة ومن عمود الحصة الربع سنوية
+
+      const btnTotal = document.getElementById('btn-forecast-tab-total');
+      const btnEntities = document.getElementById('btn-forecast-tab-entities');
+      const btnBenefs = document.getElementById('btn-forecast-tab-beneficiaries');
+      if (btnTotal && btnEntities && btnBenefs && btnBenefs.parentNode) {
+        btnBenefs.textContent = 'حصص المستفيدين (الأساسي)';
+        btnEntities.textContent = 'حصص الجهات (تجميعي)';
+        btnBenefs.parentNode.insertBefore(btnBenefs, btnEntities);
+      }
+
+      const recipTbody = document.getElementById('fc-beneficiaries-tbody');
+      if (recipTbody) {
+        const fcBenTable = recipTbody.closest('table');
+        const thRow = fcBenTable?.querySelector('thead tr');
+        if (thRow) {
+          thRow.innerHTML = `
+            <th style="width: 40px; text-align: center;">#</th>
+            <th>المستفيد</th>
+            <th style="text-align: center; width: 130px;">الاستهلاك السنوي</th>
+            <th style="text-align: center; width: 130px;">الحصة المقترحة</th>
+            <th style="text-align: center; width: 120px;">نسبة الاستحقاق</th>
+          `;
+        }
+        const activeId = hiddenInput?.value;
+        const rawIt = (state.data.items || []).find(i => i && i.id === activeId) || topItem;
+        if (rawIt) {
+          const stItem = parseAndEnrichStructuredItem(rawIt);
+          const marginPct = parseInt(document.getElementById('forecast-safety-margin')?.value || '15', 10);
+          const txsSource = (state.data.transactions || []).filter(t => t && !t.isDeleted);
+          const benMap = {};
+          let totalBurn = 0;
+          txsSource.forEach(t => {
+            const bInfo = getCanonicalBeneficiaryKeyAndLabel(t);
+            (t.items || []).forEach(li => {
+              if (li.id === stItem.id || li.name === stItem.name || (li.shortRef && li.shortRef === stItem.shortRef)) {
+                const q = Math.max(0, sanitize(li.qty));
+                if (q > 0) {
+                  benMap[bInfo.key] = benMap[bInfo.key] || { label: bInfo.label, isDir: bInfo.isDir, qty: 0 };
+                  benMap[bInfo.key].qty += q;
+                  totalBurn += q;
+                }
+              }
+            });
+          });
+          const totalNeeded = Math.round(totalBurn * (1 + marginPct / 100));
+          const benList = Object.values(benMap).sort((a, b) => b.qty - a.qty);
+          if (benList.length === 0) {
+            recipTbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">لا توجد عمليات سحب مسجلة لهذه المادة لدى المستفيدين</td></tr>`;
+          } else {
+            recipTbody.innerHTML = benList.map((b, idx) => {
+              const ratio = totalBurn > 0 ? (b.qty / totalBurn) : 0;
+              const quota = Math.round(totalNeeded * ratio);
+              const pct = (ratio * 100).toFixed(1);
+              return `
+                <tr>
+                  <td style="text-align: center;" class="tabular-nums">${idx + 1}</td>
+                  <td><span style="color: var(--text-main); font-weight: 500;">${escapeHtml(b.label)}</span></td>
+                  <td style="text-align: center;" class="tabular-nums">${b.qty}</td>
+                  <td style="text-align: center;" class="tabular-nums"><strong style="color: #0284c7;">${quota}</strong></td>
+                  <td style="text-align: center;"><span class="badge badge-subtle tabular-nums">${pct}%</span></td>
+                </tr>
+              `;
+            }).join('');
+          }
+        }
+      }
+
       const fcEntitiesTable = document.querySelector('#forecast-drill-content-entities table.data-table');
       if (fcEntitiesTable) {
         const thRow = fcEntitiesTable.querySelector('thead tr');
         if (thRow) {
           thRow.innerHTML = `
             <th style="width: 40px; text-align: center;">#</th>
-            <th>الجهة المستفيدة</th>
+            <th>الجهة</th>
             <th style="text-align: center; width: 130px;">الاستهلاك السنوي</th>
             <th style="text-align: center; width: 110px;">نسبة الحصة (%)</th>
             <th style="text-align: center; width: 140px;">الحصة المقترحة</th>
@@ -34942,10 +35273,11 @@ ${itemsText}
         const trs = fcEntitiesTable.querySelectorAll('tbody tr');
         trs.forEach(tr => {
           if (tr.children.length === 7) {
-            tr.removeChild(tr.children[5]); // إزالة عمود الحصة الربع سنوية
+            tr.removeChild(tr.children[5]);
           }
         });
       }
+
       const hiddenId = hiddenInput?.value;
       const rawIt = (state.data.items || []).find(i => i && i.id === hiddenId) || topItem;
       if (rawIt) {
@@ -35025,11 +35357,24 @@ ${itemsText}
       if (hiddenInput && (!hiddenInput.value || !state._userPickedSimQuotaItemId)) {
         hiddenInput.value = topItem.id;
       }
+      const marginSelect = document.getElementById('sim-quota-safety-margin');
+      if (marginSelect && !state._userChangedSimMargin) {
+        marginSelect.innerHTML = `
+          <option value="0" selected>0% (نفس استهلاك السنة المرجعية دون زيادة)</option>
+          <option value="5">+5% (هامش احتياطي خفيف)</option>
+          <option value="10">+10% (هامش أمان اعتيادي)</option>
+          <option value="15">+15% (هامش أمان متوازن)</option>
+          <option value="20">+20% (هامش أمان موسع)</option>
+        `;
+        marginSelect.onchange = function() {
+          state._userChangedSimMargin = true;
+          calculateAndRenderSimulatedQuota();
+        };
+      }
       calculateAndRenderSimulatedQuota();
     };
     window.initAndRenderSimulatedQuota = initAndRenderSimulatedQuota;
 
-    // ج) نافذة التفاصيل التفاعلية لجدول محاكاة الحصص (تفصيل المعدل السنوي / تفصيل نسبة التغيير / التحليل التقني)
     window._lastSimulatedQuotaRows = [];
     window._lastSimulatedQuotaContext = null;
 
@@ -35113,10 +35458,10 @@ ${itemsText}
             <div style="font-size:0.74rem;color:var(--text-muted);margin-top:2px;">المادة: <span style="color:#38bdf8;font-weight:600;">${itemLabel}</span></div>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-radius:8px;background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.3);margin-bottom:10px;">
-            <span>المعدل السنوي المعتمد (${row.yearsCount === 1 ? 'سنة واحدة متوفرة' : row.yearsCount + ' سنوات'}):</span>
+            <span>المعدل السنوي المعتمد (${row.activeYearsCount === 1 ? 'سنة فعلية واحدة' : row.activeYearsCount + ' سنوات فعلية'}):</span>
             <span class="tabular-nums" style="font-size:1rem;font-weight:700;color:#38bdf8;">${row.avgAnnual}</span>
           </div>
-          <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:6px;">تفصيل الاستهلاك حسب السنوات المتوفرة:</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:6px;">تفصيل الاستهلاك للسنوات الفعالة (تُهمل أي سنة سابقة كان استهلاكها 0):</div>
           <div style="display:flex;flex-direction:column;gap:5px;">
             ${yearsRowsHtml}
           </div>
@@ -35124,15 +35469,15 @@ ${itemsText}
       } else if (mode === 'change') {
         titleEl.innerHTML = `
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-          <span>تفاصيل نسبة التغيير في الاستهلاك</span>
+          <span>تفاصيل مؤشر تغير الاستهلاك</span>
         `;
         let transitionsHtml = '';
-        if (row.yearsCount <= 1) {
+        if (row.activeYearsCount <= 1 || row.yearTransitions.length === 0) {
           transitionsHtml = `
             <div style="padding:10px 12px;border-radius:8px;background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-secondary);font-size:0.79rem;">
-              المتوفر حالياً في قاعدة البيانات هو سجل سنة <strong>${escapeHtml(row.yearlyBreakdown[0]?.year || '2026')}</strong> فقط؛ لذلك فإن نسبة التغيير السنوي هي <strong class="tabular-nums">0%</strong>.
+              بدأ الحساب من سنة <strong>${escapeHtml(row.yearlyBreakdown[0]?.year || '2026')}</strong> (ولا توجد سنة سابقة ذات استهلاك فعلي أكبر من الصفر لهذا المستفيد)؛ لذلك فإن تغير الاستهلاك هو <strong class="tabular-nums">0%</strong>.
               <div style="margin-top:6px;font-size:0.73rem;color:var(--text-muted);">
-                عند إضافة إشهادات لسنوات أخرى، سيظهر هنا تلقائياً تفصيل نسبة الزيادة أو النقصان بين كل سنة وأخرى.
+                عند توفر استهلاك فعلي في سنتين متتاليتين، سيُحتسب الفرق النسبي الحقيقي بينهما تلقائياً.
               </div>
             </div>
           `;
@@ -35157,7 +35502,7 @@ ${itemsText}
             <div style="font-size:0.74rem;color:var(--text-muted);margin-top:2px;">المادة: <span style="color:#10b981;font-weight:600;">${itemLabel}</span></div>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-radius:8px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.3);margin-bottom:10px;">
-            <span>معدل التغيير السنوي:</span>
+            <span>نسبة تغير الاستهلاك:</span>
             <span class="tabular-nums" style="font-size:1rem;font-weight:700;color:#10b981;">${chgSign}${row.changePct}%</span>
           </div>
           <div style="display:flex;flex-direction:column;gap:6px;">
@@ -35165,7 +35510,6 @@ ${itemsText}
           </div>
         `;
       } else {
-        // mode === 'tech' (التحليل التقني المختصر والمباشر)
         titleEl.innerHTML = `
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
           <span>التحليل التقني للحصة المقترحة</span>
@@ -35206,7 +35550,7 @@ ${itemsText}
             </div>
             <div style="padding:6px 8px;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:6px;display:flex;justify-content:space-between;">
               <span style="color:var(--text-muted);">هامش الأمان:</span>
-              <span class="tabular-nums" style="font-weight:600;">+${ctx.marginPct || 15}%</span>
+              <span class="tabular-nums" style="font-weight:600;">+${ctx.marginPct || 0}%</span>
             </div>
             <div style="padding:6px 8px;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:6px;display:flex;justify-content:space-between;">
               <span style="color:var(--text-muted);">الحصة المقترحة:</span>
@@ -35242,7 +35586,6 @@ ${itemsText}
     }
     window.openSimQuotaDetailModal = openSimQuotaDetailModal;
 
-    // د) الدالة الرئيسية لبناء جدول محاكاة الحصص المضغوط ذي الأعمدة الخمسة المتقاربة
     calculateAndRenderSimulatedQuota = function() {
       try {
         const hiddenInput = document.getElementById('sim-quota-item-selected-id');
@@ -35265,18 +35608,34 @@ ${itemsText}
         }
         if (badge) badge.textContent = `المادة المفعلة: ${selectedItem.shortRef || selectedItem.name}`;
 
-        // تحديث النص الفرعي لبطاقة الجهات لإزالة كلمة "محاكم"
         const entitiesCountEl = document.getElementById('sim-quota-metric-entities-count');
-        if (entitiesCountEl && entitiesCountEl.nextElementSibling) {
-          entitiesCountEl.nextElementSibling.textContent = 'جهات ومستفيدون معتمدون';
+        if (entitiesCountEl) {
+          if (entitiesCountEl.previousElementSibling) {
+            entitiesCountEl.previousElementSibling.textContent = 'المستفيدون المشمولون بالتوزيع';
+          }
+          if (entitiesCountEl.nextElementSibling) {
+            entitiesCountEl.nextElementSibling.textContent = 'مستفيدون معتمدون';
+          }
         }
 
         const marginSelect = document.getElementById('sim-quota-safety-margin');
-        const marginPct = marginSelect ? parseInt(marginSelect.value, 10) : 15;
+        if (marginSelect && !state._userChangedSimMargin && marginSelect.value === "15") {
+          marginSelect.innerHTML = `
+            <option value="0" selected>0% (نفس استهلاك السنة المرجعية دون زيادة)</option>
+            <option value="5">+5% (هامش احتياطي خفيف)</option>
+            <option value="10">+10% (هامش أمان اعتيادي)</option>
+            <option value="15">+15% (هامش أمان متوازن)</option>
+            <option value="20">+20% (هامش أمان موسع)</option>
+          `;
+          marginSelect.onchange = function() {
+            state._userChangedSimMargin = true;
+            calculateAndRenderSimulatedQuota();
+          };
+        }
+        const marginPct = marginSelect ? parseInt(marginSelect.value, 10) : 0;
 
         const txsSource = Array.isArray(state.data.transactions) ? state.data.transactions.filter(t => t && !t.isDeleted) : [];
 
-        // اكتشاف جميع السنوات المتوفرة فعلياً في قاعدة البيانات
         const globalYearsSet = new Set();
         txsSource.forEach(t => {
           const sortKey = getTransactionDeliverySortKey(t);
@@ -35284,10 +35643,8 @@ ${itemsText}
           if (/^\d{4}$/.test(yr) && yr !== "1970") globalYearsSet.add(yr);
         });
         if (globalYearsSet.size === 0) globalYearsSet.add("2026");
-        const availableYears = Array.from(globalYearsSet).sort(); // تصاعدياً مثلاً ['2026'] أو ['2024','2025','2026']
-        const yearsCount = availableYears.length;
+        const availableYears = Array.from(globalYearsSet).sort();
 
-        // تجميع الاستهلاك الفعلي لكل مستفيد حسب السنوات المتوفرة فقط
         const entityStats = {};
 
         function ensureEntityRecord(eKey, recip, dest, isDir) {
@@ -35339,7 +35696,6 @@ ${itemsText}
           });
         });
 
-        // إذا لم يكن للمادة سحب سابق لدى باقي المستفيدين، ندرج المستفيدين الرئيسيين للجهات
         const allDestKeys = Object.keys(state.data.destinations || {});
         if (Object.keys(entityStats).length <= 1) {
           allDestKeys.forEach(d => {
@@ -35359,49 +35715,18 @@ ${itemsText}
         let totalSimulatedQuota = 0;
 
         Object.values(entityStats).forEach(rec => {
-          const yearlyBreakdown = availableYears.map(y => ({
-            year: y,
-            qty: rec.yearMap[y] || 0,
-            opsCount: rec.yearOps[y] || 0
-          }));
-
-          // المعدل السنوي للاستهلاك
-          const avgAnnual = yearsCount === 1
-            ? (rec.yearMap[availableYears[0]] || 0)
-            : Math.round((rec.total / yearsCount) * 10) / 10;
-          const avgAnnualRounded = Math.round(avgAnnual);
+          const metrics = computeActiveYearlyMetrics(rec.yearMap, rec.yearOps, availableYears);
+          const avgAnnualRounded = metrics.avgAnnual;
+          const changePct = metrics.changePct;
           totalAvgAnnualAll += avgAnnualRounded;
-
-          // حساب نسبة التغيير السنوي: إذا كانت هناك سنة واحدة فقط فنسبة التغيير = 0%
-          let changePct = 0;
-          const yearTransitions = [];
-          if (yearsCount > 1) {
-            for (let i = 1; i < availableYears.length; i++) {
-              const yPrev = availableYears[i - 1];
-              const yCurr = availableYears[i];
-              const qPrev = rec.yearMap[yPrev] || 0;
-              const qCurr = rec.yearMap[yCurr] || 0;
-              let diffPct = 0;
-              if (qPrev > 0) {
-                diffPct = Math.round(((qCurr - qPrev) / qPrev) * 100);
-              } else if (qCurr > 0) {
-                diffPct = 100;
-              }
-              yearTransitions.push({ fromYear: yPrev, toYear: yCurr, fromQty: qPrev, toQty: qCurr, diffPct });
-            }
-            if (yearTransitions.length > 0) {
-              changePct = yearTransitions[yearTransitions.length - 1].diffPct;
-            }
-          }
 
           const diagAnswer = diagMap[`${selectedItem.id}__${rec.entityKey}`] || "";
           let baseForQuota = avgAnnualRounded;
-          if (yearsCount > 1) {
-            const latestQty = rec.yearMap[availableYears[availableYears.length - 1]] || 0;
+          if (metrics.activeYearsCount > 1) {
             if (changePct >= 15) {
-              baseForQuota = Math.max(avgAnnualRounded, latestQty);
+              baseForQuota = Math.max(avgAnnualRounded, metrics.latestYearQty);
             } else if (changePct <= -15) {
-              baseForQuota = Math.min(avgAnnualRounded, Math.round(latestQty * 0.75 + avgAnnualRounded * 0.25));
+              baseForQuota = Math.min(avgAnnualRounded, Math.round(metrics.latestYearQty * 0.75 + avgAnnualRounded * 0.25));
             }
           }
 
@@ -35416,8 +35741,7 @@ ${itemsText}
           const proposedAnnual = Math.round(baseForQuota * (1 + marginPct / 100));
           totalSimulatedQuota += proposedAnnual;
 
-          // صياغة العبارة التقنية المختصرة والمباشرة حسب الحالة
-          let shortStateTitle = "استقرار";
+          let shortStateTitle = "استقرار في الاستهلاك";
           let shortTechPhrase = "";
           let techBgColor = "rgba(16, 185, 129, 0.08)";
           let techBorderColor = "rgba(16, 185, 129, 0.3)";
@@ -35460,15 +35784,17 @@ ${itemsText}
             techTextColor = "#f59e0b";
             iconStrokeColor = "#f59e0b";
           } else {
-            shortStateTitle = "استقرار في الاستهلاك";
-            shortTechPhrase = `الحفاظ على الاستقرار (معدل: ${avgAnnualRounded})؛ تم اقتراح حصة (${proposedAnnual}) مع هامش الأمان (+${marginPct}%).`;
+            shortStateTitle = "استقرار في الاستهلاك (0%)";
+            shortTechPhrase = marginPct > 0
+              ? `الحفاظ على الاستقرار (استهلاك: ${avgAnnualRounded})؛ تم اقتراح حصة (${proposedAnnual}) مع هامش (+${marginPct}%).`
+              : `الحفاظ على نفس استهلاك السنة الحالية (${avgAnnualRounded})؛ الحصة المقترحة (${proposedAnnual}).`;
           }
 
           quotaRows.push({
             ...rec,
-            yearsCount,
-            yearlyBreakdown,
-            yearTransitions,
+            activeYearsCount: metrics.activeYearsCount,
+            yearlyBreakdown: metrics.yearlyBreakdown,
+            yearTransitions: metrics.yearTransitions,
             avgAnnual: avgAnnualRounded,
             changePct,
             diagAnswer,
@@ -35520,14 +35846,13 @@ ${itemsText}
         const elTotal = document.getElementById('sim-quota-metric-total');
         if (elTotal) elTotal.textContent = sanitize(totalSimulatedQuota);
         const elMargin = document.getElementById('sim-quota-metric-margin-label');
-        if (elMargin) elMargin.textContent = `+${marginPct}% هامش أمان`;
+        if (elMargin) elMargin.textContent = marginPct > 0 ? `+${marginPct}% هامش أمان` : 'مطابق لاستهلاك السنة (0% زيادة)';
         const elCount = document.getElementById('sim-quota-metric-entities-count');
         if (elCount) elCount.textContent = quotaRows.length;
 
         const tbody = document.getElementById('sim-quota-tbody');
         if (!tbody) return;
 
-        // ترويسة الأعمدة الخمسة المختصرة والمباشرة فقط
         const theadTr = tbody.closest('table')?.querySelector('thead tr');
         if (theadTr) {
           theadTr.innerHTML = `
@@ -35580,10 +35905,11 @@ ${itemsText}
     };
     window.calculateAndRenderSimulatedQuota = calculateAndRenderSimulatedQuota;
 
-    // هـ) بناء المصفوفة الإحصائية الذكية الشاملة لجميع المواد (للتقرير الإحصائي العام وتدبير الصفقة القادمة)
-    function buildComprehensiveProcurementAnalytics(safetyMarginPct = 15) {
+    function buildComprehensiveProcurementAnalytics(safetyMarginPct = 15, filteredTxsOverride = null) {
       const items = (Array.isArray(state.data.items) ? state.data.items : []).filter(i => i && !i.isDeleted);
-      const txs = (Array.isArray(state.data.transactions) ? state.data.transactions : []).filter(t => t && !t.isDeleted);
+      const txs = Array.isArray(filteredTxsOverride)
+        ? filteredTxsOverride
+        : (Array.isArray(state.data.transactions) ? state.data.transactions : []).filter(t => t && !t.isDeleted);
 
       const globalYearsSet = new Set();
       txs.forEach(t => {
@@ -35592,22 +35918,25 @@ ${itemsText}
       });
       if (globalYearsSet.size === 0) globalYearsSet.add("2026");
       const availableYears = Array.from(globalYearsSet).sort();
-      const yearsCount = availableYears.length;
 
       const itemMap = {};
       const catTotals = {};
+      const beneficiaryTotals = {};
       let grandTotalUnits = 0;
 
       items.forEach(rawIt => {
         const st = parseAndEnrichStructuredItem(rawIt);
         const yMap = {};
-        availableYears.forEach(y => { yMap[y] = 0; });
+        const yOps = {};
+        availableYears.forEach(y => { yMap[y] = 0; yOps[y] = 0; });
         itemMap[st.id] = {
           ...st,
           stock: sanitize(st.stock),
           totalUnits: 0,
           txCount: 0,
-          yearMap: yMap
+          yearMap: yMap,
+          yearOps: yOps,
+          beneficiariesSet: new Set()
         };
         catTotals[st.category] = 0;
       });
@@ -35616,6 +35945,19 @@ ${itemsText}
         const yr = availableYears.includes(getTransactionDeliverySortKey(t).slice(0, 4))
           ? getTransactionDeliverySortKey(t).slice(0, 4)
           : availableYears[availableYears.length - 1];
+        const bInfo = getCanonicalBeneficiaryKeyAndLabel(t);
+        if (!beneficiaryTotals[bInfo.key]) {
+          beneficiaryTotals[bInfo.key] = {
+            key: bInfo.key,
+            label: bInfo.label,
+            isDir: bInfo.isDir,
+            units: 0,
+            opsCount: 0,
+            itemsMap: {}
+          };
+        }
+        beneficiaryTotals[bInfo.key].opsCount += 1;
+
         (t.items || []).forEach(li => {
           const q = Math.max(0, sanitize(li.qty));
           if (q <= 0) return;
@@ -35627,8 +35969,14 @@ ${itemsText}
             rec.totalUnits += q;
             rec.txCount += 1;
             rec.yearMap[yr] = (rec.yearMap[yr] || 0) + q;
+            rec.yearOps[yr] = (rec.yearOps[yr] || 0) + 1;
+            rec.beneficiariesSet.add(bInfo.label);
             catTotals[rec.category] = (catTotals[rec.category] || 0) + q;
             grandTotalUnits += q;
+
+            beneficiaryTotals[bInfo.key].units += q;
+            const itemShort = rec.shortRef || rec.name;
+            beneficiaryTotals[bInfo.key].itemsMap[itemShort] = (beneficiaryTotals[bInfo.key].itemsMap[itemShort] || 0) + q;
           }
         });
       });
@@ -35646,26 +35994,17 @@ ${itemsText}
       let classACount = 0;
 
       const enrichedRows = sortedList.map((rec, idx) => {
-        const avgAnnual = yearsCount === 1 ? rec.totalUnits : Math.round((rec.totalUnits / yearsCount) * 10) / 10;
-        const avgAnnualRounded = Math.round(avgAnnual);
+        const metrics = computeActiveYearlyMetrics(rec.yearMap, rec.yearOps, availableYears);
+        const avgAnnualRounded = metrics.avgAnnual;
+        const changePct = metrics.changePct;
         const globalSharePct = grandTotalUnits > 0 ? ((rec.totalUnits / grandTotalUnits) * 100) : 0;
         const catTotal = catTotals[rec.category] || 0;
         const catSharePct = catTotal > 0 ? ((rec.totalUnits / catTotal) * 100) : 0;
 
-        let changePct = 0;
-        if (yearsCount > 1) {
-          const prevY = availableYears[availableYears.length - 2];
-          const currY = availableYears[availableYears.length - 1];
-          const prevQ = rec.yearMap[prevY] || 0;
-          const currQ = rec.yearMap[currY] || 0;
-          if (prevQ > 0) changePct = Math.round(((currQ - prevQ) / prevQ) * 100);
-          else if (currQ > 0) changePct = 100;
-        }
-
         cumulativeUnits += rec.totalUnits;
         const cumShare = grandTotalUnits > 0 ? (cumulativeUnits / grandTotalUnits) : 1;
 
-        let demandClass = "D"; // 'A' | 'B' | 'C' | 'D' (unused)
+        let demandClass = "D";
         let statusLabel = "";
         let procurementDecision = "";
         let decisionColor = "#64748b";
@@ -35676,7 +36015,7 @@ ${itemsText}
           unusedItemsCount++;
           demandClass = "D";
           statusLabel = "مادة غير مستعملة (0)";
-          procurementDecision = "عدم البرمجة بالصفقة (استهلاك منعدم)";
+          procurementDecision = "غير مستعملة (0) — لا تُطلب بالصفقة";
           decisionColor = "#64748b";
           decisionBg = "#f8fafc";
           proposedQuota = 0;
@@ -35711,9 +36050,11 @@ ${itemsText}
           ...rec,
           rank: idx + 1,
           avgAnnual: avgAnnualRounded,
+          monthlyBurn: Math.round((avgAnnualRounded / 12) * 10) / 10,
           globalSharePct: Number(globalSharePct.toFixed(1)),
           catSharePct: Number(catSharePct.toFixed(1)),
           changePct,
+          beneficiariesCount: rec.beneficiariesSet.size,
           demandClass,
           statusLabel,
           procurementDecision,
@@ -35723,7 +36064,6 @@ ${itemsText}
         };
       });
 
-      // ملخص الأصناف
       const categorySummary = (state.data.categories || []).map(catName => {
         const catItems = enrichedRows.filter(r => r.category === catName);
         const activeInCat = catItems.filter(r => r.totalUnits > 0).length;
@@ -35741,9 +36081,24 @@ ${itemsText}
         };
       }).sort((a, b) => b.consumedUnits - a.consumedUnits);
 
+      const beneficiariesSummary = Object.values(beneficiaryTotals).map(b => {
+        const sharePct = grandTotalUnits > 0 ? Number(((b.units / grandTotalUnits) * 100).toFixed(1)) : 0;
+        const topItems = Object.entries(b.itemsMap)
+          .sort((x, y) => y[1] - x[1])
+          .slice(0, 3)
+          .map(([name, q]) => ({ name, qty: q }));
+        return {
+          ...b,
+          sharePct,
+          distinctItemsCount: Object.keys(b.itemsMap).length,
+          avgPerOp: b.opsCount > 0 ? Math.round((b.units / b.opsCount) * 10) / 10 : 0,
+          topItems
+        };
+      }).sort((a, b) => b.units - a.units);
+
       return {
         availableYears,
-        yearsCount,
+        yearsCount: availableYears.length,
         totalTransactions: txs.length,
         grandTotalUnits,
         totalItemsCount: items.length,
@@ -35753,42 +36108,226 @@ ${itemsText}
         totalProposedDealUnits,
         safetyMarginPct,
         rows: enrichedRows,
-        categorySummary
+        categorySummary,
+        beneficiariesSummary
       };
     }
     window.buildComprehensiveProcurementAnalytics = buildComprehensiveProcurementAnalytics;
 
-    // و) ترقية بطاقات وجداول صفحة التحليل الذكي لتعتمد على الاستهلاك الفعلي بدل المخزون الصفري
-    const _v6RenderAiInsightsView = renderAiInsightsView;
-    renderAiInsightsView = function() {
-      _v6RenderAiInsightsView();
-      const analytics = buildComprehensiveProcurementAnalytics(15);
-      const elRiskVal = document.getElementById('ai-kpi-risk-val');
-      const elRiskSub = document.getElementById('ai-kpi-risk-sub');
-      const elRiskBadge = document.getElementById('ai-kpi-risk-badge');
-      if (elRiskVal) elRiskVal.textContent = sanitize(analytics.activeItemsCount);
-      if (elRiskSub) elRiskSub.textContent = `مادة مستهلكة (${analytics.unusedItemsCount} مادة غير مستعملة)`;
-      if (elRiskBadge) elRiskBadge.textContent = `${analytics.classACount} فئة A`;
+    getFilteredAiTransactions = function() {
+      const tfVal = document.getElementById('ai-filter-timeframe')?.value || 'current-year';
+      const catVal = document.getElementById('ai-filter-category')?.value || 'all';
+      const benVal = document.getElementById('ai-filter-destination')?.value || 'all';
 
-      const topItem = getTopDistributedItem();
-      const elItemName = document.getElementById('ai-kpi-top-item-name');
-      const elItemSub = document.getElementById('ai-kpi-top-item-sub');
-      if (topItem && elItemName) {
-        elItemName.textContent = topItem.shortRef || topItem.name;
-        elItemName.title = formatItemDisplayText(topItem);
+      const now = new Date(2026, 10, 2);
+      let txs = Array.isArray(state.data.transactions) ? state.data.transactions.filter(t => t && !t.isDeleted) : [];
+
+      if (tfVal !== 'all') {
+        txs = txs.filter(t => {
+          const sortKey = getTransactionDeliverySortKey(t);
+          const y = parseInt(sortKey.slice(0, 4), 10);
+          const m = parseInt(sortKey.slice(5, 7), 10);
+          const d = parseInt(sortKey.slice(8, 10), 10);
+          const tDate = new Date(y, (m || 1) - 1, d || 1);
+          const diffDays = (now - tDate) / (1000 * 60 * 60 * 24);
+
+          if (tfVal === 'current-year') return y === 2026;
+          if (tfVal === 'last-month') return diffDays >= -5 && diffDays <= 35;
+          if (tfVal === 'last-3-months') return diffDays >= -5 && diffDays <= 95;
+          if (tfVal === 'last-6-months') return diffDays >= -5 && diffDays <= 185;
+          return true;
+        });
       }
-      if (topItem && elItemSub) {
-        const share = analytics.grandTotalUnits > 0 ? ((topItem.distributedQty / analytics.grandTotalUnits) * 100).toFixed(1) : 0;
-        elItemSub.textContent = `${topItem.distributedQty} قطعة (${share}% من الاستهلاك العام)`;
+
+      if (benVal !== 'all') {
+        txs = txs.filter(t => {
+          const bInfo = getCanonicalBeneficiaryKeyAndLabel(t);
+          return bInfo.key === benVal || bInfo.label === benVal || t.destination === benVal;
+        });
+      }
+
+      if (catVal !== 'all') {
+        txs = txs.map(t => {
+          const filteredItems = (t.items || []).filter(it => it.category === catVal);
+          return { ...t, items: filteredItems };
+        }).filter(t => t.items.length > 0);
+      }
+
+      return txs;
+    };
+    window.getFilteredAiTransactions = getFilteredAiTransactions;
+
+    function jumpToUnusedItemsView() {
+      switchAiSubTab('forecast');
+      setAiForecastFilterMode('unused');
+    }
+    window.jumpToUnusedItemsView = jumpToUnusedItemsView;
+
+    renderAiInsightsView = function() {
+      try {
+        const subBtnEntities = document.querySelector('#ai-subtab-btn-entities span');
+        if (subBtnEntities) subBtnEntities.textContent = 'سلوك المستفيدين';
+
+        const catSelect = document.getElementById('ai-filter-category');
+        if (catSelect && catSelect.options.length <= 1) {
+          (state.data.categories || []).forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c;
+            opt.textContent = c;
+            catSelect.appendChild(opt);
+          });
+        }
+
+        const benSelect = document.getElementById('ai-filter-destination');
+        if (benSelect) {
+          const lblSpan = benSelect.previousElementSibling?.querySelector('span');
+          if (lblSpan) lblSpan.textContent = 'تصفية حسب المستفيد';
+          const prevVal = benSelect.value || 'all';
+          const allTxs = (state.data.transactions || []).filter(t => t && !t.isDeleted);
+          const benOptionsMap = new Map();
+          benOptionsMap.set("DIR_SETTAT", "المديرية الإقليمية بسطات");
+          allTxs.forEach(t => {
+            const bInfo = getCanonicalBeneficiaryKeyAndLabel(t);
+            benOptionsMap.set(bInfo.key, bInfo.label);
+          });
+          benSelect.innerHTML = `<option value="all">كافة المستفيدين المعتمدين (${benOptionsMap.size})</option>` +
+            Array.from(benOptionsMap.entries()).map(([k, lbl]) => `<option value="${escapeHtml(k)}">${escapeHtml(lbl)}</option>`).join('');
+          if (prevVal && (prevVal === 'all' || benOptionsMap.has(prevVal))) {
+            benSelect.value = prevVal;
+          }
+        }
+
+        const filteredTxs = getFilteredAiTransactions();
+        const timeframeDays = getAiTimeframeDays();
+        const analytics = buildComprehensiveProcurementAnalytics(15, filteredTxs);
+
+        const monthlyVel = Math.round((analytics.grandTotalUnits / Math.max(1, timeframeDays)) * 30);
+        const elVelVal = document.getElementById('ai-kpi-velocity-val');
+        const elVelSub = document.getElementById('ai-kpi-velocity-sub');
+        if (elVelVal) elVelVal.textContent = sanitize(monthlyVel);
+        if (elVelSub) elVelSub.textContent = `قطعة/شهر (${analytics.grandTotalUnits} قطعة في ${analytics.totalTransactions} إشهاد)`;
+
+        const elRiskVal = document.getElementById('ai-kpi-risk-val');
+        const elRiskSub = document.getElementById('ai-kpi-risk-sub');
+        const elRiskBadge = document.getElementById('ai-kpi-risk-badge');
+        const riskCard = elRiskVal?.closest('.ai-glass-kpi-card');
+        if (riskCard) {
+          const titleSpan = riskCard.querySelector('.ai-kpi-title span');
+          if (titleSpan) titleSpan.textContent = 'مواد غير مستعملة (0 استهلاك)';
+          riskCard.style.cursor = 'pointer';
+          riskCard.title = 'اضغط لعرض قائمة المواد غير المستعملة التي وصل استهلاكها إلى الصفر';
+          riskCard.onclick = jumpToUnusedItemsView;
+        }
+        if (elRiskVal) elRiskVal.textContent = sanitize(analytics.unusedItemsCount);
+        if (elRiskBadge) elRiskBadge.textContent = `${analytics.activeItemsCount} مادة نشطة`;
+        if (elRiskSub) elRiskSub.textContent = `من أصل ${analytics.totalItemsCount} مادة (لا حاجة لطلبها بالصفقة)`;
+
+        const elDestName = document.getElementById('ai-kpi-top-dest-name');
+        const elDestSub = document.getElementById('ai-kpi-top-dest-sub');
+        const elTopDestPct = document.getElementById('ai-kpi-top-dest-pct');
+        const destCard = elDestName?.closest('.ai-glass-kpi-card');
+        if (destCard) {
+          const titleSpan = destCard.querySelector('.ai-kpi-title span');
+          if (titleSpan) titleSpan.textContent = 'المستفيد الأكثر استهلاكاً';
+        }
+        const topBen = analytics.beneficiariesSummary[0];
+        if (topBen && topBen.units > 0) {
+          if (elDestName) {
+            elDestName.textContent = topBen.label;
+            elDestName.title = topBen.label;
+          }
+          if (elDestSub) elDestSub.textContent = `${topBen.units} قطعة (${topBen.opsCount} إشهاد تسليم)`;
+          if (elTopDestPct) elTopDestPct.textContent = `${topBen.sharePct}% من العام`;
+        } else {
+          if (elDestName) elDestName.textContent = 'لا توجد عمليات';
+          if (elDestSub) elDestSub.textContent = '0 قطعة مسحوبة';
+          if (elTopDestPct) elTopDestPct.textContent = '0%';
+        }
+
+        const topItem = analytics.rows[0];
+        const elItemName = document.getElementById('ai-kpi-top-item-name');
+        const elItemSub = document.getElementById('ai-kpi-top-item-sub');
+        if (topItem && topItem.totalUnits > 0) {
+          if (elItemName) {
+            elItemName.textContent = topItem.shortRef || topItem.name;
+            elItemName.title = formatItemDisplayText(topItem);
+          }
+          if (elItemSub) elItemSub.textContent = `${topItem.totalUnits} قطعة (${topItem.globalSharePct}% من الاستهلاك العام)`;
+        } else {
+          if (elItemName) elItemName.textContent = 'لا توجد بيانات';
+          if (elItemSub) elItemSub.textContent = '0 قطعة موزعة';
+        }
+
+        switchAiSubTab(_aiActiveSubTab);
+      } catch (err) {
+        console.error('renderAiInsightsView error:', err);
       }
     };
     window.renderAiInsightsView = renderAiInsightsView;
 
+    window._aiForecastFilterMode = 'all';
+
+    function setAiForecastFilterMode(mode) {
+      window._aiForecastFilterMode = mode || 'all';
+      renderAiForecastTable();
+    }
+    window.setAiForecastFilterMode = setAiForecastFilterMode;
+
     renderAiForecastTable = function() {
       const tbody = document.getElementById('ai-forecast-tbody');
       if (!tbody) return;
-      const analytics = buildComprehensiveProcurementAnalytics(15);
+
+      const filteredTxs = getFilteredAiTransactions();
+      const analytics = buildComprehensiveProcurementAnalytics(15, filteredTxs);
       const search = (document.getElementById('ai-forecast-search')?.value || '').trim().toLowerCase();
+      const mode = window._aiForecastFilterMode || 'all';
+
+      const cardEl = tbody.closest('.card');
+      if (cardEl && !document.getElementById('ai-forecast-explainer-bar')) {
+        const headerEl = cardEl.querySelector('.card-header');
+        if (headerEl) {
+          const titleH3 = headerEl.querySelector('.card-title');
+          const subDiv = headerEl.querySelector('.card-subtitle');
+          if (titleH3) titleH3.textContent = 'مصفوفة سرعة الاستهلاك وكفاية الرصيد وفرز المواد غير المستعملة';
+          if (subDiv) subDiv.textContent = 'تحليل وتيرة السحب السنوي والشهري لكل مادة، ومدة كفاية المخزون المتوفر، وفرز المواد النشطة عن المواد المتوقفة (0 استهلاك)';
+
+          const explainer = document.createElement('div');
+          explainer.id = 'ai-forecast-explainer-bar';
+          explainer.style.cssText = 'margin: 10px 0 12px 0; padding: 10px 14px; border-radius: 10px; background: var(--bg-muted); border: 1px solid var(--border-subtle); font-size: 0.79rem; line-height: 1.55;';
+          headerEl.parentNode.insertBefore(explainer, headerEl.nextSibling);
+        }
+      }
+
+      const inStockCount = analytics.rows.filter(r => r.stock > 0).length;
+      const explainerBar = document.getElementById('ai-forecast-explainer-bar');
+      if (explainerBar) {
+        explainerBar.innerHTML = `
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+            <div style="flex:1 1 380px;">
+              <strong style="color:#38bdf8;">💡 كيف تقرأ هذه المصفوفة وتستفيد منها؟</strong>
+              <span style="color:var(--text-secondary);">
+                تقسم هذه الصفحة مواد المستودع (${analytics.totalItemsCount} مادة) إلى: 
+                <strong>مواد نشطة مستهلكة (${analytics.activeItemsCount} مادة)</strong> يُقاس سحبها الشهري ونسبتها من الاستهلاك العام لتحديد حصتها في الصفقة القادمة، 
+                و<strong>مواد غير مستعملة (${analytics.unusedItemsCount} مادة استهلاكها 0)</strong> لم تعد مطلوبة فلا داعي لشرائها في الصفقات المقبلة. وعند توفر رصيد بالمخزن، تحسب عمودياً عدد الأيام أو الأشهر التي يكفيها هذا الرصيد.
+              </span>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+              <button type="button" class="btn btn-sm ${mode === 'all' ? 'btn-primary' : 'btn-outline'}" onclick="setAiForecastFilterMode('all')" style="font-size:0.74rem;padding:4px 10px;">
+                كافة المواد (${analytics.totalItemsCount})
+              </button>
+              <button type="button" class="btn btn-sm ${mode === 'active' ? 'btn-primary' : 'btn-outline'}" onclick="setAiForecastFilterMode('active')" style="font-size:0.74rem;padding:4px 10px;">
+                🔥 مواد نشطة مستهلكة (${analytics.activeItemsCount})
+              </button>
+              <button type="button" class="btn btn-sm ${mode === 'unused' ? 'btn-primary' : 'btn-outline'}" onclick="setAiForecastFilterMode('unused')" style="font-size:0.74rem;padding:4px 10px;">
+                🛑 مواد غير مستعملة — 0 استهلاك (${analytics.unusedItemsCount})
+              </button>
+              <button type="button" class="btn btn-sm ${mode === 'instock' ? 'btn-primary' : 'btn-outline'}" onclick="setAiForecastFilterMode('instock')" style="font-size:0.74rem;padding:4px 10px;">
+                📦 متوفرة بالمخزن (${inStockCount})
+              </button>
+            </div>
+          </div>
+        `;
+      }
 
       const theadTr = tbody.closest('table')?.querySelector('thead tr');
       if (theadTr) {
@@ -35796,15 +36335,19 @@ ${itemsText}
           <th style="width: 38px; text-align: center;">#</th>
           <th>المادة والمواصفات</th>
           <th>الصنف</th>
-          <th style="text-align: center;">المعدل السنوي</th>
-          <th style="text-align: center;">نسبة الاستهلاك العام</th>
-          <th style="text-align: center;">نسبة التغيير</th>
-          <th style="text-align: center;">الحصة المقترحة للصفقة</th>
-          <th style="text-align: center;">قرار تدبير الصفقة القادمة</th>
+          <th style="text-align: center;">الاستهلاك السنوي</th>
+          <th style="text-align: center;">السحب الشهري</th>
+          <th style="text-align: center;">نسبتها من العام</th>
+          <th style="text-align: center;">الرصيد وكفايته</th>
+          <th style="text-align: center;">الحصة المقترحة وقرار الصفقة</th>
         `;
       }
 
       let list = analytics.rows;
+      if (mode === 'active') list = list.filter(r => r.totalUnits > 0);
+      else if (mode === 'unused') list = list.filter(r => r.totalUnits === 0);
+      else if (mode === 'instock') list = list.filter(r => r.stock > 0);
+
       if (search) {
         list = list.filter(r => {
           const hay = `${r.shortRef || ''} ${r.name || ''} ${r.deviceFull || ''} ${r.category || ''}`.toLowerCase();
@@ -35813,22 +36356,35 @@ ${itemsText}
       }
 
       if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 24px; color: var(--text-muted);">لا توجد مواد مطابقة لشرط البحث</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 24px; color: var(--text-muted);">لا توجد مواد مطابقة للفلتر المحدد</td></tr>`;
         return;
       }
 
       tbody.innerHTML = list.map((r, idx) => {
-        const chgSign = r.changePct > 0 ? '+' : '';
         const badgeCls = r.demandClass === 'A' ? 'badge-primary' : (r.demandClass === 'B' ? 'badge-success' : (r.demandClass === 'C' ? 'badge-warning' : 'badge-subtle'));
+        let stockCoverageHtml = '';
+        if (r.stock > 0) {
+          if (r.monthlyBurn > 0) {
+            const monthsLeft = Math.round((r.stock / r.monthlyBurn) * 10) / 10;
+            stockCoverageHtml = `<span class="tabular-nums" style="color:#10b981;font-weight:700;">${r.stock} ق</span> <span style="font-size:0.71rem;color:var(--text-muted);">(يكفي ~${monthsLeft} شهر)</span>`;
+          } else {
+            stockCoverageHtml = `<span class="tabular-nums" style="color:#38bdf8;font-weight:700;">${r.stock} ق</span> <span style="font-size:0.71rem;color:var(--text-muted);">(راكد بالمخزن)</span>`;
+          }
+        } else {
+          stockCoverageHtml = r.totalUnits > 0
+            ? `<span class="tabular-nums" style="color:#ef4444;">0</span> <span style="font-size:0.7rem;color:var(--text-muted);">(يتطلب شراء)</span>`
+            : `<span class="tabular-nums" style="color:var(--text-muted);">0 (غير مستعملة)</span>`;
+        }
+
         return `
           <tr>
             <td style="text-align: center; font-size: 0.75rem;" class="tabular-nums">${idx + 1}</td>
             <td>${formatItemDisplayHtml(r)}</td>
             <td><span class="badge badge-subtle" style="font-size: 0.72rem;">${escapeHtml(r.category)}</span></td>
-            <td style="text-align: center;" class="tabular-nums"><strong>${r.avgAnnual}</strong></td>
+            <td style="text-align: center;" class="tabular-nums"><strong>${r.avgAnnual}</strong> <span style="font-size:0.7rem;color:var(--text-muted);">(${r.txCount} تسليم)</span></td>
+            <td style="text-align: center;" class="tabular-nums">${r.monthlyBurn} / شهر</td>
             <td style="text-align: center;" class="tabular-nums"><span class="badge badge-subtle">${r.globalSharePct}%</span></td>
-            <td style="text-align: center;" class="tabular-nums">${chgSign}${r.changePct}%</td>
-            <td style="text-align: center;" class="tabular-nums"><strong style="color: #10b981;">${r.proposedQuota}</strong></td>
+            <td style="text-align: center;">${stockCoverageHtml}</td>
             <td style="text-align: center;"><span class="badge ${badgeCls}" style="font-size: 0.72rem;">${escapeHtml(r.procurementDecision)}</span></td>
           </tr>
         `;
@@ -35836,7 +36392,187 @@ ${itemsText}
     };
     window.renderAiForecastTable = renderAiForecastTable;
 
-    // ز) إعادة هندسة شاملة لـ "تقرير الرؤى والتحليل الإحصائي الذكي للمخزون والتوزيع" (printAiAnalysisReport)
+    renderAiEntitiesPatterns = function() {
+      const container = document.getElementById('ai-entities-patterns-grid');
+      if (!container) return;
+
+      const cardEl = container.closest('.card');
+      if (cardEl) {
+        const titleEl = cardEl.querySelector('.card-title');
+        const subEl = cardEl.querySelector('.card-subtitle');
+        if (titleEl) titleEl.textContent = 'تحليل سلوك ونمط الاستهلاك لدى المستفيدين المعتمدين';
+        if (subEl) subEl.textContent = 'قياس حجم ونسبة استهلاك كل مستفيد فعلي، وعدد تسليماته، وأهم المواد التي يطلبها (يتفاعل مباشرة مع فلاتر الفترة والصنف والمستفيد أعلاه)';
+      }
+
+      const filteredTxs = getFilteredAiTransactions();
+      const analytics = buildComprehensiveProcurementAnalytics(15, filteredTxs);
+      const benList = analytics.beneficiariesSummary;
+
+      if (benList.length === 0) {
+        container.innerHTML = `<div style="color: var(--text-muted); text-align: center; padding: 24px; grid-column: 1 / -1;">لا توجد عمليات سحب مسجلة للمستفيدين ضمن هذا الفلتر</div>`;
+        return;
+      }
+
+      const avgPerBen = analytics.grandTotalUnits / Math.max(1, benList.length);
+
+      container.innerHTML = benList.map((b, idx) => {
+        const ratioToAvg = avgPerBen > 0 ? (b.units / avgPerBen) : 1;
+        let behaviorBadge = '';
+        let behaviorNote = '';
+        let borderColor = 'var(--border-subtle)';
+        let barColor = '#3b82f6';
+
+        if (b.units === 0) {
+          behaviorBadge = '<span class="badge badge-subtle" style="font-size:0.71rem;">بدون سحب (0)</span>';
+          behaviorNote = 'لم يسجل أي سحب خلال الفترة المحددة.';
+        } else if (ratioToAvg >= 1.5 || idx < 3) {
+          behaviorBadge = '<span class="badge badge-warning" style="font-size:0.71rem;">🔥 استهلاك كثيف (فئة أولى)</span>';
+          behaviorNote = `مستفيد رئيسي يمثل ${b.sharePct}% من إجمالي الاستهلاك بمعدل ${b.avgPerOp} وحدة في كل تسليم.`;
+          borderColor = 'rgba(245, 158, 11, 0.5)';
+          barColor = '#f59e0b';
+        } else if (ratioToAvg >= 0.5) {
+          behaviorBadge = '<span class="badge badge-success" style="font-size:0.71rem;">⚖️ سحب منتظم ومعتدل</span>';
+          behaviorNote = `وتيرة استهلاك متوازنة (${b.opsCount} إشهادات تسليم على ${b.distinctItemsCount} مواد مختلفة).`;
+          borderColor = 'rgba(16, 185, 129, 0.45)';
+          barColor = '#10b981';
+        } else {
+          behaviorBadge = '<span class="badge badge-subtle" style="font-size:0.71rem;">📉 سحب محدود</span>';
+          behaviorNote = `استهلاك منخفض (${b.units} وحدة فقط عبر ${b.opsCount} تسليم).`;
+          borderColor = 'var(--border-subtle)';
+          barColor = '#38bdf8';
+        }
+
+        const topItemsPills = (b.topItems || []).map(ti => `
+          <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:6px;background:var(--bg-muted);border:1px solid var(--border-subtle);font-size:0.71rem;">
+            <span dir="ltr" style="font-weight:600;color:var(--text-main);">${escapeHtml(ti.name)}</span>
+            <strong class="tabular-nums" style="color:#38bdf8;">(${ti.qty})</strong>
+          </span>
+        `).join('');
+
+        return `
+          <div style="background: var(--bg-card); border: 1.5px solid ${borderColor}; border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; justify-content: space-between; gap: 8px;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 6px;">
+                <span style="color: var(--text-main); font-size: 0.86rem; font-weight: 700;">${idx + 1}. ${escapeHtml(b.label)}</span>
+                ${behaviorBadge}
+              </div>
+              <div style="font-size: 0.76rem; color: var(--text-muted); line-height: 1.45; margin-bottom: 8px;">
+                ${escapeHtml(behaviorNote)}
+              </div>
+              ${topItemsPills ? `
+                <div style="margin-bottom: 6px;">
+                  <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 4px;">أكثر المواد استهلاكاً من طرف هذا المستفيد:</div>
+                  <div style="display: flex; flex-wrap: wrap; gap: 4px;">${topItemsPills}</div>
+                </div>
+              ` : ''}
+            </div>
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 4px;">
+                <span>المستلم: <strong class="tabular-nums" style="color: var(--text-main);">${b.units} وحدة</strong> (${b.opsCount} إشهاد)</span>
+                <strong class="tabular-nums" style="color: ${barColor};">${b.sharePct}% من العام</strong>
+              </div>
+              <div style="height: 6px; background: var(--bg-muted); border-radius: 999px; overflow: hidden;">
+                <div style="height: 100%; width: ${Math.min(100, Math.max(4, b.sharePct))}%; background: ${barColor}; border-radius: 999px;"></div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    };
+    window.renderAiEntitiesPatterns = renderAiEntitiesPatterns;
+
+    renderAiRecommendations = function() {
+      const urgentList = document.getElementById('ai-recom-urgent-list');
+      const dormantList = document.getElementById('ai-recom-dormant-list');
+      const guidelinesList = document.getElementById('ai-recom-guidelines-list');
+      if (!urgentList || !dormantList || !guidelinesList) return;
+
+      const filteredTxs = getFilteredAiTransactions();
+      const analytics = buildComprehensiveProcurementAnalytics(15, filteredTxs);
+
+      const card1Title = urgentList.closest('.card')?.querySelector('.card-title');
+      if (card1Title) {
+        card1Title.style.color = '#0284c7';
+        card1Title.innerHTML = `🔥 أولويات الصفقة القادمة (المواد الأكثر استهلاكاً — ${analytics.classACount} مواد)`;
+      }
+      const card2Title = dormantList.closest('.card')?.querySelector('.card-title');
+      if (card2Title) {
+        card2Title.style.color = '#f59e0b';
+        card2Title.innerHTML = `🛑 مواد غير مستعملة — استهلاك 0 (${analytics.unusedItemsCount} مادة لا تحتاج طلبها)`;
+      }
+      const card3Title = guidelinesList.closest('.card')?.querySelector('.card-title');
+      if (card3Title) {
+        card3Title.style.color = '#10b981';
+        card3Title.innerHTML = `👥 توصيات ضبط استهلاك المستفيدين وترشيد الصفقة`;
+      }
+
+      const topActiveItems = analytics.rows.filter(r => r.totalUnits > 0).slice(0, 8);
+      if (topActiveItems.length === 0) {
+        urgentList.innerHTML = `<div style="font-size: 0.8rem; color: var(--text-muted); padding: 12px; text-align: center;">لا توجد مواد مستهلكة في الفترة المحددة.</div>`;
+      } else {
+        urgentList.innerHTML = `
+          <div style="font-size:0.74rem;color:var(--text-muted);margin-bottom:4px;">
+            هذه المواد تمثل عصب الاستهلاك الفعلي ويجب تأمين حصتها السنوية المقترحة في الصفقة القادمة:
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;max-height:310px;overflow-y:auto;padding-left:4px;">
+            ${topActiveItems.map((it, idx) => `
+              <div style="background: var(--bg-muted); border-radius: 8px; padding: 7px 10px; display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; border: 1px solid var(--border-subtle);">
+                <div>
+                  <strong style="color: var(--text-main);" dir="ltr">${idx + 1}. ${escapeHtml(it.shortRef || it.name)}</strong>
+                  <div style="font-size: 0.7rem; color: var(--text-muted);">${escapeHtml(it.category)} — الموزع: <strong>${it.totalUnits}</strong> (${it.globalSharePct}% من العام)</div>
+                </div>
+                <span class="badge badge-primary tabular-nums" style="font-size: 0.72rem;">حصة الصفقة: ${it.proposedQuota}</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      const unusedItems = analytics.rows.filter(r => r.totalUnits === 0);
+      if (unusedItems.length === 0) {
+        dormantList.innerHTML = `<div style="font-size: 0.8rem; color: var(--text-muted); padding: 12px; text-align: center;">جميع المواد المسجلة تم استهلاكها خلال هذه الفترة.</div>`;
+      } else {
+        dormantList.innerHTML = `
+          <div style="font-size:0.74rem;color:var(--text-muted);margin-bottom:4px;">
+            مواد مسجلة وصل استهلاكها إلى <strong>0</strong> هذه السنة؛ يُوصى بعدم برمجتها في الصفقة القادمة لتوفير الميزانية:
+          </div>
+          <div style="display:flex;flex-direction:column;gap:5px;max-height:270px;overflow-y:auto;padding-left:4px;">
+            ${unusedItems.map((it, idx) => `
+              <div style="background: var(--bg-muted); border-radius: 7px; padding: 6px 10px; display: flex; justify-content: space-between; align-items: center; font-size: 0.76rem; border: 1px solid var(--border-subtle);">
+                <div>
+                  <span style="color: var(--text-main); font-weight: 600;" dir="ltr">${idx + 1}. ${escapeHtml(it.shortRef || it.name)}</span>
+                  <div style="font-size: 0.69rem; color: var(--text-muted);">${escapeHtml(it.category)}${it.deviceModel ? ' — ' + escapeHtml(it.deviceModel) : ''}</div>
+                </div>
+                <span class="badge badge-subtle tabular-nums" style="font-size: 0.69rem;">استهلاك: 0</span>
+              </div>
+            `).join('')}
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" onclick="jumpToUnusedItemsView()" style="margin-top:4px;font-size:0.74rem;width:100%;">
+            عرض جدول المواد غير المستعملة الكامل (${unusedItems.length} مادة) ⬅
+          </button>
+        `;
+      }
+
+      const topBen = analytics.beneficiariesSummary[0];
+      const lowUseCount = analytics.rows.filter(r => r.demandClass === 'C').length;
+      guidelinesList.innerHTML = `
+        <div style="font-size: 0.79rem; line-height: 1.55; display: flex; flex-direction: column; gap: 8px;">
+          <div style="background: var(--bg-muted); padding: 8px 10px; border-radius: 8px; border-right: 3px solid #0284c7;">
+            <strong>تركيز ميزانية الصفقة القادمة:</strong> من أصل <strong>${analytics.totalItemsCount}</strong> مادة مسجلة، هناك <strong>${analytics.activeItemsCount} مادة فقط</strong> مستعملة فعلياً، بينما <strong>${analytics.unusedItemsCount} مادة</strong> استهلاكها صفر ولا تحتاج لإدراجها في طلبية السنة المقبلة.
+          </div>
+          ${topBen ? `
+          <div style="background: var(--bg-muted); padding: 8px 10px; border-radius: 8px; border-right: 3px solid #10b981;">
+            <strong>توزيع الحصص حسب المستفيدين:</strong> يتصدر المستفيد <strong>«${escapeHtml(topBen.label)}»</strong> قائمة الاستهلاك بـ <strong>${topBen.units} وحدة (${topBen.sharePct}%)</strong>؛ يُوصى باعتماد جدول حصص المستفيدين في تبويب «محاكاة الحصص» كمرجع للتسليم.
+          </div>
+          ` : ''}
+          <div style="background: var(--bg-muted); padding: 8px 10px; border-radius: 8px; border-right: 3px solid #f59e0b;">
+            <strong>ترشيد المواد نادرة الاستعمال:</strong> توجد <strong>${lowUseCount} مواد</strong> ذات سحب سنوي ضعيف جداً (أقل من 6 وحدات سنوياً)؛ يُوصى بشرائها بالحد الأدنى لتفادي تجميد الرصيد.
+          </div>
+        </div>
+      `;
+    };
+    window.renderAiRecommendations = renderAiRecommendations;
+
     window.filterAiPrintableReportRows = function(filterMode) {
       const rows = document.querySelectorAll('.ai-report-item-row');
       rows.forEach(tr => {
@@ -35854,8 +36590,27 @@ ${itemsText}
       });
     };
 
+    function buildReportSignersBlockHtml(signersArray) {
+      const activeSigners = (Array.isArray(signersArray) ? signersArray : []).filter(s => s && s.enabled);
+      if (activeSigners.length === 0) return '';
+      return `
+        <div style="display: flex; justify-content: space-around; align-items: flex-start; margin-top: 24px; padding-top: 10px; page-break-inside: avoid; border-top: 1px solid #cbd5e1;">
+          ${activeSigners.map(s => `
+            <div style="text-align: center; min-width: 160px;">
+              <div style="font-weight: 800; font-size: 9.5pt; color: #0f172a;">${escapeHtml(s.title || '')}</div>
+              ${s.name ? `<div style="font-size: 8.5pt; color: #334155; margin-top: 2px; font-weight: 600;">${escapeHtml(s.name)}</div>` : ''}
+              <div style="height: 45px;"></div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+    window.buildReportSignersBlockHtml = buildReportSignersBlockHtml;
+
     printAiAnalysisReport = function() {
-      const marginSelect = document.getElementById('sim-quota-safety-margin') || document.getElementById('forecast-safety-margin');
+      const statsCfg = getStatsReportConfig();
+      const activeCols = normalizeColumnsWidthTo100(statsCfg.columns).filter(c => c.enabled);
+      const marginSelect = document.getElementById('forecast-safety-margin');
       const safetyMarginPct = marginSelect ? parseInt(marginSelect.value, 10) : 15;
       const analytics = buildComprehensiveProcurementAnalytics(safetyMarginPct);
       const headerSrc = escapeHtml(getBrandingAssetSrc('header') || './en_tete.png');
@@ -35874,25 +36629,76 @@ ${itemsText}
         </tr>
       `).join('');
 
+      const theadHtml = activeCols.map(c => `
+        <th style="width: ${c.widthPct}%; border: 1px solid #94a3b8; padding: 5px; text-align: center;">${escapeHtml(c.title)}</th>
+      `).join('');
+
       const itemRowsHtml = analytics.rows.map((r, idx) => {
         const chgSign = r.changePct > 0 ? '+' : '';
         const itemCleanText = escapeHtml(formatItemDisplayText(r));
-        return `
-          <tr class="ai-report-item-row" data-demand-class="${r.demandClass}" style="background:${r.demandClass === 'D' ? '#fafafa' : '#ffffff'};">
-            <td style="text-align:center;border:1px solid #cbd5e1;padding:5px;">${idx + 1}</td>
-            <td style="border:1px solid #cbd5e1;padding:5px;font-weight:600;text-align:right;" dir="auto">${itemCleanText}</td>
-            <td style="border:1px solid #cbd5e1;padding:5px;font-size:8pt;">${escapeHtml(r.category)}</td>
-            <td style="text-align:center;border:1px solid #cbd5e1;padding:5px;font-weight:700;">${r.avgAnnual}</td>
-            <td style="text-align:center;border:1px solid #cbd5e1;padding:5px;font-weight:700;color:#0284c7;">${r.globalSharePct}%</td>
-            <td style="text-align:center;border:1px solid #cbd5e1;padding:5px;">${r.catSharePct}%</td>
-            <td style="text-align:center;border:1px solid #cbd5e1;padding:5px;" dir="ltr">${chgSign}${r.changePct}%</td>
-            <td style="text-align:center;border:1px solid #cbd5e1;padding:5px;font-weight:800;color:#059669;">${r.proposedQuota}</td>
-            <td style="text-align:center;border:1px solid #cbd5e1;padding:5px;background:${r.decisionBg};color:${r.decisionColor};font-weight:700;font-size:8pt;">
-              ${escapeHtml(r.procurementDecision)}
-            </td>
-          </tr>
-        `;
+        const tds = activeCols.map(c => {
+          if (c.key === 'index') return `<td style="width:${c.widthPct}%;text-align:center;border:1px solid #cbd5e1;padding:5px;">${idx + 1}</td>`;
+          if (c.key === 'item') return `<td style="width:${c.widthPct}%;border:1px solid #cbd5e1;padding:5px;font-weight:600;text-align:right;" dir="auto">${itemCleanText}</td>`;
+          if (c.key === 'category') return `<td style="width:${c.widthPct}%;border:1px solid #cbd5e1;padding:5px;font-size:8pt;">${escapeHtml(r.category)}</td>`;
+          if (c.key === 'avgAnnual') return `<td style="width:${c.widthPct}%;text-align:center;border:1px solid #cbd5e1;padding:5px;font-weight:700;">${r.avgAnnual}</td>`;
+          if (c.key === 'globalShare') return `<td style="width:${c.widthPct}%;text-align:center;border:1px solid #cbd5e1;padding:5px;font-weight:700;color:#0284c7;">${r.globalSharePct}%</td>`;
+          if (c.key === 'catShare') return `<td style="width:${c.widthPct}%;text-align:center;border:1px solid #cbd5e1;padding:5px;">${r.catSharePct}%</td>`;
+          if (c.key === 'changePct') return `<td style="width:${c.widthPct}%;text-align:center;border:1px solid #cbd5e1;padding:5px;" dir="ltr">${chgSign}${r.changePct}%</td>`;
+          if (c.key === 'proposedQuota') return `<td style="width:${c.widthPct}%;text-align:center;border:1px solid #cbd5e1;padding:5px;font-weight:800;color:#059669;">${r.proposedQuota}</td>`;
+          if (c.key === 'decision') return `<td style="width:${c.widthPct}%;text-align:center;border:1px solid #cbd5e1;padding:5px;background:${r.decisionBg};color:${r.decisionColor};font-weight:700;font-size:8pt;">${escapeHtml(r.procurementDecision)}</td>`;
+          return `<td style="width:${c.widthPct}%;border:1px solid #cbd5e1;padding:5px;"></td>`;
+        }).join('');
+        return `<tr class="ai-report-item-row" data-demand-class="${r.demandClass}" style="background:${r.demandClass === 'D' ? '#fafafa' : '#ffffff'};">${tds}</tr>`;
       }).join('');
+
+      const execCardsBlock = statsCfg.showExecutiveCards ? `
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 14px; text-align: center;">
+          <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 7px; background: #f8fafc;">
+            <div style="font-size: 7.5pt; color: #475569; font-weight: 700;">إجمالي الاستهلاك العام</div>
+            <div style="font-size: 13pt; font-weight: 900; color: #0f172a;">${analytics.grandTotalUnits}</div>
+            <div style="font-size: 7pt; color: #64748b;">في ${analytics.totalTransactions} عملية تسليم</div>
+          </div>
+          <div style="border: 1px solid #0284c7; border-radius: 6px; padding: 7px; background: #f0f9ff;">
+            <div style="font-size: 7.5pt; color: #0369a1; font-weight: 700;">المواد النشطة المستعملة</div>
+            <div style="font-size: 13pt; font-weight: 900; color: #0284c7;">${analytics.activeItemsCount}</div>
+            <div style="font-size: 7pt; color: #0369a1;">من أصل ${analytics.totalItemsCount} مادة مسجلة</div>
+          </div>
+          <div style="border: 1px solid #059669; border-radius: 6px; padding: 7px; background: #ecfdf5;">
+            <div style="font-size: 7.5pt; color: #047857; font-weight: 700;">مواد الأولوية القصوى (فئة A)</div>
+            <div style="font-size: 13pt; font-weight: 900; color: #059669;">${analytics.classACount}</div>
+            <div style="font-size: 7pt; color: #047857;">تمثل عصب الاستهلاك العام</div>
+          </div>
+          <div style="border: 1px solid #94a3b8; border-radius: 6px; padding: 7px; background: #f8fafc;">
+            <div style="font-size: 7.5pt; color: #475569; font-weight: 700;">مواد غير مستعملة (0 سحب)</div>
+            <div style="font-size: 13pt; font-weight: 900; color: #64748b;">${analytics.unusedItemsCount}</div>
+            <div style="font-size: 7pt; color: #64748b;">يُوصى باستبعادها من الصفقة</div>
+          </div>
+          <div style="border: 1px solid #10b981; border-radius: 6px; padding: 7px; background: #f0fdf4;">
+            <div style="font-size: 7.5pt; color: #15803d; font-weight: 700;">إجمالي الحاجيات للصفقة</div>
+            <div style="font-size: 13pt; font-weight: 900; color: #15803d;">${analytics.totalProposedDealUnits}</div>
+            <div style="font-size: 7pt; color: #15803d;">وحدة مقترحة للشراء السنوي</div>
+          </div>
+        </div>
+      ` : '';
+
+      const catTableBlock = statsCfg.showCategoryTable ? `
+        <h3 style="font-size: 10pt; border-bottom: 1.5px solid #0f172a; padding-bottom: 3px; margin: 10px 0 6px 0;">أولاً: توزيع الاستهلاك العام والحصص السنوية المقترحة حسب الأصناف</h3>
+        <table style="width: 100%; font-size: 8pt; border-collapse: collapse; margin-bottom: 14px;">
+          <thead>
+            <tr style="background: #e2e8f0;">
+              <th style="width: 5%; border: 1px solid #94a3b8; padding: 5px;">#</th>
+              <th style="width: 33%; border: 1px solid #94a3b8; padding: 5px;">الصنف</th>
+              <th style="width: 18%; border: 1px solid #94a3b8; padding: 5px;">عدد المواد (النشطة / الكل)</th>
+              <th style="width: 14%; border: 1px solid #94a3b8; padding: 5px;">الكمية المستهلكة</th>
+              <th style="width: 15%; border: 1px solid #94a3b8; padding: 5px;">نسبته من الاستهلاك العام</th>
+              <th style="width: 15%; border: 1px solid #94a3b8; padding: 5px;">الحصة المقترحة للصفقة</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${catRowsHtml}
+          </tbody>
+        </table>
+      ` : '';
 
       const html = `
         <div class="official-cert-page" style="padding: 18px; font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif; direction: rtl; color: #0f172a; background: #ffffff;">
@@ -35901,60 +36707,15 @@ ${itemsText}
           </div>
 
           <div style="text-align: center; border: 2px solid #0f172a; padding: 8px 14px; border-radius: 8px; margin: 10px 0 14px 0; background: #f8fafc;">
-            <h2 style="margin: 0; font-size: 13.5pt; color: #0f172a;">تقرير الرؤى والتحليل الإحصائي الذكي للاستهلاك العام وتدبير الصفقة القادمة</h2>
-            <div style="font-size: 9pt; color: #475569; margin-top: 3px;">السنوات المرجعية المحللة: (${yearsLabel}) — هامش الأمان المعتمد: (+${safetyMarginPct}%) — تاريخ التقرير: ${todayStr}</div>
+            <h2 style="margin: 0; font-size: 13.5pt; color: #0f172a;">${escapeHtml(statsCfg.titleText)}</h2>
+            <div style="font-size: 9pt; color: #475569; margin-top: 3px;">السنوات المرجعية: (${yearsLabel}) — هامش الأمان المعتمد: (+${safetyMarginPct}%) — تاريخ التقرير: ${todayStr}</div>
           </div>
 
-          <!-- بطاقات المؤشرات الاستراتيجية العامة -->
-          <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 14px; text-align: center;">
-            <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 7px; background: #f8fafc;">
-              <div style="font-size: 7.5pt; color: #475569; font-weight: 700;">إجمالي الاستهلاك العام</div>
-              <div style="font-size: 13pt; font-weight: 900; color: #0f172a;">${analytics.grandTotalUnits}</div>
-              <div style="font-size: 7pt; color: #64748b;">في ${analytics.totalTransactions} عملية تسليم</div>
-            </div>
-            <div style="border: 1px solid #0284c7; border-radius: 6px; padding: 7px; background: #f0f9ff;">
-              <div style="font-size: 7.5pt; color: #0369a1; font-weight: 700;">المواد النشطة المستعملة</div>
-              <div style="font-size: 13pt; font-weight: 900; color: #0284c7;">${analytics.activeItemsCount}</div>
-              <div style="font-size: 7pt; color: #0369a1;">من أصل ${analytics.totalItemsCount} مادة مسجلة</div>
-            </div>
-            <div style="border: 1px solid #059669; border-radius: 6px; padding: 7px; background: #ecfdf5;">
-              <div style="font-size: 7.5pt; color: #047857; font-weight: 700;">مواد الأولوية القصوى (فئة A)</div>
-              <div style="font-size: 13pt; font-weight: 900; color: #059669;">${analytics.classACount}</div>
-              <div style="font-size: 7pt; color: #047857;">تمثل عصب الاستهلاك العام</div>
-            </div>
-            <div style="border: 1px solid #94a3b8; border-radius: 6px; padding: 7px; background: #f8fafc;">
-              <div style="font-size: 7.5pt; color: #475569; font-weight: 700;">مواد غير مستعملة (0 سحب)</div>
-              <div style="font-size: 13pt; font-weight: 900; color: #64748b;">${analytics.unusedItemsCount}</div>
-              <div style="font-size: 7pt; color: #64748b;">يُوصى باستبعادها من الصفقة</div>
-            </div>
-            <div style="border: 1px solid #10b981; border-radius: 6px; padding: 7px; background: #f0fdf4;">
-              <div style="font-size: 7.5pt; color: #15803d; font-weight: 700;">إجمالي الحاجيات للصفقة</div>
-              <div style="font-size: 13pt; font-weight: 900; color: #15803d;">${analytics.totalProposedDealUnits}</div>
-              <div style="font-size: 7pt; color: #15803d;">وحدة مقترحة للشراء السنوي</div>
-            </div>
-          </div>
+          ${execCardsBlock}
+          ${catTableBlock}
 
-          <!-- أولاً: خلاصة الاستهلاك والحاجيات حسب الأصناف -->
-          <h3 style="font-size: 10pt; border-bottom: 1.5px solid #0f172a; padding-bottom: 3px; margin: 10px 0 6px 0;">أولاً: توزيع الاستهلاك العام والحصص السنوية المقترحة حسب الأصناف</h3>
-          <table style="width: 100%; font-size: 8pt; border-collapse: collapse; margin-bottom: 14px;">
-            <thead>
-              <tr style="background: #e2e8f0;">
-                <th style="width: 5%; border: 1px solid #94a3b8; padding: 5px;">#</th>
-                <th style="width: 33%; border: 1px solid #94a3b8; padding: 5px;">الصنف</th>
-                <th style="width: 18%; border: 1px solid #94a3b8; padding: 5px;">عدد المواد (النشطة / الكل)</th>
-                <th style="width: 14%; border: 1px solid #94a3b8; padding: 5px;">الكمية المستهلكة</th>
-                <th style="width: 15%; border: 1px solid #94a3b8; padding: 5px;">نسبته من الاستهلاك العام</th>
-                <th style="width: 15%; border: 1px solid #94a3b8; padding: 5px;">الحصة المقترحة للصفقة</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${catRowsHtml}
-            </tbody>
-          </table>
-
-          <!-- شريط تصفية تفاعلي قبل الطباعة -->
           <div class="no-print" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin:10px 0 6px 0;padding:8px 10px;background:#f1f5f9;border-radius:6px;border:1px solid #cbd5e1;">
-            <span style="font-size:8.5pt;font-weight:700;color:#0f172a;">تصفية جدول المواد في التقرير:</span>
+            <span style="font-size:8.5pt;font-weight:700;color:#0f172a;">تصفية جدول المواد قبل الطباعة:</span>
             <div style="display:flex;gap:6px;flex-wrap:wrap;">
               <button type="button" id="btn-ai-rep-filter-all" onclick="filterAiPrintableReportRows('all')" style="padding:4px 10px;border-radius:5px;border:1px solid #0284c7;background:#0284c7;color:#fff;font-size:8pt;font-weight:700;cursor:pointer;">
                 كافة المواد المسجلة (${analytics.totalItemsCount})
@@ -35968,20 +36729,11 @@ ${itemsText}
             </div>
           </div>
 
-          <!-- ثانياً: المصفوفة التفصيلية الشاملة لجميع المواد -->
-          <h3 style="font-size: 10pt; border-bottom: 1.5px solid #0f172a; padding-bottom: 3px; margin: 8px 0 6px 0;">ثانياً: بيان نسب الاستهلاك العام والحصص السنوية المقترحة للصفقة القادمة (لكل مادة)</h3>
-          <table style="width: 100%; font-size: 7.8pt; border-collapse: collapse; margin-bottom: 18px;">
+          <h3 style="font-size: 10pt; border-bottom: 1.5px solid #0f172a; padding-bottom: 3px; margin: 8px 0 6px 0;">بيان نسب الاستهلاك العام والحصص السنوية المقترحة للصفقة القادمة (لكل مادة)</h3>
+          <table style="width: 100%; font-size: 7.8pt; border-collapse: collapse; margin-bottom: 16px;">
             <thead>
               <tr style="background: #e2e8f0;">
-                <th style="width: 4%; border: 1px solid #94a3b8; padding: 5px;">#</th>
-                <th style="width: 31%; border: 1px solid #94a3b8; padding: 5px;">المادة (المرجع / الجهاز أو المواصفة)</th>
-                <th style="width: 14%; border: 1px solid #94a3b8; padding: 5px;">الصنف</th>
-                <th style="width: 7%; border: 1px solid #94a3b8; padding: 5px;">المعدل السنوي</th>
-                <th style="width: 8%; border: 1px solid #94a3b8; padding: 5px;">نسبتها من العام</th>
-                <th style="width: 7%; border: 1px solid #94a3b8; padding: 5px;">نسبتها بالصنف</th>
-                <th style="width: 6%; border: 1px solid #94a3b8; padding: 5px;">التغيير</th>
-                <th style="width: 8%; border: 1px solid #94a3b8; padding: 5px;">الحصة المقترحة</th>
-                <th style="width: 15%; border: 1px solid #94a3b8; padding: 5px;">قرار تدبير الصفقة القادمة</th>
+                ${theadHtml}
               </tr>
             </thead>
             <tbody>
@@ -35989,17 +36741,18 @@ ${itemsText}
             </tbody>
           </table>
 
+          ${buildReportSignersBlockHtml(statsCfg.signers)}
+
           <div style="text-align: center; margin-top: 20px;">
             <img src="${footerSrc}" style="width: 100%; max-height: 65px; object-fit: contain;" alt="Pied" />
           </div>
         </div>
       `;
 
-      openDocPreviewModal(`تقرير التحليل الإحصائي الذكي وتدبير الصفقة — ${todayStr}`, html);
+      openDocPreviewModal(`${statsCfg.titleText} — ${todayStr}`, html);
     };
     window.printAiAnalysisReport = printAiAnalysisReport;
 
-    // تحديث تصدير CSV ليشمل كافة المؤشرات الاستراتيجية
     exportAiReportCSV = function() {
       const analytics = buildComprehensiveProcurementAnalytics(15);
       const headers = [
@@ -36041,10 +36794,9 @@ ${itemsText}
     };
     window.exportAiReportCSV = exportAiReportCSV;
 
-    // ح) تحديث طباعة جدول محاكاة الحصص (printSimulatedQuotaTable) وبطاقة التوقعات (printForecastReportA4)
-    //    لتوافق الهيكلة المختصرة ذات الـ 5 أعمدة بدون عمود الحصة الربع سنوية وبدون كلمة "المحكمة"
     printSimulatedQuotaTable = function() {
       calculateAndRenderSimulatedQuota();
+      const statsCfg = getStatsReportConfig();
       const rows = window._lastSimulatedQuotaRows || [];
       const ctx = window._lastSimulatedQuotaContext || {};
       const headerSrc = escapeHtml(getBrandingAssetSrc('header') || './en_tete.png');
@@ -36053,7 +36805,7 @@ ${itemsText}
       const totalQuota = rows.reduce((s, r) => s + (r.quotaAnnual || 0), 0);
       const totalAvg = rows.reduce((s, r) => s + (r.avgAnnual || 0), 0);
 
-      const trsHtml = rows.map((r, idx) => {
+      const trsHtml = rows.map(r => {
         const pct = (r.ratio * 100).toFixed(1);
         const chgSign = r.changePct > 0 ? '+' : '';
         return `
@@ -36073,29 +36825,30 @@ ${itemsText}
             <img src="${headerSrc}" style="width: 100%; max-height: 95px; object-fit: contain;" alt="En-tête" />
           </div>
           <div style="text-align: center; border: 2px solid #0f172a; padding: 8px 14px; border-radius: 8px; margin: 10px 0 14px 0; background: #f8fafc;">
-            <h2 style="margin: 0; font-size: 13.5pt; color: #0f172a;">جدول محاكاة توزيع الحصص السنوية المقترحة</h2>
-            <div style="font-size: 9.5pt; color: #0284c7; font-weight: 700; margin-top: 3px;">المادة: ${escapeHtml(ctx.itemShortName || '—')} | إجمالي الاستهلاك السنوي: ${totalAvg} | إجمالي الحصص المقترحة (+${ctx.marginPct || 15}%): ${totalQuota}</div>
+            <h2 style="margin: 0; font-size: 13.5pt; color: #0f172a;">${escapeHtml(statsCfg.quotaTitleText)}</h2>
+            <div style="font-size: 9.5pt; color: #0284c7; font-weight: 700; margin-top: 3px;">المادة: ${escapeHtml(ctx.itemShortName || '—')} | إجمالي الاستهلاك السنوي: ${totalAvg} | إجمالي الحصص المقترحة (+${ctx.marginPct || 0}%): ${totalQuota}</div>
           </div>
           <table style="width: 100%; font-size: 8.5pt; border-collapse: collapse; margin-bottom: 18px;">
             <thead>
               <tr style="background: #e2e8f0;">
-                <th style="width: 26%; border: 1px solid #94a3b8; padding: 6px; text-align: right;">المستفيد</th>
+                <th style="width: 28%; border: 1px solid #94a3b8; padding: 6px; text-align: right;">المستفيد</th>
                 <th style="width: 14%; border: 1px solid #94a3b8; padding: 6px; text-align: center;">الاستهلاك</th>
                 <th style="width: 12%; border: 1px solid #94a3b8; padding: 6px; text-align: center;">الحصة المقترحة</th>
                 <th style="width: 10%; border: 1px solid #94a3b8; padding: 6px; text-align: center;">نسبة الحصة</th>
-                <th style="width: 38%; border: 1px solid #94a3b8; padding: 6px; text-align: right;">التحليل التقني</th>
+                <th style="width: 36%; border: 1px solid #94a3b8; padding: 6px; text-align: right;">التحليل التقني</th>
               </tr>
             </thead>
             <tbody>
               ${trsHtml}
             </tbody>
           </table>
+          ${buildReportSignersBlockHtml(statsCfg.signers)}
           <div style="text-align: center; margin-top: 20px;">
             <img src="${footerSrc}" style="width: 100%; max-height: 65px; object-fit: contain;" alt="Pied" />
           </div>
         </div>
       `;
-      openDocPreviewModal(`جدول محاكاة الحصص السنوية — ${escapeHtml(ctx.itemShortName || '')} — ${todayStr}`, html);
+      openDocPreviewModal(`${statsCfg.quotaTitleText} — ${escapeHtml(ctx.itemShortName || '')} — ${todayStr}`, html);
     };
     window.printSimulatedQuotaTable = printSimulatedQuotaTable;
 
@@ -36104,11 +36857,67 @@ ${itemsText}
     };
     window.printForecastReportA4 = printForecastReportA4;
 
+    printInventorySheet = function() {
+      const invCfg = getInvReportConfig();
+      const activeCols = normalizeColumnsWidthTo100(invCfg.columns).filter(c => c.enabled);
+      const headerSrc = escapeHtml(getBrandingAssetSrc('header') || './en_tete.png');
+      const footerSrc = escapeHtml(getBrandingAssetSrc('footer') || './en_pied.png');
+      const items = (state.data.items || []).filter(i => i && !i.isDeleted).map(i => parseAndEnrichStructuredItem(i));
+      const totalItems = items.length;
+      const totalUnits = items.reduce((s, i) => s + sanitize(i.stock), 0);
+      const todayStr = new Date().toLocaleDateString('ar-MA');
+
+      const theadHtml = activeCols.map(c => `
+        <th style="width: ${c.widthPct}%; border: 1px solid #94a3b8; padding: 6px; text-align: center;">${escapeHtml(c.title)}</th>
+      `).join('');
+
+      const rowsHtml = items.map((it, idx) => {
+        const tds = activeCols.map(c => {
+          if (c.key === 'index') return `<td style="width:${c.widthPct}%;text-align:center;border:1px solid #cbd5e1;padding:5px;">${idx + 1}</td>`;
+          if (c.key === 'item') return `<td style="width:${c.widthPct}%;border:1px solid #cbd5e1;padding:5px;font-weight:700;text-align:right;" dir="auto">${escapeHtml(formatItemDisplayText(it))}</td>`;
+          if (c.key === 'category') return `<td style="width:${c.widthPct}%;border:1px solid #cbd5e1;padding:5px;text-align:center;">${escapeHtml(it.category)}</td>`;
+          if (c.key === 'sysStock') return `<td style="width:${c.widthPct}%;text-align:center;border:1px solid #cbd5e1;padding:5px;font-weight:700;" class="tabular-nums">${sanitize(it.stock)}</td>`;
+          if (c.key === 'physStock') return `<td style="width:${c.widthPct}%;text-align:center;border:1px solid #cbd5e1;padding:5px;">.......</td>`;
+          if (c.key === 'diff') return `<td style="width:${c.widthPct}%;text-align:center;border:1px solid #cbd5e1;padding:5px;">.......</td>`;
+          if (c.key === 'notes') return `<td style="width:${c.widthPct}%;text-align:center;border:1px solid #cbd5e1;padding:5px;font-size:8pt;">مطابق / عجز / فائض</td>`;
+          return `<td style="width:${c.widthPct}%;border:1px solid #cbd5e1;padding:5px;"></td>`;
+        }).join('');
+        return `<tr>${tds}</tr>`;
+      }).join('');
+
+      const html = `
+        <div class="official-cert-page" style="padding: 18px; font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif; direction: rtl; color: #0f172a; background: #ffffff;">
+          <div style="text-align: center; margin-bottom: 10px;">
+            <img src="${headerSrc}" style="width: 100%; max-height: 95px; object-fit: contain;" alt="En-tête" />
+          </div>
+          <div style="text-align: center; background: #f8fafc; border: 2px solid #0f172a; border-radius: 8px; padding: 8px 14px; margin-bottom: 14px;">
+            <h2 style="font-size: 13.5pt; margin: 0; color: #0f172a;">${escapeHtml(invCfg.titleText)}</h2>
+            <div style="font-size: 9pt; color: #475569; margin-top: 3px;">${escapeHtml(invCfg.subtitleText)} — التاريخ: ${todayStr} — عدد المواد: ${totalItems} — مجموع القطع: ${totalUnits}</div>
+          </div>
+          <table style="width: 100%; font-size: 8.2pt; border-collapse: collapse; margin-bottom: 16px;">
+            <thead>
+              <tr style="background: #e2e8f0;">
+                ${theadHtml}
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
+            </tbody>
+          </table>
+          ${buildReportSignersBlockHtml(invCfg.signers)}
+          <div style="text-align: center; margin-top: 20px;">
+            <img src="${footerSrc}" style="width: 100%; max-height: 65px; object-fit: contain;" alt="Pied" />
+          </div>
+        </div>
+      `;
+      openDocPreviewModal(`${invCfg.titleText} — ${todayStr}`, html);
+    };
+    window.printInventorySheet = printInventorySheet;
+
     // =========================================================================
-    // 5. حقن الفلاتر المنسقة + تبويب "10. إعداد وصياغة الإشهاد" في مركز الإعدادات
+    // 5. حقن الفلاتر المنسقة + تبويب "10. إعداد الإشهاد والتقارير" في مركز الإعدادات
     // =========================================================================
     function injectStructuredFiltersAndModalsUI() {
-      // أ) في عملية التوزيع (#bulk-distribution-view المرحلة 1)
       const bulkCatSelect = document.getElementById("bulk-pool-cat-select");
       if (bulkCatSelect && !document.getElementById("bulk-pool-device-select")) {
         const catGroup = bulkCatSelect.closest(".form-group");
@@ -36138,7 +36947,6 @@ ${itemsText}
         }
       }
 
-      // ب) في صفحة جرد المخزون (#inventory-view)
       const invCatFilter = document.getElementById("inventory-cat-filter");
       if (invCatFilter && !document.getElementById("inventory-device-filter")) {
         const catFormGroup = invCatFilter.closest(".form-group");
@@ -36157,7 +36965,6 @@ ${itemsText}
         }
       }
 
-      // ج) في الإعدادات -> 2. إدارة المواد (#settings-pane-items)
       const setItemsCatFilter = document.getElementById("settings-items-cat-filter");
       if (setItemsCatFilter && !document.getElementById("settings-items-device-filter")) {
         const setDevSel = document.createElement("select");
@@ -36169,7 +36976,6 @@ ${itemsText}
         setItemsCatFilter.parentNode.insertBefore(setDevSel, setItemsCatFilter.nextSibling);
       }
 
-      // د) في الإعدادات -> 1. إدارة الأصناف (#settings-pane-cats): استخدام كلمة "مرجع" بدل "مرجع"
       const newCatInput = document.getElementById("new-category-name-input");
       if (newCatInput && !document.getElementById("new-category-schema-mode")) {
         const parentBar = newCatInput.parentNode;
@@ -36189,177 +36995,557 @@ ${itemsText}
         newCatInput.parentNode.insertBefore(modeSelect, newCatInput.nextSibling);
       }
 
-      // هـ) إضافة التبويب رقم 10 في مركز الإعدادات: "10. إعداد وصياغة الإشهاد"
       injectCertificateTemplateSettingsPane();
-
       upgradeItemModalsWithStructuredFields();
     }
+
+    window._activeDocSettingsSubTab = "cert";
+
+    function switchDocSettingsInternalTab(subTab) {
+      window._activeDocSettingsSubTab = subTab || "cert";
+      ["cert", "inv", "stats"].forEach(k => {
+        const btn = document.getElementById(`btn-doc-cfg-tab-${k}`);
+        const sec = document.getElementById(`sec-doc-cfg-tab-${k}`);
+        if (btn) btn.className = (k === window._activeDocSettingsSubTab) ? "btn btn-primary btn-sm" : "btn btn-outline btn-sm";
+        if (sec) sec.style.display = (k === window._activeDocSettingsSubTab) ? "block" : "none";
+      });
+      if (subTab === "cert") updateCertSettingsLivePreview();
+      else if (subTab === "inv") updateInvReportLivePreview();
+      else if (subTab === "stats") updateStatsReportLivePreview();
+    }
+    window.switchDocSettingsInternalTab = switchDocSettingsInternalTab;
 
     function injectCertificateTemplateSettingsPane() {
       const navVert = document.querySelector("#settings-view .settings-nav-vertical");
       const contentArea = document.querySelector("#settings-view .settings-content-area");
       if (!navVert || !contentArea) return;
 
-      if (!document.getElementById("settings-sub-tab-cert")) {
-        const navBtn = document.createElement("button");
+      let navBtn = document.getElementById("settings-sub-tab-cert");
+      if (!navBtn) {
+        navBtn = document.createElement("button");
         navBtn.type = "button";
         navBtn.className = "settings-nav-card";
         navBtn.id = "settings-sub-tab-cert";
         navBtn.setAttribute("onclick", "switchSettingsSubTab('cert')");
-        navBtn.innerHTML = `
-          <span class="settings-nav-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-          </span>
-          <div class="settings-nav-info">
-            <div class="settings-nav-title">10. إعداد وصياغة الإشهاد</div>
-            <div class="settings-nav-desc">تخصيص عنوان الإشهاد، العبارات، الأعمدة، والتوقيع</div>
-          </div>
-        `;
         navVert.appendChild(navBtn);
       }
+      navBtn.innerHTML = `
+        <span class="settings-nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </span>
+        <div class="settings-nav-info">
+          <div class="settings-nav-title">10. إعداد الإشهاد والتقارير</div>
+          <div class="settings-nav-desc">ضبط الإشهاد، مطبوع الجرد، والتقارير الإحصائية (الأعمدة، النسب 100%، التوقيعات)</div>
+        </div>
+      `;
 
-      if (!document.getElementById("settings-pane-cert")) {
-        const pane = document.createElement("div");
+      let pane = document.getElementById("settings-pane-cert");
+      if (!pane) {
+        pane = document.createElement("div");
         pane.id = "settings-pane-cert";
         pane.className = "settings-pane";
         pane.style.display = "none";
-        pane.innerHTML = `
-          <div class="card" style="margin-bottom: 0;">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
-              <div>
-                <h3 class="card-title">إعداد وصياغة وثيقة الإشهاد الرسمي</h3>
-                <div class="card-subtitle">
-                  تحيين وضبط عنوان الإشهاد، صياغة العبارة التمهيدية (مع الحفاظ التلقائي على متغيرات <strong>التاريخ</strong> و<strong>المستفيد</strong> و<strong>الجهة</strong>)، عناوين أعمدة الجدول الأربعة، وعبارة توقيع المستلم. تسري التعديلات فوراً على الطباعة A4 وملفات PDF المرسلة.
-                </div>
-              </div>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                <button type="button" class="btn btn-primary btn-sm" onclick="saveCertConfigFromSettings()" style="font-weight:800;">
-                  حفظ إعدادات الإشهاد
-                </button>
-                <button type="button" class="btn btn-outline btn-sm" onclick="resetCertConfigToDefaults()">
-                  استعادة الصيغة الافتراضية
-                </button>
+        contentArea.appendChild(pane);
+      }
+
+      if (pane.getAttribute("data-v75-upgraded") === "1") return;
+      pane.setAttribute("data-v75-upgraded", "1");
+
+      pane.innerHTML = `
+        <div class="card" style="margin-bottom: 0;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:14px;">
+            <div>
+              <h3 class="card-title">مركز إعداد وصياغة الإشهاد والتقارير الرسمية</h3>
+              <div class="card-subtitle">
+                تحكم كامل في وثيقة الإشهاد، ومطبوع جرد المخزون، والتقارير الإحصائية: إظهار أو إخفاء الأعمدة، تخصيص النسب المئوية لعرض الأعمدة (بحيث تساوي 100%)، تعديل العناوين، وتحديد أسماء وصفات الموقعين.
               </div>
             </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button type="button" class="btn btn-primary btn-sm" onclick="saveAllDocsAndReportsConfigs()" style="font-weight:800;">
+                💾 حفظ جميع إعدادات الإشهاد والتقارير
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="resetAllDocsAndReportsConfigs()">
+                استعادة الإعدادات الافتراضية
+              </button>
+            </div>
+          </div>
 
-            <div class="grid-2" style="gap:14px;margin-bottom:14px;">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;padding:8px;background:var(--bg-muted);border-radius:10px;border:1px solid var(--border-subtle);">
+            <button type="button" id="btn-doc-cfg-tab-cert" class="btn btn-primary btn-sm" onclick="switchDocSettingsInternalTab('cert')">
+              📄 1. إعداد وثيقة الإشهاد الرسمي
+            </button>
+            <button type="button" id="btn-doc-cfg-tab-inv" class="btn btn-outline btn-sm" onclick="switchDocSettingsInternalTab('inv')">
+              📦 2. إعداد مطبوع وتقرير الجرد
+            </button>
+            <button type="button" id="btn-doc-cfg-tab-stats" class="btn btn-outline btn-sm" onclick="switchDocSettingsInternalTab('stats')">
+              📊 3. إعداد التقارير الإحصائية والحصص
+            </button>
+          </div>
+
+          <!-- القسم 1: إعداد وثيقة الإشهاد الرسمي -->
+          <div id="sec-doc-cfg-tab-cert">
+            <div class="grid-2" style="gap:12px;margin-bottom:12px;">
               <div class="form-group" style="margin-bottom:0;">
-                <label class="form-label">1. عنوان الوثيقة الرئيسي (في الإطار العلوي)</label>
-                <input type="text" id="cert-cfg-title" class="form-control" placeholder="مثال: إشهاد أو إشهاد تسليم" oninput="updateCertSettingsLivePreview()" />
+                <label class="form-label">عنوان الوثيقة الرئيسي (في الإطار العلوي)</label>
+                <input type="text" id="cert-cfg-title" class="form-control" placeholder="إشهاد" oninput="updateCertSettingsLivePreview()" />
               </div>
-              <div class="form-group" style="margin-bottom:0;">
-                <label class="form-label">2. عبارة التوقيع أسفل الجدول</label>
-                <input type="text" id="cert-cfg-signature" class="form-control" placeholder="مثال: توقيع المستلم" oninput="updateCertSettingsLivePreview()" />
-              </div>
-            </div>
-
-            <div style="background:var(--bg-muted);border:1px solid var(--border-subtle);border-radius:10px;padding:14px;margin-bottom:14px;">
-              <div style="font-weight:800;font-size:0.88rem;color:#38bdf8;margin-bottom:10px;">
-                3. صياغة الفقرة التمهيدية للإشهاد (المتغيرات الديناميكية: [التاريخ] و[المستفيد والجهة] تُدرج تلقائياً):
-              </div>
-              <div class="grid-2" style="gap:12px;margin-bottom:10px;">
-                <div class="form-group" style="margin-bottom:0;">
-                  <label class="form-label" style="font-size:0.78rem;">العبارة الافتتاحية (قبل التاريخ)</label>
-                  <input type="text" id="cert-cfg-intro-prefix" class="form-control" placeholder="بتاريخ" oninput="updateCertSettingsLivePreview()" />
-                </div>
-                <div class="form-group" style="margin-bottom:0;">
-                  <label class="form-label" style="font-size:0.78rem;">العبارة الوسطى (بين التاريخ واسم المستفيد)</label>
-                  <input type="text" id="cert-cfg-intro-middle" class="form-control" placeholder="، أشهد أنا الموقع (ة) أسفله، السيد (ة)" oninput="updateCertSettingsLivePreview()" />
-                </div>
-              </div>
-              <div class="grid-2" style="gap:12px;">
-                <div class="form-group" style="margin-bottom:0;">
-                  <label class="form-label" style="font-size:0.78rem;">العبارة الختامية (بعد اسم المستفيد والجهة)</label>
-                  <input type="text" id="cert-cfg-intro-suffix" class="form-control" placeholder="، أني تسلمت المواد والمعدات المبينة أسفله:" oninput="updateCertSettingsLivePreview()" />
-                </div>
-                <div class="form-group" style="margin-bottom:0;">
-                  <label class="form-label" style="font-size:0.78rem;">حرف الربط بين صفة المستفيد والجهة (عند عدم تكرارها)</label>
-                  <input type="text" id="cert-cfg-party-conn" class="form-control" placeholder="ب" oninput="updateCertSettingsLivePreview()" />
-                </div>
-              </div>
-            </div>
-
-            <div style="background:var(--bg-muted);border:1px solid var(--border-subtle);border-radius:10px;padding:14px;margin-bottom:16px;">
-              <div style="font-weight:800;font-size:0.88rem;color:#38bdf8;margin-bottom:10px;">
-                4. عناوين أعمدة جدول الإشهاد الأربعة وطريقة عرض المادة:
-              </div>
-              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:12px;">
-                <div class="form-group" style="margin-bottom:0;">
-                  <label class="form-label" style="font-size:0.78rem;">عنوان العمود 1 (الترقيم)</label>
-                  <input type="text" id="cert-cfg-col1" class="form-control" placeholder="#" oninput="updateCertSettingsLivePreview()" />
-                </div>
-                <div class="form-group" style="margin-bottom:0;">
-                  <label class="form-label" style="font-size:0.78rem;">عنوان العمود 2 (المادة)</label>
-                  <input type="text" id="cert-cfg-col2" class="form-control" placeholder="المادة" oninput="updateCertSettingsLivePreview()" />
-                </div>
-                <div class="form-group" style="margin-bottom:0;">
-                  <label class="form-label" style="font-size:0.78rem;">عنوان العمود 3 (الكمية)</label>
-                  <input type="text" id="cert-cfg-col3" class="form-control" placeholder="الكمية" oninput="updateCertSettingsLivePreview()" />
-                </div>
-                <div class="form-group" style="margin-bottom:0;">
-                  <label class="form-label" style="font-size:0.78rem;">عنوان العمود 4 (الملاحظات)</label>
-                  <input type="text" id="cert-cfg-col4" class="form-control" placeholder="الملاحظات" oninput="updateCertSettingsLivePreview()" />
-                </div>
-              </div>
-              <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-                <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:0.83rem;font-weight:700;">
-                  <input type="checkbox" id="cert-cfg-show-cat" checked onchange="updateCertSettingsLivePreview()" style="width:17px;height:17px;accent-color:#38bdf8;" />
-                  <span>إظهار اسم الصنف بين قوسين <code>(الصنف)</code> قبل بيان المادة في الإشهاد</span>
+              <div class="form-group" style="margin-bottom:0;display:flex;align-items:flex-end;">
+                <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:0.82rem;font-weight:700;padding:8px 12px;background:var(--bg-muted);border-radius:8px;border:1px solid var(--border-subtle);width:100%;">
+                  <input type="checkbox" id="cert-cfg-show-cat" checked onchange="updateCertSettingsLivePreview()" style="width:16px;height:16px;accent-color:#38bdf8;" />
+                  <span>إظهار اسم الصنف بين قوسين <code>(الصنف)</code> قبل المادة في الإشهاد</span>
                 </label>
               </div>
             </div>
 
-            <!-- معاينة حية مصغرة لوثيقة الإشهاد -->
-            <div style="border:1.5px solid rgba(56,189,248,0.4);border-radius:12px;padding:16px;background:#ffffff;color:#0f172a;direction:rtl;">
+            <div style="background:var(--bg-muted);border:1px solid var(--border-subtle);border-radius:10px;padding:12px;margin-bottom:14px;">
+              <div style="font-weight:800;font-size:0.84rem;color:#38bdf8;margin-bottom:8px;">
+                صياغة الفقرة التمهيدية للإشهاد (المتغيرات الديناميكية: [التاريخ] و[المستفيد والجهة] تُدرج تلقائياً):
+              </div>
+              <div class="grid-2" style="gap:10px;margin-bottom:8px;">
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label" style="font-size:0.76rem;">العبارة الافتتاحية (قبل التاريخ)</label>
+                  <input type="text" id="cert-cfg-intro-prefix" class="form-control" oninput="updateCertSettingsLivePreview()" />
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label" style="font-size:0.76rem;">العبارة الوسطى (بين التاريخ والمستفيد)</label>
+                  <input type="text" id="cert-cfg-intro-middle" class="form-control" oninput="updateCertSettingsLivePreview()" />
+                </div>
+              </div>
+              <div class="grid-2" style="gap:10px;">
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label" style="font-size:0.76rem;">العبارة الختامية (بعد المستفيد والجهة)</label>
+                  <input type="text" id="cert-cfg-intro-suffix" class="form-control" oninput="updateCertSettingsLivePreview()" />
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label" style="font-size:0.76rem;">حرف الربط بين المستفيد والجهة</label>
+                  <input type="text" id="cert-cfg-party-conn" class="form-control" oninput="updateCertSettingsLivePreview()" />
+                </div>
+              </div>
+            </div>
+
+            <div style="background:var(--bg-muted);border:1px solid var(--border-subtle);border-radius:10px;padding:12px;margin-bottom:14px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+                <div>
+                  <span style="font-weight:800;font-size:0.86rem;color:#38bdf8;">التحكم في أعمدة الإشهاد (إظهار / إخفاء / إضافة عمود / تخصيص النسب المئوية 100%):</span>
+                  <div style="font-size:0.74rem;color:var(--text-muted);">عند إخفاء عمود الترقيم مثلاً تصبح النسب تلقائياً: المادة 70%، الكمية 10%، الملاحظات 20% (المجموع = 100%).</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span id="cert-cols-sum-badge" class="badge badge-success tabular-nums" style="font-size:0.76rem;">المجموع: 100% ✓</span>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="autoBalanceCertColumnsTo100()" style="font-size:0.74rem;padding:4px 10px;">
+                    ⚖️ موازنة تلقائية لـ 100%
+                  </button>
+                </div>
+              </div>
+
+              <div style="margin-bottom:10px;">
+                <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:0.79rem;color:var(--text-secondary);">
+                  <input type="checkbox" id="cert-cfg-hide-idx-single" onchange="updateCertSettingsLivePreview()" style="width:15px;height:15px;accent-color:#38bdf8;" />
+                  <span>إخفاء عمود الترقيم (<code>#</code>) تلقائياً عندما يحتوي الإشهاد على مادة واحدة فقط</span>
+                </label>
+              </div>
+
+              <div id="cert-columns-config-rows" style="display:flex;flex-direction:column;gap:8px;"></div>
+            </div>
+
+            <div style="background:var(--bg-muted);border:1px solid var(--border-subtle);border-radius:10px;padding:12px;margin-bottom:14px;">
+              <div style="font-weight:800;font-size:0.84rem;color:#38bdf8;margin-bottom:8px;">التوقيعات أسفل جدول الإشهاد:</div>
+              <div class="grid-2" style="gap:10px;margin-bottom:8px;">
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label" style="font-size:0.76rem;">صفة الموقع الرئيسي (يسار الوثيقة)</label>
+                  <input type="text" id="cert-cfg-signature" class="form-control" placeholder="توقيع المستلم" oninput="updateCertSettingsLivePreview()" />
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label" style="font-size:0.76rem;">اسم الموقع أو نص إضافي تحت الصفة (اختياري)</label>
+                  <input type="text" id="cert-cfg-signature-sub" class="form-control" placeholder="اتركه فارغاً أو اكتب اسم الموقع..." oninput="updateCertSettingsLivePreview()" />
+                </div>
+              </div>
+              <div style="margin-top:6px;">
+                <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:0.8rem;font-weight:700;margin-bottom:8px;">
+                  <input type="checkbox" id="cert-cfg-show-second-sig" onchange="updateCertSettingsLivePreview()" style="width:15px;height:15px;accent-color:#38bdf8;" />
+                  <span>إضافة توقيع ثانٍ في يمين الوثيقة (مثال: مسؤول تدبير المخزون / تأشيرة المصلحة)</span>
+                </label>
+                <div class="grid-2" id="cert-second-sig-inputs-wrap" style="gap:10px;display:none;">
+                  <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label" style="font-size:0.76rem;">صفة الموقع الثاني (يمين الوثيقة)</label>
+                    <input type="text" id="cert-cfg-second-sig-title" class="form-control" placeholder="مسؤول تدبير المخزون" oninput="updateCertSettingsLivePreview()" />
+                  </div>
+                  <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label" style="font-size:0.76rem;">اسم الموقع الثاني (اختياري)</label>
+                    <input type="text" id="cert-cfg-second-sig-sub" class="form-control" placeholder="اسم المسؤول..." oninput="updateCertSettingsLivePreview()" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style="border:1.5px solid rgba(56,189,248,0.4);border-radius:12px;padding:14px;background:#ffffff;color:#0f172a;direction:rtl;">
               <div style="font-size:0.76rem;font-weight:800;color:#0284c7;margin-bottom:8px;">
-                👁️ معاينة حية فورية لشكل الإشهاد الرسمي:
+                👁️ معاينة حية فورية لشكل الإشهاد الرسمي (بالأعمدة والنسب المئوية المحددة):
               </div>
               <div id="cert-settings-live-preview-box"></div>
             </div>
           </div>
+
+          <!-- القسم 2: إعداد مطبوع وتقرير جرد المخزون -->
+          <div id="sec-doc-cfg-tab-inv" style="display:none;">
+            <div class="grid-2" style="gap:12px;margin-bottom:12px;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">عنوان مطبوع الجرد</label>
+                <input type="text" id="inv-rep-cfg-title" class="form-control" oninput="updateInvReportLivePreview()" />
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">السطر الوصفي الفرعي تحت العنوان</label>
+                <input type="text" id="inv-rep-cfg-subtitle" class="form-control" oninput="updateInvReportLivePreview()" />
+              </div>
+            </div>
+
+            <div style="background:var(--bg-muted);border:1px solid var(--border-subtle);border-radius:10px;padding:12px;margin-bottom:14px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+                <span style="font-weight:800;font-size:0.85rem;color:#38bdf8;">أعمدة مطبوع الجرد (إظهار / إخفاء / تعديل العنوان / النسب المئوية 100%):</span>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span id="inv-cols-sum-badge" class="badge badge-success tabular-nums" style="font-size:0.76rem;">المجموع: 100% ✓</span>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="autoBalanceInvColumnsTo100()" style="font-size:0.74rem;padding:4px 10px;">
+                    ⚖️ موازنة تلقائية لـ 100%
+                  </button>
+                </div>
+              </div>
+              <div id="inv-columns-config-rows" style="display:flex;flex-direction:column;gap:8px;"></div>
+            </div>
+
+            <div style="background:var(--bg-muted);border:1px solid var(--border-subtle);border-radius:10px;padding:12px;margin-bottom:14px;">
+              <div style="font-weight:800;font-size:0.85rem;color:#38bdf8;margin-bottom:8px;">تحديد الموقعين أسفل مطبوع الجرد (من يوقع، صفته، واسمه):</div>
+              <div id="inv-signers-config-rows" style="display:flex;flex-direction:column;gap:8px;"></div>
+            </div>
+
+            <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+              <button type="button" class="btn btn-primary btn-sm" onclick="saveAllDocsAndReportsConfigs(); printInventorySheet();">
+                🖨️ معاينة وطباعة مطبوع الجرد الكامل الآن
+              </button>
+            </div>
+
+            <div style="border:1.5px solid rgba(56,189,248,0.4);border-radius:12px;padding:14px;background:#ffffff;color:#0f172a;direction:rtl;">
+              <div style="font-size:0.76rem;font-weight:800;color:#0284c7;margin-bottom:8px;">
+                👁️ معاينة حية فورية لمطبوع الجرد:
+              </div>
+              <div id="inv-report-live-preview-box"></div>
+            </div>
+          </div>
+
+          <!-- القسم 3: إعداد التقارير الإحصائية وتقارير الحصص -->
+          <div id="sec-doc-cfg-tab-stats" style="display:none;">
+            <div class="grid-2" style="gap:12px;margin-bottom:12px;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">عنوان التقرير الإحصائي العام</label>
+                <input type="text" id="stats-rep-cfg-title" class="form-control" oninput="updateStatsReportLivePreview()" />
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">عنوان مطبوع محاكاة الحصص السنوية</label>
+                <input type="text" id="stats-rep-cfg-quota-title" class="form-control" oninput="updateStatsReportLivePreview()" />
+              </div>
+            </div>
+
+            <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;padding:10px 12px;background:var(--bg-muted);border-radius:8px;border:1px solid var(--border-subtle);">
+              <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:0.8rem;font-weight:700;">
+                <input type="checkbox" id="stats-rep-show-exec" checked onchange="updateStatsReportLivePreview()" style="width:15px;height:15px;accent-color:#38bdf8;" />
+                <span>إظهار بطاقات المؤشرات التنفيذية الخمس في أعلى التقرير</span>
+              </label>
+              <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:0.8rem;font-weight:700;">
+                <input type="checkbox" id="stats-rep-show-cats" checked onchange="updateStatsReportLivePreview()" style="width:15px;height:15px;accent-color:#38bdf8;" />
+                <span>إظهار جدول توزيع الاستهلاك والحصص حسب الأصناف</span>
+              </label>
+            </div>
+
+            <div style="background:var(--bg-muted);border:1px solid var(--border-subtle);border-radius:10px;padding:12px;margin-bottom:14px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+                <span style="font-weight:800;font-size:0.85rem;color:#38bdf8;">أعمدة التقرير الإحصائي وتدبير الصفقة (إظهار / إخفاء / العنوان / النسب 100%):</span>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span id="stats-cols-sum-badge" class="badge badge-success tabular-nums" style="font-size:0.76rem;">المجموع: 100% ✓</span>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="autoBalanceStatsColumnsTo100()" style="font-size:0.74rem;padding:4px 10px;">
+                    ⚖️ موازنة تلقائية لـ 100%
+                  </button>
+                </div>
+              </div>
+              <div id="stats-columns-config-rows" style="display:flex;flex-direction:column;gap:8px;"></div>
+            </div>
+
+            <div style="background:var(--bg-muted);border:1px solid var(--border-subtle);border-radius:10px;padding:12px;margin-bottom:14px;">
+              <div style="font-weight:800;font-size:0.85rem;color:#38bdf8;margin-bottom:8px;">تحديد الموقعين أسفل التقارير الإحصائية وتقارير الحصص:</div>
+              <div id="stats-signers-config-rows" style="display:flex;flex-direction:column;gap:8px;"></div>
+            </div>
+
+            <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:10px;">
+              <button type="button" class="btn btn-primary btn-sm" onclick="saveAllDocsAndReportsConfigs(); printAiAnalysisReport();">
+                🖨️ معاينة وطباعة التقرير الإحصائي العام الآن
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="saveAllDocsAndReportsConfigs(); printSimulatedQuotaTable();">
+                🖨️ معاينة وطباعة جدول محاكاة الحصص الآن
+              </button>
+            </div>
+
+            <div style="border:1.5px solid rgba(56,189,248,0.4);border-radius:12px;padding:14px;background:#ffffff;color:#0f172a;direction:rtl;">
+              <div style="font-size:0.76rem;font-weight:800;color:#0284c7;margin-bottom:8px;">
+                👁️ معاينة حية فورية للتقرير الإحصائي:
+              </div>
+              <div id="stats-report-live-preview-box"></div>
+            </div>
+          </div>
+
+        </div>
+      `;
+    }
+
+    function renderColumnsConfigRowsUI(containerId, colsArray, prefix, onChangeCallbackName) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      container.innerHTML = colsArray.map((col, idx) => {
+        const isExtra = col.key === "extra";
+        const extraSelectHtml = isExtra ? `
+          <select id="${prefix}-col-source-${idx}" class="form-control" style="width:140px;height:32px;font-size:0.75rem;" onchange="${onChangeCallbackName}()">
+            <option value="category" ${col.sourceField === 'category' ? 'selected' : ''}>بيانات: الصنف</option>
+            <option value="shortRef" ${col.sourceField === 'shortRef' ? 'selected' : ''}>بيانات: المرجع</option>
+            <option value="device" ${col.sourceField === 'device' ? 'selected' : ''}>بيانات: الجهاز</option>
+            <option value="empty" ${col.sourceField === 'empty' ? 'selected' : ''}>خانة فارغة للتأشير</option>
+          </select>
+        ` : '';
+        return `
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:7px 10px;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;">
+            <label style="display:inline-flex;align-items:center;gap:7px;cursor:pointer;min-width:150px;font-size:0.8rem;font-weight:700;">
+              <input type="checkbox" id="${prefix}-col-en-${idx}" data-col-key="${escapeHtml(col.key)}" ${col.enabled ? 'checked' : ''} onchange="onColumnEnableToggled('${prefix}', ${idx})" style="width:16px;height:16px;accent-color:#38bdf8;" />
+              <span>${isExtra ? '➕ عمود إضافي مخصص' : 'العمود ' + (idx + 1)}</span>
+            </label>
+            <div style="display:flex;align-items:center;gap:8px;flex:1 1 220px;">
+              <span style="font-size:0.74rem;color:var(--text-muted);white-space:nowrap;">العنوان:</span>
+              <input type="text" id="${prefix}-col-title-${idx}" class="form-control" value="${escapeHtml(col.title)}" style="height:32px;font-size:0.79rem;" oninput="${onChangeCallbackName}()" />
+              ${extraSelectHtml}
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="font-size:0.74rem;color:var(--text-muted);">النسبة:</span>
+              <input type="number" id="${prefix}-col-pct-${idx}" class="form-control tabular-nums" min="0" max="100" value="${col.enabled ? col.widthPct : 0}" ${col.enabled ? '' : 'disabled'} style="width:72px;height:32px;font-size:0.8rem;text-align:center;font-weight:700;" oninput="${onChangeCallbackName}()" />
+              <span style="font-size:0.78rem;font-weight:700;">%</span>
+            </div>
+          </div>
         `;
-        contentArea.appendChild(pane);
+      }).join('');
+    }
+
+    function renderSignersConfigRowsUI(containerId, signersArray, prefix, onChangeCallbackName) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      const posLabels = ["الموقع 1 (اليمين)", "الموقع 2 (الوسط)", "الموقع 3 (اليسار)"];
+      container.innerHTML = signersArray.map((sig, idx) => `
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:7px 10px;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;">
+          <label style="display:inline-flex;align-items:center;gap:7px;cursor:pointer;min-width:140px;font-size:0.79rem;font-weight:700;">
+            <input type="checkbox" id="${prefix}-sig-en-${idx}" ${sig.enabled ? 'checked' : ''} onchange="${onChangeCallbackName}()" style="width:15px;height:15px;accent-color:#38bdf8;" />
+            <span>${posLabels[idx] || ('الموقع ' + (idx + 1))}</span>
+          </label>
+          <div style="display:flex;align-items:center;gap:6px;flex:1 1 200px;">
+            <span style="font-size:0.73rem;color:var(--text-muted);white-space:nowrap;">الصفة:</span>
+            <input type="text" id="${prefix}-sig-title-${idx}" class="form-control" value="${escapeHtml(sig.title || '')}" placeholder="مثال: مسؤول المخزون" style="height:32px;font-size:0.78rem;" oninput="${onChangeCallbackName}()" />
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;flex:1 1 200px;">
+            <span style="font-size:0.73rem;color:var(--text-muted);white-space:nowrap;">الاسم:</span>
+            <input type="text" id="${prefix}-sig-name-${idx}" class="form-control" value="${escapeHtml(sig.name || '')}" placeholder="اختياري: اسم الموقع..." style="height:32px;font-size:0.78rem;" oninput="${onChangeCallbackName}()" />
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function onColumnEnableToggled(prefix, colIdx) {
+      const pctInput = document.getElementById(`${prefix}-col-pct-${colIdx}`);
+      const enCheck = document.getElementById(`${prefix}-col-en-${colIdx}`);
+      if (pctInput && enCheck) {
+        pctInput.disabled = !enCheck.checked;
+        if (!enCheck.checked) pctInput.value = 0;
+        else if (Number(pctInput.value) <= 0) pctInput.value = 10;
+      }
+      if (prefix === "cert") {
+        const en0 = document.getElementById("cert-col-en-0")?.checked;
+        const en1 = document.getElementById("cert-col-en-1")?.checked;
+        const en2 = document.getElementById("cert-col-en-2")?.checked;
+        const en3 = document.getElementById("cert-col-en-3")?.checked;
+        const en4 = document.getElementById("cert-col-en-4")?.checked;
+        if (!en0 && en1 && en2 && en3 && !en4) {
+          document.getElementById("cert-col-pct-1").value = 70;
+          document.getElementById("cert-col-pct-2").value = 10;
+          document.getElementById("cert-col-pct-3").value = 20;
+        } else {
+          autoBalanceCertColumnsTo100();
+          return;
+        }
+        updateCertSettingsLivePreview();
+      } else if (prefix === "inv") {
+        autoBalanceInvColumnsTo100();
+      } else if (prefix === "stats") {
+        autoBalanceStatsColumnsTo100();
+      }
+    }
+    window.onColumnEnableToggled = onColumnEnableToggled;
+
+    function readColumnsDraftFromDom(prefix, defaultCols) {
+      return defaultCols.map((dc, idx) => {
+        const enabled = document.getElementById(`${prefix}-col-en-${idx}`)
+          ? document.getElementById(`${prefix}-col-en-${idx}`).checked
+          : dc.enabled;
+        const title = (document.getElementById(`${prefix}-col-title-${idx}`)?.value || "").trim() || dc.title;
+        const rawPct = parseInt(document.getElementById(`${prefix}-col-pct-${idx}`)?.value, 10);
+        const widthPct = enabled ? (isNaN(rawPct) || rawPct < 0 ? dc.widthPct : rawPct) : 0;
+        const sourceField = document.getElementById(`${prefix}-col-source-${idx}`)?.value || dc.sourceField || "category";
+        return { key: dc.key, enabled, title, widthPct, sourceField };
+      });
+    }
+
+    function readSignersDraftFromDom(prefix, defaultSigners) {
+      return defaultSigners.map((ds, idx) => ({
+        enabled: document.getElementById(`${prefix}-sig-en-${idx}`) ? document.getElementById(`${prefix}-sig-en-${idx}`).checked : ds.enabled,
+        title: (document.getElementById(`${prefix}-sig-title-${idx}`)?.value || "").trim() || ds.title,
+        name: (document.getElementById(`${prefix}-sig-name-${idx}`)?.value || "").trim()
+      }));
+    }
+
+    function updateSumBadgeUI(badgeId, cols) {
+      const badge = document.getElementById(badgeId);
+      if (!badge) return;
+      const sum = cols.filter(c => c.enabled).reduce((s, c) => s + (Number(c.widthPct) || 0), 0);
+      if (sum === 100) {
+        badge.className = "badge badge-success tabular-nums";
+        badge.textContent = `المجموع: 100% ✓`;
+      } else {
+        badge.className = "badge badge-warning tabular-nums";
+        badge.textContent = `المجموع الحالي: ${sum}% (سيتم موازنته لـ 100%)`;
       }
     }
 
+    function autoBalanceCertColumnsTo100() {
+      const cols = normalizeColumnsWidthTo100(readColumnsDraftFromDom("cert", DEFAULT_CERT_CONFIG.columns));
+      cols.forEach((c, idx) => {
+        const inp = document.getElementById(`cert-col-pct-${idx}`);
+        if (inp) inp.value = c.enabled ? c.widthPct : 0;
+      });
+      updateCertSettingsLivePreview();
+    }
+    window.autoBalanceCertColumnsTo100 = autoBalanceCertColumnsTo100;
+
+    function autoBalanceInvColumnsTo100() {
+      const cols = normalizeColumnsWidthTo100(readColumnsDraftFromDom("inv", DEFAULT_INV_REPORT_CONFIG.columns));
+      cols.forEach((c, idx) => {
+        const inp = document.getElementById(`inv-col-pct-${idx}`);
+        if (inp) inp.value = c.enabled ? c.widthPct : 0;
+      });
+      updateInvReportLivePreview();
+    }
+    window.autoBalanceInvColumnsTo100 = autoBalanceInvColumnsTo100;
+
+    function autoBalanceStatsColumnsTo100() {
+      const cols = normalizeColumnsWidthTo100(readColumnsDraftFromDom("stats", DEFAULT_STATS_REPORT_CONFIG.columns));
+      cols.forEach((c, idx) => {
+        const inp = document.getElementById(`stats-col-pct-${idx}`);
+        if (inp) inp.value = c.enabled ? c.widthPct : 0;
+      });
+      updateStatsReportLivePreview();
+    }
+    window.autoBalanceStatsColumnsTo100 = autoBalanceStatsColumnsTo100;
+
     function populateCertConfigSettingsUI() {
       injectCertificateTemplateSettingsPane();
-      const cfg = getCertConfig();
+      const certCfg = getCertConfig();
+      const invCfg = getInvReportConfig();
+      const statsCfg = getStatsReportConfig();
+
       const setVal = (id, val) => {
         const el = document.getElementById(id);
-        if (el) el.value = val;
+        if (el) el.value = val ?? "";
       };
-      setVal("cert-cfg-title", cfg.titleText);
-      setVal("cert-cfg-signature", cfg.signatureText);
-      setVal("cert-cfg-intro-prefix", cfg.introPrefix);
-      setVal("cert-cfg-intro-middle", cfg.introMiddle);
-      setVal("cert-cfg-intro-suffix", cfg.introSuffix);
-      setVal("cert-cfg-party-conn", cfg.partyConnector);
-      setVal("cert-cfg-col1", cfg.col1Title);
-      setVal("cert-cfg-col2", cfg.col2Title);
-      setVal("cert-cfg-col3", cfg.col3Title);
-      setVal("cert-cfg-col4", cfg.col4Title);
-      const chk = document.getElementById("cert-cfg-show-cat");
-      if (chk) chk.checked = cfg.showCategoryInParens !== false;
+
+      setVal("cert-cfg-title", certCfg.titleText);
+      setVal("cert-cfg-signature", certCfg.signatureText);
+      setVal("cert-cfg-signature-sub", certCfg.signatureSubName);
+      setVal("cert-cfg-second-sig-title", certCfg.secondSignatureText);
+      setVal("cert-cfg-second-sig-sub", certCfg.secondSignatureSubName);
+      setVal("cert-cfg-intro-prefix", certCfg.introPrefix);
+      setVal("cert-cfg-intro-middle", certCfg.introMiddle);
+      setVal("cert-cfg-intro-suffix", certCfg.introSuffix);
+      setVal("cert-cfg-party-conn", certCfg.partyConnector);
+
+      const chkCat = document.getElementById("cert-cfg-show-cat");
+      if (chkCat) chkCat.checked = certCfg.showCategoryInParens !== false;
+      const chkSingle = document.getElementById("cert-cfg-hide-idx-single");
+      if (chkSingle) chkSingle.checked = Boolean(certCfg.hideIndexIfSingleItem);
+      const chkSecSig = document.getElementById("cert-cfg-show-second-sig");
+      if (chkSecSig) chkSecSig.checked = Boolean(certCfg.showSecondSignature);
+
+      renderColumnsConfigRowsUI("cert-columns-config-rows", certCfg.columns, "cert", "updateCertSettingsLivePreview");
+
+      setVal("inv-rep-cfg-title", invCfg.titleText);
+      setVal("inv-rep-cfg-subtitle", invCfg.subtitleText);
+      renderColumnsConfigRowsUI("inv-columns-config-rows", invCfg.columns, "inv", "updateInvReportLivePreview");
+      renderSignersConfigRowsUI("inv-signers-config-rows", invCfg.signers, "inv", "updateInvReportLivePreview");
+
+      setVal("stats-rep-cfg-title", statsCfg.titleText);
+      setVal("stats-rep-cfg-quota-title", statsCfg.quotaTitleText);
+      const chkExec = document.getElementById("stats-rep-show-exec");
+      if (chkExec) chkExec.checked = statsCfg.showExecutiveCards !== false;
+      const chkCats = document.getElementById("stats-rep-show-cats");
+      if (chkCats) chkCats.checked = statsCfg.showCategoryTable !== false;
+      renderColumnsConfigRowsUI("stats-columns-config-rows", statsCfg.columns, "stats", "updateStatsReportLivePreview");
+      renderSignersConfigRowsUI("stats-signers-config-rows", statsCfg.signers, "stats", "updateStatsReportLivePreview");
+
       updateCertSettingsLivePreview();
+      updateInvReportLivePreview();
+      updateStatsReportLivePreview();
     }
     window.populateCertConfigSettingsUI = populateCertConfigSettingsUI;
 
     function readDraftCertConfigFromInputs() {
       const cur = getCertConfig();
+      const rawCols = readColumnsDraftFromDom("cert", DEFAULT_CERT_CONFIG.columns);
+      updateSumBadgeUI("cert-cols-sum-badge", rawCols);
+      const cols = normalizeColumnsWidthTo100(rawCols);
+      const showSecSig = Boolean(document.getElementById("cert-cfg-show-second-sig")?.checked);
+      const secWrap = document.getElementById("cert-second-sig-inputs-wrap");
+      if (secWrap) secWrap.style.display = showSecSig ? "grid" : "none";
+
       return {
         titleText: (document.getElementById("cert-cfg-title")?.value || "").trim() || DEFAULT_CERT_CONFIG.titleText,
         signatureText: (document.getElementById("cert-cfg-signature")?.value || "").trim() || DEFAULT_CERT_CONFIG.signatureText,
+        signatureSubName: (document.getElementById("cert-cfg-signature-sub")?.value || "").trim(),
+        showSecondSignature: showSecSig,
+        secondSignatureText: (document.getElementById("cert-cfg-second-sig-title")?.value || "").trim() || DEFAULT_CERT_CONFIG.secondSignatureText,
+        secondSignatureSubName: (document.getElementById("cert-cfg-second-sig-sub")?.value || "").trim(),
         introPrefix: document.getElementById("cert-cfg-intro-prefix")?.value ?? cur.introPrefix,
         introMiddle: document.getElementById("cert-cfg-intro-middle")?.value ?? cur.introMiddle,
         introSuffix: document.getElementById("cert-cfg-intro-suffix")?.value ?? cur.introSuffix,
         partyConnector: document.getElementById("cert-cfg-party-conn")?.value ?? cur.partyConnector,
-        col1Title: (document.getElementById("cert-cfg-col1")?.value || "").trim() || DEFAULT_CERT_CONFIG.col1Title,
-        col2Title: (document.getElementById("cert-cfg-col2")?.value || "").trim() || DEFAULT_CERT_CONFIG.col2Title,
-        col3Title: (document.getElementById("cert-cfg-col3")?.value || "").trim() || DEFAULT_CERT_CONFIG.col3Title,
-        col4Title: (document.getElementById("cert-cfg-col4")?.value || "").trim() || DEFAULT_CERT_CONFIG.col4Title,
         showCategoryInParens: document.getElementById("cert-cfg-show-cat") ? document.getElementById("cert-cfg-show-cat").checked : true,
-        partsSeparator: " / "
+        hideIndexIfSingleItem: Boolean(document.getElementById("cert-cfg-hide-idx-single")?.checked),
+        partsSeparator: " / ",
+        columns: cols,
+        col1Title: cols[0]?.title || "#",
+        col2Title: cols[1]?.title || "المادة",
+        col3Title: cols[2]?.title || "الكمية",
+        col4Title: cols[3]?.title || "الملاحظات"
+      };
+    }
+
+    function readDraftInvReportConfigFromInputs() {
+      const rawCols = readColumnsDraftFromDom("inv", DEFAULT_INV_REPORT_CONFIG.columns);
+      updateSumBadgeUI("inv-cols-sum-badge", rawCols);
+      return {
+        titleText: (document.getElementById("inv-rep-cfg-title")?.value || "").trim() || DEFAULT_INV_REPORT_CONFIG.titleText,
+        subtitleText: (document.getElementById("inv-rep-cfg-subtitle")?.value || "").trim() || DEFAULT_INV_REPORT_CONFIG.subtitleText,
+        columns: normalizeColumnsWidthTo100(rawCols),
+        signers: readSignersDraftFromDom("inv", DEFAULT_INV_REPORT_CONFIG.signers)
+      };
+    }
+
+    function readDraftStatsReportConfigFromInputs() {
+      const rawCols = readColumnsDraftFromDom("stats", DEFAULT_STATS_REPORT_CONFIG.columns);
+      updateSumBadgeUI("stats-cols-sum-badge", rawCols);
+      return {
+        titleText: (document.getElementById("stats-rep-cfg-title")?.value || "").trim() || DEFAULT_STATS_REPORT_CONFIG.titleText,
+        quotaTitleText: (document.getElementById("stats-rep-cfg-quota-title")?.value || "").trim() || DEFAULT_STATS_REPORT_CONFIG.quotaTitleText,
+        showExecutiveCards: document.getElementById("stats-rep-show-exec") ? document.getElementById("stats-rep-show-exec").checked : true,
+        showCategoryTable: document.getElementById("stats-rep-show-cats") ? document.getElementById("stats-rep-show-cats").checked : true,
+        columns: normalizeColumnsWidthTo100(rawCols),
+        signers: readSignersDraftFromDom("stats", DEFAULT_STATS_REPORT_CONFIG.signers)
       };
     }
 
@@ -36367,60 +37553,140 @@ ${itemsText}
       const box = document.getElementById("cert-settings-live-preview-box");
       if (!box) return;
       const draft = readDraftCertConfigFromInputs();
+      const activeCols = draft.columns.filter(c => c.enabled);
       const catPart = draft.showCategoryInParens ? `<strong>(طونير طابعات)</strong> ` : "";
+
+      const ths = activeCols.map(c => `<th style="border:1.5px solid #000;padding:6px;width:${c.widthPct}%;text-align:center;">${escapeHtml(c.title)} <span style="font-size:0.68rem;color:#0284c7;">(${c.widthPct}%)</span></th>`).join('');
+      const tds = activeCols.map(c => {
+        if (c.key === "index") return `<td style="border:1px solid #000;padding:6px;text-align:center;font-weight:700;">1</td>`;
+        if (c.key === "item") return `<td style="border:1px solid #000;padding:6px;text-align:right;">${catPart}<span dir="ltr" style="font-weight:700;">CANON 052H (2200C002) / Imprimante CANON LBP 214DW / Noir</span></td>`;
+        if (c.key === "qty") return `<td style="border:1px solid #000;padding:6px;text-align:center;font-weight:800;">2</td>`;
+        if (c.key === "notes") return `<td style="border:1px solid #000;padding:6px;text-align:center;">حسب الطلب</td>`;
+        if (c.key === "extra") {
+          const val = c.sourceField === "category" ? "طونير طابعات" : (c.sourceField === "shortRef" ? "CANON 052H" : (c.sourceField === "device" ? "CANON LBP 214DW" : ""));
+          return `<td style="border:1px solid #000;padding:6px;text-align:center;">${escapeHtml(val)}</td>`;
+        }
+        return `<td style="border:1px solid #000;padding:6px;"></td>`;
+      }).join('');
+
+      const sigHtml = draft.showSecondSignature
+        ? `
+          <div style="display:flex;justify-content:space-between;padding:0 10%;font-weight:800;font-size:0.88rem;color:#000;">
+            <div style="text-align:center;"><div>${escapeHtml(draft.secondSignatureText)}</div>${draft.secondSignatureSubName ? `<div style="font-size:0.76rem;font-weight:600;">${escapeHtml(draft.secondSignatureSubName)}</div>` : ''}</div>
+            <div style="text-align:center;"><div>${escapeHtml(draft.signatureText)}</div>${draft.signatureSubName ? `<div style="font-size:0.76rem;font-weight:600;">${escapeHtml(draft.signatureSubName)}</div>` : ''}</div>
+          </div>
+        `
+        : `
+          <div style="text-align:left;padding-left:14%;font-weight:800;font-size:0.9rem;color:#000;">
+            <div>${escapeHtml(draft.signatureText)}</div>
+            ${draft.signatureSubName ? `<div style="font-size:0.76rem;font-weight:600;">${escapeHtml(draft.signatureSubName)}</div>` : ''}
+          </div>
+        `;
+
       box.innerHTML = `
         <div style="text-align:center;margin-bottom:10px;">
           <span style="display:inline-block;border:2px solid #000;border-radius:999px;padding:4px 28px;font-weight:900;font-size:1.05rem;color:#000;">
             ${escapeHtml(draft.titleText)}
           </span>
         </div>
-        <p style="font-size:0.88rem;line-height:1.6;margin:0 0 10px 0;color:#000;text-align:right;">
-          ${escapeHtml(draft.introPrefix)} <strong>02/11/2026</strong>${escapeHtml(draft.introMiddle)} <strong>رئيس كتابة الضبط</strong> ${escapeHtml(draft.partyConnector)}<strong>المحكمة الابتدائية بسطات</strong>${escapeHtml(draft.introSuffix)}
+        <p style="font-size:0.86rem;line-height:1.6;margin:0 0 10px 0;color:#000;text-align:right;">
+          ${escapeHtml(draft.introPrefix)} <strong>03/11/2026</strong>${escapeHtml(draft.introMiddle)} <strong>رئيس كتابة الضبط</strong> ${escapeHtml(draft.partyConnector)}<strong>المحكمة الابتدائية بسطات</strong>${escapeHtml(draft.introSuffix)}
         </p>
-        <table style="width:100%;border-collapse:collapse;font-size:0.82rem;color:#000;margin-bottom:14px;">
-          <thead>
-            <tr style="background:#efefef;">
-              <th style="border:1.5px solid #000;padding:6px;width:7%;text-align:center;">${escapeHtml(draft.col1Title)}</th>
-              <th style="border:1.5px solid #000;padding:6px;width:53%;text-align:center;">${escapeHtml(draft.col2Title)}</th>
-              <th style="border:1.5px solid #000;padding:6px;width:14%;text-align:center;">${escapeHtml(draft.col3Title)}</th>
-              <th style="border:1.5px solid #000;padding:6px;width:26%;text-align:center;">${escapeHtml(draft.col4Title)}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="border:1px solid #000;padding:6px;text-align:center;font-weight:700;">1</td>
-              <td style="border:1px solid #000;padding:6px;text-align:right;">${catPart}<span dir="ltr" style="font-weight:700;">CANON 057H (3010C002) / Imprimante CANON LBP 226DW / Noir</span></td>
-              <td style="border:1px solid #000;padding:6px;text-align:center;font-weight:800;">2</td>
-              <td style="border:1px solid #000;padding:6px;text-align:center;">حسب الطلب</td>
-            </tr>
-          </tbody>
+        <table style="width:100%;border-collapse:collapse;font-size:0.8rem;color:#000;margin-bottom:14px;">
+          <thead><tr style="background:#efefef;">${ths}</tr></thead>
+          <tbody><tr>${tds}</tr></tbody>
         </table>
-        <div style="text-align:left;padding-left:14%;font-weight:800;font-size:0.9rem;color:#000;">
-          ${escapeHtml(draft.signatureText)}
-        </div>
+        ${sigHtml}
       `;
     }
     window.updateCertSettingsLivePreview = updateCertSettingsLivePreview;
 
-    function saveCertConfigFromSettings() {
+    function updateInvReportLivePreview() {
+      const box = document.getElementById("inv-report-live-preview-box");
+      if (!box) return;
+      const draft = readDraftInvReportConfigFromInputs();
+      const activeCols = draft.columns.filter(c => c.enabled);
+      const ths = activeCols.map(c => `<th style="border:1px solid #94a3b8;padding:5px;width:${c.widthPct}%;text-align:center;">${escapeHtml(c.title)} (${c.widthPct}%)</th>`).join('');
+      const tds = activeCols.map(c => {
+        if (c.key === "index") return `<td style="border:1px solid #cbd5e1;padding:5px;text-align:center;">1</td>`;
+        if (c.key === "item") return `<td style="border:1px solid #cbd5e1;padding:5px;text-align:right;font-weight:700;">CANON 052H (2200C002) / CANON LBP 214DW</td>`;
+        if (c.key === "category") return `<td style="border:1px solid #cbd5e1;padding:5px;text-align:center;">طونير طابعات</td>`;
+        if (c.key === "sysStock") return `<td style="border:1px solid #cbd5e1;padding:5px;text-align:center;font-weight:700;">12</td>`;
+        if (c.key === "physStock") return `<td style="border:1px solid #cbd5e1;padding:5px;text-align:center;">12</td>`;
+        if (c.key === "diff") return `<td style="border:1px solid #cbd5e1;padding:5px;text-align:center;">0</td>`;
+        return `<td style="border:1px solid #cbd5e1;padding:5px;text-align:center;">مطابق</td>`;
+      }).join('');
+
+      box.innerHTML = `
+        <div style="text-align:center;border:1.5px solid #0f172a;border-radius:6px;padding:6px;margin-bottom:10px;background:#f8fafc;">
+          <div style="font-weight:800;font-size:0.95rem;">${escapeHtml(draft.titleText)}</div>
+          <div style="font-size:0.75rem;color:#475569;">${escapeHtml(draft.subtitleText)}</div>
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-size:0.76rem;color:#0f172a;">
+          <thead><tr style="background:#e2e8f0;">${ths}</tr></thead>
+          <tbody><tr>${tds}</tr></tbody>
+        </table>
+        ${buildReportSignersBlockHtml(draft.signers)}
+      `;
+    }
+    window.updateInvReportLivePreview = updateInvReportLivePreview;
+
+    function updateStatsReportLivePreview() {
+      const box = document.getElementById("stats-report-live-preview-box");
+      if (!box) return;
+      const draft = readDraftStatsReportConfigFromInputs();
+      const activeCols = draft.columns.filter(c => c.enabled);
+      const ths = activeCols.map(c => `<th style="border:1px solid #94a3b8;padding:5px;width:${c.widthPct}%;text-align:center;">${escapeHtml(c.title)} (${c.widthPct}%)</th>`).join('');
+      const tds = activeCols.map(c => {
+        if (c.key === "index") return `<td style="border:1px solid #cbd5e1;padding:5px;text-align:center;">1</td>`;
+        if (c.key === "item") return `<td style="border:1px solid #cbd5e1;padding:5px;text-align:right;font-weight:700;">CANON 052H (2200C002) / CANON LBP 214DW</td>`;
+        if (c.key === "category") return `<td style="border:1px solid #cbd5e1;padding:5px;text-align:center;">طونير طابعات</td>`;
+        if (c.key === "avgAnnual") return `<td style="border:1px solid #cbd5e1;padding:5px;text-align:center;font-weight:700;">73</td>`;
+        if (c.key === "globalShare") return `<td style="border:1px solid #cbd5e1;padding:5px;text-align:center;color:#0284c7;font-weight:700;">19.1%</td>`;
+        if (c.key === "catShare") return `<td style="border:1px solid #cbd5e1;padding:5px;text-align:center;">37.6%</td>`;
+        if (c.key === "changePct") return `<td style="border:1px solid #cbd5e1;padding:5px;text-align:center;">0%</td>`;
+        if (c.key === "proposedQuota") return `<td style="border:1px solid #cbd5e1;padding:5px;text-align:center;color:#059669;font-weight:800;">84</td>`;
+        return `<td style="border:1px solid #cbd5e1;padding:5px;text-align:center;background:#e0f2fe;color:#0284c7;font-weight:700;">أولوية قصوى</td>`;
+      }).join('');
+
+      box.innerHTML = `
+        <div style="text-align:center;border:1.5px solid #0f172a;border-radius:6px;padding:6px;margin-bottom:10px;background:#f8fafc;">
+          <div style="font-weight:800;font-size:0.95rem;">${escapeHtml(draft.titleText)}</div>
+          <div style="font-size:0.75rem;color:#0284c7;">عنوان مطبوع الحصص: ${escapeHtml(draft.quotaTitleText)}</div>
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-size:0.75rem;color:#0f172a;">
+          <thead><tr style="background:#e2e8f0;">${ths}</tr></thead>
+          <tbody><tr>${tds}</tr></tbody>
+        </table>
+        ${buildReportSignersBlockHtml(draft.signers)}
+      `;
+    }
+    window.updateStatsReportLivePreview = updateStatsReportLivePreview;
+
+    function saveAllDocsAndReportsConfigs() {
       if (!state.profile) state.profile = {};
       state.profile.certConfig = readDraftCertConfigFromInputs();
-      persistAll(true);
-      updateCertSettingsLivePreview();
-      showToast("✓ تم حفظ إعدادات وصياغة الإشهاد الرسمي بنجاح", "success");
-    }
-    window.saveCertConfigFromSettings = saveCertConfigFromSettings;
-
-    function resetCertConfigToDefaults() {
-      if (!state.profile) state.profile = {};
-      state.profile.certConfig = JSON.parse(JSON.stringify(DEFAULT_CERT_CONFIG));
+      state.profile.invReportConfig = readDraftInvReportConfigFromInputs();
+      state.profile.statsReportConfig = readDraftStatsReportConfigFromInputs();
       persistAll(true);
       populateCertConfigSettingsUI();
-      showToast("تمت استعادة الصيغة القياسية الافتراضية للإشهاد ✓", "info");
+      showToast("✓ تم حفظ إعدادات الإشهاد ومطبوع الجرد والتقارير الإحصائية بنجاح", "success");
     }
-    window.resetCertConfigToDefaults = resetCertConfigToDefaults;
+    window.saveAllDocsAndReportsConfigs = saveAllDocsAndReportsConfigs;
+    window.saveCertConfigFromSettings = saveAllDocsAndReportsConfigs;
 
-    // توسيع switchSettingsSubTab ليشمل التبويب العاشر (cert)
+    function resetAllDocsAndReportsConfigs() {
+      if (!state.profile) state.profile = {};
+      state.profile.certConfig = JSON.parse(JSON.stringify(DEFAULT_CERT_CONFIG));
+      state.profile.invReportConfig = JSON.parse(JSON.stringify(DEFAULT_INV_REPORT_CONFIG));
+      state.profile.statsReportConfig = JSON.parse(JSON.stringify(DEFAULT_STATS_REPORT_CONFIG));
+      persistAll(true);
+      populateCertConfigSettingsUI();
+      showToast("تمت استعادة الإعدادات الافتراضية للإشهاد وجميع التقارير ✓", "info");
+    }
+    window.resetAllDocsAndReportsConfigs = resetAllDocsAndReportsConfigs;
+    window.resetCertConfigToDefaults = resetAllDocsAndReportsConfigs;
+
     const _v6SwitchSettingsSubTab = switchSettingsSubTab;
     switchSettingsSubTab = function(tab) {
       injectCertificateTemplateSettingsPane();
