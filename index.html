@@ -58756,6 +58756,1395 @@ ${itemsText}
       window.calculateAndRenderForecast = calculateAndRenderForecast;
 
       // تشغيل التهيئة عند تحميل الصفحة
+
+      // =========================================================================
+      // 4. الطبقة الهندسية الشاملة للتحصين التقني والتشغيلي والأمني (V8.0 Enterprise Hardening)
+      //    - منع التكرار والضغط السريع المتكرر (Timed Idempotency & Fingerprint Locks)
+      //    - التحقق الصارم من المدخلات وتطهير النصوص (Input Bounds & XSS Sanitization)
+      //    - الدقة المحاسبية للمخزون عند الحذف/التعديل/الاسترجاع (Exact actualDeducted Accounting)
+      //    - دعم التنفيذ الجزئي والكلي للطلبيات مع حفظ أصل الطلبية والرصيد المتبقي
+      //    - استقلالية نسب المرحلة 1 والمرحلة 2 في التوزيع المركزي + طريقة الباقي الأكبر (Largest Remainder)
+      //    - صمام أمان النسخ الاحتياطي والاسترجاع مع لقطة الأمان الفورية (Pre-Restore Safety Snapshot)
+      //    - حماية المزامنة السحابية في وضع عدم الاتصال ومنع الكتابة الفوقية للنسخ الأقدم
+      //    - التنظيف الكامل للذاكرة والجلسة عند تسجيل الخروج + سجل حركية المادة الشامل
+      // =========================================================================
+
+      const V8_MAX_SAFE_QTY = 50000;
+      const _v8ActionLocks = {};
+      const _v8RecentFingerprints = {};
+
+      function acquireActionIdempotencyLock(actionKey, cooldownMs = 650, fingerprint = "") {
+        const now = Date.now();
+        if (_v8ActionLocks[actionKey] && now < _v8ActionLocks[actionKey]) {
+          return false;
+        }
+        if (fingerprint) {
+          const prev = _v8RecentFingerprints[actionKey];
+          if (prev && prev.fp === fingerprint && (now - prev.ts) < 1800) {
+            return false;
+          }
+          _v8RecentFingerprints[actionKey] = { fp: fingerprint, ts: now };
+        }
+        _v8ActionLocks[actionKey] = now + Math.max(100, cooldownMs);
+        return true;
+      }
+      window.acquireActionIdempotencyLock = acquireActionIdempotencyLock;
+
+      function releaseActionIdempotencyLock(actionKey, keepCooldownMs = 250) {
+        const now = Date.now();
+        if (keepCooldownMs > 0) {
+          _v8ActionLocks[actionKey] = now + keepCooldownMs;
+        } else {
+          delete _v8ActionLocks[actionKey];
+        }
+      }
+      window.releaseActionIdempotencyLock = releaseActionIdempotencyLock;
+
+      function validateAndSanitizeQty(rawVal, maxAllowed = V8_MAX_SAFE_QTY) {
+        if (rawVal === null || rawVal === undefined || rawVal === "") {
+          return { valid: false, value: 0, reason: "empty" };
+        }
+        const num = Number(rawVal);
+        if (!Number.isFinite(num) || Number.isNaN(num)) {
+          return { valid: false, value: 0, reason: "nan" };
+        }
+        if (num <= 0) {
+          return { valid: false, value: 0, reason: "non_positive" };
+        }
+        const intVal = Math.floor(num);
+        if (intVal <= 0) {
+          return { valid: false, value: 0, reason: "fraction_zero" };
+        }
+        if (intVal > maxAllowed) {
+          return { valid: false, value: maxAllowed, reason: "exceeds_max", maxAllowed };
+        }
+        return { valid: true, value: intVal, wasFraction: intVal !== num };
+      }
+      window.validateAndSanitizeQty = validateAndSanitizeQty;
+
+      function validateAndSanitizeISODate(rawDate, fallbackToday = true) {
+        const today = new Date().toISOString().split("T")[0];
+        const str = String(rawDate || "").trim();
+        if (!str) {
+          return { valid: fallbackToday, value: fallbackToday ? today : "", reason: "empty" };
+        }
+        const m = str.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (!m) {
+          return { valid: false, value: fallbackToday ? today : str, reason: "format" };
+        }
+        const yr = parseInt(m[1], 10);
+        const mo = parseInt(m[2], 10);
+        const dy = parseInt(m[3], 10);
+        if (yr < 2000 || yr > 2035 || mo < 1 || mo > 12 || dy < 1 || dy > 31) {
+          return { valid: false, value: fallbackToday ? today : str, reason: "range" };
+        }
+        const checkDate = new Date(Date.UTC(yr, mo - 1, dy));
+        if (
+          checkDate.getUTCFullYear() !== yr ||
+          checkDate.getUTCMonth() + 1 !== mo ||
+          checkDate.getUTCDate() !== dy
+        ) {
+          return { valid: false, value: fallbackToday ? today : str, reason: "calendar_invalid" };
+        }
+        return { valid: true, value: str };
+      }
+      window.validateAndSanitizeISODate = validateAndSanitizeISODate;
+
+      // 4.1 تطهير عروض الجداول والإشعارات من أي نصوص غير مهربة (XSS Hardening)
+      showCenterToast = function(msg) {
+        const existing = document.getElementById("center-toast-active");
+        if (existing) existing.remove();
+        const toast = document.createElement("div");
+        toast.id = "center-toast-active";
+        toast.className = "center-toast-overlay";
+        toast.innerHTML = `
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>${escapeHtml(String(msg || ""))}</span>
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+          toast.style.opacity = "0";
+          toast.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+          toast.style.transform = "translate(-50%, -50%) scale(0.9)";
+          setTimeout(() => toast.remove(), 300);
+        }, 2200);
+      };
+      window.showCenterToast = showCenterToast;
+
+      renderCartTable = function() {
+        const tbody = document.getElementById("cart-table-body");
+        const badge = document.getElementById("cart-summary-badge");
+        if (!tbody) return;
+        const cartArr = Array.isArray(state.cart) ? state.cart : [];
+        if (badge) badge.textContent = `${cartArr.length} مادة بالسلة`;
+
+        if (cartArr.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="6" style="text-align: center; padding: 24px; color: var(--text-muted);">
+                السلة فارغة. يرجى اختيار المواد والكميات وإضافتها للسلة أعلاه.
+              </td>
+            </tr>
+          `;
+          if (typeof saveIssuanceSessionDraft === "function") saveIssuanceSessionDraft();
+          return;
+        }
+
+        tbody.innerHTML = cartArr.map((it, idx) => `
+          <tr>
+            <td style="text-align: center; font-weight: bold;" class="tabular-nums">${idx + 1}</td>
+            <td><strong title="${escapeHtml(it.name)}">${formatItemDisplayHtml(it)}</strong></td>
+            <td style="color: var(--text-muted); font-size: 0.8rem;">${escapeHtml(it.category || "عام")}</td>
+            <td style="text-align: center;"><strong class="tabular-nums font-bold">${sanitize(it.qty)}</strong></td>
+            <td style="color: var(--text-muted); font-size: 0.82rem;">${escapeHtml(it.notes || "—")}</td>
+            <td style="text-align: center;">
+              <button type="button" class="btn-icon danger" onclick="removeCartItem(${idx})" title="حذف من السلة">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              </button>
+            </td>
+          </tr>
+        `).join("");
+        if (typeof saveIssuanceSessionDraft === "function") saveIssuanceSessionDraft();
+      };
+      window.renderCartTable = renderCartTable;
+
+      renderOrderItemsPreview = function() {
+        const tbody = document.getElementById("order-items-preview-body");
+        if (!tbody) return;
+        if (!state.orderFormItems || state.orderFormItems.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 12px;">لم تتم إضافة مواد للطلبية بعد</td>
+            </tr>
+          `;
+          return;
+        }
+        tbody.innerHTML = state.orderFormItems.map((it, idx) => `
+          <tr>
+            <td><strong>${escapeHtml(formatItemDisplayText(it))}</strong></td>
+            <td style="color: var(--text-muted); font-size: 0.76rem;">${escapeHtml(it.category || "عام")}</td>
+            <td style="text-align: center;"><strong class="tabular-nums">${sanitize(it.qty)}</strong></td>
+            <td style="text-align: center;">
+              <button type="button" class="btn-icon danger" style="width: 26px; height: 26px;" onclick="removeOrderItem(${idx})" title="إزالة">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path></svg>
+              </button>
+            </td>
+          </tr>
+        `).join("");
+      };
+      window.renderOrderItemsPreview = renderOrderItemsPreview;
+
+      // 4.2 التحقق الصارم عند إضافة مادة للسلة أو للطلبية (منع الكميات السالبة أو الخيالية أو النصية)
+      addItemToCart = function() {
+        const itemSelect = document.getElementById("cart-item-select");
+        const qtyInput = document.getElementById("cart-item-qty");
+        const notesInput = document.getElementById("cart-item-notes");
+
+        if (!itemSelect || !itemSelect.value) {
+          showToast("يرجى اختيار مادة من المخزون أولاً", "warning");
+          return;
+        }
+        const item = (state.data.items || []).find(i => i && i.id === itemSelect.value);
+        if (!item) {
+          showToast("لم يتم العثور على المادة المحددة في المخزون", "error");
+          return;
+        }
+
+        const qCheck = validateAndSanitizeQty(qtyInput ? qtyInput.value : 1, V8_MAX_SAFE_QTY);
+        if (!qCheck.valid) {
+          if (qCheck.reason === "exceeds_max") {
+            showToast(`الكمية المدخلة تتجاوز الحد الأقصى المسموح به للعملية الواحدة (${V8_MAX_SAFE_QTY} قطعة)!`, "error");
+          } else {
+            showToast("الكمية المطلوبة يجب أن تكون رقماً صحيحاً أكبر من صفر", "warning");
+          }
+          return;
+        }
+        const qty = qCheck.value;
+
+        const existingInCart = state.cart.find(c => c.id === item.id);
+        const alreadyInCart = existingInCart ? sanitize(existingInCart.qty) : 0;
+        if (alreadyInCart + qty > V8_MAX_SAFE_QTY) {
+          showToast(`إجمالي الكمية في السلة لهذه المادة لا يمكن أن يتجاوز ${V8_MAX_SAFE_QTY} قطعة`, "error");
+          return;
+        }
+
+        const currentStock = sanitize(item.stock);
+        if (alreadyInCart + qty > currentStock) {
+          showToast(`تنبيه: الكمية المطلوبة (${alreadyInCart + qty}) تتجاوز رصيد المخزن الحالي (${currentStock})، وتمت الإضافة بنجاح للمتابعة`, "warning");
+        }
+
+        const cleanNotes = (notesInput?.value || "").replace(/\s+/g, " ").trim().slice(0, 300);
+        if (existingInCart) {
+          existingInCart.qty = alreadyInCart + qty;
+          if (cleanNotes) {
+            existingInCart.notes = existingInCart.notes ? `${existingInCart.notes} / ${cleanNotes}` : cleanNotes;
+          }
+        } else {
+          state.cart.push({
+            id: item.id,
+            name: item.name,
+            category: item.category,
+            qty: qty,
+            notes: cleanNotes
+          });
+        }
+
+        if (notesInput) notesInput.value = "";
+        if (qtyInput) qtyInput.value = 1;
+        renderCartTable();
+        showCenterToast(`✓ تمت إضافة ${qty} قطعة من "${formatItemDisplayText(item)}" إلى السلة بنجاح`);
+      };
+      window.addItemToCart = addItemToCart;
+
+      addItemToOrderCart = function() {
+        const itemSelect = document.getElementById("order-item-id-select");
+        const qtyInput = document.getElementById("order-item-qty-input");
+        if (!itemSelect || !itemSelect.value) {
+          showToast("يرجى اختيار مادة أولاً", "warning");
+          return;
+        }
+        const qCheck = validateAndSanitizeQty(qtyInput ? qtyInput.value : 1, V8_MAX_SAFE_QTY);
+        if (!qCheck.valid) {
+          showToast(
+            qCheck.reason === "exceeds_max"
+              ? `الكمية تتجاوز الحد الأقصى المسموح به (${V8_MAX_SAFE_QTY})`
+              : "يرجى إدخال كمية صحيحة أكبر من الصفر",
+            "warning"
+          );
+          return;
+        }
+        const qty = qCheck.value;
+        const item = (state.data.items || []).find(i => i && i.id === itemSelect.value);
+        if (!item) return;
+
+        if (!state.orderFormItems) state.orderFormItems = [];
+        const existing = state.orderFormItems.find(i => i.id === item.id);
+        if (existing) {
+          if (sanitize(existing.qty) + qty > V8_MAX_SAFE_QTY) {
+            showToast(`تجاوز الحد الأقصى المسموح به (${V8_MAX_SAFE_QTY})`, "error");
+            return;
+          }
+          existing.qty = sanitize(existing.qty) + qty;
+        } else {
+          state.orderFormItems.push({
+            id: item.id,
+            name: item.name,
+            category: item.category,
+            qty: qty
+          });
+        }
+        if (qtyInput) qtyInput.value = 1;
+        renderOrderItemsPreview();
+        showToast(`تمت إضافة ${qty} قطعة من "${formatItemDisplayText(item)}" إلى الطلبية`, "info");
+      };
+      window.addItemToOrderCart = addItemToOrderCart;
+
+      // 4.3 الدقة المحاسبية الصارمة للمخزون عند استرجاع/حذف/تعديل الإشهادات (Exact actualDeducted Accounting)
+      restoreVoucherItemsToStock = function(voucher) {
+        if (!voucher || !Array.isArray(voucher.items)) return 0;
+        let restoredUnits = 0;
+        voucher.items.forEach(it => {
+          if (!it) return;
+          const stockItem = (state.data.items || []).find(i => i && (i.id === it.id || i.name === it.name));
+          if (stockItem) {
+            // إذا كان الحقل actualDeducted مسجلاً (حتى لو كان 0 بسبب إصدار الإشهاد على رصيد صفري)، نعيد بالضبط ما خُصم فعلياً فقط!
+            const hasRecordedActual = (it.actualDeducted !== undefined && it.actualDeducted !== null && it.actualDeducted !== "");
+            const qtyToRestore = hasRecordedActual
+              ? Math.max(0, sanitize(it.actualDeducted))
+              : Math.max(1, sanitize(it.qty));
+            stockItem.stock = Math.max(0, sanitize(stockItem.stock) + qtyToRestore);
+            restoredUnits += qtyToRestore;
+          }
+        });
+        return restoredUnits;
+      };
+      window.restoreVoucherItemsToStock = restoreVoucherItemsToStock;
+
+      deleteVoucher = function(id) {
+        const voucher = (state.data.transactions || []).find(t => t && t.id === id);
+        if (!voucher) {
+          if (Array.isArray(window._lastPrintBasketVouchers)) {
+            window._lastPrintBasketVouchers = window._lastPrintBasketVouchers.filter(v => v.id !== id);
+          }
+          const container = document.getElementById("bulk-generated-certificates-container");
+          if (container) {
+            container.querySelectorAll("tr").forEach(tr => {
+              if (tr.innerHTML.includes(id)) tr.remove();
+            });
+          }
+          return;
+        }
+
+        const totalUnits = (voucher.items || []).reduce((s, i) => s + sanitize(i.qty), 0);
+        const itemsSummary = (voucher.items || []).map(i => `${escapeHtml(formatItemDisplayText(i))} (<strong>${sanitize(i.qty)}</strong>)`).join(" ، ");
+        const descHtml = `
+          <div><strong>رقم الإشهاد:</strong> <span class="tabular-nums">${escapeHtml(voucher.id)}</span></div>
+          <div><strong>المستفيد:</strong> ${escapeHtml(voucher.recipient)} — ${escapeHtml(voucher.destination)}</div>
+          <div><strong>المواد المسحوبة (${totalUnits} قطعة):</strong> ${itemsSummary}</div>
+        `;
+
+        openDeleteStockChoiceModal(
+          "حذف الإشهاد وخيار إعادة المواد للمخزون",
+          descHtml,
+          (shouldRestock) => {
+            if (!acquireActionIdempotencyLock("deleteVoucher_" + id, 500)) return;
+            let restored = 0;
+            if (shouldRestock) {
+              restored = restoreVoucherItemsToStock(voucher);
+            }
+            voucher._restockedOnDelete = Boolean(shouldRestock);
+            voucher._restoredUnitsCount = restored;
+
+            moveRecordToSoftTrash("voucher", voucher, `إشهاد ${voucher.id} — ${voucher.recipient} (${voucher.destination})`);
+            state.data.transactions = (state.data.transactions || []).filter(t => t && t.id !== id);
+            state.selectedVouchersForPrint.delete(id);
+
+            if (Array.isArray(state.data.bulkBatches)) {
+              state.data.bulkBatches.forEach(b => {
+                if (Array.isArray(b.voucherIds) && b.voucherIds.includes(id)) {
+                  b.voucherIds = b.voucherIds.filter(vid => vid !== id);
+                  b.certificatesCount = b.voucherIds.length;
+                  const remVouchers = (state.data.transactions || []).filter(t => b.voucherIds.includes(t.id));
+                  b.totalUnits = remVouchers.reduce((s, v) => s + (v.items || []).reduce((a, i) => a + sanitize(i.qty), 0), 0);
+                }
+              });
+              state.data.bulkBatches = state.data.bulkBatches.filter(b => (b.certificatesCount || 0) > 0);
+            }
+
+            if (Array.isArray(window._lastPrintBasketVouchers)) {
+              window._lastPrintBasketVouchers = window._lastPrintBasketVouchers.filter(v => v.id !== id);
+              if (window._lastPrintBasketRecord) {
+                window._lastPrintBasketRecord.certificatesCount = window._lastPrintBasketVouchers.length;
+                if (window._lastPrintBasketVouchers.length > 0) {
+                  renderLastCommittedBatchCertificates(window._lastPrintBasketRecord, window._lastPrintBasketVouchers);
+                } else {
+                  clearBulkStep3DisplayedCertificates(true);
+                }
+              }
+            }
+
+            persistAll(true);
+            renderHistoryTable();
+            renderInventoryTable();
+            if (typeof renderBulkBatchesHistory === "function") renderBulkBatchesHistory();
+            refreshAllBadges();
+
+            if (shouldRestock) {
+              showToast(`تم حذف الإشهاد (${id}) وإعادة (${restored}) قطعة مخصومة فعلياً إلى رصيد المخزون ✓`, "success");
+            } else {
+              showToast(`تم حذف الإشهاد (${id}) دون تعديل رصيد المخزون ✓`, "info");
+            }
+          }
+        );
+      };
+      window.deleteVoucher = deleteVoucher;
+
+      restoreFromTrash = function(trashId) {
+        if (!acquireActionIdempotencyLock("restoreTrash_" + trashId, 500)) return;
+        ensureTrashAndNotificationsArrays();
+        const idx = state.data.trash.findIndex(t => t && t.trashId === trashId);
+        if (idx === -1) return;
+
+        const entry = state.data.trash[idx];
+        const payload = JSON.parse(JSON.stringify(entry.payload || {}));
+        payload.isDeleted = false;
+        delete payload.deletedAt;
+
+        if (entry.type === "item") {
+          if (Array.isArray(state.data._deletedItemIds)) {
+            state.data._deletedItemIds = state.data._deletedItemIds.filter(id => id !== payload.id);
+          }
+          if (!state.data.items.some(i => i.id === payload.id)) {
+            state.data.items.unshift(payload);
+          } else {
+            const existing = state.data.items.find(i => i.id === payload.id);
+            if (existing) existing.isDeleted = false;
+          }
+        } else if (entry.type === "voucher") {
+          // لا نعيد خصم الكميات من المخزون إلا إذا كانت قد أُعيدت للمخزون فعلياً عند الحذف (_restockedOnDelete !== false)
+          const wasRestockedOnDelete = payload._restockedOnDelete !== false;
+          if (wasRestockedOnDelete) {
+            for (const vIt of (payload.items || [])) {
+              const stItem = state.data.items.find(i => i && (i.id === vIt.id || i.name === vIt.name));
+              if (stItem) {
+                const curStock = Math.max(0, sanitize(stItem.stock));
+                const reqQty = Math.max(1, sanitize(vIt.qty));
+                const targetDeduct = (vIt.actualDeducted !== undefined && vIt.actualDeducted !== null)
+                  ? Math.min(curStock, Math.max(0, sanitize(vIt.actualDeducted)))
+                  : Math.min(curStock, reqQty);
+                vIt.actualDeducted = targetDeduct;
+                stItem.stock = Math.max(0, curStock - targetDeduct);
+              }
+            }
+          }
+          delete payload._restockedOnDelete;
+          delete payload._restoredUnitsCount;
+          if (!state.data.transactions.some(t => t.id === payload.id)) {
+            state.data.transactions.unshift(payload);
+            sortTransactionsByDeliveryDateDesc(state.data.transactions);
+          }
+        } else if (entry.type === "order") {
+          if (!state.data.orders.some(o => o.id === payload.id)) {
+            state.data.orders.unshift(payload);
+          }
+        }
+
+        state.data.trash.splice(idx, 1);
+        logSystemNotification(
+          `↩️ تم استرجاع سجل من الحذف المؤقت: ${entry.title}`,
+          `تمت إعادة تفعيل السجل (${entry.originalId}) وإرجاعه إلى القوائم النشطة بنجاح.`,
+          "success",
+          "trash"
+        );
+        persistAll(true);
+        refreshAllBadges();
+        renderTrashView();
+        renderInventoryTable();
+        renderHistoryTable();
+        renderOrdersList();
+        showToast("تم استرجاع السجل من مركز الحذف المؤقت بنجاح ✓", "success");
+      };
+      window.restoreFromTrash = restoreFromTrash;
+
+      saveEditedVoucher = function() {
+        if (!state.editingVoucherState) return;
+        const vId = state.editingVoucherState.id;
+        if (!acquireActionIdempotencyLock("saveEditedVoucher_" + vId, 600)) return;
+
+        const origVoucher = (state.data.transactions || []).find(t => t && t.id === vId);
+        if (!origVoucher) return;
+
+        if (!Array.isArray(state.editingVoucherState.items) || state.editingVoucherState.items.length === 0) {
+          showToast("يجب أن يحتوي الإشهاد على مادة واحدة على الأقل!", "warning");
+          return;
+        }
+
+        for (const it of state.editingVoucherState.items) {
+          const qCheck = validateAndSanitizeQty(it.qty, V8_MAX_SAFE_QTY);
+          if (!qCheck.valid) {
+            showToast(`كمية غير صالحة للمادة "${it.name || ""}"!`, "error");
+            return;
+          }
+          it.qty = qCheck.value;
+        }
+
+        const dateRaw = document.getElementById("edit-voucher-date")?.value || origVoucher.isoDate;
+        const dateCheck = validateAndSanitizeISODate(dateRaw, true);
+        if (!dateCheck.valid) {
+          showToast("تاريخ الإشهاد المدخل غير صالح!", "warning");
+          return;
+        }
+
+        // 1. استرجاع الكمية المخصومة فعلياً في الإشهاد الأصلي قبل إعادة الاحتساب
+        (origVoucher.items || []).forEach(origIt => {
+          if (!origIt) return;
+          const stockItem = (state.data.items || []).find(i => i && (i.id === origIt.id || i.name === origIt.name));
+          if (stockItem) {
+            const hasActual = (origIt.actualDeducted !== undefined && origIt.actualDeducted !== null && origIt.actualDeducted !== "");
+            const prevDeducted = hasActual ? Math.max(0, sanitize(origIt.actualDeducted)) : Math.max(1, sanitize(origIt.qty));
+            stockItem.stock = Math.max(0, sanitize(stockItem.stock) + prevDeducted);
+          }
+        });
+
+        // 2. خصم الكميات الجديدة وتسجيل actualDeducted بدقة
+        let hasShortage = false;
+        state.editingVoucherState.items.forEach(newIt => {
+          const stockItem = (state.data.items || []).find(i => i && (i.id === newIt.id || i.name === newIt.name));
+          const reqQty = Math.max(1, sanitize(newIt.qty));
+          if (stockItem) {
+            const curStock = Math.max(0, sanitize(stockItem.stock));
+            if (curStock < reqQty) hasShortage = true;
+            const actualDed = Math.min(curStock, reqQty);
+            newIt.actualDeducted = actualDed;
+            stockItem.stock = Math.max(0, curStock - reqQty);
+          } else {
+            hasShortage = true;
+            newIt.actualDeducted = 0;
+          }
+        });
+
+        if (hasShortage) {
+          showToast("تنبيه: تم حفظ تعديل الإشهاد مع وجود مواد برصيد غير كافٍ أو صفري بالمخزن", "warning");
+        }
+
+        origVoucher.isoDate = dateCheck.value;
+        origVoucher.destination = document.getElementById("edit-voucher-dest")?.value || origVoucher.destination;
+        origVoucher.recipient = (document.getElementById("edit-voucher-recipient")?.value || origVoucher.recipient || "").trim();
+        origVoucher.reason = document.getElementById("edit-voucher-reason")?.value || origVoucher.reason;
+        origVoucher.items = JSON.parse(JSON.stringify(state.editingVoucherState.items));
+
+        sortTransactionsByDeliveryDateDesc(state.data.transactions);
+        persistAll(true);
+        closeEditVoucherModal();
+        renderHistoryTable();
+        renderInventoryTable();
+        refreshAllBadges();
+        showToast(`تم حفظ التعديلات على الإشهاد (${origVoucher.id}) وتحديث المخزون بدقة ✓`, "success");
+      };
+      window.saveEditedVoucher = saveEditedVoucher;
+
+      // 4.4 دورة حياة الطلبيات المتكاملة (إنشاء ← قيد المعالجة ← تنفيذ جزئي أو كلي ← أرشفة) مع حفظ أصل الطلبية
+      saveNewOrder = function() {
+        const dateVal = document.getElementById("order-form-date")?.value || "";
+        const destVal = document.getElementById("order-form-dest")?.value || "";
+        const reqSelectVal = document.getElementById("order-form-requester")?.value || "";
+        let reqVal = reqSelectVal.trim();
+        if (reqSelectVal === "__custom__") {
+          reqVal = (document.getElementById("order-custom-requester-input")?.value || "").trim();
+        }
+        const notesVal = (document.getElementById("order-form-notes")?.value || "").trim().slice(0, 400);
+
+        const dCheck = validateAndSanitizeISODate(dateVal, false);
+        if (!dCheck.valid) {
+          showToast("يرجى تحديد تاريخ صحيح للطلبية (YYYY-MM-DD)", "warning");
+          return;
+        }
+        if (!destVal) {
+          showToast("يرجى تحديد الجهة الطالبة", "warning");
+          return;
+        }
+        if (!reqVal) {
+          showToast("يرجى اختيار صاحب الطلب / المستلم التابع للجهة المحددة", "warning");
+          return;
+        }
+        if (!isRecipientValidForDestination(destVal, reqVal)) {
+          showToast("لا يمكن حفظ الطلب: المستلم المحدد غير مسجل ضمن المستفيدين التابعين للجهة المختارة!", "error");
+          return;
+        }
+        if (!state.orderFormItems || state.orderFormItems.length === 0) {
+          showToast("يرجى إضافة مادة واحدة على الأقل للطلبية", "warning");
+          return;
+        }
+
+        const fp = `${dCheck.value}|${destVal}|${reqVal}|${state.orderFormItems.map(i => i.id + ":" + i.qty).join(",")}`;
+        if (!acquireActionIdempotencyLock("saveNewOrder", 700, fp)) return;
+
+        let ordId = `ORD-${dCheck.value.slice(0, 4)}-${String(Math.floor(100 + Math.random() * 900))}`;
+        while ((state.data.orders || []).some(o => o && o.id === ordId)) {
+          ordId = `ORD-${dCheck.value.slice(0, 4)}-${String(Math.floor(100 + Math.random() * 900))}`;
+        }
+
+        const cleanItems = state.orderFormItems.map(i => ({
+          id: i.id,
+          name: i.name,
+          category: i.category,
+          qty: Math.max(1, Math.min(V8_MAX_SAFE_QTY, sanitize(i.qty)))
+        }));
+
+        const newOrder = {
+          id: ordId,
+          date: dCheck.value,
+          destination: resolveCanonicalDestination(destVal),
+          requester: reqVal,
+          notes: notesVal,
+          status: "pending",
+          fulfillmentStatus: "قيد المعالجة",
+          items: JSON.parse(JSON.stringify(cleanItems)),
+          originalItems: JSON.parse(JSON.stringify(cleanItems)),
+          deliveryHistory: []
+        };
+
+        if (!state.data.orders) state.data.orders = [];
+        state.data.orders.unshift(newOrder);
+        persistAll(true);
+
+        state.orderFormItems = [];
+        const dEl = document.getElementById("order-form-dest");
+        if (dEl) dEl.value = "";
+        onOrderDestChanged();
+        const nEl = document.getElementById("order-form-notes");
+        if (nEl) nEl.value = "";
+        toggleNewOrderPanel(false);
+
+        renderOrdersList();
+        refreshAllBadges();
+        if (typeof renderRecentOrders === "function") renderRecentOrders();
+        showToast(`تم تسجيل الطلبية رقم ${newOrder.id} بنجاح دون خصم من المخزون`, "success");
+      };
+      window.saveNewOrder = saveNewOrder;
+
+      // ترقية submitIssuance بمانع التكرار الصارم + دعم التنفيذ الجزئي والكلي للطلبيات المحولة
+      submitIssuance = function(andPrint = false) {
+        if (_isSubmittingIssuance) return;
+
+        const dateRaw = document.getElementById("voucher-date-input")?.value || "";
+        const dateCheck = validateAndSanitizeISODate(dateRaw, true);
+        if (!dateCheck.valid) {
+          showToast("تاريخ التسليم المدخل غير صالح! يرجى التحقق من التاريخ.", "warning");
+          return;
+        }
+        const dateVal = dateCheck.value;
+        const destVal = (document.getElementById("voucher-dest-select")?.value || "").trim();
+        const recipSelectVal = document.getElementById("voucher-recipient-select")?.value || "";
+        let recipVal = recipSelectVal;
+        if (recipSelectVal === "__custom__") {
+          recipVal = (document.getElementById("custom-recipient-input")?.value || "").trim();
+        }
+
+        if (!destVal) {
+          showToast("يرجى تحديد الجهة المستفيدة أولاً", "warning");
+          return;
+        }
+        if (!recipVal) {
+          showToast("يرجى اختيار أو كتابة اسم المستلم", "warning");
+          return;
+        }
+        if (recipSelectVal !== "__custom__" && !isRecipientValidForDestination(destVal, recipVal)) {
+          showToast("المستلم المختار لا ينتمي للجهة المحددة! يرجى اختيار مستلم تابع للجهة.", "error");
+          return;
+        }
+        if (!Array.isArray(state.cart) || state.cart.length === 0) {
+          showToast("لا يمكن إصدار إشهاد بسلة فارغة! أضف مادة واحدة على الأقل", "warning");
+          return;
+        }
+
+        for (const cIt of state.cart) {
+          const qCheck = validateAndSanitizeQty(cIt.qty, V8_MAX_SAFE_QTY);
+          if (!qCheck.valid) {
+            showToast(`الكمية المدخلة للمادة "${cIt.name || ""}" غير صالحة!`, "error");
+            return;
+          }
+          cIt.qty = qCheck.value;
+        }
+
+        if (state.pendingConvertedOrderId && state.data.orders) {
+          const ordCheck = state.data.orders.find(o => o && o.id === state.pendingConvertedOrderId);
+          if (ordCheck && isOrderInArchiveState(ordCheck)) {
+            showToast("تم تحويل هذه الطلبية واعتمادها بالكامل مسبقاً ولا يمكن خصمها مرتين!", "error");
+            state.pendingConvertedOrderId = null;
+            return;
+          }
+        }
+
+        const cartFp = `${dateVal}|${destVal}|${recipVal}|${state.cart.map(c => c.id + ":" + c.qty).join(",")}`;
+        if (!acquireActionIdempotencyLock("submitIssuance", 750, cartFp)) {
+          return;
+        }
+
+        const preCommitSnapshot = {
+          type: "single_issuance",
+          items: JSON.parse(JSON.stringify(state.data.items || [])),
+          transactions: JSON.parse(JSON.stringify(state.data.transactions || [])),
+          orders: JSON.parse(JSON.stringify(state.data.orders || [])),
+          bulkBatches: JSON.parse(JSON.stringify(state.data.bulkBatches || [])),
+          cart: JSON.parse(JSON.stringify(state.cart || [])),
+          pendingConvertedOrderId: state.pendingConvertedOrderId,
+          pendingConvertedOrderIds: [...(state.pendingConvertedOrderIds || [])]
+        };
+
+        _isSubmittingIssuance = true;
+        try {
+          const zeroStockItems = [];
+          state.cart.forEach(cartItem => {
+            const stockItem = (state.data.items || []).find(i => i && i.id === cartItem.id);
+            const curStock = stockItem ? Math.max(0, sanitize(stockItem.stock)) : 0;
+            const reqQty = Math.max(1, sanitize(cartItem.qty));
+            cartItem.actualDeducted = Math.min(curStock, reqQty);
+            if (curStock <= 0) {
+              zeroStockItems.push(`${cartItem.name} (الرصيد: 0)`);
+            } else if (curStock < reqQty) {
+              zeroStockItems.push(`${cartItem.name} (المتوفر: ${curStock} من أصل ${reqQty})`);
+            }
+            if (stockItem) {
+              stockItem.stock = Math.max(0, curStock - reqQty);
+            }
+          });
+
+          if (zeroStockItems.length > 0) {
+            showToast(`تنبيه: الرصيد بالمخزن فارغ أو غير كافٍ لـ [${zeroStockItems.join(" ، ")}] — تم تمرير العملية وتوثيقها`, "warning");
+          }
+
+          let voucherId = (document.getElementById("voucher-num-input")?.value || "").trim() || generateNextVoucherNumber();
+          if ((state.data.transactions || []).some(t => t && t.id === voucherId)) {
+            voucherId = generateNextVoucherNumber();
+          }
+          const reasonVal = document.getElementById("voucher-reason-select")?.value || "بناءً على طلب";
+          const channelVal = document.getElementById("voucher-channel-select")?.value || "كتاب";
+          let statusVal = document.getElementById("voucher-status-select")?.value || "استجابة كلية";
+          const orderRefVal = (document.getElementById("voucher-order-ref")?.value || "").trim();
+
+          // فحص الطلبات المحولة: هل تم تسليمها كلياً أم جزئياً؟
+          const idsToConvert = new Set([
+            ...(Array.isArray(state.pendingConvertedOrderIds) ? state.pendingConvertedOrderIds : []),
+            ...(state.pendingConvertedOrderId ? [state.pendingConvertedOrderId] : [])
+          ]);
+
+          let anyPartialOrder = false;
+          if (idsToConvert.size > 0 && Array.isArray(state.data.orders)) {
+            const deliveredPoolByItem = {};
+            state.cart.forEach(c => {
+              deliveredPoolByItem[c.id] = (deliveredPoolByItem[c.id] || 0) + sanitize(c.qty);
+            });
+
+            state.data.orders.forEach(o => {
+              if (!o || !idsToConvert.has(o.id)) return;
+              if (!Array.isArray(o.originalItems) || o.originalItems.length === 0) {
+                o.originalItems = JSON.parse(JSON.stringify(o.items || []));
+              }
+              if (!Array.isArray(o.deliveryHistory)) o.deliveryHistory = [];
+
+              const remainingItems = [];
+              const deliveredInThisRun = [];
+
+              (o.items || []).forEach(ordIt => {
+                const reqQ = Math.max(1, sanitize(ordIt.qty));
+                const availDeliv = deliveredPoolByItem[ordIt.id] || 0;
+                const fulfilledNow = Math.min(reqQ, availDeliv);
+                deliveredPoolByItem[ordIt.id] = Math.max(0, availDeliv - fulfilledNow);
+                const remQ = Math.max(0, reqQ - fulfilledNow);
+
+                if (fulfilledNow > 0) {
+                  deliveredInThisRun.push({ id: ordIt.id, name: ordIt.name, category: ordIt.category, qty: fulfilledNow });
+                }
+                if (remQ > 0) {
+                  remainingItems.push({ ...ordIt, qty: remQ });
+                }
+              });
+
+              o.deliveryHistory.push({
+                voucherId: voucherId,
+                date: dateVal,
+                deliveredItems: deliveredInThisRun
+              });
+
+              if (remainingItems.length === 0) {
+                // تنفيذ كلي للطلبية: تحول للأرشيف مع الاحتفاظ ببيان المواد الأصلية للعرض المرجعي
+                o.status = "converted";
+                o.fulfillmentStatus = "استجابة كلية";
+                o.convertedVoucherId = voucherId;
+                o.convertedDate = new Date().toLocaleDateString("ar-MA");
+                o.items = JSON.parse(JSON.stringify(o.originalItems));
+              } else {
+                // تنفيذ جزئي: تبقى الطلبية مفتوحة بالكميات المتبقية فقط دون إفساد سجل الطلبية الأصلية!
+                anyPartialOrder = true;
+                o.status = "pending";
+                o.fulfillmentStatus = "تنفيذ جزئي";
+                o.lastPartialVoucherId = voucherId;
+                o.items = remainingItems;
+              }
+            });
+
+            state.pendingConvertedOrderId = null;
+            state.pendingConvertedOrderIds = [];
+          }
+
+          if (anyPartialOrder && statusVal === "استجابة كلية") {
+            statusVal = "استجابة جزئية";
+          }
+
+          const newVoucher = {
+            id: voucherId,
+            operationId: voucherId,
+            date: new Date().toLocaleString("ar-MA"),
+            isoDate: dateVal,
+            destination: destVal,
+            recipient: recipVal,
+            reason: reasonVal,
+            channel: channelVal,
+            status: statusVal,
+            orderRef: orderRefVal,
+            items: JSON.parse(JSON.stringify(state.cart))
+          };
+          newVoucher.secretCode = generateCertSecretCode(newVoucher);
+          state.data.transactions.unshift(newVoucher);
+          sortTransactionsByDeliveryDateDesc(state.data.transactions);
+
+          if (typeof logSystemNotification === "function") {
+            logSystemNotification(
+              `إصدار إشهاد تسليم جديد (${voucherId})`,
+              `المستفيد: ${recipVal} — الجهة: ${destVal} (${state.cart.length} بنود).`,
+              "info",
+              "issuance"
+            );
+          }
+          if (typeof scanLowStockNotifications === "function") {
+            scanLowStockNotifications(false);
+          }
+
+          clearIssuanceSessionDraft();
+          persistAll(true);
+          showToast(
+            anyPartialOrder
+              ? `تم إصدار الإشهاد (${voucherId}) كتنفيذ جزئي وحفظ الباقي في الطلبية المفتوحة ✓`
+              : "تم حفظ إشهاد التسليم وخصم المواد من المخزون بنجاح ✓",
+            "success"
+          );
+          triggerGracefulUndoBar(`تم إصدار الإشهاد (${voucherId}) للمستفيد ${recipVal}`, preCommitSnapshot);
+
+          if (typeof renderOrdersList === "function") renderOrdersList();
+          if (typeof renderHistoryTable === "function") renderHistoryTable();
+          if (typeof updateDashboardDualCardsMetrics === "function") updateDashboardDualCardsMetrics();
+          if (typeof renderRecentTransactions === "function") renderRecentTransactions();
+          if (typeof renderRecentOrders === "function") renderRecentOrders();
+
+          if (andPrint) {
+            printCertificate(voucherId);
+          }
+
+          _doResetIssuanceForm();
+          refreshAllBadges();
+          return newVoucher;
+        } finally {
+          _isSubmittingIssuance = false;
+          releaseActionIdempotencyLock("submitIssuance", 350);
+        }
+      };
+      window.submitIssuance = submitIssuance;
+
+      // تحسين عرض جدول الطلبيات ليوضح حالة التنفيذ الجزئي والرصيد المتبقي والأصلي بوضوح
+      const _v79RenderOrdersList = renderOrdersList;
+      renderOrdersList = function() {
+        _v79RenderOrdersList();
+        const tbody = document.getElementById("orders-table-body");
+        if (!tbody) return;
+        const orders = (state.data.orders || []).filter(o => o && !o.isDeleted);
+        tbody.querySelectorAll("tr").forEach(tr => {
+          const firstStrong = tr.querySelector("td strong.tabular-nums");
+          if (!firstStrong) return;
+          const ordId = firstStrong.textContent.trim();
+          const ord = orders.find(o => o.id === ordId);
+          if (ord && ord.fulfillmentStatus === "تنفيذ جزئي" && !isOrderInArchiveState(ord)) {
+            const statusTd = tr.children[6];
+            if (statusTd) {
+              const remUnits = (ord.items || []).reduce((s, it) => s + sanitize(it.qty), 0);
+              const origUnits = (ord.originalItems || ord.items || []).reduce((s, it) => s + sanitize(it.qty), 0);
+              statusTd.innerHTML = `
+                <span class="badge" style="background:rgba(59,130,246,0.15);color:#3b82f6;border:1px solid rgba(59,130,246,0.4);font-weight:800;">
+                  تنفيذ جزئي (متبقي ${remUnits} من ${origUnits})
+                </span>
+              `;
+            }
+          }
+        });
+      };
+      window.renderOrdersList = renderOrdersList;
+
+      // 4.5 استقلالية نسب المرحلة 1 (المخزون الإجمالي) والمرحلة 2 (حصص الجهات) + طريقة الباقي الأكبر (Largest Remainder Method)
+      applyStagedItemPercentage = function(itemId, pct) {
+        if (!bulkDistState.stagedItems) bulkDistState.stagedItems = {};
+        if (!bulkDistState.stagedItems[itemId]) {
+          bulkDistState.stagedItems[itemId] = { baseQty: 0, finalQty: 0, pct: 100 };
+        }
+        const st = bulkDistState.stagedItems[itemId];
+        const inputEl = document.getElementById(`staged-qty-input-${itemId}`);
+        const stockItem = (state.data.items || []).find(i => i && i.id === itemId);
+        const warehouseStock = stockItem ? Math.max(0, sanitize(stockItem.stock)) : 0;
+
+        let base = parseInt(st.baseQty, 10) || 0;
+        if (base <= 0 && inputEl) {
+          const cur = parseInt(inputEl.value, 10) || 0;
+          if (cur > 0) {
+            base = cur;
+            st.baseQty = base;
+          }
+        }
+        // إذا لم يدخل المستخدم كمية مخصصة بعد، نعتمد رصيد المخزون الإجمالي للمادة في المرحلة الأولى تلقائياً
+        if (base <= 0 && warehouseStock > 0) {
+          base = warehouseStock;
+          st.baseQty = base;
+        }
+        if (base <= 0) {
+          showToast("يرجى إدخال الكمية الأساسية المراد توزيعها أولاً (أكبر من 0) لاحتساب النسبة المئوية منها", "warning");
+          if (inputEl) inputEl.focus();
+          return;
+        }
+
+        const safePct = Math.max(1, Math.min(100, Number(pct) || 100));
+        const calculated = Math.min(base, Math.max(1, Math.round(base * (safePct / 100))));
+        st.finalQty = calculated;
+        st.pct = safePct;
+        if (inputEl) {
+          inputEl.value = String(calculated);
+          inputEl.setAttribute("value", String(calculated));
+        }
+        const badge = document.getElementById(`staged-base-badge-${itemId}`);
+        if (badge) badge.textContent = `المرجع بالمرحلة 1: ${base} (${safePct}% = ${calculated})`;
+        showToast(`المرحلة 1: تم تخصيص ${safePct}% (${calculated} من أصل ${base} قطعة) للسحب للتوزيع`, "info");
+      };
+      window.applyStagedItemPercentage = applyStagedItemPercentage;
+
+      // خوارزمية الباقي الأكبر (Hamilton / Largest Remainder Method) لتوزيع أي كمية (poolQty) وفق أوزان أو نسب مئوية
+      // دون ضياع أي وحدة أو خلق أي وحدة زائدة (المجموع يساوي poolQty بالضبط 100%)
+      function allocateByLargestRemainder(poolQty, weightsArray) {
+        const totalPool = Math.max(0, Math.floor(Number(poolQty) || 0));
+        const count = Array.isArray(weightsArray) ? weightsArray.length : 0;
+        if (count === 0) return [];
+        if (totalPool === 0) return new Array(count).fill(0);
+
+        const cleanWeights = weightsArray.map(w => Math.max(0, Number(w) || 0));
+        const weightSum = cleanWeights.reduce((a, b) => a + b, 0);
+        if (weightSum <= 0) {
+          const base = Math.floor(totalPool / count);
+          const rem = totalPool % count;
+          return cleanWeights.map((_, idx) => base + (idx < rem ? 1 : 0));
+        }
+
+        const exactQuotas = cleanWeights.map(w => (totalPool * w) / weightSum);
+        const floors = exactQuotas.map(q => Math.floor(q));
+        let remainderUnits = totalPool - floors.reduce((a, b) => a + b, 0);
+
+        const orderIndices = exactQuotas
+          .map((q, idx) => ({ idx, frac: q - floors[idx], weight: cleanWeights[idx] }))
+          .sort((a, b) => {
+            if (Math.abs(b.frac - a.frac) > 1e-9) return b.frac - a.frac;
+            if (b.weight !== a.weight) return b.weight - a.weight;
+            return a.idx - b.idx;
+          });
+
+        for (let i = 0; i < remainderUnits && i < orderIndices.length; i++) {
+          floors[orderIndices[i].idx] += 1;
+        }
+        return floors;
+      }
+      window.allocateByLargestRemainder = allocateByLargestRemainder;
+
+      // توزيع مادة في المرحلة 2 بين الجهات المفعلة حسب نسب مئوية أو أوزان استهلاك تاريخية (مستقلة تماماً عن نسبة المرحلة 1)
+      function distributeSingleItemByPercentages(itemId, customWeightsOrPcts = null) {
+        const poolEntry = (bulkDistState.pool || []).find(p => p.itemId === itemId);
+        if (!poolEntry) return [];
+        const activeRows = (bulkDistState.rows || []).filter(r => r.enabled);
+        if (!activeRows.length) {
+          showToast("يرجى تفعيل جهة مستفيدة واحدة على الأقل في المرحلة 2", "warning");
+          return [];
+        }
+
+        const weights = Array.isArray(customWeightsOrPcts) && customWeightsOrPcts.length === activeRows.length
+          ? customWeightsOrPcts
+          : activeRows.map(r => {
+              const hist = getBeneficiaryHistoricalAvgForItem(r.destName, r.recipientName, itemId);
+              return hist > 0 ? hist : 1;
+            });
+
+        const allocations = allocateByLargestRemainder(poolEntry.qty, weights);
+        activeRows.forEach((r, idx) => {
+          r.allocations[itemId] = allocations[idx];
+        });
+
+        renderBulkAllocationMatrix();
+        renderBulkPoolBasket();
+        updateBulkLiveMonitor();
+        renderBulkPrecommitReviewTable();
+        saveBulkDistributionDraft();
+        return allocations;
+      }
+      window.distributeSingleItemByPercentages = distributeSingleItemByPercentages;
+
+      // تخصيص نسبة مئوية في المرحلة 2 لجهة معينة من الكمية المخصصة للتوزيع (poolEntry.qty) مع عدم تجاوز الباقي المتاح
+      function allocateStage2PercentageToRow(rowId, itemId, pctOfStage1Pool) {
+        const row = (bulkDistState.rows || []).find(r => r.rowId === rowId);
+        const poolEntry = (bulkDistState.pool || []).find(p => p.itemId === itemId);
+        if (!row || !row.enabled || !poolEntry) return 0;
+
+        const safePct = Math.max(0, Math.min(100, Number(pctOfStage1Pool) || 0));
+        const currentVal = parseInt(row.allocations[itemId], 10) || 0;
+        const otherAllocated = getBulkItemAllocatedSum(itemId) - currentVal;
+        const maxAvailableForRow = Math.max(0, poolEntry.qty - otherAllocated);
+        const rawShare = Math.round(poolEntry.qty * (safePct / 100));
+        const finalShare = Math.min(maxAvailableForRow, Math.max(0, rawShare));
+
+        onBulkMatrixCellInput(rowId, itemId, finalShare);
+        return finalShare;
+      }
+      window.allocateStage2PercentageToRow = allocateStage2PercentageToRow;
+
+      // 4.6 صمام أمان النسخ الاحتياطي والاسترجاع (Pre-Restore Schema Validator & Automatic Safety Rollback Snapshot)
+      const PRE_RESTORE_SAFETY_KEY = "E_STOCK_PRE_RESTORE_SAFETY_SNAPSHOT_V8";
+
+      function validateBackupPayloadSchema(importedObj) {
+        const report = {
+          valid: false,
+          errors: [],
+          warnings: [],
+          stats: { categories: 0, items: 0, transactions: 0, orders: 0, audits: 0 }
+        };
+
+        if (!importedObj || typeof importedObj !== "object" || Array.isArray(importedObj)) {
+          report.errors.push("بنية الملف غير صالحة: يجب أن يكون كائن JSON قياسي (Object).");
+          return report;
+        }
+
+        const candidateData = (importedObj.data && typeof importedObj.data === "object" && !Array.isArray(importedObj.data))
+          ? importedObj.data
+          : importedObj;
+
+        const hasItems = Array.isArray(candidateData.items);
+        const hasTxs = Array.isArray(candidateData.transactions);
+        if (!hasItems && !hasTxs) {
+          report.errors.push("الملف يفتقر إلى المصفوفات الجوهرية (items و transactions).");
+          return report;
+        }
+
+        if (hasItems) {
+          const seenItemIds = new Set();
+          candidateData.items.forEach((it, idx) => {
+            if (!it || typeof it !== "object") {
+              report.errors.push(`المادة رقم ${idx + 1} تالفة أو غير صالحة.`);
+              return;
+            }
+            const id = String(it.id || "").trim();
+            const name = String(it.name || it.label || it.designation || "").trim();
+            if (!name) {
+              report.warnings.push(`المادة رقم ${idx + 1} بدون اسم وسيتم تسميتها افتراضياً.`);
+            }
+            if (id && seenItemIds.has(id)) {
+              report.warnings.push(`تكرار معرف المادة (${id}) — سيتم توحيده تلقائياً.`);
+            }
+            if (id) seenItemIds.add(id);
+            const st = Number(it.stock !== undefined ? it.stock : (it.quantity !== undefined ? it.quantity : 0));
+            if (Number.isNaN(st) || st < 0) {
+              report.warnings.push(`رصيد غير صالح للمادة "${name}" (${it.stock}) — سيتم تصحيحه إلى 0.`);
+            }
+          });
+          report.stats.items = candidateData.items.length;
+        }
+
+        if (hasTxs) {
+          const seenTxIds = new Set();
+          candidateData.transactions.forEach((tx, idx) => {
+            if (!tx || typeof tx !== "object") {
+              report.errors.push(`الإشهاد رقم ${idx + 1} في الملف تالف.`);
+              return;
+            }
+            const tid = String(tx.id || tx.operationId || "").trim();
+            if (tid && seenTxIds.has(tid)) {
+              report.warnings.push(`تكرار رقم الإشهاد (${tid}) في الملف.`);
+            }
+            if (tid) seenTxIds.add(tid);
+          });
+          report.stats.transactions = candidateData.transactions.length;
+        }
+
+        report.stats.categories = Array.isArray(candidateData.categories) ? candidateData.categories.length : 0;
+        report.stats.orders = Array.isArray(candidateData.orders) ? candidateData.orders.length : 0;
+        report.stats.audits = Array.isArray(candidateData.auditHistory) ? candidateData.auditHistory.length : 0;
+
+        if (report.stats.items === 0 && report.stats.transactions === 0) {
+          report.errors.push("الملف المستورد فارغ تماماً (0 مادة و 0 إشهاد) — تم رفض الاسترجاع لحماية بياناتك الحالية.");
+          return report;
+        }
+
+        report.valid = report.errors.length === 0;
+        return report;
+      }
+      window.validateBackupPayloadSchema = validateBackupPayloadSchema;
+
+      function createPreRestoreSafetySnapshot(reasonLabel = "قبل استيراد نسخة احتياطية") {
+        try {
+          const snapshot = {
+            savedAt: new Date().toISOString(),
+            reason: reasonLabel,
+            activeUser: getActiveUserEmail(),
+            profile: JSON.parse(JSON.stringify(state.profile || {})),
+            data: JSON.parse(JSON.stringify(state.data || {})),
+            templates: JSON.parse(JSON.stringify(state.templates || []))
+          };
+          const serialized = JSON.stringify(snapshot);
+          localStorage.setItem(PRE_RESTORE_SAFETY_KEY, serialized);
+          localStorage.setItem(STORAGE_KEYS.BACKUP_PRE_MIGRATION, serialized);
+          return true;
+        } catch (err) {
+          console.warn("Safety snapshot warning:", err);
+          return false;
+        }
+      }
+      window.createPreRestoreSafetySnapshot = createPreRestoreSafetySnapshot;
+
+      importDataJSON = function(e) {
+        const file = e && e.target && e.target.files ? e.target.files[0] : null;
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          try {
+            const rawText = evt?.target?.result;
+            if (!rawText || !String(rawText).trim()) {
+              showToast("خطأ: ملف النسخة الاحتياطية فارغ! لم يتم المساس ببياناتك الحالية.", "error");
+              return;
+            }
+
+            let imported;
+            try {
+              imported = JSON.parse(rawText);
+            } catch (parseErr) {
+              showToast("خطأ: ملف JSON تالف أو غير صالح للقراءة! لم يتم المساس ببياناتك الحالية.", "error");
+              return;
+            }
+
+            const validation = validateBackupPayloadSchema(imported);
+            if (!validation.valid) {
+              showToast(`رفض الاستيراد لحماية البيانات: ${validation.errors[0]}`, "error");
+              return;
+            }
+
+            const candidateData = (imported.data && typeof imported.data === "object") ? imported.data : imported;
+            const candidateProfile = (imported.profile && typeof imported.profile === "object") ? imported.profile : state.profile;
+            const normalized = migrateAndNormalizeData(
+              JSON.parse(JSON.stringify(candidateData)),
+              JSON.parse(JSON.stringify(candidateProfile)),
+              !isPrincipalAdminEmail(getActiveUserEmail())
+            );
+
+            const curItemsCount = (state.data.items || []).length;
+            const curTxsCount = (state.data.transactions || []).length;
+            const exportedDateStr = imported.exportedAt ? String(imported.exportedAt).slice(0, 19).replace("T", " ") : "غير محدد";
+            const warnLine = validation.warnings.length > 0
+              ? `\n• ملاحظات الفحص التلقائي: تم تصحيح (${validation.warnings.length}) حقول فرعية تلقائياً.`
+              : "\n• فحص السلامة الهندسية: الملف سليم ومطابق بنسبة 100%.";
+
+            const summaryMsg = `معاينة وفحص النسخة الاحتياطية قبل الاسترجاع:
+• تاريخ تصدير النسخة: ${exportedDateStr}
+• المواد في النسخة: ${normalized.data.items.length} مادة (الحالي بالنظام: ${curItemsCount})
+• إشهادات التسليم في النسخة: ${normalized.data.transactions.length} إشهاد (الحالي بالنظام: ${curTxsCount})
+• الأصناف: ${normalized.data.categories.length} صنف | الطلبيات: ${normalized.data.orders.length} طلبية${warnLine}
+
+🔒 ضمانة الأمان: سيتم تلقائياً حفظ «لقطة أمان وقائية» من بياناتك الحالية في المتصفح قبل الاسترجاع بحيث يمكنك التراجع بضغطة زر واحدة.`;
+
+            openAppConfirmModal(
+              "فحص وتأكيد استيراد النسخة الاحتياطية",
+              summaryMsg,
+              () => {
+                createPreRestoreSafetySnapshot("نسخة وقائية تلقائية قبل استيراد ملف JSON");
+                state.data = normalized.data;
+                state.profile = normalized.profile;
+                if (Array.isArray(imported.templates)) {
+                  state.templates = imported.templates;
+                }
+                persistAll(true);
+                populateUserProfileSettings();
+                populateAboutAppSettings();
+                renderSettingsQuickNotesTable();
+                renderQuickNoteChips();
+                renderBrandingSettings();
+                renderItemShortcutsSettings();
+                refreshAllBadges();
+                switchTab(state.currentTab || "dashboard-view");
+                showToast("✓ تم التحقق من النسخة الاحتياطية واسترجاع البيانات بأمان مع حفظ لقطة التراجع الوقائية", "success");
+              },
+              "اعتماد الاسترجاع الآمن",
+              false
+            );
+          } catch (err) {
+            console.error("Import error:", err);
+            showToast("حدث خطأ غير متوقع أثناء فحص ملف النسخة الاحتياطية. لم تتأثر بياناتك الحالية.", "error");
+          } finally {
+            if (e && e.target) e.target.value = "";
+          }
+        };
+        reader.readAsText(file);
+      };
+      window.importDataJSON = importDataJSON;
+
+      // 4.7 حماية المزامنة السحابية في وضع عدم الاتصال (Offline Queue + Conflict Resolution)
+      function markPendingCloudSync(email, isoTs) {
+        try {
+          const clean = String(email || getActiveUserEmail()).trim().toLowerCase();
+          localStorage.setItem(`E_STOCK_PENDING_CLOUD_SYNC_${clean}`, isoTs || new Date().toISOString());
+        } catch (e) {}
+      }
+
+      function clearPendingCloudSync(email) {
+        try {
+          const clean = String(email || getActiveUserEmail()).trim().toLowerCase();
+          localStorage.removeItem(`E_STOCK_PENDING_CLOUD_SYNC_${clean}`);
+        } catch (e) {}
+      }
+
+      function hasPendingCloudSync(email) {
+        try {
+          const clean = String(email || getActiveUserEmail()).trim().toLowerCase();
+          return Boolean(localStorage.getItem(`E_STOCK_PENDING_CLOUD_SYNC_${clean}`));
+        } catch (e) {
+          return false;
+        }
+      }
+      window.hasPendingCloudSync = hasPendingCloudSync;
+
+      const _v79PersistAll = persistAll;
+      persistAll = function(syncCloud = true) {
+        if (window._isSessionAuthenticated === false) {
+          return;
+        }
+        const activeEmail = getActiveUserEmail();
+        const nowIso = new Date().toISOString();
+        if (state && state.data) {
+          state.data._localUpdatedAt = nowIso;
+          if (state.profile) state.profile._localUpdatedAt = nowIso;
+        }
+        if (syncCloud) {
+          markPendingCloudSync(activeEmail, nowIso);
+        }
+        const res = _v79PersistAll(syncCloud);
+        if (syncCloud) {
+          if (typeof navigator !== "undefined" && navigator.onLine === false) {
+            if (typeof setCloudStatusBadge === "function") {
+              setCloudStatusBadge(false, "وضع عدم الاتصال — التعديلات محفوظة محلياً وبانتظار المزامنة");
+            }
+          } else if (window.__FIREBASE_BRIDGE__ && window.__FIREBASE_BRIDGE__.isReady) {
+            clearPendingCloudSync(activeEmail);
+          }
+        }
+        return res;
+      };
+      window.persistAll = persistAll;
+
+      async function flushPendingOfflineCloudSync() {
+        if (typeof navigator !== "undefined" && navigator.onLine === false) return false;
+        const activeEmail = getActiveUserEmail();
+        if (!hasPendingCloudSync(activeEmail)) return false;
+        if (window.__FIREBASE_BRIDGE__ && typeof window.__FIREBASE_BRIDGE__.pushUserCloudData === "function") {
+          try {
+            await window.__FIREBASE_BRIDGE__.pushUserCloudData(activeEmail, state.data, state.profile, false);
+            clearPendingCloudSync(activeEmail);
+            if (typeof setCloudStatusBadge === "function") {
+              setCloudStatusBadge(true, "تمت مزامنة التعديلات المحلية مع السحابة بنجاح ✓");
+            }
+            return true;
+          } catch (err) {
+            console.warn("Deferred cloud sync retry pending:", err);
+          }
+        }
+        return false;
+      }
+      window.flushPendingOfflineCloudSync = flushPendingOfflineCloudSync;
+
+      window.addEventListener("online", () => {
+        flushPendingOfflineCloudSync();
+      });
+
+      // 4.8 التنظيف الصارم للجلسة والذاكرة عند تسجيل الخروج (Session & Memory Isolation on Logout)
+      const _origLogoutCurrentUser = typeof logoutCurrentUser === "function" ? logoutCurrentUser : null;
+      if (_origLogoutCurrentUser) {
+        logoutCurrentUser = async function() {
+          window._isSessionAuthenticated = false;
+          // تنظيف فوري لكافة البيانات المؤقتة في الذاكرة لمنع تسرب أي سلة أو مسودة لمستخدم لاحق
+          state.cart = [];
+          state.orderFormItems = [];
+          state.editingVoucherState = null;
+          state.pendingConvertedOrderId = null;
+          state.pendingConvertedOrderIds = [];
+          if (state.selectedVouchersForPrint && typeof state.selectedVouchersForPrint.clear === "function") {
+            state.selectedVouchersForPrint.clear();
+          }
+          if (typeof bulkDistState === "object" && bulkDistState) {
+            bulkDistState.pool = [];
+            bulkDistState.stagedItems = {};
+            bulkDistState.rows = [];
+          }
+          window._lastPrintBasketRecord = null;
+          window._lastPrintBasketVouchers = [];
+
+          // إغلاق أي نوافذ منبثقة مفتوحة
+          document.querySelectorAll(".modal-overlay.open").forEach(m => m.classList.remove("open"));
+          ["share-voucher-modal", "delete-stock-choice-modal", "graceful-undo-bar"].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = "none";
+          });
+
+          await _origLogoutCurrentUser();
+        };
+        window.logoutCurrentUser = logoutCurrentUser;
+      }
+
+      const _origCompleteLoginV8 = typeof completeUserSessionLogin === "function" ? completeUserSessionLogin : null;
+      if (_origCompleteLoginV8) {
+        let _lastAuthenticatedEmail = "";
+        completeUserSessionLogin = async function(userObj) {
+          window._isSessionAuthenticated = true;
+          const cleanEmail = String(userObj?.email || "").trim().toLowerCase();
+          if (_lastAuthenticatedEmail && _lastAuthenticatedEmail !== cleanEmail) {
+            state.cart = [];
+            state.orderFormItems = [];
+            state.editingVoucherState = null;
+            if (typeof bulkDistState === "object" && bulkDistState) {
+              bulkDistState.pool = [];
+              bulkDistState.stagedItems = {};
+              bulkDistState.rows = [];
+            }
+          }
+          _lastAuthenticatedEmail = cleanEmail;
+          return await _origCompleteLoginV8(userObj);
+        };
+        window.completeUserSessionLogin = completeUserSessionLogin;
+      }
+
+      // 4.9 سجل حركية المادة الشامل (Unified Item Movement Ledger)
+      function getItemMovementLedger(itemId) {
+        const item = (state.data.items || []).find(i => i && i.id === itemId);
+        if (!item) return null;
+
+        const movements = [];
+        let totalIssuedQty = 0;
+        let totalActualDeducted = 0;
+
+        (state.data.transactions || []).forEach(tx => {
+          if (!tx || tx.isDeleted) return;
+          (tx.items || []).forEach(it => {
+            if (!it) return;
+            if (it.id === item.id || it.name === item.name) {
+              const q = Math.max(0, sanitize(it.qty));
+              const ded = (it.actualDeducted !== undefined && it.actualDeducted !== null)
+                ? Math.max(0, sanitize(it.actualDeducted))
+                : q;
+              totalIssuedQty += q;
+              totalActualDeducted += ded;
+              movements.push({
+                type: tx.isBulkDistribution ? "توزيع مركزي" : "إشهاد تسليم",
+                refId: tx.id,
+                date: getTransactionDeliverySortKey(tx),
+                party: `${tx.recipient || ""} — ${tx.destination || ""}`,
+                qtyChange: -q,
+                actualDeducted: ded,
+                notes: it.notes || tx.reason || ""
+              });
+            }
+          });
+        });
+
+        (state.data.auditHistory || []).forEach(aud => {
+          if (!aud || !Array.isArray(aud.items)) return;
+          const match = aud.items.find(a => a && (a.id === item.id || a.name === item.name));
+          if (match && sanitize(match.diff) !== 0) {
+            movements.push({
+              type: "محضر جرد ميداني",
+              refId: aud.id,
+              date: aud.date || "",
+              party: aud.auditor || "لجنة الجرد",
+              qtyChange: Number(match.diff) || 0,
+              actualDeducted: Math.abs(Number(match.diff) || 0),
+              notes: `النظام: ${match.systemStock} ← الفعلي: ${match.physicalStock}`
+            });
+          }
+        });
+
+        movements.sort((a, b) => String(b.date).localeCompare(String(a.date)));
+
+        return {
+          itemId: item.id,
+          itemName: formatItemDisplayText(item),
+          category: item.category,
+          currentStock: Math.max(0, sanitize(item.stock)),
+          totalIssuedQty,
+          totalActualDeducted,
+          movementsCount: movements.length,
+          movements
+        };
+      }
+      window.getItemMovementLedger = getItemMovementLedger;
+
+      // 4.10 تحسين الأداء (Debouncing للبحث الفوري لمنع إعادة بناء الـ DOM المفرطة مع الحفاظ على الاستجابة الفورية)
+      function createDebouncedHandler(fn, waitMs = 110) {
+        let timer = null;
+        return function(...args) {
+          if (timer) clearTimeout(timer);
+          timer = setTimeout(() => {
+            timer = null;
+            fn.apply(this, args);
+          }, waitMs);
+        };
+      }
+      window.createDebouncedHandler = createDebouncedHandler;
+
+
       window.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
           injectGlobalSettingsSaveBarUI();
@@ -58918,12 +60307,29 @@ ${itemsText}
               const parsedProfile = JSON.parse(cloudDoc.profileJson);
               const isNonAdmin = !isPrincipalAdminEmail(docKey);
               if (isNonAdmin) parsedData._isNonAdminZeroState = true;
-              const hadOldSchema = (parsedData._schemaVersion !== 'V2_STRUCTURED_2026_11_02_R3');
-              const migrated = migrateAndNormalizeData(parsedData, parsedProfile, isNonAdmin);
-              state.data = migrated.data;
-              state.profile = migrated.profile;
-              persistAll(hadOldSchema);
-              refreshAllViewsAfterAuth();
+              const localTs = state?.data?._localUpdatedAt || "";
+              const cloudTs = parsedData?._localUpdatedAt || cloudDoc?.updatedAt || "";
+              const pendingSync = (typeof hasPendingCloudSync === "function" && hasPendingCloudSync(docKey));
+              if (pendingSync || (localTs && cloudTs && localTs > cloudTs)) {
+                await this.pushUserCloudData(docKey, state.data, state.profile, false);
+                if (typeof clearPendingCloudSync === "function") clearPendingCloudSync(docKey);
+                refreshAllViewsAfterAuth();
+              } else {
+                if (Array.isArray(state?.data?._deletedDestinations)) {
+                  parsedData._deletedDestinations = Array.from(new Set([...(parsedData._deletedDestinations || []), ...state.data._deletedDestinations]));
+                  parsedData._customDestinationsEdited = true;
+                }
+                if (state?.data?._deletedRecipients) {
+                  parsedData._deletedRecipients = Object.assign({}, parsedData._deletedRecipients || {}, state.data._deletedRecipients);
+                  parsedData._customDestinationsEdited = true;
+                }
+                const hadOldSchema = (parsedData._schemaVersion !== 'V2_STRUCTURED_2026_11_03_LOGICAL_AI_V79');
+                const migrated = migrateAndNormalizeData(parsedData, parsedProfile, isNonAdmin);
+                state.data = migrated.data;
+                state.profile = migrated.profile;
+                persistAll(hadOldSchema);
+                refreshAllViewsAfterAuth();
+              }
             }
           } else {
             // إذا لم يكن للمستخدم وثيقة سحابية بعد:
