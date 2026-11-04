@@ -25886,39 +25886,94 @@ return `${st.shortRef} (${st.colorTag})`;
 return st.shortRef || st.name;
 }
 window.getChartShortItemLabel = getChartShortItemLabel;
-function getTransactionDeliverySortKey(tx) {
-if (!tx) return "0000-00-00T00:00:00";
-let iso = String(tx.isoDate || "").trim();
-const rawDate = String(tx.date || "").trim();
-let timePart = "12:00:00";
-if (rawDate.includes(" ")) {
-const sp = rawDate.split(" ");
-if (sp[1] && /^\d{1,2}:\d{2}(:\d{2})?$/.test(sp[1].trim())) {
-const tParts = sp[1].trim().split(":");
-timePart = `${tParts[0].padStart(2, "0")}:${tParts[1].padStart(2, "0")}:${(tParts[2] || "00").padStart(2, "0")}`;
+function normalizeEasternDigitsToAscii(str) {
+return String(str || "")
+.replace(/[٠-٩]/g, d => String(d.charCodeAt(0) - 1632))
+.replace(/[۰-۹]/g, d => String(d.charCodeAt(0) - 1776));
+}
+function extractTxTimeHHMMSS(tx) {
+if (!tx) return "";
+const candidates = [tx.timeStr, tx.date];
+for (const raw of candidates) {
+if (!raw) continue;
+const clean = normalizeEasternDigitsToAscii(raw).trim();
+const tm = clean.match(/(?:^|[\s,،T\-]+)(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+if (tm) {
+let hh = parseInt(tm[1], 10);
+const mm = String(tm[2]).padStart(2, "0");
+const ss = String(tm[3] || "00").padStart(2, "0");
+if ((clean.includes("م") || /pm/i.test(clean)) && hh < 12) hh += 12;
+if ((clean.includes("ص") || /am/i.test(clean)) && hh === 12) hh = 0;
+if (hh >= 0 && hh <= 23) {
+return `${String(hh).padStart(2, "0")}:${mm}:${ss}`;
 }
 }
-if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) {
+}
+const ts = Number(tx._createdAt || tx._updatedAt || 0);
+if (ts > 1000000000000) {
+const dObj = new Date(ts);
+if (!isNaN(dObj.getTime())) {
+return `${String(dObj.getHours()).padStart(2, "0")}:${String(dObj.getMinutes()).padStart(2, "0")}:${String(dObj.getSeconds()).padStart(2, "0")}`;
+}
+}
+return "";
+}
+window.extractTxTimeHHMMSS = extractTxTimeHHMMSS;
+function extractTxCalendarISODate(tx) {
+if (!tx) return "1970-01-01";
+const iso = normalizeEasternDigitsToAscii(tx.isoDate || "").trim();
+if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+const rawDate = normalizeEasternDigitsToAscii(tx.date || "").trim();
 const m1 = rawDate.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
 const m2 = rawDate.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
 if (m1) {
-iso = `${m1[3]}-${m1[2].padStart(2, "0")}-${m1[1].padStart(2, "0")}`;
-} else if (m2) {
-iso = `${m2[1]}-${m2[2].padStart(2, "0")}-${m2[3].padStart(2, "0")}`;
-} else {
-iso = "1970-01-01";
+return `${m1[3]}-${m1[2].padStart(2, "0")}-${m1[1].padStart(2, "0")}`;
 }
+if (m2) {
+return `${m2[1]}-${m2[2].padStart(2, "0")}-${m2[3].padStart(2, "0")}`;
 }
+return "1970-01-01";
+}
+window.extractTxCalendarISODate = extractTxCalendarISODate;
+function getTransactionDeliverySortKey(tx) {
+if (!tx) return "0000-00-00T00:00:00";
+const iso = extractTxCalendarISODate(tx);
+const timePart = extractTxTimeHHMMSS(tx) || "00:00:00";
 return `${iso}T${timePart}`;
 }
 window.getTransactionDeliverySortKey = getTransactionDeliverySortKey;
+function getSameDayPreciseTimestampMs(tx, isoDate) {
+if (!tx) return 0;
+const createdMs = Number(tx._createdAt || 0);
+if (createdMs > 0) return createdMs;
+const updatedMs = Number(tx._updatedAt || 0);
+if (updatedMs > 0) return updatedMs;
+const hms = extractTxTimeHHMMSS(tx);
+if (hms && isoDate && isoDate !== "1970-01-01") {
+const parsed = Date.parse(`${isoDate}T${hms}Z`);
+if (!isNaN(parsed)) return parsed;
+}
+return 0;
+}
 function sortTransactionsByDeliveryDateDesc(txArray) {
 if (!Array.isArray(txArray)) return [];
+const originalIndexMap = new Map();
+txArray.forEach((item, idx) => {
+if (item) originalIndexMap.set(item, idx);
+});
 txArray.sort((a, b) => {
-const ka = getTransactionDeliverySortKey(a);
-const kb = getTransactionDeliverySortKey(b);
-if (kb !== ka) return kb.localeCompare(ka);
-return String(b?.id || "").localeCompare(String(a?.id || ""));
+const isoA = extractTxCalendarISODate(a);
+const isoB = extractTxCalendarISODate(b);
+if (isoB !== isoA) return isoB.localeCompare(isoA);
+const tsA = getSameDayPreciseTimestampMs(a, isoA);
+const tsB = getSameDayPreciseTimestampMs(b, isoB);
+if (tsB !== tsA) return tsB - tsA;
+const hmsA = extractTxTimeHHMMSS(a);
+const hmsB = extractTxTimeHHMMSS(b);
+if (hmsB !== hmsA) return hmsB.localeCompare(hmsA);
+const idxA = originalIndexMap.has(a) ? originalIndexMap.get(a) : 0;
+const idxB = originalIndexMap.has(b) ? originalIndexMap.get(b) : 0;
+return idxA - idxB;
 });
 return txArray;
 }
@@ -37757,16 +37812,28 @@ submitIssuance = function(andPrint = false) {
 window._isSessionAuthenticated = true;
 const beforeIds = new Set((state.data.transactions || []).map(t => t && t.id).filter(Boolean));
 const res = _v83SubmitIssuance(andPrint);
-const nowMs = Date.now();
+window._txMonotonicClock = Math.max(Date.now(), (window._txMonotonicClock || 0) + 1);
+const nowMs = window._txMonotonicClock;
+const dObj = new Date(nowMs);
+const hhmmss = `${String(dObj.getHours()).padStart(2, "0")}:${String(dObj.getMinutes()).padStart(2, "0")}:${String(dObj.getSeconds()).padStart(2, "0")}`;
+let addedAny = false;
 (state.data.transactions || []).forEach(t => {
 if (t && t.id && !beforeIds.has(t.id)) {
+t._createdAt = t._createdAt || nowMs;
 t._updatedAt = nowMs;
-if (t.isoDate && (!t.date || !String(t.date).startsWith(t.isoDate))) {
-t.date = t.isoDate;
+t.timeStr = t.timeStr || extractTxTimeHHMMSS(t) || hhmmss;
+if (t.isoDate) {
+t.date = `${t.isoDate} ${t.timeStr}`;
 }
 recordTransactionInLocalJournal(t);
+addedAny = true;
 }
 });
+if (addedAny) {
+sortTransactionsByDeliveryDateDesc(state.data.transactions);
+if (typeof renderHistoryTable === "function") renderHistoryTable();
+if (typeof renderRecentTransactions === "function") renderRecentTransactions();
+}
 persistAll(true);
 return res;
 };
@@ -38048,7 +38115,33 @@ cloned.items = cloned.items.map(li => parseAndEnrichStructuredItem(li, li.catego
 dataObj.transactions.push(cloned);
 }
 });
+if (!dataObj._rescuedBulkTrashV93 && Array.isArray(dataObj.trash) && dataObj.trash.length > 0) {
+const existingTxIds = new Set((dataObj.transactions || []).map(t => t && t.id).filter(Boolean));
+const remainingTrash = [];
+let rescuedCount = 0;
+dataObj.trash.forEach(entry => {
+const p = entry && entry.payload;
+if (entry && entry.type === "voucher" && p && p.id && (p.isBulkDistribution || p.batchId)) {
+p.isDeleted = false;
+delete p.deletedAt;
+if (!existingTxIds.has(p.id)) {
+dataObj.transactions.unshift(p);
+existingTxIds.add(p.id);
+rescuedCount++;
+}
+} else {
+remainingTrash.push(entry);
+}
+});
+if (rescuedCount > 0) {
+dataObj.trash = remainingTrash;
+}
+dataObj._rescuedBulkTrashV93 = true;
+}
+dataObj.bulkBatches = [];
+if (Array.isArray(dataObj.transactions)) {
 sortTransactionsByDeliveryDateDesc(dataObj.transactions);
+}
 }
 if (dataObj && Array.isArray(dataObj.orders)) {
 const delOrdSet = new Set([...(dataObj._deletedOrderIds || []), ...(journal.deletedOrderIds || [])]);
@@ -41782,6 +41875,144 @@ const pagesHtml = previewVouchers.map(v => `<div class="cert-batch-page-break">$
 openDocPreviewModal(`معاينة كافة الإشهادات (${previewVouchers.length} إشهادات رسمية مستقلة)`, pagesHtml);
 };
 window.previewAllBulkCertificatesBeforeCommit = previewAllBulkCertificatesBeforeCommit;
+refreshBulkBadgesCount = function() {
+const hasActiveUnfinishedRun = Array.isArray(bulkDistState?.pool) && bulkDistState.pool.length > 0;
+const displayCount = hasActiveUnfinishedRun ? 1 : 0;
+const b1 = document.getElementById("badge-total-bulk-batches");
+const b2 = document.getElementById("nav-badge-bulk-runs");
+if (b1) {
+b1.textContent = String(displayCount);
+b1.style.display = displayCount > 0 ? "inline-flex" : "none";
+}
+if (b2) {
+b2.textContent = String(displayCount);
+b2.style.display = displayCount > 0 ? "inline-flex" : "none";
+}
+};
+window.refreshBulkBadgesCount = refreshBulkBadgesCount;
+renderBulkBatchesHistory = function() {
+const tbody = document.getElementById("bulk-batches-history-tbody");
+if (tbody) {
+tbody.innerHTML = "";
+const parentPanel = tbody.closest(".glass-panel");
+if (parentPanel && parentPanel.querySelector("#bulk-batches-history-tbody")) {
+const tableWrap = tbody.closest(".table-responsive");
+if (tableWrap) tableWrap.style.display = "none";
+}
+}
+const clearBatchesBtn = document.querySelector("button[onclick*='clearAllBulkBatchesWithRestore']");
+if (clearBatchesBtn) clearBatchesBtn.style.display = "none";
+refreshBulkBadgesCount();
+};
+window.renderBulkBatchesHistory = renderBulkBatchesHistory;
+deleteBulkBatch = function() {
+showToast("تم ترحيل كافة الإشهادات نهائياً إلى «أرشيف العمليات» — يمكنك تعديل أو حذف أي إشهاد بشكل مستقل من صفحة الأرشيف.", "info");
+};
+window.deleteBulkBatch = deleteBulkBatch;
+function wipeAndResetBulkDistributionWorkspaceToZero() {
+clearBulkDistributionDraft();
+bulkDistState.pool = [];
+bulkDistState.stagedItems = {};
+bulkDistState.rows = [];
+bulkDistState.lastCommittedBatchId = null;
+window._lastPrintBasketRecord = null;
+window._lastPrintBasketVouchers = [];
+if (state && state.data) {
+state.data.bulkBatches = [];
+}
+const notesEl = document.getElementById("bulk-run-notes");
+if (notesEl) notesEl.value = "";
+if (typeof resetBulkStep1UpperForm === "function") resetBulkStep1UpperForm();
+if (typeof generateNewBulkBatchCode === "function") generateNewBulkBatchCode(false);
+if (typeof clearBulkStep3DisplayedCertificates === "function") clearBulkStep3DisplayedCertificates(true);
+if (typeof renderBulkBeneficiaryBubbleCards === "function") renderBulkBeneficiaryBubbleCards();
+if (typeof renderBulkPoolBasket === "function") renderBulkPoolBasket();
+if (typeof renderBulkAllocationMatrix === "function") renderBulkAllocationMatrix();
+if (typeof updateBulkLiveMonitor === "function") updateBulkLiveMonitor();
+if (typeof renderBulkBatchesHistory === "function") renderBulkBatchesHistory();
+setBulkStep(1);
+refreshBulkBadgesCount();
+}
+window.wipeAndResetBulkDistributionWorkspaceToZero = wipeAndResetBulkDistributionWorkspaceToZero;
+const _v92RenderBulkPoolBasket = renderBulkPoolBasket;
+renderBulkPoolBasket = function() {
+if (bulkDistState.step >= 2 && Array.isArray(bulkDistState.pool) && bulkDistState.pool.length > 0) {
+const tbody = document.getElementById("bulk-pool-basket-tbody");
+const countBadge = document.getElementById("bulk-pool-count-badge");
+if (countBadge) countBadge.textContent = "0 مواد في السلة (رُحّلت للمصفوفة)";
+if (tbody) {
+tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:22px;color:#10b981;font-weight:800;">
+✓ تم نقل المواد المختارة (${bulkDistState.pool.length} مواد) إلى المرحلة الحالية (${bulkDistState.step === 2 ? 'مصفوفة التوزيع' : 'اعتماد الإشهادات'}) — أكمل التوزيع والاعتماد أو عد لتعديل السلة عند الحاجة.
+</td></tr>`;
+}
+return;
+}
+return _v92RenderBulkPoolBasket();
+};
+window.renderBulkPoolBasket = renderBulkPoolBasket;
+function buildCurrentStage3PreviewVouchers() {
+if (!Array.isArray(bulkDistState.pool) || bulkDistState.pool.length === 0) return [];
+const batchId = bulkDistState.batchId || "DIST-PREVIEW";
+const dateVal = document.getElementById("bulk-run-date")?.value || new Date().toISOString().split("T")[0];
+const reasonVal = document.getElementById("bulk-run-reason")?.value || "حصة التوزيع المركزي الدوري";
+const channelVal = document.getElementById("bulk-run-channel")?.value || "تسليم مباشر";
+const activeRows = (bulkDistState.rows || []).filter(r => r.enabled && bulkDistState.pool.some(p => (parseInt(r.allocations[p.itemId], 10) || 0) > 0));
+const previewVouchers = [];
+activeRows.forEach((row, idx) => {
+const vItems = [];
+bulkDistState.pool.forEach(p => {
+const q = parseInt(row.allocations[p.itemId], 10) || 0;
+if (q > 0) {
+const stItem = (state.data.items || []).find(i => i.id === p.itemId);
+if (stItem) {
+vItems.push({
+id: stItem.id,
+name: stItem.name,
+category: stItem.category,
+qty: q,
+notes: getEffectiveBulkAllocationNote(row, p)
+});
+}
+}
+});
+if (vItems.length > 0) {
+previewVouchers.push({
+id: `${batchId}-P${idx + 1}`,
+operationId: `${batchId}-P${idx + 1}`,
+batchId,
+date: dateVal,
+isoDate: dateVal,
+destination: row.destName,
+recipient: row.recipientName || "رئيس كتابة الضبط",
+reason: reasonVal,
+channel: channelVal,
+status: "معاينة قبل الاعتماد",
+items: vItems
+});
+}
+});
+return previewVouchers;
+}
+const _v92SetBulkStep = setBulkStep;
+setBulkStep = function(stepNum) {
+_v92SetBulkStep(stepNum);
+renderBulkPoolBasket();
+if (stepNum === 3) {
+const previewVouchers = buildCurrentStage3PreviewVouchers();
+if (previewVouchers.length > 0) {
+renderLastCommittedBatchCertificates({
+batchId: (bulkDistState.batchId || "DIST") + " (معاينة جاهزة للاعتماد والترحيل للأرشيف)",
+itemsCount: bulkDistState.pool.length,
+totalUnits: previewVouchers.reduce((s, v) => s + v.items.reduce((acc, it) => acc + it.qty, 0), 0)
+}, previewVouchers);
+} else {
+clearBulkStep3DisplayedCertificates(true);
+}
+renderBulkBatchesHistory();
+}
+refreshBulkBadgesCount();
+};
+window.setBulkStep = setBulkStep;
 commitBulkDistributionRun = function(andPreviewPrint = false) {
 if (_isCommittingBulkRun) return;
 if (!bulkDistState.pool.length) {
@@ -41801,33 +42032,19 @@ return;
 }
 }
 const activeRows = bulkDistState.rows.filter(r => r.enabled && bulkDistState.pool.some(p => (parseInt(r.allocations[p.itemId], 10) || 0) > 0));
-const totalUnitsToDistribute = bulkDistState.pool.reduce((s, p) => s + (parseInt(p.qty, 10) || 0), 0);
-openAppConfirmModal(
-"تأكيد تفعيل عملية التوزيع وحفظها في الأرشيف",
-`سيتم الآن اعتماد عملية التوزيع (${bulkDistState.batchId || "DIST"}) لـ (${activeRows.length}) جهات مستفيدة بإجمالي (${totalUnitsToDistribute} قطعة):\n• سيتم سحب الكميات المتوفرة من رصيد الجرد الحالي.\n• سيتم ترحيل وحفظ الإشهادات رسمياً في أرشيف العمليات بدون أي ملاحظات إجبارية (تُحفظ فقط الملاحظات التي أدخلتها بنفسك).`,
-() => {
+if (activeRows.length === 0) {
+showToast("يرجى تخصيص كميات لمستفيد واحد على الأقل قبل الاعتماد", "warning");
+return;
+}
 _isCommittingBulkRun = true;
 try {
-const preBulkSnapshot = {
-type: "bulk_distribution",
-items: JSON.parse(JSON.stringify(state.data.items || [])),
-transactions: JSON.parse(JSON.stringify(state.data.transactions || [])),
-orders: JSON.parse(JSON.stringify(state.data.orders || [])),
-bulkBatches: JSON.parse(JSON.stringify(state.data.bulkBatches || [])),
-bulkState: {
-batchId: bulkDistState.batchId,
-pool: JSON.parse(JSON.stringify(bulkDistState.pool || [])),
-rows: JSON.parse(JSON.stringify(bulkDistState.rows || []))
-}
-};
 const batchId = bulkDistState.batchId || generateNewBulkBatchCode(false);
 const dateVal = document.getElementById("bulk-run-date")?.value || new Date().toISOString().split("T")[0];
 const reasonVal = document.getElementById("bulk-run-reason")?.value || "حصة التوزيع المركزي الدوري";
 const channelVal = document.getElementById("bulk-run-channel")?.value || "تسليم مباشر";
-const userNotes = sanitizeAutoForcedNoteString(document.getElementById("bulk-run-notes")?.value || "");
-const ownerName = state.profile?.userProfile?.fullName || state.profile?.projectMeta?.ownerName || "محمد أيت حمادي";
-const nowMs = Date.now();
-const pooledSummary = [];
+window._txMonotonicClock = Math.max(Date.now(), (window._txMonotonicClock || 0) + 10);
+const baseNowMs = window._txMonotonicClock;
+window._txMonotonicClock = baseNowMs + activeRows.length + 5;
 const zeroStockAlerts = [];
 const itemDeductRatio = {};
 bulkDistState.pool.forEach(p => {
@@ -41842,15 +42059,8 @@ zeroStockAlerts.push(`${stockItem.name} (الرصيد: 0)`);
 zeroStockAlerts.push(`${stockItem.name} (المتوفر: ${curStock} من أصل ${reqQty})`);
 }
 stockItem.stock = Math.max(0, curStock - reqQty);
-stockItem._stockUpdatedAt = nowMs;
+stockItem._stockUpdatedAt = baseNowMs;
 itemDeductRatio[p.itemId] = { remainingDeductible: actualDeductedTotal };
-pooledSummary.push({
-id: stockItem.id,
-name: stockItem.name,
-category: stockItem.category,
-qty: p.qty,
-actualDeducted: actualDeductedTotal
-});
 }
 });
 if (zeroStockAlerts.length > 0) {
@@ -41880,6 +42090,9 @@ notes: customItemNote
 }
 });
 if (voucherItems.length > 0) {
+const rowCreatedMs = baseNowMs + (activeRows.length - idx);
+const dObj = new Date(rowCreatedMs);
+const hhmmss = `${String(dObj.getHours()).padStart(2, "0")}:${String(dObj.getMinutes()).padStart(2, "0")}:${String(dObj.getSeconds()).padStart(2, "0")}`;
 let voucherId = `CERT-${Date.now()}-${idx + 1}-${Math.floor(100 + Math.random() * 900)}`;
 while (state.data.transactions.some(t => t.id === voucherId) || generatedVouchers.some(v => v.id === voucherId)) {
 voucherId = `CERT-${Date.now()}-${idx + 1}-${Math.floor(100 + Math.random() * 900)}`;
@@ -41889,15 +42102,17 @@ id: voucherId,
 operationId: voucherId,
 batchId: batchId,
 isBulkDistribution: true,
-date: dateVal,
+date: `${dateVal} ${hhmmss}`,
 isoDate: dateVal,
+timeStr: hhmmss,
 destination: row.destName,
 recipient: row.recipientName || "رئيس كتابة الضبط",
 reason: reasonVal,
 channel: channelVal,
 status: "استجابة كلية",
 items: voucherItems,
-_updatedAt: nowMs
+_createdAt: rowCreatedMs,
+_updatedAt: rowCreatedMs
 };
 newVoucher.secretCode = generateCertSecretCode(newVoucher);
 state.data.transactions.unshift(newVoucher);
@@ -41906,56 +42121,25 @@ generatedVouchers.push(newVoucher);
 }
 });
 sortTransactionsByDeliveryDateDesc(state.data.transactions);
-if (!Array.isArray(state.data.bulkBatches)) state.data.bulkBatches = [];
-const batchRecord = {
-batchId: batchId,
-date: dateVal,
-deliverer: ownerName,
-reason: reasonVal,
-notes: userNotes,
-itemsCount: pooledSummary.length,
-totalUnits: pooledSummary.reduce((s, i) => s + i.qty, 0),
-pooledItems: pooledSummary,
-certificatesCount: generatedVouchers.length,
-voucherIds: generatedVouchers.map(v => v.id),
-createdAt: new Date().toISOString()
-};
-state.data.bulkBatches.unshift(batchRecord);
-bulkDistState.lastCommittedBatchId = batchId;
-window._lastPrintBasketRecord = batchRecord;
-window._lastPrintBasketVouchers = generatedVouchers;
-clearBulkDistributionDraft();
-bulkDistState.pool = [];
-bulkDistState.stagedItems = {};
-bulkDistState.rows = [];
-const notesEl = document.getElementById("bulk-run-notes");
-if (notesEl) notesEl.value = "";
-generateNewBulkBatchCode(false);
+wipeAndResetBulkDistributionWorkspaceToZero();
 window._isSessionAuthenticated = true;
 persistAll(true);
 refreshAllBadges();
 refreshBulkBadgesCount();
-renderBulkBeneficiaryBubbleCards();
-renderBulkPoolBasket();
-renderBulkAllocationMatrix();
-updateBulkLiveMonitor();
-setBulkStep(3);
-renderLastCommittedBatchCertificates(batchRecord, generatedVouchers);
-renderBulkBatchesHistory();
 renderHistoryTable();
 renderInventoryTable();
-triggerGracefulUndoBar(`تم اعتماد الدفعة (${batchRecord.batchId}) وترحيلها للأرشيف (${generatedVouchers.length} إشهادات)`, preBulkSnapshot);
-showToast(`✓ تم اعتماد العملية وترحيلها إلى الأرشيف بدون أي ملاحظات إجبارية!`, "success");
+if (typeof renderRecentTransactions === "function") renderRecentTransactions();
+switchTab("history-view");
+showCenterToast(`✓ تم اعتماد التوزيع وترحيل (${generatedVouchers.length}) إشهادات رسمية مباشرة إلى أرشيف العمليات وتصفير منطقة التوزيع بالكامل!`);
 if (andPreviewPrint && generatedVouchers.length > 0) {
-printBulkBatchCertificates(batchRecord.batchId);
+const htmls = generatedVouchers.map(v => generateVoucherA4Html(v)).join('<div style="page-break-after: always;"></div>');
+const sandbox = document.getElementById("print-sandbox-area");
+if (sandbox) sandbox.innerHTML = htmls;
+openDocPreviewModal(`طباعة مجمعة لإشهادات التوزيع المعتمدة (${generatedVouchers.length} إشهادات رسمية)`, htmls);
 }
 } finally {
 _isCommittingBulkRun = false;
 }
-},
-"تأكيد وتفعيل التوزيع",
-false
-);
 };
 window.commitBulkDistributionRun = commitBulkDistributionRun;
 const _v90RenderLastCommittedBatchCertificates = renderLastCommittedBatchCertificates;
