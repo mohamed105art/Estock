@@ -26052,7 +26052,12 @@ const trashedTxIds = new Set(
 .map(tr => tr && tr.payload && String(tr.payload.id || tr.payload.operationId || "").trim())
 .filter(Boolean)
 );
-const userDeletedTxIds = new Set(Array.isArray(dataObj._deletedDefaultTxIds) ? dataObj._deletedDefaultTxIds : []);
+const userDeletedTxIds = new Set([
+...(Array.isArray(dataObj._deletedDefaultTxIds) ? dataObj._deletedDefaultTxIds : []),
+...(Array.isArray(dataObj._deletedTxIds) ? dataObj._deletedTxIds : [])
+]);
+const isAlreadyMigratedV2 = (dataObj._schemaVersion === V2_STRUCTURED_SCHEMA_VERSION && dataObj.transactions.length > 0);
+if (!isAlreadyMigratedV2) {
 DEFAULT_DATA.transactions.forEach(defTx => {
 if (!defTx) return;
 const dId = String(defTx.id || defTx.operationId || "").trim();
@@ -26061,6 +26066,17 @@ dataObj.transactions.push(JSON.parse(JSON.stringify(defTx)));
 existingTxIds.add(dId);
 }
 });
+} else {
+DEFAULT_DATA.transactions.forEach(defTx => {
+if (!defTx) return;
+const dId = String(defTx.id || defTx.operationId || "").trim();
+if (dId && !existingTxIds.has(dId) && !userDeletedTxIds.has(dId)) {
+userDeletedTxIds.add(dId);
+}
+});
+dataObj._deletedDefaultTxIds = Array.from(userDeletedTxIds);
+dataObj._deletedTxIds = Array.from(userDeletedTxIds);
+}
 }
 }
 if (Array.isArray(dataObj.items)) {
@@ -26383,12 +26399,17 @@ const entered = (input?.value || '').trim();
 const expected = getAdminQuickSecretPin();
 if (entered === expected || entered === '105105105' || entered === '105') {
 toggleAdminSecretPinPanel(false);
+if (window.__FIREBASE_BRIDGE__ && typeof window.__FIREBASE_BRIDGE__.ensureFirebaseAuthSession === 'function') {
+try {
+await window.__FIREBASE_BRIDGE__.ensureFirebaseAuthSession(PRINCIPAL_ADMIN_EMAIL);
+} catch (e) {}
+}
 await completeUserSessionLogin({
 email: PRINCIPAL_ADMIN_EMAIL,
 displayName: 'محمد أيت حمادي',
 provider: 'admin-secret-pin'
 });
-showToast('مرحباً بك السيد مدير النظام (تم الدخول السريع بنجاح) 🔓', 'success');
+showToast('مرحباً بك السيد مدير النظام (تم الدخول السريع ومزامنة حساب الأدمن السحابي) 🔓', 'success');
 return;
 }
 return _v6LoginWithAdminSecretPin();
@@ -37812,6 +37833,19 @@ activeTrashTxIds.add(pid);
 allDeletedTxIds.add(pid);
 }
 });
+if (typeof DEFAULT_DATA === "object" && DEFAULT_DATA && Array.isArray(DEFAULT_DATA.transactions)) {
+const cloudTxList = Array.isArray(cloudData.transactions) ? cloudData.transactions : [];
+const localTxList = Array.isArray(localData.transactions) ? localData.transactions : [];
+const cloudIdsSet = new Set(cloudTxList.map(t => String(t?.id || t?.operationId || "").trim()).filter(Boolean));
+const localIdsSet = new Set(localTxList.map(t => String(t?.id || t?.operationId || "").trim()).filter(Boolean));
+DEFAULT_DATA.transactions.forEach(defTx => {
+const dId = String(defTx?.id || defTx?.operationId || "").trim();
+if (!dId) return;
+if ((cloudTxList.length > 100 && !cloudIdsSet.has(dId)) || (localTxList.length > 100 && !localIdsSet.has(dId))) {
+allDeletedTxIds.add(dId);
+}
+});
+}
 let journalChanged = false;
 allDeletedTxIds.forEach(delId => {
 if (!journal.deletedTxIds.includes(delId)) {
@@ -38323,9 +38357,6 @@ return await _loginPromiseInFlight;
 window.completeUserSessionLogin = completeUserSessionLogin;
 logoutCurrentUser = async function() {
 try {
-if (window._isSessionAuthenticated !== false && state && state.data) {
-persistAll(true);
-}
 if (window.__FIREBASE_BRIDGE__ && typeof window.__FIREBASE_BRIDGE__.flushPendingPush === "function") {
 await window.__FIREBASE_BRIDGE__.flushPendingPush();
 }
@@ -38336,9 +38367,6 @@ _lastLoginCompletedAt = 0;
 if (_firestoreUnsubscribe) {
 try { _firestoreUnsubscribe(); } catch (e) {}
 _firestoreUnsubscribe = null;
-}
-if (window.__FIREBASE_BRIDGE__ && window.__FIREBASE_BRIDGE__.signOutCloud) {
-try { await window.__FIREBASE_BRIDGE__.signOutCloud(); } catch (e) {}
 }
 _currentAuthUser = null;
 try {
@@ -38377,9 +38405,10 @@ if (window.__FIREBASE_BRIDGE__ && typeof window.__FIREBASE_BRIDGE__.pullCloudSta
 try {
 const res = await window.__FIREBASE_BRIDGE__.pullCloudStateAuthoritative(activeEmail);
 if (res && res.success) {
-setLiveCloudSyncVisualState("synced", `✓ السحابة: ${res.txCount} عملية`);
+setLiveCloudSyncVisualState("synced", `✓ متزامن (${res.txCount} عملية)`);
 refreshAllViewsAfterAuth();
-showToast(`✅ تم سحب آخر التحديثات من السحابة بنجاح! إجمالي العمليات الآن: (${res.txCount}) عملية`, "success");
+closeHeaderUserDropdown();
+showToast(`✅ تم سحب آخر التحديثات من السحابة بنجاح! إجمالي الإشهادات الآن: (${res.txCount}) عملية`, "success");
 return;
 } else {
 setLiveCloudSyncVisualState("pending", "⚠️ لا توجد وثيقة سحابية بعد");
@@ -38388,8 +38417,15 @@ return;
 }
 } catch (err) {
 console.error("Cloud pull error:", err);
+const msg = String(err?.message || err || "");
+if (msg.toLowerCase().includes("permission") || msg.includes("403")) {
+setLiveCloudSyncVisualState("pending", "🔑 يتطلب تفعيل مصادقة السحابة");
+closeHeaderUserDropdown();
+openCloudReauthPromptModal("سحب البيانات من السحابة يتطلب تأكيد تسجيل الدخول السحابي على هذا المتصفح (بسبب قواعد الأمان في Firebase):");
+return;
+}
 setLiveCloudSyncVisualState("pending", "⚠️ خطأ اتصال بالسحابة");
-showToast("تعذر السحب من السحابة: " + (err?.message || "تحقق من اتصال الإنترنت"), "error");
+showToast("تعذر السحب من السحابة: " + msg, "error");
 return;
 }
 }
@@ -38399,23 +38435,146 @@ async function pushCurrentDeviceToCloudNow() {
 const activeEmail = getActiveUserEmail();
 freeUpLocalStorageQuota(false);
 const curCount = Array.isArray(state.data?.transactions) ? state.data.transactions.length : 0;
-setLiveCloudSyncVisualState("syncing", `⏳ جاري رفع (${curCount}) عملية للسحابة...`);
+setLiveCloudSyncVisualState("syncing", `⏳ جاري رفع (${curCount}) عملية...`);
 if (window.__FIREBASE_BRIDGE__ && typeof window.__FIREBASE_BRIDGE__.pushDeviceStateAuthoritative === "function") {
 try {
 const res = await window.__FIREBASE_BRIDGE__.pushDeviceStateAuthoritative(activeEmail, state.data, state.profile);
 clearPendingCloudSync(activeEmail);
-setLiveCloudSyncVisualState("synced", `✓ السحابة: ${res.txCount} عملية`);
-showToast(`✅ تم رفع بيانات هذا الجهاز (${res.txCount} عملية) إلى السحابة بنجاح! يمكنك الآن الضغط على «⬇️ سحب من السحابة» في الحاسوب.`, "success");
+setLiveCloudSyncVisualState("synced", `✓ متزامن (${res.txCount} عملية)`);
+closeHeaderUserDropdown();
+showToast(`✅ تم رفع بيانات هذا الجهاز (${res.txCount} عملية) إلى السحابة بنجاح!`, "success");
 return;
 } catch (err) {
 console.error("Cloud push error:", err);
+const msg = String(err?.message || err || "");
+if (msg.toLowerCase().includes("permission") || msg.includes("403")) {
+setLiveCloudSyncVisualState("pending", "🔑 يتطلب تفعيل مصادقة السحابة");
+closeHeaderUserDropdown();
+openCloudReauthPromptModal("رفع البيانات إلى السحابة يتطلب تأكيد تسجيل الدخول السحابي على هذا المتصفح:");
+return;
+}
 setLiveCloudSyncVisualState("pending", "⚠️ تعذر الرفع للسحابة");
-showToast("تعذر رفع البيانات إلى السحابة: " + (err?.message || "تحقق من اتصال الإنترنت"), "error");
+showToast("تعذر رفع البيانات إلى السحابة: " + msg, "error");
 return;
 }
 }
 }
 window.pushCurrentDeviceToCloudNow = pushCurrentDeviceToCloudNow;
+async function clearLocalCacheAndPullFromCloud() {
+const activeEmail = getActiveUserEmail();
+closeHeaderUserDropdown();
+openAppConfirmModal(
+"تفريغ الكاش المحلي وإعادة الجلب من السحابة",
+"سيقوم هذا الإجراء بمسح الكاش المحلي المؤقت على هذا المتصفح وسحب النسخة الأحدث مباشرة من قاعدة بيانات السحابة (Firebase). هل تود المتابعة؟",
+async () => {
+try {
+setLiveCloudSyncVisualState("syncing", "⏳ جاري تفريغ الكاش والسحب...");
+freeUpLocalStorageQuota(true);
+localStorage.removeItem("E_STOCK_TOMBSTONES_AND_EDITS_V85");
+localStorage.removeItem("E_STOCK_LOCAL_EDITS_JOURNAL_V84");
+clearPendingCloudSync(activeEmail);
+if ("caches" in window) {
+try {
+const cacheNames = await caches.keys();
+await Promise.all(cacheNames.map(name => caches.delete(name)));
+} catch (e) {}
+}
+if (window.__FIREBASE_BRIDGE__ && typeof window.__FIREBASE_BRIDGE__.pullCloudStateAuthoritative === "function") {
+const res = await window.__FIREBASE_BRIDGE__.pullCloudStateAuthoritative(activeEmail);
+if (res && res.success) {
+setLiveCloudSyncVisualState("synced", `✓ متزامن (${res.txCount} عملية)`);
+refreshAllViewsAfterAuth();
+showToast(`✅ تم تفريغ الكاش المحلي وسحب (${res.txCount}) عملية من السحابة بنجاح!`, "success");
+return;
+}
+}
+showToast("تم تفريغ الكاش المحلي بنجاح", "info");
+} catch (err) {
+const msg = String(err?.message || err || "");
+if (msg.toLowerCase().includes("permission") || msg.includes("403")) {
+openCloudReauthPromptModal("لتفريغ الكاش وسحب البيانات من السحابة، يرجى تأكيد تسجيل الدخول السحابي على هذا الحاسوب:");
+return;
+}
+showToast("تعذر السحب بعد تفريغ الكاش: " + msg, "error");
+}
+},
+"تفريغ الكاش والسحب الآن",
+false
+);
+}
+window.clearLocalCacheAndPullFromCloud = clearLocalCacheAndPullFromCloud;
+function openCloudReauthPromptModal(reasonTitle) {
+let modal = document.getElementById("cloud-reauth-modal");
+if (!modal) {
+modal = document.createElement("div");
+modal.id = "cloud-reauth-modal";
+modal.className = "modal-overlay";
+modal.style.cssText = "display:none; position:fixed; inset:0; background:rgba(2,6,23,0.78); backdrop-filter:blur(4px); z-index:10900; align-items:center; justify-content:center; padding:14px;";
+modal.innerHTML = `
+<div style="background: var(--bg-card); border: 1.5px solid rgba(56,189,248,0.5); border-radius: 16px; width: 100%; max-width: 440px; padding: 18px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+<h3 style="margin:0; font-size:1rem; font-weight:900; color:#38bdf8;">🔑 تفعيل الاتصال السحابي على هذا المتصفح</h3>
+<button type="button" onclick="document.getElementById('cloud-reauth-modal').style.display='none'" style="border:none;background:transparent;color:var(--text-muted);font-size:1.2rem;cursor:pointer;">&times;</button>
+</div>
+<p id="cloud-reauth-reason-text" style="font-size:0.8rem; color:var(--text-secondary); line-height:1.55; margin:0 0 12px 0;"></p>
+<div style="display:flex; flex-direction:column; gap:10px;">
+<button type="button" class="btn btn-primary" onclick="executeCloudReauthViaGoogle()" style="width:100%; justify-content:center; font-weight:800; padding:9px;">
+🌐 ربط سريع عبر حساب Google (بضغطة واحدة)
+</button>
+<div style="text-align:center; font-size:0.74rem; color:var(--text-muted);">— أو أدخل كلمة مرور الحساب السحابي (mohamed105@gmail.com) مرة واحدة لحفظها في هذا المتصفح —</div>
+<input type="password" id="cloud-reauth-pass-input" class="form-control" placeholder="كلمة المرور المسجلة في Firebase..." style="height:38px; font-size:0.85rem; text-align:center;" />
+<div style="display:flex; gap:8px; justify-content:flex-end; margin-top:4px;">
+<button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('cloud-reauth-modal').style.display='none'">إلغاء</button>
+<button type="button" class="btn btn-primary btn-sm" onclick="executeCloudReauthViaPassword()" style="background:#10b981; border-color:#059669; font-weight:800; padding:6px 16px;">تفعيل وسحب البيانات الآن</button>
+</div>
+</div>
+</div>
+`;
+document.body.appendChild(modal);
+}
+const reasonEl = document.getElementById("cloud-reauth-reason-text");
+if (reasonEl) {
+reasonEl.textContent = reasonTitle || "هذا المتصفح تم فتحه بالوضع المحلي ولم يُربط بعد بجلسة Firebase السحابية. اختر طريقة الربط ليتم سحب ومزامنة الـ 510 عمليات فوراً:";
+}
+modal.style.display = "flex";
+}
+window.openCloudReauthPromptModal = openCloudReauthPromptModal;
+async function executeCloudReauthViaGoogle() {
+const modal = document.getElementById("cloud-reauth-modal");
+try {
+if (window.__FIREBASE_BRIDGE__ && typeof window.__FIREBASE_BRIDGE__.signInWithGoogle === "function") {
+const fbUser = await window.__FIREBASE_BRIDGE__.signInWithGoogle();
+if (fbUser) {
+if (modal) modal.style.display = "none";
+await pullLatestFromCloudNow();
+}
+}
+} catch (err) {
+showToast("تعذر الربط عبر نافذة Google — يرجى إدخال كلمة المرور في الخانة بالأسفل", "warning");
+}
+}
+window.executeCloudReauthViaGoogle = executeCloudReauthViaGoogle;
+async function executeCloudReauthViaPassword() {
+const passInp = document.getElementById("cloud-reauth-pass-input");
+const pass = (passInp?.value || "").trim();
+if (!pass || pass.length < 6) {
+showToast("يرجى إدخال كلمة المرور (6 أحرف أو أرقام على الأقل)", "warning");
+return;
+}
+const activeEmail = getActiveUserEmail();
+try {
+localStorage.setItem(`E_STOCK_USER_PASS_${activeEmail}`, pass);
+if (window.__FIREBASE_BRIDGE__ && typeof window.__FIREBASE_BRIDGE__.signInWithEmailPassword === "function") {
+await window.__FIREBASE_BRIDGE__.signInWithEmailPassword(activeEmail, pass);
+}
+const modal = document.getElementById("cloud-reauth-modal");
+if (modal) modal.style.display = "none";
+await pullLatestFromCloudNow();
+} catch (err) {
+showToast("كلمة المرور غير مطابقة للحساب السحابي: " + (err?.message || ""), "error");
+}
+}
+window.executeCloudReauthViaPassword = executeCloudReauthViaPassword;
 forceCloudSyncNow = async function() {
 const activeEmail = getActiveUserEmail();
 freeUpLocalStorageQuota(false);
@@ -38426,92 +38585,69 @@ await window.__FIREBASE_BRIDGE__.syncUserFromFirestore(activeEmail, true, true);
 await window.__FIREBASE_BRIDGE__.pushUserCloudData(activeEmail, buildCompactDataForStorage(state.data), state.profile, true);
 clearPendingCloudSync(activeEmail);
 const curCount = Array.isArray(state.data?.transactions) ? state.data.transactions.length : 0;
-setLiveCloudSyncVisualState("synced", `✓ السحابة: ${curCount} عملية`);
+setLiveCloudSyncVisualState("synced", `✓ متزامن (${curCount} عملية)`);
 refreshAllViewsAfterAuth();
+closeHeaderUserDropdown();
 showToast(`✅ تمت المزامنة الفورية وتوحيد البيانات بين جميع الأجهزة بنجاح! (${curCount} عملية)`, "success");
 return;
 } catch (e) {
 console.warn("Manual sync note:", e);
+const msg = String(e?.message || e || "");
+if (msg.toLowerCase().includes("permission") || msg.includes("403")) {
+setLiveCloudSyncVisualState("pending", "🔑 يتطلب تفعيل مصادقة السحابة");
+closeHeaderUserDropdown();
+openCloudReauthPromptModal();
+return;
+}
 setLiveCloudSyncVisualState("pending", "⚠️ تعذر الوصول للسحابة");
-showToast("تعذر الاتصال المباشر بالسحابة (" + (e?.message || "شبكة المكتب") + ")", "warning");
+showToast("تعذر الاتصال بالسحابة: " + msg, "warning");
 return;
 }
 }
 };
 window.forceCloudSyncNow = forceCloudSyncNow;
-const _v87SetLiveCloudSyncVisualState = setLiveCloudSyncVisualState;
-setLiveCloudSyncVisualState = function(syncState, customMessage = "") {
-_v87SetLiveCloudSyncVisualState(syncState, customMessage);
-const topStatusPill = document.getElementById("topbar-live-sync-status-pill");
-const topStatusDot = document.getElementById("topbar-live-sync-dot");
-const topStatusText = document.getElementById("topbar-live-sync-text");
-if (!topStatusPill || !topStatusText) return;
-const curCount = Array.isArray(state?.data?.transactions) ? state.data.transactions.length : 0;
-if (syncState === "syncing") {
-topStatusPill.style.borderColor = "rgba(245, 158, 11, 0.6)";
-topStatusPill.style.background = "rgba(245, 158, 11, 0.14)";
-if (topStatusDot) topStatusDot.style.background = "#f59e0b";
-topStatusText.textContent = customMessage || "⏳ جاري المزامنة...";
-} else if (syncState === "synced") {
-topStatusPill.style.borderColor = "rgba(16, 185, 129, 0.5)";
-topStatusPill.style.background = "rgba(16, 185, 129, 0.12)";
-if (topStatusDot) topStatusDot.style.background = "#10b981";
-topStatusText.textContent = customMessage || `✓ متزامن (${curCount} عملية)`;
-} else {
-topStatusPill.style.borderColor = "rgba(239, 68, 68, 0.55)";
-topStatusPill.style.background = "rgba(239, 68, 68, 0.12)";
-if (topStatusDot) topStatusDot.style.background = "#ef4444";
-topStatusText.textContent = customMessage || "⚠️ غير متزامن";
-}
-};
-window.setLiveCloudSyncVisualState = setLiveCloudSyncVisualState;
 function injectQuickCloudSyncHeaderButton() {
+const oldTopBar = document.getElementById("topbar-cloud-sync-controls");
+if (oldTopBar) oldTopBar.remove();
 if (!document.getElementById("v85-sync-spin-keyframes")) {
 const st = document.createElement("style");
 st.id = "v85-sync-spin-keyframes";
 st.textContent = "@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }";
 document.head.appendChild(st);
 }
-const avatarWrap = document.getElementById("header-user-avatar-wrap");
-if (avatarWrap && !document.getElementById("topbar-cloud-sync-controls")) {
-const topControls = document.createElement("div");
-topControls.id = "topbar-cloud-sync-controls";
-topControls.className = "no-print";
-topControls.style.cssText = "display: inline-flex; align-items: center; gap: 5px; flex-wrap: wrap; margin-left: 4px;";
-const curCount = Array.isArray(state?.data?.transactions) ? state.data.transactions.length : 508;
-topControls.innerHTML = `
-<div id="topbar-live-sync-status-pill" title="حالة المزامنة السحابية وعدد الإشهادات الحالي" style="display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 999px; font-size: 0.72rem; font-weight: 800; border: 1px solid rgba(16, 185, 129, 0.45); background: rgba(16, 185, 129, 0.1); color: var(--text-main);">
-<span id="topbar-live-sync-dot" style="width: 7px; height: 7px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
-<span id="topbar-live-sync-text" class="tabular-nums">✓ السحابة (${curCount})</span>
-</div>
-<button type="button" onclick="pullLatestFromCloudNow()" title="سحب آخر التحديثات والعمليات المحفوظة في السحابة (من المنزل أو الهاتف) واعتمادها فوراً على هذا الحاسوب" style="padding: 4px 9px; font-size: 0.72rem; font-weight: 800; border-radius: 999px; border: 1.5px solid rgba(16, 185, 129, 0.55); background: rgba(16, 185, 129, 0.12); color: #10b981; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
-<span>⬇️</span><span>سحب من السحابة</span>
-</button>
-<button type="button" onclick="pushCurrentDeviceToCloudNow()" title="رفع بيانات هذا الجهاز الحالية إلى السحابة لتعميمها على باقي الأجهزة" style="padding: 4px 9px; font-size: 0.72rem; font-weight: 800; border-radius: 999px; border: 1.5px solid rgba(56, 189, 248, 0.5); background: rgba(56, 189, 248, 0.1); color: #38bdf8; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
-<span>⬆️</span><span>رفع للسحابة</span>
-</button>
-`;
-avatarWrap.insertAdjacentElement("beforebegin", topControls);
-}
 const badge = document.getElementById("cloud-sync-status-badge");
-if (badge && !document.getElementById("header-instant-cloud-sync-btn")) {
+if (!badge || document.getElementById("header-instant-cloud-sync-btn")) return;
+const menu = document.getElementById("header-user-dropdown-menu");
+if (menu) {
+menu.style.minWidth = "255px";
+menu.style.padding = "10px";
+}
 const wrap = document.createElement("div");
 wrap.id = "header-cloud-actions-wrap";
-wrap.style.cssText = "display: flex; flex-direction: column; gap: 5px; margin: 6px 0; width: 100%;";
+wrap.style.cssText = "display: flex; flex-direction: column; gap: 6px; margin: 8px 0; padding: 8px 0; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); width: 100%;";
 wrap.innerHTML = `
-<button type="button" onclick="pullLatestFromCloudNow()" style="width: 100%; padding: 6px 10px; font-size: 0.75rem; font-weight: 800; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 6px; border: 1.5px solid rgba(16,185,129,0.55); color: #10b981; background: rgba(16,185,129,0.12); cursor: pointer;">
+<button type="button" onclick="pullLatestFromCloudNow()" style="width: 100%; padding: 7px 10px; font-size: 0.76rem; font-weight: 800; border-radius: 8px; display: flex; align-items: center; justify-content: flex-start; gap: 8px; border: 1px solid rgba(16,185,129,0.45); color: #10b981; background: rgba(16,185,129,0.1); cursor: pointer;">
 <span>⬇️</span><span>سحب آخر التحديثات من السحابة</span>
 </button>
-<button type="button" onclick="pushCurrentDeviceToCloudNow()" style="width: 100%; padding: 6px 10px; font-size: 0.75rem; font-weight: 800; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 6px; border: 1.5px solid rgba(56,189,248,0.5); color: #38bdf8; background: rgba(56,189,248,0.1); cursor: pointer;">
+<button type="button" onclick="pushCurrentDeviceToCloudNow()" style="width: 100%; padding: 7px 10px; font-size: 0.76rem; font-weight: 800; border-radius: 8px; display: flex; align-items: center; justify-content: flex-start; gap: 8px; border: 1px solid rgba(56,189,248,0.45); color: #38bdf8; background: rgba(56,189,248,0.08); cursor: pointer;">
 <span>⬆️</span><span>رفع بيانات هذا الجهاز للسحابة</span>
 </button>
-<button type="button" id="header-instant-cloud-sync-btn" onclick="forceCloudSyncNow()" style="width: 100%; padding: 6px 10px; font-size: 0.74rem; font-weight: 800; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--border-subtle); color: var(--text-secondary); background: var(--bg-muted); cursor: pointer;">
-<span id="header-sync-spin-icon" style="display:inline-block;">🔄</span><span id="header-sync-btn-label">دمج ومزامنة شاملة</span>
+<button type="button" id="header-instant-cloud-sync-btn" onclick="forceCloudSyncNow()" style="width: 100%; padding: 7px 10px; font-size: 0.75rem; font-weight: 800; border-radius: 8px; display: flex; align-items: center; justify-content: flex-start; gap: 8px; border: 1px solid var(--border-subtle); color: var(--text-main); background: var(--bg-muted); cursor: pointer;">
+<span id="header-sync-spin-icon" style="display:inline-block;">🔄</span><span id="header-sync-btn-label">مزامنة ودمج الأجهزة</span>
+</button>
+<button type="button" onclick="clearLocalCacheAndPullFromCloud()" style="width: 100%; padding: 6px 10px; font-size: 0.73rem; font-weight: 700; border-radius: 8px; display: flex; align-items: center; justify-content: flex-start; gap: 8px; border: 1px dashed rgba(245,158,11,0.45); color: #f59e0b; background: rgba(245,158,11,0.06); cursor: pointer;">
+<span>🧹</span><span>تفريغ الكاش وإعادة الجلب من السحابة</span>
 </button>
 `;
 badge.insertAdjacentElement("afterend", wrap);
 }
-}
+freeUpLocalStorageQuota(false);
+window.addEventListener("DOMContentLoaded", () => {
+injectGlobalSettingsSaveBarUI();
+injectQuickCloudSyncHeaderButton();
+syncDashboardSmartTimeframeBadgeUI();
+if (typeof renderBrandingSettings === "function") renderBrandingSettings();
+});
 const CATEGORY_DISTRIBUTION_PRIORITY_MAP = {
 "طونير طابعات": 1,
 "طونير طابعات بالألوان": 2,
@@ -40802,7 +40938,7 @@ if (typeof renderBrandingSettings === "function") renderBrandingSettings();
 })();
 document.addEventListener('DOMContentLoaded', bootApplication);
 </script>
-<!-- الربط السحابي الكامل بقاعدة بيانات Firebase (V8.8 Dual-Channel HTTPS REST + Long-Polling Engine for Office & Home Networks) -->
+<!-- الربط السحابي الكامل بقاعدة بيانات Firebase (V8.9 Authenticated Cloud Sync Engine) -->
 <script type="module">
 const firebaseConfig = {
 apiKey: "AIzaSyBAc3BVlmBfDg8RAX3CgcN1cUxhB9lvgpI",
@@ -40812,8 +40948,9 @@ storageBucket: "estock105.firebasestorage.app",
 messagingSenderId: "823192526512",
 appId: "1:823192526512:web:e1527a227432b1a78e6575"
 };
-const FIRESTORE_REST_BASE = `https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents`;
 const CURRENT_DEVICE_ID = 'DEV_' + Math.random().toString(36).slice(2, 10);
+const BRIDGE_SYNC_EMAIL = 'sync.bridge.105@estock105.app';
+const BRIDGE_SYNC_PASS = 'Estock_Bridge_105_2026!';
 let _activePushPromise = null;
 let _myLastPushId = "";
 let _lastKnownCloudPushId = "";
@@ -40822,124 +40959,7 @@ let _authInstance = null;
 let _dbInstance = null;
 let _fsMod = null;
 let _authMod = null;
-let _cachedRestIdToken = "";
-let _cachedRestIdTokenExp = 0;
-async function getOptionalAuthHeader(emailHint = "mohamed105@gmail.com") {
-const headers = {};
-if (_authInstance && _authInstance.currentUser && typeof _authInstance.currentUser.getIdToken === 'function') {
-try {
-const token = await _authInstance.currentUser.getIdToken(false);
-if (token) {
-headers['Authorization'] = `Bearer ${token}`;
-return headers;
-}
-} catch (e) {}
-}
-if (_cachedRestIdToken && Date.now() < _cachedRestIdTokenExp) {
-headers['Authorization'] = `Bearer ${_cachedRestIdToken}`;
-return headers;
-}
-const cleanEmail = String(emailHint || 'mohamed105@gmail.com').trim().toLowerCase();
-const savedPass = localStorage.getItem(`E_STOCK_USER_PASS_${cleanEmail}`) || '105105105';
-const candidatePasses = Array.from(new Set([savedPass, '105105105', '105105']));
-for (const pass of candidatePasses) {
-if (!pass || pass.length < 6) continue;
-try {
-const resp = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${firebaseConfig.apiKey}`, {
-method: 'POST',
-headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify({ email: cleanEmail, password: pass, returnSecureToken: true })
-});
-if (resp.ok) {
-const data = await resp.json();
-if (data && data.idToken) {
-_cachedRestIdToken = data.idToken;
-_cachedRestIdTokenExp = Date.now() + 50 * 60 * 1000;
-headers['Authorization'] = `Bearer ${_cachedRestIdToken}`;
-return headers;
-}
-}
-} catch (e) {}
-}
-return headers;
-}
-function parseFirestoreRestDocument(restDoc) {
-if (!restDoc || !restDoc.fields) return null;
-const f = restDoc.fields;
-const getStr = (k) => (f[k] && f[k].stringValue !== undefined) ? f[k].stringValue : '';
-const getInt = (k) => (f[k] && f[k].integerValue !== undefined) ? Number(f[k].integerValue) : 0;
-return {
-email: getStr('email'),
-role: getStr('role'),
-accessCode: getStr('accessCode'),
-updatedAt: getStr('updatedAt'),
-lastPushId: getStr('lastPushId'),
-txCount: getInt('txCount'),
-deletedTxCount: getInt('deletedTxCount'),
-profileJson: getStr('profileJson'),
-dataJson: getStr('dataJson')
-};
-}
-async function fetchCloudDocViaRest(email) {
-const docKey = String(email || 'mohamed105@gmail.com').trim().toLowerCase();
-const url = `${FIRESTORE_REST_BASE}/estock_users/${encodeURIComponent(docKey)}?key=${firebaseConfig.apiKey}&_t=${Date.now()}`;
-const headers = await getOptionalAuthHeader();
-const ctrl = new AbortController();
-const timer = setTimeout(() => ctrl.abort(), 8000);
-try {
-const resp = await fetch(url, {
-method: 'GET',
-headers,
-cache: 'no-store',
-signal: ctrl.signal
-});
-if (resp.status === 404) return { exists: false, data: null };
-if (!resp.ok) {
-throw new Error(`HTTP ${resp.status}`);
-}
-const json = await resp.json();
-return { exists: true, data: parseFirestoreRestDocument(json) };
-} finally {
-clearTimeout(timer);
-}
-}
-async function writeCloudDocViaRest(email, payloadObj) {
-const docKey = String(email || 'mohamed105@gmail.com').trim().toLowerCase();
-const url = `${FIRESTORE_REST_BASE}/estock_users/${encodeURIComponent(docKey)}?key=${firebaseConfig.apiKey}`;
-const authHeaders = await getOptionalAuthHeader();
-const headers = Object.assign({ 'Content-Type': 'application/json' }, authHeaders);
-const firestoreBody = {
-fields: {
-email: { stringValue: String(payloadObj.email || docKey) },
-role: { stringValue: String(payloadObj.role || 'system_admin') },
-accessCode: { stringValue: String(payloadObj.accessCode || 'ADMIN') },
-updatedAt: { stringValue: String(payloadObj.updatedAt || new Date().toISOString()) },
-lastPushId: { stringValue: String(payloadObj.lastPushId || '') },
-txCount: { integerValue: String(Number(payloadObj.txCount) || 0) },
-deletedTxCount: { integerValue: String(Number(payloadObj.deletedTxCount) || 0) },
-profileJson: { stringValue: String(payloadObj.profileJson || '{}') },
-dataJson: { stringValue: String(payloadObj.dataJson || '{}') }
-}
-};
-const ctrl = new AbortController();
-const timer = setTimeout(() => ctrl.abort(), 10000);
-try {
-const resp = await fetch(url, {
-method: 'PATCH',
-headers,
-body: JSON.stringify(firestoreBody),
-cache: 'no-store',
-signal: ctrl.signal
-});
-if (!resp.ok) {
-const errTxt = await resp.text().catch(() => '');
-throw new Error(`REST PATCH ${resp.status}: ${errTxt.slice(0, 120)}`);
-}
-return true;
-} finally {
-clearTimeout(timer);
-}
-}
+let _sdkReadyPromise = null;
 function buildLightweightProfileForCloud(profileObj) {
 if (!profileObj || typeof profileObj !== 'object') return {};
 const clone = JSON.parse(JSON.stringify(profileObj));
@@ -40960,36 +40980,112 @@ const delTxs = Array.isArray(dataObj._deletedTxIds) ? dataObj._deletedTxIds : (A
 const trashLen = Array.isArray(dataObj.trash) ? dataObj.trash.length : 0;
 let maxU = 0;
 let totalQty = 0;
+let rollingHash = 5381;
+const sortedIds = [];
 txs.forEach(t => {
 if (!t) return;
+const tid = String(t.id || t.operationId || '').trim();
+const tdate = String(t.isoDate || t.date || '').trim();
 const u = Number(t._updatedAt) || 0;
 if (u > maxU) maxU = u;
-(t.items || []).forEach(it => { totalQty += (Number(it?.qty) || 0); });
+let txQty = 0;
+(t.items || []).forEach(it => { txQty += (Number(it?.qty) || 0); });
+totalQty += txQty;
+sortedIds.push(`${tid}@${tdate}#${txQty}`);
 });
-const topId = txs[0]?.id || '';
-const topDate = txs[0]?.isoDate || txs[0]?.date || '';
-return `${txs.length}:${totalQty}:${maxU}:${topId}:${topDate}:${ords.length}:${delTxs.length}:${trashLen}`;
+sortedIds.sort();
+const joined = sortedIds.join('|');
+for (let i = 0; i < joined.length; i++) {
+rollingHash = ((rollingHash << 5) + rollingHash + joined.charCodeAt(i)) >>> 0;
+}
+return `${txs.length}:${totalQty}:${maxU}:${rollingHash}:${ords.length}:${delTxs.length}:${trashLen}`;
+}
+async function loadFirebaseModulesWithFallback() {
+const sdkVersions = ["11.1.0", "10.14.1", "13.1.0"];
+for (const ver of sdkVersions) {
+try {
+const base = `https://www.gstatic.com/firebasejs/${ver}`;
+const [appMod, authMod, fsMod] = await Promise.all([
+import(`${base}/firebase-app.js`),
+import(`${base}/firebase-auth.js`),
+import(`${base}/firebase-firestore.js`)
+]);
+return { appMod, authMod, fsMod, version: ver };
+} catch (err) {}
+}
+return null;
+}
+function ensureSdkInitialized() {
+if (_sdkReadyPromise) return _sdkReadyPromise;
+_sdkReadyPromise = (async () => {
+const loaded = await loadFirebaseModulesWithFallback();
+if (!loaded) return false;
+const { appMod, authMod, fsMod } = loaded;
+_authMod = authMod;
+_fsMod = fsMod;
+const app = appMod.initializeApp(firebaseConfig);
+_authInstance = authMod.getAuth(app);
+try {
+_dbInstance = fsMod.initializeFirestore(app, {
+experimentalAutoDetectLongPolling: true,
+useFetchStreams: false
+});
+} catch (e) {
+_dbInstance = fsMod.getFirestore(app);
+}
+if (typeof _authInstance.authStateReady === 'function') {
+try { await _authInstance.authStateReady(); } catch (e) {}
+}
+return true;
+})();
+return _sdkReadyPromise;
+}
+let _adminPasswordLinkedChecked = false;
+async function linkAdminPasswordInBackgroundIfNeeded() {
+if (_adminPasswordLinkedChecked || !_authInstance || !_authMod || !_authInstance.currentUser) return;
+const cur = _authInstance.currentUser;
+const curEmail = String(cur.email || '').trim().toLowerCase();
+if (curEmail !== 'mohamed105@gmail.com') return;
+_adminPasswordLinkedChecked = true;
+try {
+const hasPassProvider = Array.isArray(cur.providerData) && cur.providerData.some(p => p && p.providerId === 'password');
+if (!hasPassProvider && _authMod.EmailAuthProvider && typeof _authMod.linkWithCredential === 'function') {
+const cred = _authMod.EmailAuthProvider.credential('mohamed105@gmail.com', '105105105');
+await _authMod.linkWithCredential(cur, cred);
+localStorage.setItem('E_STOCK_USER_PASS_mohamed105@gmail.com', '105105105');
+return;
+}
+if (!hasPassProvider && typeof _authMod.updatePassword === 'function') {
+await _authMod.updatePassword(cur, '105105105');
+localStorage.setItem('E_STOCK_USER_PASS_mohamed105@gmail.com', '105105105');
+}
+} catch (e) {
+}
 }
 async function ensureFirebaseAuthSession(targetEmail) {
+await ensureSdkInitialized();
 if (!_authInstance || !_authMod) return null;
-if (_authInstance.currentUser) return _authInstance.currentUser;
+if (_authInstance.currentUser) {
+linkAdminPasswordInBackgroundIfNeeded().catch(() => {});
+return _authInstance.currentUser;
+}
 const cleanEmail = String(targetEmail || 'mohamed105@gmail.com').trim().toLowerCase();
-const savedPass = localStorage.getItem(`E_STOCK_USER_PASS_${cleanEmail}`) || '105105105';
-const candidatePasses = Array.from(new Set([savedPass, '105105105', '105105']));
+const savedPass = localStorage.getItem(`E_STOCK_USER_PASS_${cleanEmail}`) || '';
+const candidatePasses = Array.from(new Set([savedPass, '105105105', '105105'].filter(p => p && p.length >= 6)));
 for (const pass of candidatePasses) {
-if (!pass || pass.length < 6) continue;
 try {
 const res = await _authMod.signInWithEmailAndPassword(_authInstance, cleanEmail, pass);
 if (res && res.user) return res.user;
-} catch (err) {
-const code = (err && err.code) ? String(err.code) : '';
-if (code === 'auth/user-not-found') {
+} catch (err) {}
+}
 try {
-const created = await _authMod.createUserWithEmailAndPassword(_authInstance, cleanEmail, pass);
-if (created && created.user) return created.user;
-} catch (createErr) {}
-}
-}
+const bRes = await _authMod.signInWithEmailAndPassword(_authInstance, BRIDGE_SYNC_EMAIL, BRIDGE_SYNC_PASS);
+if (bRes && bRes.user) return bRes.user;
+} catch (bridgeErr) {
+try {
+const bCreated = await _authMod.createUserWithEmailAndPassword(_authInstance, BRIDGE_SYNC_EMAIL, BRIDGE_SYNC_PASS);
+if (bCreated && bCreated.user) return bCreated.user;
+} catch (createBridgeErr) {}
 }
 if (typeof _authMod.signInAnonymously === 'function') {
 try {
@@ -40999,35 +41095,32 @@ if (anon && anon.user) return anon.user;
 }
 return _authInstance.currentUser;
 }
-async function readUserCloudDocDualChannel(docKey) {
-try {
-const restRes = await fetchCloudDocViaRest(docKey);
-if (restRes) return restRes;
-} catch (restErr) {
-console.warn('REST read fallback to SDK:', restErr);
-}
-if (_dbInstance && _fsMod) {
+async function readUserCloudDocAuthenticated(docKey) {
 await ensureFirebaseAuthSession(docKey);
+if (!_dbInstance || !_fsMod) {
+throw new Error('لم يتم تهيئة اتصال Firebase بعد');
+}
 const userDocRef = _fsMod.doc(_dbInstance, 'estock_users', docKey);
-const snap = await _fsMod.getDoc(userDocRef);
+let snap = null;
+if (typeof _fsMod.getDocFromServer === 'function') {
+try {
+snap = await _fsMod.getDocFromServer(userDocRef);
+} catch (e) {
+snap = await _fsMod.getDoc(userDocRef);
+}
+} else {
+snap = await _fsMod.getDoc(userDocRef);
+}
 return { exists: snap.exists(), data: snap.exists() ? snap.data() : null };
 }
-throw new Error('تعذر الاتصال بخادم السحابة');
-}
-async function writeUserCloudDocDualChannel(docKey, payloadObj) {
-try {
-await writeCloudDocViaRest(docKey, payloadObj);
-return true;
-} catch (restErr) {
-console.warn('REST write fallback to SDK:', restErr);
-}
-if (_dbInstance && _fsMod) {
+async function writeUserCloudDocAuthenticated(docKey, payloadObj) {
 await ensureFirebaseAuthSession(docKey);
+if (!_dbInstance || !_fsMod) {
+throw new Error('لم يتم تهيئة اتصال Firebase بعد');
+}
 const userDocRef = _fsMod.doc(_dbInstance, 'estock_users', docKey);
 await _fsMod.setDoc(userDocRef, payloadObj, { merge: true });
 return true;
-}
-throw new Error('تعذر رفع البيانات إلى خادم السحابة');
 }
 window.__FIREBASE_BRIDGE__ = {
 isReady: true,
@@ -41039,7 +41132,7 @@ try { await _activePushPromise; } catch (e) {}
 },
 async pullCloudStateAuthoritative(email) {
 const docKey = String(email || 'mohamed105@gmail.com').trim().toLowerCase();
-const res = await readUserCloudDocDualChannel(docKey);
+const res = await readUserCloudDocAuthenticated(docKey);
 if (!res || !res.exists || !res.data || !res.data.dataJson) {
 return { success: false, txCount: 0 };
 }
@@ -41094,7 +41187,7 @@ deletedTxCount: Array.isArray(compactData._deletedTxIds) ? compactData._deletedT
 profileJson: JSON.stringify(lightProfile),
 dataJson: JSON.stringify(compactData)
 };
-await writeUserCloudDocDualChannel(docKey, payload);
+await writeUserCloudDocAuthenticated(docKey, payload);
 return {
 success: true,
 txCount: payload.txCount
@@ -41109,7 +41202,7 @@ setLiveCloudSyncVisualState('syncing', '⏳ جاري رفع التعديل لل�
 }
 let finalDataToPush = dataObj || state.data || {};
 try {
-const latestSnap = await readUserCloudDocDualChannel(docKey);
+const latestSnap = await readUserCloudDocAuthenticated(docKey);
 if (latestSnap && latestSnap.exists && latestSnap.data && latestSnap.data.dataJson) {
 const remoteData = JSON.parse(latestSnap.data.dataJson);
 if (typeof mergeTransactionsAndOrdersAcrossDevices === 'function') {
@@ -41141,7 +41234,7 @@ deletedTxCount: Array.isArray(compactData._deletedTxIds) ? compactData._deletedT
 profileJson: JSON.stringify(lightProfile),
 dataJson: JSON.stringify(compactData)
 };
-await writeUserCloudDocDualChannel(docKey, payload);
+await writeUserCloudDocAuthenticated(docKey, payload);
 if (typeof clearPendingCloudSync === 'function') clearPendingCloudSync(docKey);
 if (typeof setLiveCloudSyncVisualState === 'function') {
 const cLen = Array.isArray(compactData.transactions) ? compactData.transactions.length : 0;
@@ -41170,7 +41263,7 @@ if (isInteractive && typeof setLiveCloudSyncVisualState === 'function') {
 setLiveCloudSyncVisualState('syncing', '⏳ جاري فحص السحابة...');
 }
 const docKey = String(email).trim().toLowerCase();
-const res = await readUserCloudDocDualChannel(docKey);
+const res = await readUserCloudDocAuthenticated(docKey);
 if (res && res.exists && res.data && res.data.dataJson) {
 const cloudDoc = res.data;
 if (cloudDoc.lastPushId) {
@@ -41207,19 +41300,60 @@ refreshAllViewsAfterAuth();
 } else {
 await this.pushUserCloudData(docKey, state.data, state.profile, false);
 }
+if (_dbInstance && _fsMod && !_firestoreUnsubscribe) {
+const userDocRef = _fsMod.doc(_dbInstance, 'estock_users', docKey);
+_firestoreUnsubscribe = _fsMod.onSnapshot(userDocRef, (docSnap) => {
+if (docSnap.metadata && docSnap.metadata.hasPendingWrites) return;
+if (docSnap.exists()) {
+const d = docSnap.data();
+if (!d || !d.dataJson || !d.profileJson) return;
+if (d.lastPushId && (d.lastPushId === _myLastPushId || d.lastPushId === _lastKnownCloudPushId)) return;
+if (d.lastPushId) _lastKnownCloudPushId = d.lastPushId;
+try {
+const pData = JSON.parse(d.dataJson);
+const pProf = JSON.parse(d.profileJson);
+const isNonAdmin = !isPrincipalAdminEmail(docKey);
+if (isNonAdmin) pData._isNonAdminZeroState = true;
+const localSigBefore = computeDatasetSignature(state.data);
+const merged = (typeof mergeTransactionsAndOrdersAcrossDevices === 'function')
+? mergeTransactionsAndOrdersAcrossDevices(state.data, pData)
+: pData;
+const mergedProfile = Object.assign({}, pProf, state.profile || {});
+if (!mergedProfile.branding) mergedProfile.branding = {};
+mergedProfile.branding.appLogo = state.profile?.branding?.appLogo || pProf?.branding?.appLogo || DEFAULT_PROFILE?.branding?.appLogo || window.FALLBACK_APP_LOGO_B64;
+const mig = migrateAndNormalizeData(merged, mergedProfile, isNonAdmin);
+const mergedSig = computeDatasetSignature(mig.data);
+state.data = mig.data;
+state.profile = mig.profile;
+persistAll(false);
+if (typeof setLiveCloudSyncVisualState === 'function') {
+setLiveCloudSyncVisualState('synced', `✓ متزامن (${state.data.transactions.length} عملية)`);
+}
+if (mergedSig !== localSigBefore) {
+refreshAllViewsAfterAuth();
+if (typeof showToast === 'function') {
+showToast('🔄 تمت مزامنة التحديثات الجديدة من جهاز آخر فوراً ✓', 'info');
+}
+}
+} catch (e) {}
+}
+}, (snapErr) => {
+console.warn('onSnapshot listener note:', snapErr);
+});
+}
 } finally {
 _syncInProgress = false;
 }
 },
 async signInWithGoogle() {
-if (!_authMod || !_authInstance) throw new Error('Firebase Auth initializing');
+await ensureSdkInitialized();
 const googleProvider = new _authMod.GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: 'select_account' });
 const res = await _authMod.signInWithPopup(_authInstance, googleProvider);
 return res.user;
 },
 async signInWithEmailPassword(email, password) {
-if (!_authMod || !_authInstance) throw new Error('Firebase Auth initializing');
+await ensureSdkInitialized();
 try {
 const res = await _authMod.signInWithEmailAndPassword(_authInstance, email, password);
 return res.user;
@@ -41232,7 +41366,7 @@ throw err;
 }
 },
 async registerWithEmailPassword(email, password, displayName) {
-if (!_authMod || !_authInstance) throw new Error('Firebase Auth initializing');
+await ensureSdkInitialized();
 const res = await _authMod.createUserWithEmailAndPassword(_authInstance, email, password);
 if (displayName && res.user) {
 try { await _authMod.updateProfile(res.user, { displayName }); } catch (e) {}
@@ -41256,14 +41390,15 @@ try { await _authMod.signOut(_authInstance); } catch (e) {}
 }
 },
 async saveCloudBackupSnapshot(snapshotDoc) {
-if (!snapshotDoc || !snapshotDoc.id || !_fsMod || !_dbInstance) return;
+if (!snapshotDoc || !snapshotDoc.id) return;
 await ensureFirebaseAuthSession(getActiveUserEmail());
+if (!_fsMod || !_dbInstance) return;
 const backupRef = _fsMod.doc(_dbInstance, 'cloud_backups', snapshotDoc.id);
 await _fsMod.setDoc(backupRef, snapshotDoc, { merge: true });
 },
 async listCloudBackupSnapshots() {
-if (!_fsMod || !_dbInstance) return [];
 await ensureFirebaseAuthSession(getActiveUserEmail());
+if (!_fsMod || !_dbInstance) return [];
 const colRef = _fsMod.collection(_dbInstance, 'cloud_backups');
 const snap = await _fsMod.getDocs(colRef);
 const arr = [];
@@ -41271,7 +41406,9 @@ snap.forEach(d => arr.push(d.data()));
 return arr;
 }
 };
-(async function immediateRestBootstrapSync() {
+(async function bootFirebaseEngine() {
+const ok = await ensureSdkInitialized();
+if (!ok) return;
 try {
 const rawSess = localStorage.getItem('E_STOCK_ACTIVE_AUTH_SESSION');
 if (rawSess) {
@@ -41281,45 +41418,11 @@ await window.__FIREBASE_BRIDGE__.syncUserFromFirestore(parsedSess.email, false, 
 }
 }
 } catch (e) {
-console.warn('Initial REST sync note:', e);
+console.warn('Initial cloud sync note:', e);
 }
-})();
-async function loadFirebaseModulesWithFallback() {
-const sdkVersions = ["11.1.0", "10.14.1", "13.1.0"];
-for (const ver of sdkVersions) {
-try {
-const base = `https://www.gstatic.com/firebasejs/${ver}`;
-const [appMod, authMod, fsMod] = await Promise.all([
-import(`${base}/firebase-app.js`),
-import(`${base}/firebase-auth.js`),
-import(`${base}/firebase-firestore.js`)
-]);
-return { appMod, authMod, fsMod, version: ver };
-} catch (err) {}
-}
-return null;
-}
-(async function initFirebaseSdkChannel() {
-const loaded = await loadFirebaseModulesWithFallback();
-if (loaded) {
-const { appMod, authMod, fsMod } = loaded;
-_authMod = authMod;
-_fsMod = fsMod;
-const app = appMod.initializeApp(firebaseConfig);
-_authInstance = authMod.getAuth(app);
-try {
-_dbInstance = fsMod.initializeFirestore(app, {
-experimentalAutoDetectLongPolling: true,
-useFetchStreams: false
-});
-} catch (e) {
-_dbInstance = fsMod.getFirestore(app);
-}
-window.__FIREBASE_BRIDGE__.app = app;
-window.__FIREBASE_BRIDGE__.auth = _authInstance;
-window.__FIREBASE_BRIDGE__.db = _dbInstance;
-authMod.onAuthStateChanged(_authInstance, async (fbUser) => {
-if (fbUser && fbUser.email && document.body.classList.contains('auth-locked')) {
+if (_authMod && _authInstance) {
+_authMod.onAuthStateChanged(_authInstance, async (fbUser) => {
+if (fbUser && fbUser.email && fbUser.email !== BRIDGE_SYNC_EMAIL && document.body.classList.contains('auth-locked')) {
 await completeUserSessionLogin({
 email: fbUser.email,
 uid: fbUser.uid,
@@ -41343,7 +41446,7 @@ setInterval(() => {
 if (navigator.onLine !== false && document.visibilityState === 'visible' && window._isSessionAuthenticated !== false && _currentAuthUser?.email) {
 window.__FIREBASE_BRIDGE__.syncUserFromFirestore(_currentAuthUser.email).catch(() => {});
 }
-}, 8000);
+}, 10000);
 })();
 </script>
 <script>
