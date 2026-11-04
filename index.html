@@ -40101,6 +40101,594 @@ jpegUrls.push(canvas.toDataURL("image/jpeg", 0.94));
 return multipleJpegDataUrlsToPdfBlob(jpegUrls, 595.28, 841.89, W, H);
 };
 window.generateCertificatePdfBlob = generateCertificatePdfBlob;
+formatCertificateItemCellHtml = function(rawLineItem, forceShowCategoryInParens = false) {
+const cfg = getCertConfig();
+const st = resolveStructuredItemForCertificate(rawLineItem);
+const sep = cfg.partsSeparator || " / ";
+const slashParts = [];
+if (st.shortRef) slashParts.push(escapeHtml(st.shortRef));
+if (st.deviceFull) {
+slashParts.push(escapeHtml(st.deviceFull));
+} else if (st.specDetail) {
+slashParts.push(escapeHtml(st.specDetail));
+}
+if (st.colorTag) {
+slashParts.push(escapeHtml(st.colorTag));
+}
+const slashJoined = slashParts.length > 0 ? slashParts.join(escapeHtml(sep)) : escapeHtml(safeText(rawLineItem?.name, "—"));
+if (forceShowCategoryInParens) {
+const catStr = safeText(st.category, "");
+if (catStr && catStr !== "لم يُسجّل بعد" && catStr !== "عام") {
+return `<strong>(${escapeHtml(catStr)})</strong> <span dir="ltr" style="unicode-bidi:isolate;font-weight:700;">${slashJoined}</span>`;
+}
+}
+return `<span dir="ltr" style="unicode-bidi:isolate;font-weight:700;display:inline-block;text-align:left;">${slashJoined}</span>`;
+};
+window.formatCertificateItemCellHtml = formatCertificateItemCellHtml;
+formatCertificateItemCellPlainText = function(rawLineItem, forceShowCategoryInParens = false) {
+const cfg = getCertConfig();
+const st = resolveStructuredItemForCertificate(rawLineItem);
+const sep = cfg.partsSeparator || " / ";
+const slashParts = [];
+if (st.shortRef) slashParts.push(st.shortRef);
+if (st.deviceFull) {
+slashParts.push(st.deviceFull);
+} else if (st.specDetail) {
+slashParts.push(st.specDetail);
+}
+if (st.colorTag) {
+slashParts.push(st.colorTag);
+}
+const slashJoined = slashParts.length > 0 ? slashParts.join(sep) : safeText(rawLineItem?.name, "—");
+if (forceShowCategoryInParens) {
+const catStr = safeText(st.category, "");
+if (catStr && catStr !== "لم يُسجّل بعد" && catStr !== "عام") {
+return `(${catStr}) ${slashJoined}`;
+}
+}
+return slashJoined;
+};
+window.formatCertificateItemCellPlainText = formatCertificateItemCellPlainText;
+function prepareOrderedAndGroupedVoucherItems(rawItems, mergeEqualColorSets = false) {
+const itemsList = (Array.isArray(rawItems) ? rawItems : [])
+.filter(Boolean)
+.map(it => {
+const st = resolveStructuredItemForCertificate(it);
+const cat = safeText(st.category || it.category, "أدوات ومعدات");
+return {
+...it,
+category: cat,
+shortRef: st.shortRef || it.shortRef || "",
+deviceType: st.deviceType || it.deviceType || "",
+deviceModel: st.deviceModel || it.deviceModel || "",
+deviceFull: st.deviceFull || it.deviceFull || "",
+colorTag: st.colorTag || it.colorTag || "",
+specDetail: st.specDetail || it.specDetail || "",
+_catRank: getCategoryDistributionRank(cat),
+_colorRank: getColorSortRank(st)
+};
+});
+itemsList.sort((a, b) => {
+if (a._catRank !== b._catRank) return a._catRank - b._catRank;
+if (a.category !== b.category) return a.category.localeCompare(b.category, "ar");
+if (a.deviceFull !== b.deviceFull) return String(a.deviceFull || "").localeCompare(String(b.deviceFull || ""));
+if (a._colorRank !== b._colorRank) return a._colorRank - b._colorRank;
+return String(a.shortRef || a.name || "").localeCompare(String(b.shortRef || b.name || ""));
+});
+if (!mergeEqualColorSets) {
+return itemsList;
+}
+const byDeviceAndCat = new Map();
+itemsList.forEach(it => {
+const isColorCat = it.category.includes("ألوان");
+const key = (isColorCat && it.deviceFull) ? `${it.category}___${it.deviceFull}___${it.qty}` : null;
+if (key) {
+if (!byDeviceAndCat.has(key)) byDeviceAndCat.set(key, []);
+byDeviceAndCat.get(key).push(it);
+}
+});
+const consumedSetItems = new Set();
+const finalItems = [];
+itemsList.forEach(it => {
+if (consumedSetItems.has(it)) return;
+const isColorCat = it.category.includes("ألوان");
+const key = (isColorCat && it.deviceFull) ? `${it.category}___${it.deviceFull}___${it.qty}` : null;
+const group = key ? byDeviceAndCat.get(key) : null;
+if (group && group.length === 4) {
+group.forEach(g => consumedSetItems.add(g));
+const refsJoined = group.map(g => g.shortRef || g.name).join(" + ");
+const totalUnitsInSet = group.reduce((s, g) => s + Math.max(1, sanitize(g.qty)), 0);
+finalItems.push({
+...it,
+shortRef: refsJoined,
+colorTag: `طقم 4 ألوان كامل (${it.qty} × 4 = ${totalUnitsInSet})`,
+qty: totalUnitsInSet,
+notes: it.notes || `${it.qty} من كل لون (أسود/أزرق/أحمر/أصفر)`
+});
+} else {
+finalItems.push(it);
+}
+});
+return finalItems;
+}
+window.prepareOrderedAndGroupedVoucherItems = prepareOrderedAndGroupedVoucherItems;
+function getOptimizedCertColumnsForVoucher(voucher, cfgOverride) {
+const baseCols = getActiveCertColumnsForVoucher(voucher, cfgOverride).map(c => Object.assign({}, c));
+const items = Array.isArray(voucher?.items) ? voucher.items : [];
+const hasAnyNotes = items.some(it => it && it.notes && String(it.notes).trim() !== "" && String(it.notes).trim() !== "undefined");
+const filteredCols = baseCols.filter(c => !(c.key === "extra" && (c.sourceField === "category" || !c.sourceField)));
+if (!hasAnyNotes) {
+const itemCol = filteredCols.find(c => c.key === "item");
+const notesCol = filteredCols.find(c => c.key === "notes");
+if (itemCol && notesCol && notesCol.widthPct > 12) {
+const freed = notesCol.widthPct - 12;
+notesCol.widthPct = 12;
+itemCol.widthPct += freed;
+}
+}
+return normalizeColumnsWidthTo100(filteredCols);
+}
+function thefreed(notesCol, baseCols) {
+const origNotes = baseCols.find(c => c.key === "notes");
+return origNotes ? Math.max(0, origNotes.widthPct - 12) : 8;
+}
+function paginateCertItemsWithCategoryHeaders(orderedItems, maxVisualUnitsPerPage = 18.5) {
+if (!Array.isArray(orderedItems) || orderedItems.length === 0) {
+return [[]];
+}
+const uniqueCatsCount = new Set(orderedItems.map(i => i.category || "عام")).size;
+const totalVisualUnits = orderedItems.length + (uniqueCatsCount * 0.52);
+if (totalVisualUnits <= maxVisualUnitsPerPage) {
+const singlePageEntries = [];
+let lastCat = null;
+orderedItems.forEach((it, idx) => {
+const cat = it.category || "عام";
+if (cat !== lastCat) {
+singlePageEntries.push({ type: "category_header", category: cat, isContinuation: false });
+lastCat = cat;
+}
+singlePageEntries.push({ type: "item", item: it, globalIndex: idx });
+});
+return [singlePageEntries];
+}
+const pages = [];
+let currentPage = [];
+let currentUnits = 0;
+let lastCatOnPage = null;
+const pageCapacity = 16.5;
+orderedItems.forEach((it, idx) => {
+const cat = it.category || "عام";
+const needsCatHeader = (cat !== lastCatOnPage);
+const neededUnits = 1 + (needsCatHeader ? 0.55 : 0);
+if (currentPage.length > 0 && (currentUnits + neededUnits) > pageCapacity) {
+pages.push(currentPage);
+currentPage = [];
+currentUnits = 0;
+const isCont = (cat === lastCatOnPage);
+currentPage.push({ type: "category_header", category: cat, isContinuation: isCont });
+currentUnits += 0.55;
+lastCatOnPage = cat;
+} else if (needsCatHeader) {
+currentPage.push({ type: "category_header", category: cat, isContinuation: false });
+currentUnits += 0.55;
+lastCatOnPage = cat;
+}
+currentPage.push({ type: "item", item: it, globalIndex: idx });
+currentUnits += 1;
+});
+if (currentPage.length > 0) {
+pages.push(currentPage);
+}
+return pages;
+}
+window.paginateCertItemsWithCategoryHeaders = paginateCertItemsWithCategoryHeaders;
+generateVoucherA4Html = function(voucher) {
+const cfg = getCertConfig();
+const activeCols = getOptimizedCertColumnsForVoucher(voucher, cfg);
+const headerSrc = escapeHtml(getBrandingAssetSrc("header") || "./en_tete.png");
+const footerSrc = escapeHtml(getBrandingAssetSrc("footer") || "./en_pied.png");
+const secretCode = escapeHtml(generateCertSecretCode(voucher));
+const introHtml = buildOfficialIntroLine(voucher);
+const mergeColorSets = Boolean(voucher?._mergeEqualColorSets || window._certMergeEqualColorSets);
+const orderedItems = prepareOrderedAndGroupedVoucherItems(voucher?.items || [], mergeColorSets);
+const pagesEntries = paginateCertItemsWithCategoryHeaders(orderedItems, 18.5);
+const totalPages = pagesEntries.length;
+const totalVisualRowsPage1 = pagesEntries[0].reduce((s, e) => s + (e.type === "category_header" ? 0.55 : 1), 0);
+const isCompactLayout = totalVisualRowsPage1 > 10 || totalPages > 1;
+const isUltraCompact = totalVisualRowsPage1 > 14.5;
+const thPad = isUltraCompact ? "2.5px 4px" : (isCompactLayout ? "3px 5px" : "4px 6px");
+const thFont = isUltraCompact ? "7.8pt" : (isCompactLayout ? "8.1pt" : "8.5pt");
+const theadCellsHtml = activeCols.map(col => `
+<th style="width: ${col.widthPct}%; text-align: center; padding: ${thPad}; font-size: ${thFont};">${escapeHtml(col.title)}</th>
+`).join("");
+const signatureBlockHtml = cfg.showSecondSignature
+? `
+<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-top: ${isCompactLayout ? '6px' : '14px'}; padding: 0 8%; font-weight: 800; font-size: ${isCompactLayout ? '9.3pt' : '10.5pt'}; color: #000;">
+<div style="text-align: center;">
+<div>${escapeHtml(cfg.secondSignatureText)}</div>
+${cfg.secondSignatureSubName ? `<div style="font-size: 8.4pt; font-weight: 600; margin-top: 2px;">${escapeHtml(cfg.secondSignatureSubName)}</div>` : ""}
+</div>
+<div style="text-align: center;">
+<div>${escapeHtml(cfg.signatureText)}</div>
+${cfg.signatureSubName ? `<div style="font-size: 8.4pt; font-weight: 600; margin-top: 2px;">${escapeHtml(cfg.signatureSubName)}</div>` : ""}
+</div>
+</div>
+`
+: `
+<div class="cert-signature-block" style="margin-top: ${isCompactLayout ? '5px' : '10px'}; margin-bottom: ${isCompactLayout ? '5px' : '12px'}; font-size: ${isCompactLayout ? '9.1pt' : '9.6pt'}; min-height: ${isCompactLayout ? '30px' : '38px'};">
+<div>${escapeHtml(cfg.signatureText)}</div>
+${cfg.signatureSubName ? `<div style="font-size: 8.4pt; font-weight: 600; margin-top: 2px;">${escapeHtml(cfg.signatureSubName)}</div>` : ""}
+</div>
+`;
+return pagesEntries.map((pageRows, pageIdx) => {
+const isFirstPage = pageIdx === 0;
+const isLastPage = pageIdx === totalPages - 1;
+const cellPad = isUltraCompact ? "1.8px 5px" : (isCompactLayout ? "2.5px 5px" : "4px 6px");
+const cellFont = isUltraCompact ? "7.6pt" : (isCompactLayout ? "8pt" : "8.5pt");
+const catHeaderPad = isUltraCompact ? "1px 8px" : "1.8px 8px";
+const catHeaderFont = isUltraCompact ? "7.6pt" : "8.1pt";
+const tbodyRowsHtml = pageRows.map(entry => {
+if (entry.type === "category_header") {
+const catTitle = entry.isContinuation ? `${entry.category} (تابع)` : entry.category;
+return `
+<tr class="cert-cat-subheader-row" style="page-break-inside: avoid; break-inside: avoid; page-break-after: avoid; break-after: avoid;">
+<td colspan="${activeCols.length}" style="background-color: #f1f5f9 !important; color: #0f172a !important; font-weight: 800; font-size: ${catHeaderFont}; line-height: 1.15; padding: ${catHeaderPad} !important; text-align: right; border: 1px solid #000000; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
+<span style="display: inline-flex; align-items: center; gap: 5px;">
+<span style="font-size: 6.5pt; color: #334155;">▪</span>
+<span>${escapeHtml(catTitle)}</span>
+</span>
+</td>
+</tr>
+`;
+}
+const item = entry.item;
+const globalIdx = entry.globalIndex;
+const tdsHtml = activeCols.map(col => {
+const cellVal = getCertCellContentForColumn(col.key, col, item, globalIdx, false);
+if (col.key === "index") {
+return `<td style="width: ${col.widthPct}%; text-align: center; font-weight: 700; font-size: ${cellFont}; padding: ${cellPad} !important;" class="tabular-nums">${cellVal}</td>`;
+}
+if (col.key === "item") {
+return `<td style="width: ${col.widthPct}%; text-align: right; font-size: ${cellFont}; line-height: 1.24; padding: ${cellPad} !important;">${cellVal}</td>`;
+}
+if (col.key === "qty") {
+return `<td style="width: ${col.widthPct}%; text-align: center; font-weight: 800; font-size: ${isUltraCompact ? '8pt' : '8.7pt'}; padding: ${cellPad} !important;" class="tabular-nums">${cellVal}</td>`;
+}
+return `<td style="width: ${col.widthPct}%; text-align: center; font-size: ${cellFont}; line-height: 1.22; padding: ${cellPad} !important;">${cellVal}</td>`;
+}).join("");
+return `<tr>${tdsHtml}</tr>`;
+}).join("");
+const pageIndicatorBadge = totalPages > 1
+? `<div style="font-size: 7.8pt; font-weight: 700; color: #334155; text-align: left; margin-bottom: 1px;">الصفحة ${pageIdx + 1} من ${totalPages}</div>`
+: "";
+const introSectionHtml = isFirstPage
+? `<p class="cert-intro-paragraph" style="font-size: ${isCompactLayout ? '8.6pt' : '9.2pt'}; margin-bottom: ${isCompactLayout ? '3px' : '6px'};">${introHtml}</p>`
+: `<p class="cert-intro-paragraph" style="font-size: 8.4pt; margin-bottom: 4px; background: #f8fafc; padding: 3px 10px; border: 1px dashed #94a3b8; border-radius: 6px;">
+<strong>تابع إشهاد التسليم (${escapeHtml(voucher.id || "")})</strong> — المستفيد: <strong>${escapeHtml(voucher.recipient || "")}</strong> (${escapeHtml(voucher.destination || "")}) — التاريخ: <strong>${escapeHtml(formatOfficialCertDate(voucher))}</strong>
+</p>`;
+const continuationFooterNote = !isLastPage
+? `<div style="text-align: left; font-size: 8.2pt; font-weight: 800; color: #0f172a; margin-top: 4px; padding-left: 4%;">... يتبع في الصفحة الموالية (${pageIdx + 2} / ${totalPages}) ⬅️</div>`
+: signatureBlockHtml;
+const pageBreakStyle = !isLastPage ? "page-break-after: always; break-after: page;" : "";
+return `
+<div class="official-cert-page" data-voucher-id="${escapeHtml(voucher.id || "")}" data-secret-code="${secretCode}" style="${pageBreakStyle}">
+<div class="cert-top-section">
+<div class="cert-header-wrap">
+<img src="${headerSrc}"
+onerror="if(this.src!==window.FALLBACK_EN_TETE_B64)this.src=window.FALLBACK_EN_TETE_B64;"
+style="width: 100%; max-height: ${isUltraCompact ? '86px' : (isCompactLayout ? '95px' : '110px')}; object-fit: contain;"
+alt="En-tête" />
+</div>
+${pageIndicatorBadge}
+<div class="cert-title-container" style="margin-bottom: ${isCompactLayout ? '3px' : '6px'};">
+<div class="cert-title-box" style="font-size: ${isCompactLayout ? '11.5pt' : '12.8pt'}; padding: 1.5px 34px;">${escapeHtml(cfg.titleText)}${totalPages > 1 && !isFirstPage ? ` (تابع ${pageIdx + 1}/${totalPages})` : ""}</div>
+</div>
+${introSectionHtml}
+<table class="cert-official-table" style="margin-bottom: ${isCompactLayout ? '4px' : '8px'};">
+<thead>
+<tr>
+${theadCellsHtml}
+</tr>
+</thead>
+<tbody>
+${tbodyRowsHtml}
+</tbody>
+</table>
+${continuationFooterNote}
+</div>
+<div class="cert-bottom-section">
+<div class="cert-secret-code" style="font-size: 8px; opacity: 0.4;">${secretCode}${totalPages > 1 ? ` [P.${pageIdx + 1}/${totalPages}]` : ""}</div>
+<div class="cert-footer-wrap">
+<img src="${footerSrc}"
+onerror="if(this.src!==window.FALLBACK_EN_PIED_B64)this.src=window.FALLBACK_EN_PIED_B64;"
+style="width: 100%; max-height: ${isUltraCompact ? '54px' : (isCompactLayout ? '60px' : '70px')}; object-fit: contain;"
+alt="Pied de page" />
+</div>
+</div>
+</div>
+`;
+}).join("");
+};
+window.generateVoucherA4Html = generateVoucherA4Html;
+generateCertificatePdfBlob = async function(voucher) {
+const cfg = getCertConfig();
+const activeCols = getOptimizedCertColumnsForVoucher(voucher, cfg);
+const W = 1240;
+const H = 1754;
+const padX = 48;
+const contentW = W - padX * 2;
+const headerPrimary = getBrandingAssetSrc("header") || "./en_tete.png";
+const footerPrimary = getBrandingAssetSrc("footer") || "./en_pied.png";
+const [headerImg, footerImg] = await Promise.all([
+loadCertImageWithFallbackAsync(headerPrimary, window.FALLBACK_EN_TETE_B64),
+loadCertImageWithFallbackAsync(footerPrimary, window.FALLBACK_EN_PIED_B64)
+]);
+const mergeColorSets = Boolean(voucher?._mergeEqualColorSets || window._certMergeEqualColorSets);
+const orderedItems = prepareOrderedAndGroupedVoucherItems(voucher?.items || [], mergeColorSets);
+const pagesEntries = paginateCertItemsWithCategoryHeaders(orderedItems, 18.5);
+const totalPages = pagesEntries.length;
+const jpegUrls = [];
+for (let pageIdx = 0; pageIdx < totalPages; pageIdx++) {
+const pageRows = pagesEntries[pageIdx];
+const isFirstPage = pageIdx === 0;
+const isLastPage = pageIdx === totalPages - 1;
+const visualUnitsOnPage = pageRows.reduce((s, e) => s + (e.type === "category_header" ? 0.55 : 1), 0);
+const isCompact = visualUnitsOnPage > 10 || totalPages > 1;
+const isUltra = visualUnitsOnPage > 14.5;
+const canvas = document.createElement("canvas");
+canvas.width = W;
+canvas.height = H;
+const ctx = canvas.getContext("2d");
+ctx.fillStyle = "#ffffff";
+ctx.fillRect(0, 0, W, H);
+ctx.direction = "rtl";
+let y = 20;
+if (headerImg && headerImg.width > 0) {
+const maxH = isUltra ? 155 : (isCompact ? 170 : 190);
+const ratio = Math.min(contentW / headerImg.width, maxH / headerImg.height);
+const dw = headerImg.width * ratio;
+const dh = headerImg.height * ratio;
+ctx.drawImage(headerImg, (W - dw) / 2, y, dw, dh);
+y += dh + 6;
+} else {
+ctx.fillStyle = "#000000";
+ctx.font = "800 24px Tajawal, Arial, sans-serif";
+ctx.textAlign = "center";
+ctx.fillText("المملكة المغربية — وزارة العدل — المديرية الإقليمية للعدل بسطات", W / 2, y + 36);
+y += 56;
+}
+if (totalPages > 1) {
+ctx.save();
+ctx.fillStyle = "#334155";
+ctx.font = "700 15px Tajawal, Arial, sans-serif";
+ctx.textAlign = "left";
+ctx.fillText(`الصفحة ${pageIdx + 1} من ${totalPages}`, padX, y + 16);
+ctx.restore();
+}
+const pageTitle = isFirstPage ? cfg.titleText : `${cfg.titleText} (تابع ${pageIdx + 1}/${totalPages})`;
+ctx.save();
+ctx.font = isCompact ? "800 25px Tajawal, Arial, sans-serif" : "800 29px Tajawal, Arial, sans-serif";
+const titleTextWidth = Math.max(210, Math.ceil(ctx.measureText(pageTitle).width) + 64);
+const pillW = Math.min(contentW - 40, titleTextWidth);
+const pillH = isCompact ? 40 : 46;
+const pillX = (W - pillW) / 2;
+const pillY = y + 2;
+const pillR = pillH / 2;
+ctx.beginPath();
+ctx.moveTo(pillX + pillR, pillY);
+ctx.lineTo(pillX + pillW - pillR, pillY);
+ctx.arc(pillX + pillW - pillR, pillY + pillR, pillR, -Math.PI / 2, Math.PI / 2);
+ctx.lineTo(pillX + pillR, pillY + pillH);
+ctx.arc(pillX + pillR, pillY + pillR, pillR, Math.PI / 2, -Math.PI / 2);
+ctx.closePath();
+ctx.fillStyle = "#ffffff";
+ctx.fill();
+ctx.lineWidth = 2.3;
+ctx.strokeStyle = "#000000";
+ctx.stroke();
+ctx.fillStyle = "#000000";
+ctx.textAlign = "center";
+ctx.textBaseline = "middle";
+ctx.fillText(pageTitle, W / 2, pillY + pillH / 2 + 2);
+ctx.restore();
+y = pillY + pillH + (isCompact ? 12 : 18);
+const introPlain = isFirstPage
+? buildOfficialIntroPlainText(voucher)
+: `تابع إشهاد التسليم (${voucher.id || ""}) — المستفيد: ${voucher.recipient || ""} (${voucher.destination || ""}) — التاريخ: ${formatOfficialCertDate(voucher)}`;
+ctx.save();
+ctx.fillStyle = "#000000";
+ctx.font = isCompact ? "700 18.5px Tajawal, Arial, sans-serif" : "700 20.5px Tajawal, Arial, sans-serif";
+ctx.textAlign = "right";
+ctx.textBaseline = "top";
+const introLines = wrapCanvasTextLines(ctx, introPlain, contentW);
+introLines.forEach(line => {
+ctx.fillText(line, W - padX, y);
+y += isCompact ? 26 : 30;
+});
+ctx.restore();
+y += 6;
+let usedW = 0;
+const colWidths = activeCols.map((col, i) => {
+if (i === activeCols.length - 1) return Math.max(40, contentW - usedW);
+const w = Math.round(contentW * (col.widthPct / 100));
+usedW += w;
+return w;
+});
+const thH = isUltra ? 34 : (isCompact ? 38 : 42);
+ctx.save();
+let colRightX = W - padX;
+activeCols.forEach((col, cIdx) => {
+const cw = colWidths[cIdx];
+const cellLeftX = colRightX - cw;
+ctx.fillStyle = "#efefef";
+ctx.fillRect(cellLeftX, y, cw, thH);
+ctx.lineWidth = 1.6;
+ctx.strokeStyle = "#000000";
+ctx.strokeRect(cellLeftX, y, cw, thH);
+ctx.fillStyle = "#000000";
+ctx.font = isCompact ? "800 17.5px Tajawal, Arial, sans-serif" : "800 19.5px Tajawal, Arial, sans-serif";
+ctx.textAlign = "center";
+ctx.textBaseline = "middle";
+ctx.fillText(col.title, cellLeftX + cw / 2, y + thH / 2 + 1);
+colRightX -= cw;
+});
+ctx.restore();
+y += thH;
+const itemFontSize = isUltra ? 15.5 : (isCompact ? 16.5 : 18);
+const qtyFontSize = isUltra ? 17 : (isCompact ? 18 : 19.5);
+const lineHeight = isUltra ? 20 : (isCompact ? 22 : 25);
+const minRowH = isUltra ? 29 : (isCompact ? 33 : 38);
+const catHeaderH = isUltra ? 23 : 26;
+pageRows.forEach(entry => {
+if (entry.type === "category_header") {
+const catTitle = `▪ ${entry.isContinuation ? `${entry.category} (تابع)` : entry.category}`;
+ctx.save();
+ctx.fillStyle = "#f1f5f9";
+ctx.fillRect(padX, y, contentW, catHeaderH);
+ctx.lineWidth = 1.4;
+ctx.strokeStyle = "#000000";
+ctx.strokeRect(padX, y, contentW, catHeaderH);
+ctx.fillStyle = "#0f172a";
+ctx.font = `800 ${isUltra ? 15 : 16.5}px Tajawal, Arial, sans-serif`;
+ctx.textAlign = "right";
+ctx.textBaseline = "middle";
+ctx.fillText(catTitle, W - padX - 10, y + catHeaderH / 2 + 1);
+ctx.restore();
+y += catHeaderH;
+return;
+}
+const item = entry.item;
+const globalIdx = entry.globalIndex;
+const wrappedCells = activeCols.map((col, cIdx) => {
+const textVal = getCertCellContentForColumn(col.key, col, item, globalIdx, true);
+ctx.font = col.key === "qty" ? `800 ${qtyFontSize}px Tajawal, Arial, sans-serif` : `700 ${itemFontSize}px Tajawal, Arial, sans-serif`;
+const lines = wrapCanvasTextLines(ctx, textVal, Math.max(30, colWidths[cIdx] - 16));
+return { col, lines };
+});
+const maxLines = wrappedCells.reduce((m, wc) => Math.max(m, wc.lines.length), 1);
+const rowH = Math.max(minRowH, maxLines * lineHeight + (isUltra ? 7 : 10));
+let rRightX = W - padX;
+wrappedCells.forEach((wc, cIdx) => {
+const cw = colWidths[cIdx];
+const cellLeftX = rRightX - cw;
+ctx.fillStyle = "#ffffff";
+ctx.fillRect(cellLeftX, y, cw, rowH);
+ctx.lineWidth = 1.4;
+ctx.strokeStyle = "#000000";
+ctx.strokeRect(cellLeftX, y, cw, rowH);
+ctx.fillStyle = "#000000";
+if (wc.col.key === "item") {
+ctx.font = `700 ${itemFontSize}px Tajawal, Arial, sans-serif`;
+ctx.textAlign = "right";
+ctx.textBaseline = "top";
+const startY = y + (rowH - wc.lines.length * lineHeight) / 2;
+wc.lines.forEach((ln, lIdx) => {
+ctx.fillText(ln, rRightX - 10, startY + lIdx * lineHeight);
+});
+} else {
+ctx.font = wc.col.key === "qty" ? `800 ${qtyFontSize}px Tajawal, Arial, sans-serif` : `700 ${itemFontSize}px Tajawal, Arial, sans-serif`;
+ctx.textAlign = "center";
+ctx.textBaseline = "top";
+const startY = y + (rowH - wc.lines.length * lineHeight) / 2;
+wc.lines.forEach((ln, lIdx) => {
+ctx.fillText(ln, cellLeftX + cw / 2, startY + lIdx * lineHeight);
+});
+}
+rRightX -= cw;
+});
+y += rowH;
+});
+y += isCompact ? 14 : 22;
+if (!isLastPage) {
+ctx.save();
+ctx.fillStyle = "#0f172a";
+ctx.font = "800 17px Tajawal, Arial, sans-serif";
+ctx.textAlign = "left";
+ctx.fillText(`... يتبع في الصفحة الموالية (${pageIdx + 2} / ${totalPages})`, padX + 20, y);
+ctx.restore();
+} else {
+ctx.save();
+ctx.fillStyle = "#000000";
+ctx.font = isCompact ? "800 20px Tajawal, Arial, sans-serif" : "800 22px Tajawal, Arial, sans-serif";
+ctx.textAlign = "center";
+ctx.textBaseline = "top";
+ctx.fillText(cfg.signatureText, padX + Math.round(contentW * 0.16), y);
+if (cfg.signatureSubName) {
+ctx.font = "600 16px Tajawal, Arial, sans-serif";
+ctx.fillText(cfg.signatureSubName, padX + Math.round(contentW * 0.16), y + 26);
+}
+if (cfg.showSecondSignature) {
+ctx.font = isCompact ? "800 20px Tajawal, Arial, sans-serif" : "800 22px Tajawal, Arial, sans-serif";
+ctx.fillText(cfg.secondSignatureText, W - padX - Math.round(contentW * 0.16), y);
+if (cfg.secondSignatureSubName) {
+ctx.font = "600 16px Tajawal, Arial, sans-serif";
+ctx.fillText(cfg.secondSignatureSubName, W - padX - Math.round(contentW * 0.16), y + 26);
+}
+}
+ctx.restore();
+}
+let footerDrawH = 0;
+let footerDrawW = 0;
+if (footerImg && footerImg.width > 0) {
+const maxFH = isUltra ? 100 : (isCompact ? 112 : 122);
+const fRatio = Math.min(contentW / footerImg.width, maxFH / footerImg.height);
+footerDrawW = footerImg.width * fRatio;
+footerDrawH = footerImg.height * fRatio;
+} else {
+footerDrawH = 38;
+}
+const bottomY = H - footerDrawH - 18;
+const sCode = voucher?.secretCode || (typeof generateCertSecretCode === "function" ? generateCertSecretCode(voucher) : "");
+ctx.save();
+ctx.direction = "ltr";
+ctx.fillStyle = "rgba(0, 0, 0, 0.42)";
+ctx.font = "13.5px monospace";
+ctx.textAlign = "left";
+ctx.textBaseline = "bottom";
+ctx.fillText(totalPages > 1 ? `${sCode} [P.${pageIdx + 1}/${totalPages}]` : String(sCode), padX, bottomY - 4);
+ctx.restore();
+if (footerImg && footerImg.width > 0) {
+ctx.drawImage(footerImg, (W - footerDrawW) / 2, bottomY, footerDrawW, footerDrawH);
+} else {
+ctx.fillStyle = "#000000";
+ctx.font = "700 17px Tajawal, Arial, sans-serif";
+ctx.textAlign = "center";
+ctx.fillText("المديرية الإقليمية للعدل بسطات — مصلحة التجهيز وتدبير المخزون", W / 2, H - 28);
+}
+jpegUrls.push(canvas.toDataURL("image/jpeg", 0.94));
+}
+return multipleJpegDataUrlsToPdfBlob(jpegUrls, 595.28, 841.89, W, H);
+};
+window.generateCertificatePdfBlob = generateCertificatePdfBlob;
+function toggleMergeEqualColorSetsInPreview(checked) {
+window._certMergeEqualColorSets = Boolean(checked);
+const sess = window._activeBeneficiaryDistSession;
+if (sess && sess.draftVoucher) {
+sess.draftVoucher._mergeEqualColorSets = Boolean(checked);
+renderBeneficiarySmartDistModalContent();
+}
+}
+window.toggleMergeEqualColorSetsInPreview = toggleMergeEqualColorSetsInPreview;
+const _v86RenderBeneficiaryDistModal = renderBeneficiarySmartDistModalContent;
+renderBeneficiarySmartDistModalContent = function() {
+_v86RenderBeneficiaryDistModal();
+const sess = window._activeBeneficiaryDistSession;
+if (sess && sess.step === "preview_cert" && sess.draftVoucher) {
+const bodyEl = document.getElementById("ben-dist-modal-body");
+const topBanner = bodyEl?.firstElementChild;
+if (topBanner && !document.getElementById("cb-merge-color-sets")) {
+const isMerged = Boolean(sess.draftVoucher._mergeEqualColorSets || window._certMergeEqualColorSets);
+const toggleHtml = document.createElement("label");
+toggleHtml.style.cssText = "display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:0.78rem;font-weight:800;color:#0284c7;background:rgba(2,132,199,0.1);padding:4px 10px;border-radius:8px;border:1px solid rgba(2,132,199,0.35);";
+toggleHtml.innerHTML = `
+<input type="checkbox" id="cb-merge-color-sets" ${isMerged ? 'checked' : ''} onchange="toggleMergeEqualColorSetsInPreview(this.checked)" style="width:15px;height:15px;accent-color:#0284c7;" />
+<span>🎨 دمج أطقم الألوان الأربعة المتساوية لنفس الطابعة في سطر واحد (لاختصار المساحة)</span>
+`;
+topBanner.insertBefore(toggleHtml, topBanner.lastElementChild);
+}
+}
+};
+window.renderBeneficiarySmartDistModalContent = renderBeneficiarySmartDistModalContent;
 window.addEventListener("DOMContentLoaded", () => {
 enhanceAiSubTabsWithBeneficiaryDistribution();
 });
