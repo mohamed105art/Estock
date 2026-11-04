@@ -42620,6 +42620,977 @@ style="width:58px;height:28px;text-align:center;font-weight:800;padding:2px 4px;
 `).join("");
 };
 window.renderOrderItemsPreview = renderOrderItemsPreview;
+window._globalActiveDistCustomOverrides = window._globalActiveDistCustomOverrides || {};
+window._globalActiveDistState = {
+periodMode: "annual", // 'annual' | 'semi_annual' | 'quarterly' | 'monthly'
+workplaceFilter: "all",
+safetyMarginPct: 0,
+activeTab: "beneficiaries", // 'beneficiaries' | 'quantities_study' | 'certificates_preview'
+searchQuery: "",
+mergeEqualColorSets: false,
+isoDate: new Date().toISOString().split("T")[0],
+expandedBenKeys: {},
+unselectedBenKeys: {}
+};
+function buildGlobalActiveDistributionPlan(periodModeOverride, workplaceFilterOverride, safetyMarginOverride) {
+const gst = window._globalActiveDistState;
+const periodMode = periodModeOverride || gst.periodMode || "annual";
+const workplaceFilter = workplaceFilterOverride !== undefined ? workplaceFilterOverride : (gst.workplaceFilter || "all");
+const safetyMarginPct = safetyMarginOverride !== undefined ? safetyMarginOverride : (gst.safetyMarginPct || 0);
+const pMeta = getPeriodModeMeta(periodMode);
+const todayIso = gst.isoDate || new Date().toISOString().split("T")[0];
+const allCandidates = getAllBeneficiariesForSmartAnalysis(workplaceFilter).filter(b => !b.isDirectorateAggregate);
+const activeBeneficiaries = [];
+const activeEntitiesSet = new Set();
+allCandidates.forEach(ben => {
+const profile = buildBeneficiaryConsumptionProfile(ben.key, safetyMarginPct);
+if (!profile || !Array.isArray(profile.activeItemsList) || profile.activeItemsList.length === 0) {
+return; // مستفيد غير نشط (لا يملك مواد نشطة)
+}
+const sortedActive = [...profile.activeItemsList].sort((a, b) => {
+if (a.categoryRank !== b.categoryRank) return a.categoryRank - b.categoryRank;
+if (a.category !== b.category) return a.category.localeCompare(b.category, "ar");
+if (a.deviceModel !== b.deviceModel) return String(a.deviceModel).localeCompare(String(b.deviceModel));
+if (a.colorRank !== b.colorRank) return a.colorRank - b.colorRank;
+return b.proposedAnnual - a.proposedAnnual;
+});
+const savedOverride = window._globalActiveDistCustomOverrides[ben.key];
+let benRows = [];
+if (savedOverride && savedOverride.periodMode === periodMode && Array.isArray(savedOverride.rows)) {
+benRows = savedOverride.rows.map(r => {
+const liveItem = (state.data.items || []).find(i => i && i.id === r.itemId);
+return {
+...r,
+currentStock: liveItem ? Math.max(0, sanitize(liveItem.stock)) : r.currentStock
+};
+});
+} else {
+benRows = sortedActive.map(r => {
+const propQty = Math.max(1, r[pMeta.propKey] || 1);
+return {
+itemId: r.itemId,
+item: r.item,
+name: r.name,
+shortRef: r.shortRef || r.name,
+category: r.category,
+categoryRank: r.categoryRank,
+colorRank: r.colorRank,
+deviceModel: r.deviceModel || "",
+currentStock: r.currentStock,
+q2024: r.q2024,
+q2025: r.q2025,
+q2026: r.q2026,
+lastIsoDate: r.lastIsoDate,
+monthsSinceLast: r.monthsSinceLast,
+isRedDormant: false,
+statusBadgeHtml: r.statusBadgeHtml,
+proposedAnnual: r.proposedAnnual,
+proposedSemiAnnual: r.proposedSemiAnnual,
+proposedQuarterly: r.proposedQuarterly,
+proposedMonthly: r.proposedMonthly,
+selected: true,
+qty: propQty,
+notes: ""
+};
+});
+}
+const selectedRows = benRows.filter(r => r.selected && (parseInt(r.qty, 10) || 0) > 0);
+const totalUnits = selectedRows.reduce((s, r) => s + (parseInt(r.qty, 10) || 0), 0);
+const isBenSelected = !gst.unselectedBenKeys[ben.key] && selectedRows.length > 0;
+if (ben.destination) activeEntitiesSet.add(ben.destination);
+const draftVoucher = {
+id: `CERT-GLB-${activeBeneficiaries.length + 1}`,
+operationId: `CERT-GLB-${activeBeneficiaries.length + 1}`,
+date: todayIso,
+isoDate: todayIso,
+destination: ben.destination,
+recipient: ben.recipient,
+reason: pMeta.reasonText,
+channel: "كتاب",
+status: "استجابة كلية",
+_mergeEqualColorSets: Boolean(gst.mergeEqualColorSets),
+items: selectedRows.map(r => ({
+id: r.itemId,
+name: r.name,
+category: r.category,
+qty: Math.max(1, parseInt(r.qty, 10) || 1),
+notes: sanitizeAutoForcedNoteString(r.notes || "")
+}))
+};
+draftVoucher.secretCode = generateCertSecretCode(draftVoucher);
+activeBeneficiaries.push({
+key: ben.key,
+recipient: ben.recipient,
+destination: ben.destination,
+displayLabel: ben.displayLabel,
+opsCount: ben.opsCount,
+units2026: ben.units2026,
+selected: isBenSelected,
+hasCustomOverride: Boolean(savedOverride && savedOverride.periodMode === periodMode),
+rows: benRows,
+selectedRows,
+activeItemsCount: selectedRows.length,
+totalUnits,
+draftVoucher
+});
+});
+const itemDemandMap = new Map();
+activeBeneficiaries.filter(b => b.selected).forEach(ben => {
+ben.selectedRows.forEach(r => {
+const q = Math.max(1, parseInt(r.qty, 10) || 1);
+if (!itemDemandMap.has(r.itemId)) {
+itemDemandMap.set(r.itemId, {
+itemId: r.itemId,
+item: r.item,
+name: r.name,
+shortRef: r.shortRef,
+category: r.category,
+categoryRank: r.categoryRank,
+colorRank: r.colorRank,
+deviceModel: r.deviceModel,
+currentStock: r.currentStock,
+totalRequiredQty: 0,
+beneficiariesCount: 0,
+beneficiariesBreakdown: []
+});
+}
+const entry = itemDemandMap.get(r.itemId);
+entry.totalRequiredQty += q;
+entry.beneficiariesCount += 1;
+entry.beneficiariesBreakdown.push({
+benKey: ben.key,
+recipient: ben.recipient,
+destination: ben.destination,
+displayLabel: ben.displayLabel,
+qty: q
+});
+});
+});
+const aggregatedItems = Array.from(itemDemandMap.values()).map(entry => {
+const stockDiff = entry.currentStock - entry.totalRequiredQty;
+return {
+...entry,
+stockDiff,
+isSufficient: stockDiff >= 0,
+deficitQty: stockDiff < 0 ? Math.abs(stockDiff) : 0
+};
+}).sort((a, b) => {
+if (a.categoryRank !== b.categoryRank) return a.categoryRank - b.categoryRank;
+if (a.category !== b.category) return a.category.localeCompare(b.category, "ar");
+return b.totalRequiredQty - a.totalRequiredQty;
+});
+const selectedBeneficiaries = activeBeneficiaries.filter(b => b.selected && b.selectedRows.length > 0);
+const totalGlobalUnits = selectedBeneficiaries.reduce((s, b) => s + b.totalUnits, 0);
+const totalShortageItemsCount = aggregatedItems.filter(i => !i.isSufficient).length;
+const totalShortageUnits = aggregatedItems.reduce((s, i) => s + i.deficitQty, 0);
+return {
+periodMode,
+periodMeta: pMeta,
+workplaceFilter,
+safetyMarginPct,
+activeEntitiesCount: activeEntitiesSet.size,
+activeEntitiesList: Array.from(activeEntitiesSet),
+allActiveBeneficiaries: activeBeneficiaries,
+selectedBeneficiaries,
+aggregatedItems,
+totalActiveBeneficiariesCount: activeBeneficiaries.length,
+selectedBeneficiariesCount: selectedBeneficiaries.length,
+totalDistinctActiveItemsCount: aggregatedItems.length,
+totalGlobalUnits,
+totalShortageItemsCount,
+totalShortageUnits
+};
+}
+window.buildGlobalActiveDistributionPlan = buildGlobalActiveDistributionPlan;
+function ensureGlobalActiveDistModalDOM() {
+let modal = document.getElementById("global-active-dist-modal");
+if (modal) return modal;
+modal = document.createElement("div");
+modal.id = "global-active-dist-modal";
+modal.className = "modal-overlay";
+modal.style.cssText = "display:none; position:fixed; inset:0; background:rgba(2,6,23,0.82); backdrop-filter:blur(6px); z-index:10550; align-items:center; justify-content:center; padding:10px;";
+modal.onclick = (e) => { if (e.target === modal) closeGlobalActiveDistributionModal(); };
+modal.innerHTML = `
+<div style="background: var(--bg-card); border: 1.5px solid rgba(16, 185, 129, 0.5); border-radius: 16px; width: 100%; max-width: 1220px; max-height: 94vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 65px rgba(0,0,0,0.65);">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: linear-gradient(135deg, rgba(6, 78, 59, 0.35), rgba(15, 23, 42, 0.95)); border-bottom: 1px solid var(--border-subtle); gap: 10px; flex-wrap: wrap;">
+<div>
+<h3 style="margin: 0; font-size: 1.1rem; font-weight: 900; color: #10b981; display: flex; align-items: center; gap: 8px;" id="global-active-dist-title">
+🌐 الوضعية العامة والتوزيع الشامل لجميع الجهات والمستفيدين النشطين والمواد النشطة
+</h3>
+<div style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 3px;" id="global-active-dist-subtitle">
+استخراج ودراسة الحصص والكميات وإصدار جميع الإشهادات الرسمية بضغطة واحدة مع إمكانية تخصيص كل مستفيد على حدة
+</div>
+</div>
+<button type="button" class="btn-icon square-action-btn" onclick="closeGlobalActiveDistributionModal()" style="border:none;background:transparent;cursor:pointer;color:var(--text-muted);font-size:1.35rem;">&times;</button>
+</div>
+<div id="global-active-dist-body" style="padding: 14px 18px; overflow-y: auto; flex: 1 1 auto; display: flex; flex-direction: column; gap: 12px;">
+</div>
+<div id="global-active-dist-footer" style="padding: 12px 18px; background: var(--bg-muted); border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+</div>
+</div>
+`;
+document.body.appendChild(modal);
+return modal;
+}
+function openGlobalActiveDistributionModal(periodMode, initialTab) {
+if (periodMode) window._globalActiveDistState.periodMode = periodMode;
+if (initialTab) window._globalActiveDistState.activeTab = initialTab;
+const modal = ensureGlobalActiveDistModalDOM();
+renderGlobalActiveDistModalContent();
+modal.style.display = "flex";
+}
+window.openGlobalActiveDistributionModal = openGlobalActiveDistributionModal;
+function closeGlobalActiveDistributionModal() {
+const modal = document.getElementById("global-active-dist-modal");
+if (modal) modal.style.display = "none";
+}
+window.closeGlobalActiveDistributionModal = closeGlobalActiveDistributionModal;
+function switchGlobalActiveDistPeriod(newPeriod) {
+window._globalActiveDistState.periodMode = newPeriod;
+renderGlobalActiveDistModalContent();
+}
+window.switchGlobalActiveDistPeriod = switchGlobalActiveDistPeriod;
+function switchGlobalActiveDistTab(tabName) {
+window._globalActiveDistState.activeTab = tabName;
+renderGlobalActiveDistModalContent();
+}
+window.switchGlobalActiveDistTab = switchGlobalActiveDistTab;
+function onGlobalActiveWorkplaceFilterChange(val) {
+window._globalActiveDistState.workplaceFilter = val || "all";
+renderGlobalActiveDistModalContent();
+}
+window.onGlobalActiveWorkplaceFilterChange = onGlobalActiveWorkplaceFilterChange;
+function onGlobalActiveSafetyMarginChange(val) {
+window._globalActiveDistState.safetyMarginPct = Math.max(0, parseInt(val, 10) || 0);
+window._globalActiveDistCustomOverrides = {};
+renderGlobalActiveDistModalContent();
+}
+window.onGlobalActiveSafetyMarginChange = onGlobalActiveSafetyMarginChange;
+function toggleGlobalActiveBeneficiarySelection(benKey, isChecked) {
+if (isChecked) {
+delete window._globalActiveDistState.unselectedBenKeys[benKey];
+} else {
+window._globalActiveDistState.unselectedBenKeys[benKey] = true;
+}
+renderGlobalActiveDistModalContent();
+}
+window.toggleGlobalActiveBeneficiarySelection = toggleGlobalActiveBeneficiarySelection;
+function toggleAllGlobalActiveBeneficiaries(selectAll) {
+const plan = buildGlobalActiveDistributionPlan();
+if (selectAll) {
+window._globalActiveDistState.unselectedBenKeys = {};
+} else {
+plan.allActiveBeneficiaries.forEach(b => {
+window._globalActiveDistState.unselectedBenKeys[b.key] = true;
+});
+}
+renderGlobalActiveDistModalContent();
+}
+window.toggleAllGlobalActiveBeneficiaries = toggleAllGlobalActiveBeneficiaries;
+function toggleGlobalBenInlineExpand(benKey) {
+const map = window._globalActiveDistState.expandedBenKeys;
+map[benKey] = !map[benKey];
+renderGlobalActiveDistModalContent();
+}
+window.toggleGlobalBenInlineExpand = toggleGlobalBenInlineExpand;
+function ensureGlobalBenOverrideRows(benKey) {
+const gst = window._globalActiveDistState;
+const cur = window._globalActiveDistCustomOverrides[benKey];
+if (cur && cur.periodMode === gst.periodMode && Array.isArray(cur.rows)) {
+return cur.rows;
+}
+const plan = buildGlobalActiveDistributionPlan();
+const found = plan.allActiveBeneficiaries.find(b => b.key === benKey);
+if (!found) return [];
+const cloned = JSON.parse(JSON.stringify(found.rows));
+window._globalActiveDistCustomOverrides[benKey] = {
+periodMode: gst.periodMode,
+rows: cloned
+};
+return cloned;
+}
+function adjustGlobalBenItemQty(benKey, itemId, delta) {
+const rows = ensureGlobalBenOverrideRows(benKey);
+const r = rows.find(x => x.itemId === itemId);
+if (!r) return;
+const nextQty = (parseInt(r.qty, 10) || 0) + delta;
+if (nextQty <= 0) {
+r.qty = 0;
+r.selected = false;
+} else {
+r.qty = Math.min(99999, nextQty);
+r.selected = true;
+}
+renderGlobalActiveDistModalContent();
+}
+window.adjustGlobalBenItemQty = adjustGlobalBenItemQty;
+function setGlobalBenItemQtyDirect(benKey, itemId, rawVal) {
+const rows = ensureGlobalBenOverrideRows(benKey);
+const r = rows.find(x => x.itemId === itemId);
+if (!r) return;
+const n = parseInt(rawVal, 10);
+if (!isNaN(n) && n > 0) {
+r.qty = Math.min(99999, n);
+r.selected = true;
+} else {
+r.qty = 0;
+r.selected = false;
+}
+renderGlobalActiveDistModalContent();
+}
+window.setGlobalBenItemQtyDirect = setGlobalBenItemQtyDirect;
+function setGlobalBenItemNoteDirect(benKey, itemId, val) {
+const rows = ensureGlobalBenOverrideRows(benKey);
+const r = rows.find(x => x.itemId === itemId);
+if (!r) return;
+r.notes = String(val || "").trim();
+}
+window.setGlobalBenItemNoteDirect = setGlobalBenItemNoteDirect;
+function openSingleBeneficiaryFromGlobalModal(benKey) {
+const gst = window._globalActiveDistState;
+const plan = buildGlobalActiveDistributionPlan();
+const benEntry = plan.allActiveBeneficiaries.find(b => b.key === benKey);
+openBeneficiarySmartDistributionModal(benKey, gst.periodMode);
+if (window._activeBeneficiaryDistSession && benEntry) {
+window._activeBeneficiaryDistSession._openedFromGlobalModal = true;
+const overrideMap = new Map(benEntry.rows.map(r => [r.itemId, r]));
+window._activeBeneficiaryDistSession.rows.forEach(r => {
+if (overrideMap.has(r.itemId)) {
+const ov = overrideMap.get(r.itemId);
+r.selected = ov.selected;
+r.qty = ov.qty;
+r.notes = ov.notes || "";
+}
+});
+renderBeneficiarySmartDistModalContent();
+injectReturnToGlobalButtonInSingleBenModal();
+}
+}
+window.openSingleBeneficiaryFromGlobalModal = openSingleBeneficiaryFromGlobalModal;
+function saveSingleBenChangesBackToGlobalModal() {
+const sess = window._activeBeneficiaryDistSession;
+if (sess && sess.beneficiaryKey) {
+window._globalActiveDistCustomOverrides[sess.beneficiaryKey] = {
+periodMode: sess.periodMode,
+rows: JSON.parse(JSON.stringify(sess.rows.filter(r => !r.isRedDormant || r.selected)))
+};
+window._globalActiveDistState.periodMode = sess.periodMode;
+}
+closeBeneficiarySmartDistributionModal();
+openGlobalActiveDistributionModal(window._globalActiveDistState.periodMode);
+showToast("✓ تم حفظ تعديلات المستفيد وتحديث الوضعية العامة الشاملة بنجاح", "success");
+}
+window.saveSingleBenChangesBackToGlobalModal = saveSingleBenChangesBackToGlobalModal;
+function injectReturnToGlobalButtonInSingleBenModal() {
+const sess = window._activeBeneficiaryDistSession;
+if (!sess || !sess._openedFromGlobalModal) return;
+const footerEl = document.getElementById("ben-dist-modal-footer");
+if (!footerEl || footerEl.querySelector(".btn-return-global-dist")) return;
+const retBtn = document.createElement("button");
+retBtn.type = "button";
+retBtn.className = "btn btn-primary btn-return-global-dist";
+retBtn.style.cssText = "background:#0284c7;border-color:#0369a1;font-weight:800;";
+retBtn.innerHTML = "🔙 حفظ التعديلات والعودة للوضعية الشاملة لجميع المستفيدين";
+retBtn.onclick = saveSingleBenChangesBackToGlobalModal;
+footerEl.insertBefore(retBtn, footerEl.firstChild);
+}
+const _v93RenderBeneficiarySmartDistModalContent = renderBeneficiarySmartDistModalContent;
+renderBeneficiarySmartDistModalContent = function() {
+_v93RenderBeneficiarySmartDistModalContent();
+injectReturnToGlobalButtonInSingleBenModal();
+};
+window.renderBeneficiarySmartDistModalContent = renderBeneficiarySmartDistModalContent;
+function printSingleActiveBeneficiaryFromGlobal(benKey) {
+const plan = buildGlobalActiveDistributionPlan();
+const ben = plan.allActiveBeneficiaries.find(b => b.key === benKey);
+if (!ben || !ben.draftVoucher || ben.draftVoucher.items.length === 0) {
+showToast("لا توجد مواد محددة لهذا المستفيد لطباعتها", "warning");
+return;
+}
+const html = generateVoucherA4Html(ben.draftVoucher);
+const sandbox = document.getElementById("print-sandbox-area");
+if (sandbox) sandbox.innerHTML = html;
+openDocPreviewModal(`إشهاد التوزيع المقترح — ${ben.recipient} (${ben.destination})`, html);
+}
+window.printSingleActiveBeneficiaryFromGlobal = printSingleActiveBeneficiaryFromGlobal;
+function printAllGlobalActiveCertificates(periodModeOverride) {
+if (periodModeOverride) window._globalActiveDistState.periodMode = periodModeOverride;
+const plan = buildGlobalActiveDistributionPlan();
+if (plan.selectedBeneficiaries.length === 0) {
+showToast("يرجى تحديد مستفيد نشط واحد على الأقل للطباعة", "warning");
+return;
+}
+const htmls = plan.selectedBeneficiaries
+.map(b => generateVoucherA4Html(b.draftVoucher))
+.join('<div style="page-break-after: always; break-after: page;"></div>');
+const sandbox = document.getElementById("print-sandbox-area");
+if (sandbox) sandbox.innerHTML = htmls;
+openDocPreviewModal(
+`طباعة شاملة لجميع إشهادات المستفيدين النشطين (${plan.selectedBeneficiaries.length} إشهاد رسمي — ${plan.periodMeta.shortAr} — إجمالي ${plan.totalGlobalUnits} قطعة)`,
+htmls
+);
+}
+window.printAllGlobalActiveCertificates = printAllGlobalActiveCertificates;
+window.quickPrintAllActiveBeneficiariesCertificates = function() {
+const pMode = window._aiBeneficiaryAnalysisState?.periodMode || window._globalActiveDistState?.periodMode || "annual";
+printAllGlobalActiveCertificates(pMode);
+};
+function generateGlobalActiveSituationA4Html(planObj) {
+const plan = planObj || buildGlobalActiveDistributionPlan();
+const headerSrc = escapeHtml(getBrandingAssetSrc("header") || "./en_tete.png");
+const footerSrc = escapeHtml(getBrandingAssetSrc("footer") || "./en_pied.png");
+const todayStr = escapeHtml(plan.selectedBeneficiaries[0]?.draftVoucher?.date || new Date().toISOString().split("T")[0]);
+const itemsRowsHtml = plan.aggregatedItems.map((it, idx) => {
+const statusText = it.isSufficient
+? `<span style="color:#065f46;font-weight:800;">متوفر (+${it.stockDiff} فائض)</span>`
+: `<span style="color:#b91c1c;font-weight:800;">خصاص (${it.deficitQty} قطعة)</span>`;
+const bensListStr = it.beneficiariesBreakdown
+.map(b => `${b.recipient} (${b.qty})`)
+.join(" ، ");
+return `
+<tr>
+<td style="text-align:center;font-weight:700;padding:4px 5px;border:1px solid #000;font-size:8.2pt;">${idx + 1}</td>
+<td style="text-align:right;font-weight:700;padding:4px 6px;border:1px solid #000;font-size:8.2pt;">
+<div>${escapeHtml(formatCertificateItemCellPlainText(it.item))}</div>
+<div style="font-size:7pt;color:#334155;font-weight:600;margin-top:1px;">المستفيدون (${it.beneficiariesCount}): ${escapeHtml(bensListStr)}</div>
+</td>
+<td style="text-align:center;padding:4px 5px;border:1px solid #000;font-size:8pt;">${escapeHtml(it.category)}</td>
+<td style="text-align:center;font-weight:800;padding:4px 5px;border:1px solid #000;font-size:8.6pt;">${it.totalRequiredQty}</td>
+<td style="text-align:center;font-weight:700;padding:4px 5px;border:1px solid #000;font-size:8.4pt;">${it.currentStock}</td>
+<td style="text-align:center;padding:4px 5px;border:1px solid #000;font-size:8pt;">${statusText}</td>
+</tr>
+`;
+}).join("");
+const bensRowsHtml = plan.selectedBeneficiaries.map((b, idx) => {
+const itemsDesc = b.selectedRows
+.map(r => `${r.shortRef}${r.item?.colorTag ? ' (' + r.item.colorTag + ')' : ''}: [${r.qty}]`)
+.join("  |  ");
+return `
+<tr>
+<td style="text-align:center;font-weight:700;padding:4px 5px;border:1px solid #000;font-size:8.2pt;">${idx + 1}</td>
+<td style="text-align:right;font-weight:800;padding:4px 6px;border:1px solid #000;font-size:8.3pt;">${escapeHtml(b.destination)}</td>
+<td style="text-align:right;font-weight:800;padding:4px 6px;border:1px solid #000;font-size:8.3pt;">${escapeHtml(b.recipient)}</td>
+<td style="text-align:center;font-weight:700;padding:4px 5px;border:1px solid #000;font-size:8.2pt;">${b.activeItemsCount}</td>
+<td style="text-align:center;font-weight:900;padding:4px 5px;border:1px solid #000;font-size:8.6pt;">${b.totalUnits}</td>
+<td style="text-align:right;padding:4px 6px;border:1px solid #000;font-size:7.6pt;line-height:1.35;direction:ltr;">${escapeHtml(itemsDesc)}</td>
+</tr>
+`;
+}).join("");
+return `
+<div class="official-cert-page" style="padding: 4mm 7mm; min-height: 272mm; display: flex; flex-direction: column; justify-content: space-between; page-break-after: always; break-after: page;">
+<div class="cert-top-section" style="width: 100%;">
+<div class="cert-header-wrap">
+<img src="${headerSrc}" onerror="if(this.src!==window.FALLBACK_EN_TETE_B64)this.src=window.FALLBACK_EN_TETE_B64;" style="width: 100%; max-height: 88px; object-fit: contain;" alt="En-tête" />
+</div>
+<div class="cert-title-container" style="margin-bottom: 6px;">
+<div class="cert-title-box" style="font-size: 11.5pt; padding: 2px 24px;">الوضعية العامة للتوزيع الشامل ودراسة الكميات (${escapeHtml(plan.periodMeta.titleAr)})</div>
+</div>
+<p style="font-size: 8.6pt; font-weight: 700; margin: 0 0 8px 0; text-align: center; color: #0f172a;">
+تاريخ الدراسة: <strong>${todayStr}</strong> | الجهات النشطة: <strong>${plan.activeEntitiesCount}</strong> | المستفيدون النشطون: <strong>${plan.selectedBeneficiariesCount}</strong> | المواد النشطة: <strong>${plan.totalDistinctActiveItemsCount} مادة</strong> | إجمالي الوحدات: <strong>${plan.totalGlobalUnits} قطعة</strong>
+</p>
+<div style="font-weight: 900; font-size: 9.2pt; margin-bottom: 4px; color: #000;">أولاً: جدول دراسة الكميات الإجمالية المطلوبة للمواد النشطة ومقارنتها برصيد المخزن:</div>
+<table class="cert-official-table" style="width: 100%; border-collapse: collapse;">
+<thead>
+<tr style="background: #efefef;">
+<th style="width: 5%; border: 1px solid #000; padding: 4px; font-size: 8.2pt;">ر.ت</th>
+<th style="width: 45%; border: 1px solid #000; padding: 4px; font-size: 8.2pt;">بيان المادة النشطة والمستفيدين الطالبين لها</th>
+<th style="width: 14%; border: 1px solid #000; padding: 4px; font-size: 8.2pt;">الصنف</th>
+<th style="width: 11%; border: 1px solid #000; padding: 4px; font-size: 8.2pt;">مجموع المطلوب</th>
+<th style="width: 11%; border: 1px solid #000; padding: 4px; font-size: 8.2pt;">المتوفر بالمخزن</th>
+<th style="width: 14%; border: 1px solid #000; padding: 4px; font-size: 8.2pt;">الوضعية / التغطية</th>
+</tr>
+</thead>
+<tbody>
+${itemsRowsHtml}
+</tbody>
+</table>
+</div>
+<div class="cert-bottom-section" style="margin-top: auto; padding-top: 6px;">
+<div class="cert-footer-wrap">
+<img src="${footerSrc}" onerror="if(this.src!==window.FALLBACK_EN_PIED_B64)this.src=window.FALLBACK_EN_PIED_B64;" style="width: 100%; max-height: 56px; object-fit: contain;" alt="Pied de page" />
+</div>
+</div>
+</div>
+<div class="official-cert-page" style="padding: 4mm 7mm; min-height: 272mm; display: flex; flex-direction: column; justify-content: space-between;">
+<div class="cert-top-section" style="width: 100%;">
+<div class="cert-header-wrap">
+<img src="${headerSrc}" onerror="if(this.src!==window.FALLBACK_EN_TETE_B64)this.src=window.FALLBACK_EN_TETE_B64;" style="width: 100%; max-height: 88px; object-fit: contain;" alt="En-tête" />
+</div>
+<div class="cert-title-container" style="margin-bottom: 6px;">
+<div class="cert-title-box" style="font-size: 11.5pt; padding: 2px 24px;">بيان الحصص التفصيلية للمستفيدين النشطين (${escapeHtml(plan.periodMeta.shortAr)})</div>
+</div>
+<div style="font-weight: 900; font-size: 9.2pt; margin-bottom: 4px; color: #000;">ثانياً: جدول توزيع الحصص المقترحة حسب كل جهة ومستفيد نشط (${plan.selectedBeneficiariesCount} مستفيداً):</div>
+<table class="cert-official-table" style="width: 100%; border-collapse: collapse;">
+<thead>
+<tr style="background: #efefef;">
+<th style="width: 5%; border: 1px solid #000; padding: 4px; font-size: 8.2pt;">ر.ت</th>
+<th style="width: 20%; border: 1px solid #000; padding: 4px; font-size: 8.2pt;">الجهة / المحكمة</th>
+<th style="width: 22%; border: 1px solid #000; padding: 4px; font-size: 8.2pt;">المستفيد النشط</th>
+<th style="width: 7%; border: 1px solid #000; padding: 4px; font-size: 8.2pt;">المواد</th>
+<th style="width: 8%; border: 1px solid #000; padding: 4px; font-size: 8.2pt;">القطع</th>
+<th style="width: 38%; border: 1px solid #000; padding: 4px; font-size: 8.2pt;">تفصيل المراجع والكميات المخصصة</th>
+</tr>
+</thead>
+<tbody>
+${bensRowsHtml}
+</tbody>
+</table>
+</div>
+<div class="cert-bottom-section" style="margin-top: auto; padding-top: 6px;">
+<div class="cert-footer-wrap">
+<img src="${footerSrc}" onerror="if(this.src!==window.FALLBACK_EN_PIED_B64)this.src=window.FALLBACK_EN_PIED_B64;" style="width: 100%; max-height: 56px; object-fit: contain;" alt="Pied de page" />
+</div>
+</div>
+</div>
+`;
+}
+window.generateGlobalActiveSituationA4Html = generateGlobalActiveSituationA4Html;
+function printGlobalActiveSituationStudyReportA4(periodModeOverride) {
+if (periodModeOverride) window._globalActiveDistState.periodMode = periodModeOverride;
+const plan = buildGlobalActiveDistributionPlan();
+if (plan.selectedBeneficiaries.length === 0) {
+showToast("يرجى تحديد مستفيد نشط واحد على الأقل لطباعة الوضعية", "warning");
+return;
+}
+const reportHtml = generateGlobalActiveSituationA4Html(plan);
+const sandbox = document.getElementById("print-sandbox-area");
+if (sandbox) sandbox.innerHTML = reportHtml;
+openDocPreviewModal(`تقرير الوضعية العامة ودراسة الكميات الشاملة (${plan.periodMeta.titleAr})`, reportHtml);
+}
+window.printGlobalActiveSituationStudyReportA4 = printGlobalActiveSituationStudyReportA4;
+window.quickPrintGlobalActiveSituationStudyReport = function() {
+const pMode = window._aiBeneficiaryAnalysisState?.periodMode || window._globalActiveDistState?.periodMode || "annual";
+printGlobalActiveSituationStudyReportA4(pMode);
+};
+function commitGlobalActiveDistributionToArchive(andPrint = false) {
+const plan = buildGlobalActiveDistributionPlan();
+if (plan.selectedBeneficiaries.length === 0) {
+showToast("يرجى تحديد مستفيد نشط واحد على الأقل لاعتماد التوزيع", "warning");
+return;
+}
+window._txMonotonicClock = Math.max(Date.now(), (window._txMonotonicClock || 0) + 10);
+const baseNowMs = window._txMonotonicClock;
+window._txMonotonicClock = baseNowMs + plan.selectedBeneficiaries.length + 5;
+const batchCode = `GLB-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-${Math.floor(100 + Math.random() * 900)}`;
+const createdVouchers = [];
+plan.selectedBeneficiaries.forEach((ben, idx) => {
+const rowCreatedMs = baseNowMs + (plan.selectedBeneficiaries.length - idx);
+const dObj = new Date(rowCreatedMs);
+const hhmmss = `${String(dObj.getHours()).padStart(2, "0")}:${String(dObj.getMinutes()).padStart(2, "0")}:${String(dObj.getSeconds()).padStart(2, "0")}`;
+let voucherId = `CERT-${Date.now()}-${idx + 1}-${Math.floor(100 + Math.random() * 900)}`;
+while ((state.data.transactions || []).some(t => t && t.id === voucherId) || createdVouchers.some(v => v.id === voucherId)) {
+voucherId = `CERT-${Date.now()}-${idx + 1}-${Math.floor(100 + Math.random() * 900)}`;
+}
+const committedItems = [];
+ben.selectedRows.forEach(r => {
+const reqQty = Math.max(1, parseInt(r.qty, 10) || 1);
+const stockItem = (state.data.items || []).find(i => i && i.id === r.itemId);
+let actualDed = 0;
+if (stockItem) {
+const curStock = Math.max(0, sanitize(stockItem.stock));
+actualDed = Math.min(curStock, reqQty);
+stockItem.stock = Math.max(0, curStock - reqQty);
+stockItem._stockUpdatedAt = baseNowMs;
+}
+committedItems.push({
+id: r.itemId,
+name: r.name,
+category: r.category,
+qty: reqQty,
+actualDeducted: actualDed,
+notes: sanitizeAutoForcedNoteString(r.notes || "")
+});
+});
+const newVoucher = {
+id: voucherId,
+operationId: voucherId,
+batchId: batchCode,
+isBulkDistribution: true,
+date: `${ben.draftVoucher.isoDate} ${hhmmss}`,
+isoDate: ben.draftVoucher.isoDate,
+timeStr: hhmmss,
+destination: ben.destination,
+recipient: ben.recipient,
+reason: plan.periodMeta.reasonText,
+channel: "تسليم مبرمج",
+status: "استجابة كلية",
+_mergeEqualColorSets: Boolean(window._globalActiveDistState.mergeEqualColorSets),
+items: committedItems,
+_createdAt: rowCreatedMs,
+_updatedAt: rowCreatedMs
+};
+newVoucher.secretCode = generateCertSecretCode(newVoucher);
+state.data.transactions.unshift(newVoucher);
+recordTransactionInLocalJournal(newVoucher);
+createdVouchers.push(newVoucher);
+});
+sortTransactionsByDeliveryDateDesc(state.data.transactions);
+window._isSessionAuthenticated = true;
+persistAll(true);
+closeGlobalActiveDistributionModal();
+if (typeof renderHistoryTable === "function") renderHistoryTable();
+if (typeof renderInventoryTable === "function") renderInventoryTable();
+if (typeof renderAiEntitiesPatterns === "function") renderAiEntitiesPatterns();
+if (typeof refreshAllBadges === "function") refreshAllBadges();
+switchTab("history-view");
+showCenterToast(`✓ تم اعتماد التوزيع الشامل وتسجيل (${createdVouchers.length}) إشهادات رسمية في أرشيف العمليات!`);
+if (andPrint && createdVouchers.length > 0) {
+const htmls = createdVouchers.map(v => generateVoucherA4Html(v)).join('<div style="page-break-after: always; break-after: page;"></div>');
+const sandbox = document.getElementById("print-sandbox-area");
+if (sandbox) sandbox.innerHTML = htmls;
+openDocPreviewModal(`طباعة شاملة لإشهادات التوزيع المعتمدة (${createdVouchers.length} إشهاد رسمي)`, htmls);
+}
+}
+window.commitGlobalActiveDistributionToArchive = commitGlobalActiveDistributionToArchive;
+function renderGlobalActiveDistModalContent() {
+const bodyEl = document.getElementById("global-active-dist-body");
+const footerEl = document.getElementById("global-active-dist-footer");
+const titleEl = document.getElementById("global-active-dist-title");
+if (!bodyEl || !footerEl) return;
+const gst = window._globalActiveDistState;
+const plan = buildGlobalActiveDistributionPlan();
+const workplaces = Array.from(new Set(getAllBeneficiariesForSmartAnalysis("all").filter(b => !b.isDirectorateAggregate).map(b => b.destination))).filter(Boolean);
+if (titleEl) {
+titleEl.innerHTML = `🌐 الوضعية العامة والتوزيع الشامل للمستفيدين النشطين — <span style="color:#38bdf8;">${escapeHtml(plan.periodMeta.titleAr)}</span>`;
+}
+const qFilter = String(gst.searchQuery || "").trim().toLowerCase();
+let mainTabHtml = "";
+if (gst.activeTab === "quantities_study") {
+const filteredItems = plan.aggregatedItems.filter(it => {
+if (!qFilter) return true;
+return `${it.shortRef} ${it.name} ${it.category} ${it.deviceModel}`.toLowerCase().includes(qFilter);
+});
+const itemsTrs = filteredItems.map((it, idx) => {
+const bensBadges = it.beneficiariesBreakdown.map(b =>
+`<span style="display:inline-flex;align-items:center;gap:4px;background:var(--bg-muted);border:1px solid var(--border-subtle);border-radius:6px;padding:2px 7px;font-size:0.72rem;cursor:pointer;" onclick="openSingleBeneficiaryFromGlobalModal('${escapeHtml(b.benKey)}')" title="انقر لفتح وتعديل حصة هذا المستفيد">👤 ${escapeHtml(b.recipient)}: <strong style="color:#38bdf8;">${b.qty}</strong></span>`
+).join(" ");
+return `
+<tr style="${!it.isSufficient ? 'background: rgba(239, 68, 68, 0.05);' : ''}">
+<td style="text-align:center;font-weight:800;width:40px;" class="tabular-nums">${idx + 1}</td>
+<td>
+<div>${formatItemDisplayHtml(it.item)}</div>
+<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:5px;">${bensBadges}</div>
+</td>
+<td style="text-align:center;width:130px;"><span class="badge badge-subtle">${escapeHtml(it.category)}</span></td>
+<td style="text-align:center;width:110px;" class="tabular-nums">
+<span class="badge badge-primary" style="font-size:0.78rem;font-weight:900;">${it.beneficiariesCount} مستفيد</span>
+</td>
+<td style="text-align:center;width:125px;background:rgba(16,185,129,0.07);" class="tabular-nums">
+<div style="font-size:1.05rem;font-weight:900;color:#10b981;">${it.totalRequiredQty}</div>
+<div style="font-size:0.68rem;color:var(--text-muted);">مطلوب للتوزيع</div>
+</td>
+<td style="text-align:center;width:110px;" class="tabular-nums">
+<div style="font-size:0.98rem;font-weight:800;color:var(--text-main);">${it.currentStock}</div>
+<div style="font-size:0.68rem;color:var(--text-muted);">بالمخزن حالياً</div>
+</td>
+<td style="text-align:center;width:150px;" class="tabular-nums">
+${it.isSufficient
+? `<span class="badge badge-success" style="font-size:0.76rem;font-weight:800;">✓ متوفر (+${it.stockDiff} متبقي)</span>`
+: `<span class="badge badge-warning" style="background:rgba(239,68,68,0.16);color:#ef4444;border-color:rgba(239,68,68,0.4);font-size:0.76rem;font-weight:900;">⚠️ خصاص (${it.deficitQty} قطعة)</span>`
+}
+</td>
+</tr>
+`;
+}).join("");
+mainTabHtml = `
+<div style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.35);border-radius:10px;padding:10px 14px;font-size:0.8rem;color:var(--text-main);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+<span>📊 <strong>دراسة الكميات الإجمالية للمواد النشطة:</strong> يعرض هذا الجدول مجموع ما يحتاجه كافة المستفيدين النشطين من كل مادة نشطة ومقارنته برصيد المخزن الحالي. يمكنك الضغط على اسم أي مستفيد تحت المادة لتعديل حصته مباشرةً.</span>
+<button type="button" class="btn btn-primary btn-sm" onclick="printGlobalActiveSituationStudyReportA4()" style="background:#0284c7;border-color:#0369a1;font-weight:800;">
+🖨️ طباعة جدول دراسة الكميات والوضعية (A4)
+</button>
+</div>
+<div class="table-scroll-wrapper" style="max-height:54vh;">
+<table class="data-table">
+<thead>
+<tr>
+<th style="width:40px;text-align:center;">#</th>
+<th>المادة النشطة وتوزيعها على المستفيدين النشطين (انقر على المستفيد للتعديل)</th>
+<th style="width:130px;text-align:center;">الصنف</th>
+<th style="width:110px;text-align:center;">المستفيدون</th>
+<th style="width:125px;text-align:center;">مجموع المطلوب</th>
+<th style="width:110px;text-align:center;">المتوفر بالمخزن</th>
+<th style="width:150px;text-align:center;">التغطية / الخصاص</th>
+</tr>
+</thead>
+<tbody>
+${itemsTrs || `<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text-muted);">لا توجد مواد مطابقة</td></tr>`}
+</tbody>
+</table>
+</div>
+`;
+} else if (gst.activeTab === "certificates_preview") {
+const allPagesHtml = plan.selectedBeneficiaries
+.map((b, idx) => `
+<div style="width:100%;max-width:210mm;margin-bottom:16px;">
+<div style="background:#0f172a;color:#f8fafc;padding:8px 14px;border-radius:10px 10px 0 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+<span style="font-weight:800;font-size:0.86rem;">📄 إشهاد رقم (${idx + 1} / ${plan.selectedBeneficiaries.length}): <span style="color:#38bdf8;">${escapeHtml(b.recipient)}</span> — ${escapeHtml(b.destination)} (${b.activeItemsCount} مواد / ${b.totalUnits} قطعة)</span>
+<div style="display:flex;gap:6px;">
+<button type="button" class="btn btn-outline btn-sm" onclick="openSingleBeneficiaryFromGlobalModal('${escapeHtml(b.key)}')" style="color:#38bdf8;border-color:#38bdf8;font-size:0.74rem;padding:2px 10px;">🎯 تعديل هذا المستفيد</button>
+<button type="button" class="btn btn-primary btn-sm" onclick="printSingleActiveBeneficiaryFromGlobal('${escapeHtml(b.key)}')" style="background:#10b981;border-color:#059669;font-size:0.74rem;padding:2px 10px;">🖨️ طباعة وحده</button>
+</div>
+</div>
+${generateVoucherA4Html(b.draftVoucher)}
+</div>
+`).join("");
+mainTabHtml = `
+<div style="background:#cbd5e1;padding:16px;border-radius:12px;max-height:56vh;overflow-y:auto;display:flex;flex-direction:column;align-items:center;gap:14px;">
+${allPagesHtml || `<div style="padding:24px;color:#0f172a;font-weight:800;">يرجى تحديد مستفيد نشط واحد على الأقل لعرض الإشهادات</div>`}
+</div>
+`;
+} else {
+const filteredBens = plan.allActiveBeneficiaries.filter(b => {
+if (!qFilter) return true;
+const matchBen = `${b.recipient} ${b.destination} ${b.displayLabel}`.toLowerCase().includes(qFilter);
+const matchItem = b.rows.some(r => `${r.shortRef} ${r.name} ${r.category}`.toLowerCase().includes(qFilter));
+return matchBen || matchItem;
+});
+const benCardsHtml = filteredBens.map((b, idx) => {
+const isExpanded = Boolean(gst.expandedBenKeys[b.key]);
+const quickItemsPills = b.selectedRows.slice(0, 8).map(r =>
+`<span style="display:inline-flex;align-items:center;gap:3px;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:6px;padding:2px 7px;font-size:0.72rem;direction:ltr;"><strong>${escapeHtml(r.shortRef)}</strong>: <span style="color:#10b981;font-weight:900;">${r.qty}</span></span>`
+).join(" ");
+const moreCount = Math.max(0, b.selectedRows.length - 8);
+let inlineTableHtml = "";
+if (isExpanded) {
+const itemTrs = b.rows.map((r, rIdx) => `
+<tr style="${r.selected && r.qty > 0 ? '' : 'opacity:0.5;'}">
+<td style="text-align:center;width:36px;" class="tabular-nums">${rIdx + 1}</td>
+<td>${formatItemDisplayHtml(r.item)}</td>
+<td style="text-align:center;width:120px;"><span class="badge badge-subtle" style="font-size:0.7rem;">${escapeHtml(r.category)}</span></td>
+<td style="text-align:center;width:90px;" class="tabular-nums"><span class="badge ${r.currentStock >= r.qty ? 'badge-success' : 'badge-warning'}">${r.currentStock}</span></td>
+<td style="text-align:center;width:155px;">
+<div style="display:inline-flex;align-items:center;gap:4px;direction:ltr;">
+<button type="button" class="btn btn-outline btn-sm" onclick="adjustGlobalBenItemQty('${escapeHtml(b.key)}', '${escapeHtml(r.itemId)}', -1)" style="width:26px;height:26px;padding:0;font-weight:900;">−</button>
+<input type="number" class="form-control tabular-nums text-center" value="${r.qty}" min="0" max="99999" onchange="setGlobalBenItemQtyDirect('${escapeHtml(b.key)}', '${escapeHtml(r.itemId)}', this.value)" style="width:58px;height:26px;padding:2px;font-weight:800;text-align:center;" />
+<button type="button" class="btn btn-outline btn-sm" onclick="adjustGlobalBenItemQty('${escapeHtml(b.key)}', '${escapeHtml(r.itemId)}', 1)" style="width:26px;height:26px;padding:0;font-weight:900;color:#10b981;">+</button>
+</div>
+</td>
+<td style="width:160px;">
+<input type="text" class="form-control" list="global-quick-notes-datalist" value="${escapeHtml(r.notes || '')}" placeholder="ملاحظة..." oninput="setGlobalBenItemNoteDirect('${escapeHtml(b.key)}', '${escapeHtml(r.itemId)}', this.value)" style="height:26px;font-size:0.74rem;padding:2px 6px;" />
+</td>
+</tr>
+`).join("");
+inlineTableHtml = `
+<div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--border-subtle);">
+<div class="table-scroll-wrapper" style="max-height:260px;">
+<table class="data-table" style="font-size:0.8rem;margin:0;">
+<thead>
+<tr>
+<th style="width:36px;text-align:center;">#</th>
+<th>المادة النشطة</th>
+<th style="width:120px;text-align:center;">الصنف</th>
+<th style="width:90px;text-align:center;">بالمخزن</th>
+<th style="width:155px;text-align:center;">الحصة (− / +)</th>
+<th style="width:160px;">ملاحظة</th>
+</tr>
+</thead>
+<tbody>${itemTrs}</tbody>
+</table>
+</div>
+</div>
+`;
+}
+return `
+<div style="background:var(--bg-muted);border:1.5px solid ${b.selected ? 'rgba(16,185,129,0.4)' : 'var(--border-subtle)'};border-radius:12px;padding:10px 14px;margin-bottom:8px;">
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+<div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1;">
+<input type="checkbox" ${b.selected ? 'checked' : ''} onchange="toggleGlobalActiveBeneficiarySelection('${escapeHtml(b.key)}', this.checked)" style="width:18px;height:18px;accent-color:#10b981;cursor:pointer;flex-shrink:0;" />
+<div style="min-width:0;">
+<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+<span class="badge badge-subtle tabular-nums">#${idx + 1}</span>
+<strong style="font-size:0.95rem;color:var(--text-main);">${escapeHtml(b.recipient)}</strong>
+<span style="font-size:0.8rem;color:#38bdf8;font-weight:700;">— ${escapeHtml(b.destination)}</span>
+${b.hasCustomOverride ? `<span class="badge badge-primary" style="font-size:0.68rem;">✏️ مخصص</span>` : ""}
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:5px;align-items:center;">
+${quickItemsPills}
+${moreCount > 0 ? `<span class="badge badge-subtle" style="font-size:0.7rem;">+${moreCount} مواد أخرى</span>` : ""}
+</div>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex-shrink:0;">
+<span class="badge badge-success tabular-nums" style="font-size:0.78rem;font-weight:900;padding:4px 10px;">
+${b.activeItemsCount} مادة نشطة | ${b.totalUnits} قطعة
+</span>
+<button type="button" class="btn btn-outline btn-sm" onclick="toggleGlobalBenInlineExpand('${escapeHtml(b.key)}')" style="font-size:0.75rem;font-weight:800;padding:4px 10px;">
+${isExpanded ? '🔼 طي الجدول' : '✏️ تعديل سريع هنا'}
+</button>
+<button type="button" class="btn btn-primary btn-sm" onclick="openSingleBeneficiaryFromGlobalModal('${escapeHtml(b.key)}')" style="background:#0284c7;border-color:#0369a1;font-size:0.75rem;font-weight:800;padding:4px 10px;" title="فتح نافذة التوزيع الخاصة بهذا المستفيد وحده لتعديل مواده بالتفصيل ثم العودة">
+🎯 فتح وتخصيص المستفيد
+</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="printSingleActiveBeneficiaryFromGlobal('${escapeHtml(b.key)}')" style="color:#10b981;border-color:rgba(16,185,129,0.45);font-size:0.75rem;font-weight:800;padding:4px 9px;" title="طباعة إشهاد هذا المستفيد وحده">
+🖨️ إشهاده
+</button>
+</div>
+</div>
+${inlineTableHtml}
+</div>
+`;
+}).join("");
+mainTabHtml = `
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:4px;">
+<div style="font-size:0.8rem;color:var(--text-secondary);">
+<strong>قائمة المستفيدين النشطين (${filteredBens.length}):</strong> يمكنك تعديل كميات أي مستفيد مباشرةً هنا (✏️ تعديل سريع) أو الضغط على <strong>«🎯 فتح وتخصيص المستفيد»</strong> لدراسته منفرداً ثم العودة.
+</div>
+<div style="display:flex;gap:6px;">
+<button type="button" class="btn btn-outline btn-sm" onclick="toggleAllGlobalActiveBeneficiaries(true)" style="font-size:0.74rem;color:#10b981;border-color:rgba(16,185,129,0.4);font-weight:800;">✓ تحديد كل المستفيدين</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="toggleAllGlobalActiveBeneficiaries(false)" style="font-size:0.74rem;color:#ef4444;border-color:rgba(239,68,68,0.4);">إلغاء تحديد الكل</button>
+</div>
+</div>
+<div style="max-height:52vh;overflow-y:auto;padding-right:2px;">
+${benCardsHtml || `<div style="padding:24px;text-align:center;color:var(--text-muted);">لا يوجد مستفيدون مطابقون للبحث</div>`}
+</div>
+`;
+}
+bodyEl.innerHTML = `
+<div style="background:var(--bg-muted);border:1px solid var(--border-subtle);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:10px;">
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+<span style="font-size:0.8rem;font-weight:900;color:var(--text-main);">1. نوع الوضعية العامة للتوزيع الشامل:</span>
+<button type="button" class="btn ${gst.periodMode === 'annual' ? 'btn-primary' : 'btn-outline'} btn-sm" onclick="switchGlobalActiveDistPeriod('annual')" style="font-weight:800;font-size:0.78rem;">📦 سنوي (12 شهراً)</button>
+<button type="button" class="btn ${gst.periodMode === 'semi_annual' ? 'btn-primary' : 'btn-outline'} btn-sm" onclick="switchGlobalActiveDistPeriod('semi_annual')" style="font-weight:800;font-size:0.78rem;">📦 نصف سنوي (6 أشهر)</button>
+<button type="button" class="btn ${gst.periodMode === 'quarterly' ? 'btn-primary' : 'btn-outline'} btn-sm" onclick="switchGlobalActiveDistPeriod('quarterly')" style="font-weight:800;font-size:0.78rem;">📦 ربع سنوي (3 أشهر)</button>
+<button type="button" class="btn ${gst.periodMode === 'monthly' ? 'btn-primary' : 'btn-outline'} btn-sm" onclick="switchGlobalActiveDistPeriod('monthly')" style="font-weight:800;font-size:0.78rem;">📦 شهري (شهر واحد)</button>
+</div>
+<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+<select class="form-control" style="height:32px;font-size:0.78rem;width:210px;" onchange="onGlobalActiveWorkplaceFilterChange(this.value)">
+<option value="all" ${gst.workplaceFilter === 'all' ? 'selected' : ''}>-- جميع الجهات النشطة (${workplaces.length}) --</option>
+${workplaces.map(w => `<option value="${escapeHtml(w)}" ${gst.workplaceFilter === w ? 'selected' : ''}>${escapeHtml(w)}</option>`).join("")}
+</select>
+<input type="text" class="form-control" placeholder="بحث بالمستفيد أو المادة..." value="${escapeHtml(gst.searchQuery)}" oninput="window._globalActiveDistState.searchQuery=this.value; renderGlobalActiveDistModalContent();" style="height:32px;font-size:0.78rem;width:200px;" />
+</div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;padding-top:8px;border-top:1px dashed var(--border-subtle);">
+<div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:7px 10px;">
+<div style="font-size:0.7rem;color:var(--text-muted);">الجهات والمستفيدون النشطون</div>
+<div style="font-size:1rem;font-weight:900;color:#38bdf8;" class="tabular-nums">${plan.selectedBeneficiariesCount} مستفيد <span style="font-size:0.75rem;color:var(--text-secondary);">(${plan.activeEntitiesCount} جهات)</span></div>
+</div>
+<div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:7px 10px;">
+<div style="font-size:0.7rem;color:var(--text-muted);">المواد النشطة المطلوبة</div>
+<div style="font-size:1rem;font-weight:900;color:#10b981;" class="tabular-nums">${plan.totalDistinctActiveItemsCount} مادة نشطة</div>
+</div>
+<div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:7px 10px;">
+<div style="font-size:0.7rem;color:var(--text-muted);">إجمالي الكميات (${escapeHtml(plan.periodMeta.shortAr)})</div>
+<div style="font-size:1rem;font-weight:900;color:#10b981;" class="tabular-nums">${plan.totalGlobalUnits} قطعة</div>
+</div>
+<div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:7px 10px;">
+<div style="font-size:0.7rem;color:var(--text-muted);">تغطية رصيد المخزن الحالي</div>
+<div style="font-size:0.92rem;font-weight:900;color:${plan.totalShortageItemsCount === 0 ? '#10b981' : '#f59e0b'};" class="tabular-nums">
+${plan.totalShortageItemsCount === 0 ? '✓ متوفر بالكامل (100%)' : `${plan.totalShortageItemsCount} مواد تحتاج تعزيز (${plan.totalShortageUnits} قطعة)`}
+</div>
+</div>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;padding-top:4px;">
+<button type="button" class="btn ${gst.activeTab === 'beneficiaries' ? 'btn-primary' : 'btn-outline'} btn-sm" onclick="switchGlobalActiveDistTab('beneficiaries')" style="font-weight:800;font-size:0.8rem;">
+👥 1. المستفيدون النشطون وتخصيص الحصص (${plan.selectedBeneficiariesCount})
+</button>
+<button type="button" class="btn ${gst.activeTab === 'quantities_study' ? 'btn-primary' : 'btn-outline'} btn-sm" onclick="switchGlobalActiveDistTab('quantities_study')" style="font-weight:800;font-size:0.8rem;">
+📊 2. جدول دراسة الكميات الإجمالية ومقارنتها بالمخزون (${plan.totalDistinctActiveItemsCount} مادة)
+</button>
+<button type="button" class="btn ${gst.activeTab === 'certificates_preview' ? 'btn-primary' : 'btn-outline'} btn-sm" onclick="switchGlobalActiveDistTab('certificates_preview')" style="font-weight:800;font-size:0.8rem;">
+📄 3. معاينة جميع الإشهادات الرسمية الجاهزة للطباعة (${plan.selectedBeneficiariesCount} إشهاد)
+</button>
+</div>
+</div>
+${mainTabHtml}
+`;
+footerEl.innerHTML = `
+<button type="button" class="btn btn-secondary" onclick="closeGlobalActiveDistributionModal()">إغلاق</button>
+<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+<button type="button" class="btn btn-outline" onclick="printGlobalActiveSituationStudyReportA4()" style="border-color:#38bdf8;color:#38bdf8;font-weight:800;display:inline-flex;align-items:center;gap:6px;">
+<span>📊 طباعة تقرير الوضعية العامة ودراسة الكميات (Situation A4)</span>
+</button>
+<button type="button" class="btn btn-primary" onclick="printAllGlobalActiveCertificates()" style="background:#0284c7;border-color:#0369a1;font-weight:900;padding:8px 16px;display:inline-flex;align-items:center;gap:6px;">
+<span>🖨️ طباعة جميع الإشهادات الرسمية للدراسة أو التوقيع (${plan.selectedBeneficiariesCount} إشهاد)</span>
+</button>
+<button type="button" class="btn btn-primary" onclick="commitGlobalActiveDistributionToArchive(true)" style="background:#10b981;border-color:#059669;font-weight:900;padding:8px 16px;display:inline-flex;align-items:center;gap:6px;" title="اعتماد وحفظ جميع الإشهادات المحددة في أرشيف العمليات وخصم المخزون مع الطباعة">
+<span>✅ اعتماد الكل في الأرشيف + طباعة</span>
+</button>
+</div>
+`;
+}
+window.renderGlobalActiveDistModalContent = renderGlobalActiveDistModalContent;
+const _v93RenderAiEntitiesPatterns = renderAiEntitiesPatterns;
+renderAiEntitiesPatterns = function() {
+_v93RenderAiEntitiesPatterns();
+const container = document.getElementById("ai-entities-patterns-grid");
+if (!container || container.querySelector("#global-active-dist-hero-banner")) return;
+const planAnnual = buildGlobalActiveDistributionPlan("annual", "all", 0);
+const planSemi = buildGlobalActiveDistributionPlan("semi_annual", "all", 0);
+const planMonthly = buildGlobalActiveDistributionPlan("monthly", "all", 0);
+const bannerDiv = document.createElement("div");
+bannerDiv.id = "global-active-dist-hero-banner";
+bannerDiv.style.cssText = "background: linear-gradient(135deg, rgba(6, 78, 59, 0.92), rgba(15, 23, 42, 0.96)); border: 1.5px solid #10b981; border-radius: 14px; padding: 16px; margin-bottom: 14px; color: #f8fafc; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.15);";
+bannerDiv.innerHTML = `
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;">
+<div style="flex:1 1 380px;">
+<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+<span class="badge" style="background:#10b981;color:#052e16;font-weight:900;font-size:0.74rem;padding:3px 10px;">⚡ بضغطة زر واحدة — Situation Globale</span>
+<h4 style="margin:0;font-size:1.08rem;font-weight:900;color:#6ee7b7;">🌐 الوضعية العامة والتوزيع الشامل لجميع الجهات والمستفيدين النشطين والمواد النشطة</h4>
+</div>
+<div style="font-size:0.8rem;color:#cbd5e1;margin-top:6px;line-height:1.55;">
+استخرج بضغطة واحدة <strong>جميع الإشهادات الرسمية (${planAnnual.totalActiveBeneficiariesCount} مستفيداً نشطاً في ${planAnnual.activeEntitiesCount} جهات — ${planAnnual.totalDistinctActiveItemsCount} مادة نشطة)</strong> أو <strong>جدول دراسة الكميات الإجمالية ومقارنتها بالمخزون</strong> للتوزيع السنوي أو نصف السنوي أو الشهري، مع إمكانية طباعتها للدراسة أو فتح أي مستفيد لتخصيص حصته.
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
+<div style="display:flex;gap:8px;flex-wrap:wrap;">
+<button type="button" class="btn btn-primary btn-sm" onclick="openGlobalActiveDistributionModal('annual', 'beneficiaries')" style="background:#10b981;border-color:#059669;color:#052e16;font-weight:900;padding:8px 14px;font-size:0.82rem;">
+🌐 الوضعية السنوية الشاملة (${planAnnual.totalGlobalUnits} قطعة)
+</button>
+<button type="button" class="btn btn-primary btn-sm" onclick="openGlobalActiveDistributionModal('semi_annual', 'beneficiaries')" style="background:#0284c7;border-color:#0369a1;color:#fff;font-weight:900;padding:8px 14px;font-size:0.82rem;">
+🌐 الوضعية نصف السنوية (${planSemi.totalGlobalUnits} قطعة)
+</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="openGlobalActiveDistributionModal('monthly', 'beneficiaries')" style="border-color:#c084fc;color:#e9d5ff;font-weight:800;padding:8px 12px;font-size:0.8rem;">
+🌐 الوضعية الشهرية (${planMonthly.totalGlobalUnits} قطعة)
+</button>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;">
+<button type="button" class="btn btn-outline btn-sm" onclick="openGlobalActiveDistributionModal('annual', 'quantities_study')" style="border-color:#38bdf8;color:#7dd3fc;font-weight:800;padding:5px 12px;font-size:0.76rem;">
+📊 دراسة الكميات الإجمالية ومقارنتها بالمخزن
+</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="printGlobalActiveSituationStudyReportA4()" style="border-color:#fbbf24;color:#fde68a;font-weight:800;padding:5px 12px;font-size:0.76rem;">
+🖨️ طباعة تقرير الوضعية العامة (A4)
+</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="printAllGlobalActiveCertificates()" style="border-color:#6ee7b7;color:#a7f3d0;font-weight:800;padding:5px 12px;font-size:0.76rem;">
+🖨️ طباعة جميع الإشهادات بضغطة واحدة (${planAnnual.totalActiveBeneficiariesCount} إشهاد)
+</button>
+</div>
+</div>
+</div>
+`;
+container.insertBefore(bannerDiv, container.firstChild);
+};
+window.renderAiEntitiesPatterns = renderAiEntitiesPatterns;
+function injectGlobalActiveBannerIntoBulkView() {
+const bulkSection = document.getElementById("bulk-distribution-view");
+if (!bulkSection || document.getElementById("bulk-view-global-active-shortcut")) return;
+const stepsNav = bulkSection.querySelector(".steps-nav");
+if (!stepsNav) return;
+const bar = document.createElement("div");
+bar.id = "bulk-view-global-active-shortcut";
+bar.style.cssText = "background: linear-gradient(135deg, rgba(6, 78, 59, 0.85), rgba(15, 23, 42, 0.92)); border: 1.5px solid rgba(16, 185, 129, 0.55); border-radius: 12px; padding: 12px 16px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; color: #f8fafc;";
+bar.innerHTML = `
+<div>
+<div style="font-weight:900;font-size:0.95rem;color:#6ee7b7;display:flex;align-items:center;gap:6px;">
+<span>🌐 الوضعية العامة للتوزيع الشامل (جميع الجهات والمستفيدين النشطين والمواد النشطة بضغطة واحدة)</span>
+</div>
+<div style="font-size:0.76rem;color:#cbd5e1;margin-top:2px;">
+استخرج واطبع جميع الإشهادات الرسمية وجدول دراسة الكميات السنوي أو نصف السنوي أو الشهري لكافة المستفيدين النشطين دفعة واحدة:
+</div>
+</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap;">
+<button type="button" class="btn btn-primary btn-sm" onclick="openGlobalActiveDistributionModal('annual', 'beneficiaries')" style="background:#10b981;border-color:#059669;color:#052e16;font-weight:900;font-size:0.78rem;">📦 وضعية سنوية شاملة</button>
+<button type="button" class="btn btn-primary btn-sm" onclick="openGlobalActiveDistributionModal('semi_annual', 'beneficiaries')" style="background:#0284c7;border-color:#0369a1;color:#fff;font-weight:800;font-size:0.78rem;">📦 وضعية نصف سنوية</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="openGlobalActiveDistributionModal('monthly', 'beneficiaries')" style="border-color:#c084fc;color:#e9d5ff;font-weight:800;font-size:0.78rem;">📦 وضعية شهرية</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="openGlobalActiveDistributionModal('annual', 'quantities_study')" style="border-color:#38bdf8;color:#7dd3fc;font-weight:800;font-size:0.78rem;">📊 دراسة الكميات</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="printAllGlobalActiveCertificates()" style="border-color:#fbbf24;color:#fde68a;font-weight:800;font-size:0.78rem;">🖨️ طباعة جميع الإشهادات</button>
+</div>
+`;
+stepsNav.parentElement.insertBefore(bar, stepsNav);
+}
+window.addEventListener("DOMContentLoaded", () => {
+injectGlobalActiveBannerIntoBulkView();
+});
 window.addEventListener("DOMContentLoaded", () => {
 ensureGlobalQuickNotesDatalist();
 upgradeEditVoucherModalDOMForNotes();
