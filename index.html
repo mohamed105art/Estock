@@ -38412,6 +38412,1698 @@ await forceCloudSyncNow();
 };
 badge.insertAdjacentElement("afterend", btn);
 }
+const CATEGORY_DISTRIBUTION_PRIORITY_MAP = {
+"طونير طابعات": 1,
+"طونير طابعات بالألوان": 2,
+"دروم طابعات": 3,
+"طونير آلات النسخ": 4,
+"طونير آلات النسخ بالألوان": 5,
+"دروم آلات النسخ": 6,
+"طونير فاكس": 7,
+"طونير الفاكس": 7,
+"دروم فاكس": 8,
+"دروم الفاكس": 8,
+"لفائف الفاكس": 9,
+"أدوات التخزين": 10,
+"أدوات معلوماتية": 11,
+"كابلات": 12,
+"أدوات المكتب": 13,
+"المطبوعات، الكتب واللافتات": 99
+};
+function getCategoryDistributionRank(catName) {
+const clean = String(catName || "عام").trim();
+if (CATEGORY_DISTRIBUTION_PRIORITY_MAP[clean] !== undefined) {
+return CATEGORY_DISTRIBUTION_PRIORITY_MAP[clean];
+}
+if (clean.includes("طابعات") && clean.includes("ألوان")) return 2;
+if (clean.includes("طابعات") && clean.includes("دروم")) return 3;
+if (clean.includes("طابعات")) return 1;
+if (clean.includes("نسخ") && clean.includes("ألوان")) return 5;
+if (clean.includes("نسخ") && clean.includes("دروم")) return 6;
+if (clean.includes("نسخ")) return 4;
+if (clean.includes("فاكس")) return 7;
+if (clean.includes("تخزين") || clean.includes("معلوماتية")) return 11;
+if (clean.includes("كابل") || clean.includes("كابلات")) return 12;
+return 20;
+}
+window.getCategoryDistributionRank = getCategoryDistributionRank;
+function getColorSortRank(itemObj) {
+const c = String(itemObj?.colorTag || itemObj?.name || "").toLowerCase();
+if (c.includes("أسود") || c.includes("noir") || c.includes("black") || /\bk\b/.test(c)) return 1;
+if (c.includes("أزرق") || c.includes("cyan") || /\bc\b/.test(c)) return 2;
+if (c.includes("أحمر") || c.includes("وردي") || c.includes("magenta") || /\bm\b/.test(c)) return 3;
+if (c.includes("أصفر") || c.includes("jaune") || c.includes("yellow") || /\by\b/.test(c)) return 4;
+return 5;
+}
+function getAllBeneficiariesForSmartAnalysis(workplaceFilter = "all") {
+const rawTxs = (Array.isArray(state.data.transactions) ? state.data.transactions : []).filter(t => t && !t.isDeleted);
+const scopedTxs = typeof filterTransactionsByAnalyticsScope === "function" ? filterTransactionsByAnalyticsScope(rawTxs) : rawTxs;
+const benMap = new Map();
+benMap.set("DIR_SETTAT_ALL", {
+key: "DIR_SETTAT_ALL",
+recipient: "المديرية الإقليمية للعدل بسطات (كافة المصالح)",
+destination: "المديرية الإقليمية للعدل بسطات",
+displayLabel: "المديرية الإقليمية للعدل بسطات (مجموع مصالح المديرية)",
+isDirectorateAggregate: true,
+opsCount: 0,
+totalUnits: 0,
+units2026: 0,
+lastIsoDate: ""
+});
+scopedTxs.forEach(t => {
+const dest = String(t.destination || "غير محدد").trim();
+const recip = String(t.recipient || "غير محدد").trim();
+const sortKey = getTransactionDeliverySortKey(t);
+const iso = sortKey.slice(0, 10);
+const yr = sortKey.slice(0, 4);
+const txUnits = (t.items || []).reduce((s, li) => s + Math.max(0, sanitize(li?.qty)), 0);
+if (txUnits <= 0) return;
+if (isSettatDirectorateName(dest)) {
+const dirAgg = benMap.get("DIR_SETTAT_ALL");
+dirAgg.opsCount += 1;
+dirAgg.totalUnits += txUnits;
+if (yr === "2026") dirAgg.units2026 += txUnits;
+if (iso > dirAgg.lastIsoDate) dirAgg.lastIsoDate = iso;
+}
+const indivKey = `${recip}___${dest}`;
+if (!benMap.has(indivKey)) {
+const shortDest = dest
+.replace(/^محكمة الاستئناف\s*ب?/i, "استئنافية ")
+.replace(/^المحكمة الابتدائية\s*ب?/i, "ابتدائية ")
+.replace(/^المركز القضائي\s*ب?/i, "المركز القضائي ")
+.replace(/^المديرية الإقليمية للعدل\s*ب?/i, "المديرية الإقليمية ");
+const displayLabel = recip.includes(shortDest) ? recip : `${recip} — ${shortDest}`;
+benMap.set(indivKey, {
+key: indivKey,
+recipient: recip,
+destination: dest,
+displayLabel,
+isDirectorateAggregate: false,
+opsCount: 0,
+totalUnits: 0,
+units2026: 0,
+lastIsoDate: ""
+});
+}
+const bRec = benMap.get(indivKey);
+bRec.opsCount += 1;
+bRec.totalUnits += txUnits;
+if (yr === "2026") bRec.units2026 += txUnits;
+if (iso > bRec.lastIsoDate) bRec.lastIsoDate = iso;
+});
+let list = Array.from(benMap.values()).filter(b => b.totalUnits > 0);
+if (workplaceFilter && workplaceFilter !== "all") {
+list = list.filter(b => b.destination === workplaceFilter || (workplaceFilter.includes("المديرية") && b.key === "DIR_SETTAT_ALL"));
+}
+list.sort((a, b) => {
+if (a.isDirectorateAggregate !== b.isDirectorateAggregate) {
+return a.isDirectorateAggregate ? 1 : -1;
+}
+const scoreA = (a.units2026 * 2.5) + a.totalUnits;
+const scoreB = (b.units2026 * 2.5) + b.totalUnits;
+return scoreB - scoreA;
+});
+return list;
+}
+window.getAllBeneficiariesForSmartAnalysis = getAllBeneficiariesForSmartAnalysis;
+function buildBeneficiaryConsumptionProfile(beneficiaryKey, safetyMarginPct = 0, refDateStr = "2026-11-04") {
+const allBens = getAllBeneficiariesForSmartAnalysis("all");
+const targetBen = allBens.find(b => b.key === beneficiaryKey) || allBens[0];
+if (!targetBen) return null;
+const rawTxs = (Array.isArray(state.data.transactions) ? state.data.transactions : []).filter(t => t && !t.isDeleted);
+const scopedTxs = typeof filterTransactionsByAnalyticsScope === "function" ? filterTransactionsByAnalyticsScope(rawTxs) : rawTxs;
+const itemsCatalog = (state.data.items || [])
+.filter(i => i && !i.isDeleted && (typeof isItemIncludedInAnalytics === "function" ? isItemIncludedInAnalytics(i) : true))
+.map(i => parseAndEnrichStructuredItem(i));
+const itemsById = new Map(itemsCatalog.map(i => [i.id, i]));
+const parseUtcMs = (iso) => {
+const [y, m, d] = String(iso || "2026-11-04").slice(0, 10).split("-").map(Number);
+return Date.UTC(y || 2026, (m || 1) - 1, d || 1);
+};
+const refUtcMs = parseUtcMs(refDateStr);
+const twelveMonthsAgoIso = "2025-11-04";
+const sixMonthsAgoIso = "2026-05-04";
+const globalItemTotals = new Map();
+const globalItem2026Totals = new Map();
+const benItemStats = new Map();
+scopedTxs.forEach(t => {
+const dest = String(t.destination || "").trim();
+const recip = String(t.recipient || "").trim();
+const sortKey = getTransactionDeliverySortKey(t);
+const iso = sortKey.slice(0, 10);
+const yr = sortKey.slice(0, 4);
+const isMatchBeneficiary = targetBen.isDirectorateAggregate
+? isSettatDirectorateName(dest)
+: (recip === targetBen.recipient && dest === targetBen.destination);
+(t.items || []).forEach(rawLi => {
+if (!rawLi) return;
+let itemId = rawLi.id;
+if (itemId === "b0938886" || String(rawLi.name || "").includes("MLT-D203L")) itemId = "ecbf1f3c";
+if (itemId === "dcf4c5ee") itemId = "dcb4c5ee";
+const catalogItem = itemsById.get(itemId);
+if (!catalogItem) return; // مستبعد من نطاق الإحصائيات (كالمطبوعات) أو محذوف
+const q = Math.max(0, sanitize(rawLi.qty !== undefined ? rawLi.qty : rawLi.quantity));
+if (q <= 0) return;
+globalItemTotals.set(itemId, (globalItemTotals.get(itemId) || 0) + q);
+if (yr === "2026") {
+globalItem2026Totals.set(itemId, (globalItem2026Totals.get(itemId) || 0) + q);
+}
+if (!isMatchBeneficiary) return;
+if (!benItemStats.has(itemId)) {
+benItemStats.set(itemId, {
+item: catalogItem,
+q2024: 0,
+q2025: 0,
+q2026: 0,
+last12MonthsQty: 0,
+last6MonthsQty: 0,
+totalHistorical: 0,
+opsCount: 0,
+ops2026Count: 0,
+lastIsoDate: "",
+lastQty: 0,
+firstIsoDate: "9999-99-99",
+events2026: [],
+allEvents: []
+});
+}
+const st = benItemStats.get(itemId);
+st.totalHistorical += q;
+st.opsCount += 1;
+if (yr === "2024") st.q2024 += q;
+else if (yr === "2025") st.q2025 += q;
+else if (yr === "2026") {
+st.q2026 += q;
+st.ops2026Count += 1;
+st.events2026.push({ isoDate: iso, qty: q, voucherId: t.id || "", recipient: recip, destination: dest });
+}
+if (iso >= twelveMonthsAgoIso) st.last12MonthsQty += q;
+if (iso >= sixMonthsAgoIso) st.last6MonthsQty += q;
+if (iso >= st.lastIsoDate) {
+st.lastIsoDate = iso;
+st.lastQty = q;
+}
+if (iso < st.firstIsoDate) {
+st.firstIsoDate = iso;
+}
+st.allEvents.push({ isoDate: iso, qty: q, voucherId: t.id || "" });
+});
+});
+const safeMargin = Math.max(0, Number(safetyMarginPct) || 0);
+const analyzedItems = [];
+benItemStats.forEach((st, itemId) => {
+if (st.totalHistorical <= 0) return;
+const it = st.item;
+const daysSinceLast = Math.max(0, Math.round((refUtcMs - parseUtcMs(st.lastIsoDate)) / 86400000));
+const monthsSinceLast = +(daysSinceLast / 30.44).toFixed(1);
+const globalTot = globalItemTotals.get(itemId) || st.totalHistorical;
+const global2026Tot = globalItem2026Totals.get(itemId) || st.q2026;
+const shareHistoricalPct = globalTot > 0 ? Math.round((st.totalHistorical / globalTot) * 100) : 0;
+const share2026Pct = global2026Tot > 0 ? Math.round((st.q2026 / global2026Tot) * 100) : shareHistoricalPct;
+const cadence2026 = typeof compute2026ConsecutiveDeliveryCadence === "function"
+? compute2026ConsecutiveDeliveryCadence(st.events2026, refDateStr)
+: { opsCount: st.ops2026Count, avgGapMonths: null, monthlyVelocity: +(st.q2026 / 10.1).toFixed(1), cadenceBadgeText: "" };
+const isDeviceConsumable = DEVICE_CONSUMABLE_CATEGORIES.has(it.category);
+let activityTier = 1;
+let statusBadgeHtml = "";
+let statusNoteAr = "";
+let rowHighlightStyle = "";
+let isRedDormant = false;
+let isAmberWarning = false;
+let baseAnnualQuota = 0;
+const priorYearsActive = (st.q2024 > 0 && st.q2025 > 0)
+? Math.round((st.q2024 + st.q2025) / 2)
+: (st.q2025 > 0 ? st.q2025 : st.q2024);
+if (st.q2026 === 0 && st.q2025 === 0 && st.q2024 > 0) {
+activityTier = 3;
+isRedDormant = true;
+baseAnnualQuota = 0;
+statusBadgeHtml = `<span class="badge" style="background:rgba(239,68,68,0.18);color:#ef4444;border:1px solid rgba(239,68,68,0.5);font-size:0.72rem;font-weight:800;">🔴 منقطع منذ سنتين (${Math.round(monthsSinceLast)} شهراً)</span>`;
+statusNoteAr = `لم يُطلب منذ ${st.lastIsoDate} (سنة 2024 فقط: ${st.q2024} وحدة، وصفر في 2025 و2026) — غالباً لم يعد مستعملاً (الحصة المقترحة = 0).`;
+rowHighlightStyle = "background: rgba(239, 68, 68, 0.07); border-right: 4px solid #ef4444;";
+} else if (st.q2026 === 0 && monthsSinceLast > 12) {
+activityTier = 3;
+isRedDormant = true;
+baseAnnualQuota = 0;
+statusBadgeHtml = `<span class="badge" style="background:rgba(239,68,68,0.16);color:#ef4444;border:1px solid rgba(239,68,68,0.45);font-size:0.72rem;font-weight:800;">🔴 متوقف منذ > سنة (${monthsSinceLast} شهر)</span>`;
+statusNoteAr = `آخر تسليم كان بتاريخ ${st.lastIsoDate} (منذ ${monthsSinceLast} شهراً — 0 في 2026) — معلم بالأحمر لتوقفه لأكثر من سنة.`;
+rowHighlightStyle = "background: rgba(239, 68, 68, 0.06); border-right: 4px solid #ef4444;";
+} else if (st.q2026 === 0 && monthsSinceLast > 6) {
+if (!isDeviceConsumable && st.q2025 > 0) {
+activityTier = 2;
+isAmberWarning = true;
+baseAnnualQuota = st.last12MonthsQty > 0 ? st.last12MonthsQty : st.q2025;
+statusBadgeHtml = `<span class="badge" style="background:rgba(245,158,11,0.16);color:#f59e0b;border:1px solid rgba(245,158,11,0.45);font-size:0.72rem;font-weight:800;">🟠 منذ ${monthsSinceLast} شهر (حصة سنوية)</span>`;
+statusNoteAr = `آخر تسليم في ${st.lastIsoDate} (${st.q2025} وحدة في 2025)؛ مادة سنوية لم يتسلم حصتها في 2026 بعد.`;
+rowHighlightStyle = "background: rgba(245, 158, 11, 0.05); border-right: 4px solid #f59e0b;";
+} else {
+activityTier = 3;
+isRedDormant = true;
+baseAnnualQuota = 0;
+statusBadgeHtml = `<span class="badge" style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.4);font-size:0.72rem;font-weight:800;">🔴 لم يُطلب منذ ${monthsSinceLast} شهر (0 في 2026)</span>`;
+statusNoteAr = `انقطع السحب طيلة سنة 2026 (آخر تسليم: ${st.lastIsoDate} — منذ ${monthsSinceLast} شهراً)؛ الحصة المقترحة = 0 (مع إمكانية تفعيلها يدوياً).`;
+rowHighlightStyle = "background: rgba(239, 68, 68, 0.05); border-right: 4px solid #ef4444;";
+}
+} else {
+activityTier = 1;
+const realRecentAnnual = Math.max(st.q2026, st.last12MonthsQty);
+if (priorYearsActive === 0) {
+baseAnnualQuota = realRecentAnnual;
+} else if (st.q2026 <= priorYearsActive) {
+baseAnnualQuota = st.q2026;
+} else {
+const ratio = st.q2026 / priorYearsActive;
+if (ratio <= 1.45 || cadence2026.opsCount >= 2) {
+baseAnnualQuota = st.q2026;
+} else {
+baseAnnualQuota = Math.max(1, Math.round(st.q2026 * 0.72 + priorYearsActive * 0.28));
+}
+}
+if (monthsSinceLast > 6) {
+isAmberWarning = true;
+statusBadgeHtml = `<span class="badge" style="background:rgba(245,158,11,0.14);color:#f59e0b;border:1px solid rgba(245,158,11,0.4);font-size:0.72rem;font-weight:800;">🟡 نشط (آخر سحب منذ ${monthsSinceLast} شهر)</span>`;
+statusNoteAr = `استهلاك 2026 الفعلي (${st.q2026} وحدة) | آخر سحب بتاريخ ${st.lastIsoDate} (منذ ${monthsSinceLast} شهراً — أكثر من 6 أشهر).`;
+rowHighlightStyle = "border-right: 3px solid #f59e0b;";
+} else {
+statusBadgeHtml = `<span class="badge badge-success" style="font-size:0.72rem;font-weight:800;">🟢 نشط ومستمر (${st.q2026} في 2026)</span>`;
+const cadText = cadence2026.opsCount >= 2 ? ` (${cadence2026.opsCount} دفعات بـ 2026 كل ~${cadence2026.avgGapMonths} شهر)` : "";
+statusNoteAr = `استهلاك حديث عالي المصداقية: ${st.q2026} وحدة في 2026${cadText} | آخر تسليم: ${st.lastIsoDate} (${st.lastQty} وحدة).`;
+rowHighlightStyle = "border-right: 3px solid #10b981;";
+}
+}
+const weightedAnnualBurn = st.q2026 > 0
+? (priorYearsActive > 0 ? Math.round(st.q2026 * 0.75 + priorYearsActive * 0.25) : st.q2026)
+: (st.q2025 > 0 ? Math.round(st.q2025 * 0.5) : 0);
+const proposedAnnual = baseAnnualQuota > 0
+? Math.max(1, Math.round(baseAnnualQuota * (1 + safeMargin / 100)))
+: 0;
+const proposedSemiAnnual = proposedAnnual > 0
+? Math.max(1, Math.ceil(proposedAnnual / 2))
+: 0;
+const proposedQuarterly = proposedAnnual > 0
+? Math.max(1, Math.ceil(proposedAnnual / 4))
+: 0;
+const proposedMonthly = proposedAnnual > 0
+? Math.max(1, Math.ceil(proposedAnnual / 12))
+: 0;
+const exactMonthlyRate = +(proposedAnnual / 12).toFixed(1);
+analyzedItems.push({
+itemId,
+item: it,
+name: it.name,
+shortRef: it.shortRef || it.name,
+category: it.category,
+categoryRank: getCategoryDistributionRank(it.category),
+colorRank: getColorSortRank(it),
+deviceModel: it.deviceModel || "",
+colorTag: it.colorTag || "",
+currentStock: Math.max(0, sanitize(it.stock)),
+q2024: st.q2024,
+q2025: st.q2025,
+q2026: st.q2026,
+last12MonthsQty: st.last12MonthsQty,
+totalHistorical: st.totalHistorical,
+opsCount: st.opsCount,
+ops2026Count: st.ops2026Count,
+lastIsoDate: st.lastIsoDate,
+lastQty: st.lastQty,
+daysSinceLast,
+monthsSinceLast,
+shareHistoricalPct,
+share2026Pct,
+cadence2026,
+activityTier,
+isRedDormant,
+isAmberWarning,
+statusBadgeHtml,
+statusNoteAr,
+rowHighlightStyle,
+weightedAnnualBurn,
+baseAnnualQuota,
+proposedAnnual,
+proposedSemiAnnual,
+proposedQuarterly,
+proposedMonthly,
+exactMonthlyRate
+});
+});
+analyzedItems.sort((a, b) => {
+if (a.activityTier !== b.activityTier) {
+return a.activityTier - b.activityTier;
+}
+if (a.activityTier === 3) {
+if (b.lastIsoDate !== a.lastIsoDate) return b.lastIsoDate.localeCompare(a.lastIsoDate);
+return b.totalHistorical - a.totalHistorical;
+}
+if (b.proposedAnnual !== a.proposedAnnual) return b.proposedAnnual - a.proposedAnnual;
+if (b.q2026 !== a.q2026) return b.q2026 - a.q2026;
+if (b.last12MonthsQty !== a.last12MonthsQty) return b.last12MonthsQty - a.last12MonthsQty;
+return b.totalHistorical - a.totalHistorical;
+});
+const activeItemsList = analyzedItems.filter(x => !x.isRedDormant && x.proposedAnnual > 0);
+const dormantRedItemsList = analyzedItems.filter(x => x.isRedDormant || x.proposedAnnual === 0);
+return {
+beneficiary: targetBen,
+safetyMarginPct: safeMargin,
+allConsumedItems: analyzedItems,
+activeItemsList,
+dormantRedItemsList,
+totalConsumedItemsCount: analyzedItems.length,
+activeItemsCount: activeItemsList.length,
+dormantRedItemsCount: dormantRedItemsList.length,
+totalProposedAnnualUnits: activeItemsList.reduce((s, x) => s + x.proposedAnnual, 0),
+totalProposedSemiAnnualUnits: activeItemsList.reduce((s, x) => s + x.proposedSemiAnnual, 0),
+totalProposedQuarterlyUnits: activeItemsList.reduce((s, x) => s + x.proposedQuarterly, 0),
+totalProposedMonthlyUnits: activeItemsList.reduce((s, x) => s + x.proposedMonthly, 0),
+total2026Units: analyzedItems.reduce((s, x) => s + x.q2026, 0),
+total2025Units: analyzedItems.reduce((s, x) => s + x.q2025, 0),
+total2024Units: analyzedItems.reduce((s, x) => s + x.q2024, 0)
+};
+}
+window.buildBeneficiaryConsumptionProfile = buildBeneficiaryConsumptionProfile;
+window._aiBeneficiaryAnalysisState = {
+workplaceFilter: "all",
+selectedBeneficiaryKey: "",
+periodMode: "annual", // 'annual' | 'semi_annual' | 'quarterly' | 'monthly'
+safetyMarginPct: 0,
+searchQuery: ""
+};
+function getPeriodModeMeta(periodMode) {
+if (periodMode === "semi_annual") {
+return {
+code: "semi_annual",
+titleAr: "توزيع نصف سنوي (6 أشهر)",
+shortAr: "نصف سنوي (6 أشهر)",
+reasonText: "حصة التوزيع نصف السنوي (6 أشهر)",
+propKey: "proposedSemiAnnual",
+totalKey: "totalProposedSemiAnnualUnits"
+};
+}
+if (periodMode === "quarterly") {
+return {
+code: "quarterly",
+titleAr: "توزيع ربع سنوي (3 أشهر)",
+shortAr: "ربع سنوي (3 أشهر)",
+reasonText: "حصة التوزيع الربع سنوي (3 أشهر)",
+propKey: "proposedQuarterly",
+totalKey: "totalProposedQuarterlyUnits"
+};
+}
+if (periodMode === "monthly") {
+return {
+code: "monthly",
+titleAr: "توزيع شهري (شهر واحد)",
+shortAr: "شهري (شهر واحد)",
+reasonText: "حصة التوزيع الشهري",
+propKey: "proposedMonthly",
+totalKey: "totalProposedMonthlyUnits"
+};
+}
+return {
+code: "annual",
+titleAr: "توزيع سنوي كامل (12 شهراً)",
+shortAr: "سنوي (12 شهراً)",
+reasonText: "حصة التوزيع السنوي المبرمجة",
+propKey: "proposedAnnual",
+totalKey: "totalProposedAnnualUnits"
+};
+}
+window.getPeriodModeMeta = getPeriodModeMeta;
+renderAiEntitiesPatterns = function() {
+const container = document.getElementById("ai-entities-patterns-grid");
+if (!container) return;
+const parentCard = container.closest(".card");
+if (parentCard) {
+parentCard.style.border = "1.5px solid rgba(56, 189, 248, 0.4)";
+const titleEl = parentCard.querySelector(".card-title");
+const subEl = parentCard.querySelector(".card-subtitle");
+if (titleEl) {
+titleEl.innerHTML = `👤 منظومة تحليل استهلاك المستفيدين والتوزيع الذكي المباشر (سنوي / نصف سنوي / شهري)`;
+}
+if (subEl) {
+subEl.textContent = "اختر أي مستفيد لعرض جميع المواد التي يستهلكها فعلياً مرتبة من الأكثر استهلاكاً إلى الأقل، مع كشف المواد المتوقفة بالأحمر، وإصدار إشهاد توزيع ذكي مرتب حسب الأصناف بضغطة واحدة";
+}
+}
+container.style.display = "block";
+const st = window._aiBeneficiaryAnalysisState;
+const allBens = getAllBeneficiariesForSmartAnalysis(st.workplaceFilter);
+if (!st.selectedBeneficiaryKey || !allBens.some(b => b.key === st.selectedBeneficiaryKey)) {
+const defaultBen = allBens.find(b => b.recipient.includes("رئيس كتابة الضبط") && b.destination.includes("الابتدائية بسطات")) || allBens[0];
+st.selectedBeneficiaryKey = defaultBen ? defaultBen.key : "";
+}
+const profile = buildBeneficiaryConsumptionProfile(st.selectedBeneficiaryKey, st.safetyMarginPct);
+if (!profile) {
+container.innerHTML = `<div style="padding:24px;text-align:center;color:var(--text-muted);">لا توجد بيانات استهلاك مسجلة للمستفيدين.</div>`;
+return;
+}
+const workplaces = Array.from(new Set(getAllBeneficiariesForSmartAnalysis("all").map(b => b.destination))).filter(Boolean);
+const periodMeta = getPeriodModeMeta(st.periodMode);
+const qFilter = String(st.searchQuery || "").trim().toLowerCase();
+const displayedItems = profile.allConsumedItems.filter(row => {
+if (!qFilter) return true;
+return `${row.shortRef} ${row.name} ${row.category} ${row.deviceModel}`.toLowerCase().includes(qFilter);
+});
+const quickBenPillsHtml = allBens.slice(0, 8).map(b => {
+const isSel = b.key === st.selectedBeneficiaryKey;
+return `
+<button type="button"
+onclick="selectAiBeneficiaryForAnalysis('${escapeHtml(b.key)}')"
+style="padding: 5px 11px; border-radius: 999px; font-size: 0.74rem; font-weight: ${isSel ? '800' : '600'}; cursor: pointer; transition: all 0.15s ease; border: 1.5px solid ${isSel ? '#38bdf8' : 'var(--border-subtle)'}; background: ${isSel ? 'rgba(56, 189, 248, 0.16)' : 'var(--bg-card)'}; color: ${isSel ? '#38bdf8' : 'var(--text-secondary)'}; display: inline-flex; align-items: center; gap: 5px;">
+<span>👤 ${escapeHtml(b.displayLabel)}</span>
+<span class="badge badge-subtle tabular-nums" style="font-size: 0.68rem;">${b.units2026 > 0 ? `${b.units2026} بـ 26` : `${b.totalUnits} إجمالي`}</span>
+</button>
+`;
+}).join("");
+const rowsHtml = displayedItems.map((row, idx) => {
+const chosenPeriodQty = row[periodMeta.propKey] || 0;
+const stockBadgeClass = row.currentStock >= chosenPeriodQty && chosenPeriodQty > 0
+? "badge-success"
+: (row.currentStock > 0 ? "badge-warning" : "badge-subtle");
+return `
+<tr style="${row.rowHighlightStyle}">
+<td style="text-align: center; font-weight: 800;" class="tabular-nums">${idx + 1}</td>
+<td>
+<div style="display: flex; flex-direction: column; gap: 2px;">
+<div>${formatItemDisplayHtml(row.item)}</div>
+<div style="font-size: 0.72rem; color: ${row.isRedDormant ? '#ef4444' : 'var(--text-muted)'}; line-height: 1.4;">
+${escapeHtml(row.statusNoteAr)}
+</div>
+</div>
+</td>
+<td style="text-align: center;">
+<span class="badge badge-subtle" style="font-size: 0.72rem;">${escapeHtml(row.category)}</span>
+</td>
+<td style="text-align: center;" class="tabular-nums">
+<div style="display: inline-flex; align-items: center; gap: 5px; direction: ltr; font-size: 0.78rem; background: var(--bg-muted); padding: 3px 8px; border-radius: 6px; border: 1px solid var(--border-subtle);">
+<span style="color: var(--text-muted);">24: <strong>${row.q2024}</strong></span>
+<span>|</span>
+<span style="color: var(--text-secondary);">25: <strong>${row.q2025}</strong></span>
+<span>|</span>
+<span style="color: ${row.q2026 > 0 ? '#10b981' : '#ef4444'}; font-weight: 900;">26: ${row.q2026}</span>
+</div>
+<div style="font-size: 0.69rem; color: var(--text-muted); margin-top: 2px;">
+آخر 12 شهراً: <strong>${row.last12MonthsQty}</strong> | المجموع: ${row.totalHistorical}
+</div>
+</td>
+<td style="text-align: center;" class="tabular-nums">
+<div style="font-weight: 800; color: #38bdf8; font-size: 0.84rem;">${row.share2026Pct}%</div>
+<div style="font-size: 0.68rem; color: var(--text-muted);">تاريخياً: ${row.shareHistoricalPct}%</div>
+</td>
+<td style="text-align: center;" class="tabular-nums">
+<div>${row.statusBadgeHtml}</div>
+<div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 3px;">
+آخر سحب: <strong>${escapeHtml(row.lastIsoDate)}</strong>
+</div>
+</td>
+<td style="text-align: center; background: rgba(16, 185, 129, 0.06);" class="tabular-nums">
+<div style="font-size: 1.05rem; font-weight: 900; color: ${row.proposedAnnual > 0 ? '#10b981' : '#ef4444'};">${row.proposedAnnual}</div>
+<div style="font-size: 0.68rem; color: var(--text-muted);">وحدة / سنة</div>
+</td>
+<td style="text-align: center;" class="tabular-nums">
+<div style="font-size: 0.92rem; font-weight: 800; color: ${row.proposedSemiAnnual > 0 ? '#38bdf8' : 'var(--text-muted)'};">${row.proposedSemiAnnual}</div>
+<div style="font-size: 0.68rem; color: var(--text-muted);">لكل 6 أشهر</div>
+</td>
+<td style="text-align: center;" class="tabular-nums">
+<div style="font-size: 0.92rem; font-weight: 800; color: ${row.proposedMonthly > 0 ? '#a855f7' : 'var(--text-muted)'};">${row.proposedMonthly}</div>
+<div style="font-size: 0.68rem; color: var(--text-muted);">(${row.exactMonthlyRate}/شهر)</div>
+</td>
+<td style="text-align: center;" class="tabular-nums">
+<span class="badge ${stockBadgeClass}" style="font-size: 0.74rem;">${row.currentStock}</span>
+</td>
+</tr>
+`;
+}).join("");
+container.innerHTML = `
+<div style="background: var(--bg-muted); border: 1.5px solid var(--border-subtle); border-radius: 12px; padding: 14px; margin-bottom: 12px;">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; align-items: end;">
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label" style="font-size: 0.78rem; font-weight: 800; color: var(--text-secondary);">1. تصفية حسب المحكمة / الجهة (اختياري):</label>
+<select class="form-control" style="height: 38px; font-size: 0.83rem;" onchange="onAiBeneficiaryWorkplaceFilterChange(this.value)">
+<option value="all" ${st.workplaceFilter === 'all' ? 'selected' : ''}>-- جميع المحاكم والمراكز والمديرية (${workplaces.length}) --</option>
+${workplaces.map(w => `<option value="${escapeHtml(w)}" ${st.workplaceFilter === w ? 'selected' : ''}>${escapeHtml(w)}</option>`).join("")}
+</select>
+</div>
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label" style="font-size: 0.78rem; font-weight: 800; color: #38bdf8;">2. اختر المستفيد لعرض تحليله وتوزيعه الذكي:</label>
+<select id="ai-beneficiary-main-select" class="form-control" style="height: 38px; font-size: 0.85rem; font-weight: 800; border-color: rgba(56, 189, 248, 0.55);" onchange="selectAiBeneficiaryForAnalysis(this.value)">
+${allBens.map(b => `
+<option value="${escapeHtml(b.key)}" ${b.key === st.selectedBeneficiaryKey ? 'selected' : ''}>
+${escapeHtml(b.displayLabel)} (${b.opsCount} عملية — 2026: ${b.units2026} وحدة)
+</option>
+`).join("")}
+</select>
+</div>
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label" style="font-size: 0.78rem; font-weight: 800; color: var(--text-secondary);">3. هامش الأمان الإضافي على الحصة:</label>
+<select class="form-control" style="height: 38px; font-size: 0.83rem;" onchange="onAiBeneficiarySafetyMarginChange(this.value)">
+<option value="0" ${Number(st.safetyMarginPct) === 0 ? 'selected' : ''}>0% (الاستهلاك المنطقي الحقيقي الثابت بدون زيادة)</option>
+<option value="10" ${Number(st.safetyMarginPct) === 10 ? 'selected' : ''}>+10% (هامش أمان اعتيادي)</option>
+<option value="20" ${Number(st.safetyMarginPct) === 20 ? 'selected' : ''}>+20% (هامش أمان موسع)</option>
+<option value="30" ${Number(st.safetyMarginPct) === 30 ? 'selected' : ''}>+30% (هامش أمان استراتيجي)</option>
+</select>
+</div>
+</div>
+<div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border-subtle); display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+<span style="font-size: 0.74rem; font-weight: 800; color: var(--text-muted);">⚡ وصول سريع للمستفيدين:</span>
+${quickBenPillsHtml}
+</div>
+</div>
+<div style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.88)); border: 1.5px solid rgba(56, 189, 248, 0.45); border-radius: 14px; padding: 16px; margin-bottom: 14px; color: #f8fafc;">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 14px;">
+<div>
+<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+<span class="badge badge-primary" style="font-size: 0.75rem; padding: 3px 10px;">المستفيد المختار</span>
+<h4 style="margin: 0; font-size: 1.12rem; font-weight: 900; color: #38bdf8;">${escapeHtml(profile.beneficiary.recipient)}</h4>
+<span style="font-size: 0.86rem; color: #cbd5e1; font-weight: 700;">— ${escapeHtml(profile.beneficiary.destination)}</span>
+</div>
+<div style="font-size: 0.8rem; color: #94a3b8; margin-top: 6px; line-height: 1.55;">
+إجمالي عمليات التسليم المسجلة: <strong style="color:#f8fafc;">${profile.beneficiary.opsCount} إشهاد</strong> |
+المواد النشطة المستمرة: <strong style="color:#10b981;">${profile.activeItemsCount} مادة</strong> |
+مواد قديمة توقف عن طلبها (> سنة / سنتين): <strong style="color:#ef4444;">${profile.dormantRedItemsCount} مادة (معلمة بالأحمر في أسفل الجدول)</strong> |
+المواد ذات الاستهلاك (0): <strong>مستبعدة تلقائياً</strong>.
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end;">
+<div style="font-size: 0.75rem; font-weight: 800; color: #38bdf8;">🚀 إصدار توزيع ذكي وإشهاد رسمي لهذا المستفيد (مرتب حسب الأصناف):</div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap;">
+<button type="button" class="btn btn-primary btn-sm" onclick="openBeneficiarySmartDistributionModal('${escapeHtml(profile.beneficiary.key)}', 'annual')" style="background: #10b981; border-color: #059669; font-weight: 800; padding: 7px 14px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 6px;">
+<span>📦 توزيع سنوي (${profile.totalProposedAnnualUnits} قطعة)</span>
+</button>
+<button type="button" class="btn btn-primary btn-sm" onclick="openBeneficiarySmartDistributionModal('${escapeHtml(profile.beneficiary.key)}', 'semi_annual')" style="background: #0284c7; border-color: #0369a1; font-weight: 800; padding: 7px 14px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 6px;">
+<span>📦 توزيع نصف سنوي (${profile.totalProposedSemiAnnualUnits} قطعة)</span>
+</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="openBeneficiarySmartDistributionModal('${escapeHtml(profile.beneficiary.key)}', 'quarterly')" style="border-color: rgba(56,189,248,0.5); color: #38bdf8; font-weight: 800; padding: 7px 12px; font-size: 0.78rem;">
+<span>توزيع ربع سنوي (${profile.totalProposedQuarterlyUnits} قطعة)</span>
+</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="openBeneficiarySmartDistributionModal('${escapeHtml(profile.beneficiary.key)}', 'monthly')" style="border-color: rgba(168,85,247,0.55); color: #c084fc; font-weight: 800; padding: 7px 12px; font-size: 0.78rem;">
+<span>توزيع شهري (${profile.totalProposedMonthlyUnits} قطعة)</span>
+</button>
+</div>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 10px; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(148, 163, 184, 0.2);">
+<div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 9px 12px;">
+<div style="font-size: 0.72rem; color: #94a3b8;">استهلاك السنة الحالية (2026 — المرجع الأدق)</div>
+<div style="font-size: 1.25rem; font-weight: 900; color: #10b981; margin-top: 2px;" class="tabular-nums">${profile.total2026Units} <span style="font-size:0.74rem;font-weight:600;color:#cbd5e1;">وحدة</span></div>
+<div style="font-size: 0.69rem; color: #64748b;">مقابل ${profile.total2025Units} في 2025 و${profile.total2024Units} في 2024</div>
+</div>
+<div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 10px; padding: 9px 12px;">
+<div style="font-size: 0.72rem; color: #6ee7b7;">الحصة السنوية المنطقية المقترحة</div>
+<div style="font-size: 1.25rem; font-weight: 900; color: #10b981; margin-top: 2px;" class="tabular-nums">${profile.totalProposedAnnualUnits} <span style="font-size:0.74rem;font-weight:600;">وحدة / سنة</span></div>
+<div style="font-size: 0.69rem; color: #a7f3d0;">موزعة على ${profile.activeItemsCount} مادة نشطة فعلياً</div>
+</div>
+<div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 10px; padding: 9px 12px;">
+<div style="font-size: 0.72rem; color: #7dd3fc;">الحصة نصف السنوية / الشهرية المقترحة</div>
+<div style="font-size: 1.15rem; font-weight: 900; color: #38bdf8; margin-top: 2px;" class="tabular-nums">${profile.totalProposedSemiAnnualUnits} نصف سنوي <span style="font-size:0.78rem;color:#c084fc;">| ${profile.totalProposedMonthlyUnits} شهري</span></div>
+<div style="font-size: 0.69rem; color: #bae6fd;">قابلة للتعديل بالزيادة أو النقصان قبل إصدار الإشهاد</div>
+</div>
+<div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 10px; padding: 9px 12px;">
+<div style="font-size: 0.72rem; color: #fca5a5;">مواد قديمة توقف عن طلبها (> سنة)</div>
+<div style="font-size: 1.25rem; font-weight: 900; color: #ef4444; margin-top: 2px;" class="tabular-nums">${profile.dormantRedItemsCount} <span style="font-size:0.74rem;font-weight:600;">مادة متوقفة</span></div>
+<div style="font-size: 0.69rem; color: #fecaca;">معلمة باللون الأحمر في أسفل القائمة (حصتها = 0)</div>
+</div>
+</div>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 0.76rem;">
+<span style="font-weight: 800; color: var(--text-main);">📋 المواد التي سبق للمستفيد استهلاكها (${displayedItems.length} مادة — مرتبة من الأكثر استهلاكاً إلى الأقل):</span>
+<span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:9px;height:9px;border-radius:50%;background:#10b981;display:inline-block;"></span> نشط حديثاً (2026)</span>
+<span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:9px;height:9px;border-radius:50%;background:#f59e0b;display:inline-block;"></span> منذ > 6 أشهر</span>
+<span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:9px;height:9px;border-radius:50%;background:#ef4444;display:inline-block;"></span> متوقف منذ > سنة / سنتين (في الأسفل)</span>
+</div>
+<div style="width: 260px;">
+<input type="text" class="form-control" style="height: 34px; font-size: 0.8rem;" placeholder="بحث سريع في مواد هذا المستفيد..." value="${escapeHtml(st.searchQuery)}" oninput="onAiBeneficiarySearchInput(this.value)" />
+</div>
+</div>
+<div class="table-scroll-wrapper">
+<table class="data-table">
+<thead>
+<tr>
+<th style="width: 38px; text-align: center;">#</th>
+<th>المادة والمرجع والمواصفات (مرتبة من الأكثر استهلاكاً إلى الأقل فالمتوقف)</th>
+<th style="width: 115px; text-align: center;">الصنف</th>
+<th style="width: 155px; text-align: center;">مسار الاستهلاك (24–26)</th>
+<th style="width: 95px; text-align: center;">نسبته من العام</th>
+<th style="width: 165px; text-align: center;">حالة النشاط وآخر سحب</th>
+<th style="width: 115px; text-align: center; background: rgba(16, 185, 129, 0.12); color: #10b981;">التوزيع السنوي المقترح</th>
+<th style="width: 110px; text-align: center;">نصف السنوي (6 أشهر)</th>
+<th style="width: 105px; text-align: center;">الشهري المقترح</th>
+<th style="width: 85px; text-align: center;">الرصيد الحالي</th>
+</tr>
+</thead>
+<tbody>
+${rowsHtml || `<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-muted);">لا توجد مواد مطابقة للبحث</td></tr>`}
+</tbody>
+</table>
+</div>
+`;
+};
+window.renderAiEntitiesPatterns = renderAiEntitiesPatterns;
+function selectAiBeneficiaryForAnalysis(benKey) {
+window._aiBeneficiaryAnalysisState.selectedBeneficiaryKey = benKey;
+renderAiEntitiesPatterns();
+}
+window.selectAiBeneficiaryForAnalysis = selectAiBeneficiaryForAnalysis;
+function onAiBeneficiaryWorkplaceFilterChange(workplaceVal) {
+window._aiBeneficiaryAnalysisState.workplaceFilter = workplaceVal || "all";
+const filteredBens = getAllBeneficiariesForSmartAnalysis(workplaceVal);
+if (filteredBens.length > 0) {
+window._aiBeneficiaryAnalysisState.selectedBeneficiaryKey = filteredBens[0].key;
+}
+renderAiEntitiesPatterns();
+}
+window.onAiBeneficiaryWorkplaceFilterChange = onAiBeneficiaryWorkplaceFilterChange;
+function onAiBeneficiarySafetyMarginChange(val) {
+window._aiBeneficiaryAnalysisState.safetyMarginPct = Math.max(0, parseInt(val, 10) || 0);
+renderAiEntitiesPatterns();
+}
+window.onAiBeneficiarySafetyMarginChange = onAiBeneficiarySafetyMarginChange;
+function onAiBeneficiarySearchInput(q) {
+window._aiBeneficiaryAnalysisState.searchQuery = q || "";
+renderAiEntitiesPatterns();
+}
+window.onAiBeneficiarySearchInput = onAiBeneficiarySearchInput;
+function enhanceAiSubTabsWithBeneficiaryDistribution() {
+const subBtnEntities = document.getElementById("ai-subtab-btn-entities");
+if (subBtnEntities) {
+const span = subBtnEntities.querySelector("span");
+if (span) span.textContent = "👤 تحليل وتوزيع المستفيدين";
+}
+}
+window.enhanceAiSubTabsWithBeneficiaryDistribution = enhanceAiSubTabsWithBeneficiaryDistribution;
+window._activeBeneficiaryDistSession = null;
+function ensureBeneficiarySmartDistModalDOM() {
+let modal = document.getElementById("beneficiary-smart-dist-modal");
+if (modal) return modal;
+modal = document.createElement("div");
+modal.id = "beneficiary-smart-dist-modal";
+modal.className = "modal-overlay";
+modal.style.cssText = "display:none; position:fixed; inset:0; background:rgba(2,6,23,0.78); backdrop-filter:blur(5px); z-index:10600; align-items:center; justify-content:center; padding:12px;";
+modal.onclick = (e) => { if (e.target === modal) closeBeneficiarySmartDistributionModal(); };
+modal.innerHTML = `
+<div style="background: var(--bg-card); border: 1.5px solid rgba(56, 189, 248, 0.45); border-radius: 16px; width: 100%; max-width: 1040px; max-height: 92vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.55);">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: var(--bg-muted); border-bottom: 1px solid var(--border-subtle); gap: 10px; flex-wrap: wrap;">
+<div>
+<h3 style="margin: 0; font-size: 1.08rem; font-weight: 900; color: var(--text-main); display: flex; align-items: center; gap: 8px;" id="ben-dist-modal-title">
+📦 التوزيع الذكي الموجه للمستفيد وصياغة الإشهاد
+</h3>
+<div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 3px;" id="ben-dist-modal-subtitle">
+مرتب آلياً حسب الأصناف المعتمدة (طابعات ⬅️ طابعات بالألوان ⬅️ آلات النسخ ⬅️ العتاد واللوازم)
+</div>
+</div>
+<button type="button" class="btn-icon square-action-btn" onclick="closeBeneficiarySmartDistributionModal()" style="border:none;background:transparent;cursor:pointer;color:var(--text-muted);font-size:1.3rem;">&times;</button>
+</div>
+<div id="ben-dist-modal-body" style="padding: 16px 18px; overflow-y: auto; flex: 1 1 auto; display: flex; flex-direction: column; gap: 14px;">
+</div>
+<div id="ben-dist-modal-footer" style="padding: 12px 18px; background: var(--bg-muted); border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+</div>
+</div>
+`;
+document.body.appendChild(modal);
+return modal;
+}
+function openBeneficiarySmartDistributionModal(beneficiaryKey, periodMode = "annual") {
+const keyToUse = beneficiaryKey || window._aiBeneficiaryAnalysisState.selectedBeneficiaryKey;
+const marginPct = window._aiBeneficiaryAnalysisState.safetyMarginPct || 0;
+const profile = buildBeneficiaryConsumptionProfile(keyToUse, marginPct);
+if (!profile) {
+showToast("يرجى اختيار مستفيد أولاً", "warning");
+return;
+}
+const pMeta = getPeriodModeMeta(periodMode);
+const todayIso = new Date().toISOString().split("T")[0];
+const sortedForDist = [...profile.allConsumedItems].sort((a, b) => {
+if (a.isRedDormant !== b.isRedDormant) return a.isRedDormant ? 1 : -1;
+if (a.categoryRank !== b.categoryRank) return a.categoryRank - b.categoryRank;
+if (a.category !== b.category) return a.category.localeCompare(b.category, "ar");
+if (a.deviceModel !== b.deviceModel) return String(a.deviceModel).localeCompare(String(b.deviceModel));
+if (a.colorRank !== b.colorRank) return a.colorRank - b.colorRank;
+return b.proposedAnnual - a.proposedAnnual;
+});
+const distRows = sortedForDist.map(r => {
+const propQty = r[pMeta.propKey] || 0;
+const isSelected = !r.isRedDormant && propQty > 0;
+return {
+itemId: r.itemId,
+item: r.item,
+name: r.name,
+shortRef: r.shortRef,
+category: r.category,
+categoryRank: r.categoryRank,
+colorRank: r.colorRank,
+deviceModel: r.deviceModel,
+currentStock: r.currentStock,
+q2024: r.q2024,
+q2025: r.q2025,
+q2026: r.q2026,
+lastIsoDate: r.lastIsoDate,
+monthsSinceLast: r.monthsSinceLast,
+isRedDormant: r.isRedDormant,
+statusBadgeHtml: r.statusBadgeHtml,
+proposedAnnual: r.proposedAnnual,
+proposedSemiAnnual: r.proposedSemiAnnual,
+proposedQuarterly: r.proposedQuarterly,
+proposedMonthly: r.proposedMonthly,
+selected: isSelected,
+qty: isSelected ? propQty : (r.q2025 || r.q2024 || 1),
+notes: ""
+};
+});
+const cleanRecipient = profile.beneficiary.isDirectorateAggregate
+? "مصلحة التجهيز وتدبير الممتلكات"
+: profile.beneficiary.recipient;
+const cleanDestination = profile.beneficiary.destination;
+window._activeBeneficiaryDistSession = {
+step: "configure", // 'configure' | 'preview_cert'
+beneficiaryKey: profile.beneficiary.key,
+beneficiaryProfile: profile,
+recipient: cleanRecipient,
+destination: cleanDestination,
+isoDate: todayIso,
+periodMode: periodMode,
+reason: pMeta.reasonText,
+channel: "كتاب",
+rows: distRows,
+draftVoucher: null
+};
+const modal = ensureBeneficiarySmartDistModalDOM();
+renderBeneficiarySmartDistModalContent();
+modal.style.display = "flex";
+}
+window.openBeneficiarySmartDistributionModal = openBeneficiarySmartDistributionModal;
+function closeBeneficiarySmartDistributionModal() {
+const modal = document.getElementById("beneficiary-smart-dist-modal");
+if (modal) modal.style.display = "none";
+}
+window.closeBeneficiarySmartDistributionModal = closeBeneficiarySmartDistributionModal;
+function switchBeneficiaryDistPeriodMode(newPeriodMode) {
+const sess = window._activeBeneficiaryDistSession;
+if (!sess) return;
+sess.periodMode = newPeriodMode;
+const pMeta = getPeriodModeMeta(newPeriodMode);
+sess.reason = pMeta.reasonText;
+sess.rows.forEach(r => {
+const propQty = r[pMeta.propKey] || 0;
+if (!r.isRedDormant && propQty > 0) {
+r.selected = true;
+r.qty = propQty;
+} else if (r.isRedDormant) {
+r.selected = false;
+}
+});
+renderBeneficiarySmartDistModalContent();
+}
+window.switchBeneficiaryDistPeriodMode = switchBeneficiaryDistPeriodMode;
+function toggleBeneficiaryDistRow(itemId, checked) {
+const sess = window._activeBeneficiaryDistSession;
+if (!sess) return;
+const row = sess.rows.find(r => r.itemId === itemId);
+if (!row) return;
+row.selected = Boolean(checked);
+if (row.selected && (!row.qty || row.qty < 1)) {
+row.qty = 1;
+}
+renderBeneficiarySmartDistModalContent();
+}
+window.toggleBeneficiaryDistRow = toggleBeneficiaryDistRow;
+function toggleBeneficiaryDistCategoryAll(catName, checked) {
+const sess = window._activeBeneficiaryDistSession;
+if (!sess) return;
+sess.rows.forEach(r => {
+if (r.category === catName && (!r.isRedDormant || checked)) {
+r.selected = Boolean(checked);
+if (r.selected && (!r.qty || rowQtyInvalid(r.qty))) r.qty = 1;
+}
+});
+renderBeneficiarySmartDistModalContent();
+}
+window.toggleBeneficiaryDistCategoryAll = toggleBeneficiaryDistCategoryAll;
+function rowQtyInvalid(q) {
+const n = parseInt(q, 10);
+return isNaN(n) || n < 1;
+}
+function adjustBeneficiaryDistRowQty(itemId, delta) {
+const sess = window._activeBeneficiaryDistSession;
+if (!sess) return;
+const row = sess.rows.find(r => r.itemId === itemId);
+if (!row) return;
+const nextQty = (parseInt(row.qty, 10) || 0) + delta;
+if (nextQty <= 0) {
+row.qty = 0;
+row.selected = false;
+} else {
+row.qty = Math.min(99999, nextQty);
+row.selected = true;
+}
+renderBeneficiarySmartDistModalContent();
+}
+window.adjustBeneficiaryDistRowQty = adjustBeneficiaryDistRowQty;
+function onBeneficiaryDistRowQtyInput(itemId, rawVal) {
+const sess = window._activeBeneficiaryDistSession;
+if (!sess) return;
+const row = sess.rows.find(r => r.itemId === itemId);
+if (!row) return;
+const n = parseInt(rawVal, 10);
+if (!isNaN(n) && n > 0) {
+row.qty = Math.min(99999, n);
+row.selected = true;
+} else if (n === 0) {
+row.qty = 0;
+row.selected = false;
+}
+updateBeneficiaryDistLiveCountersOnly();
+}
+window.onBeneficiaryDistRowQtyInput = onBeneficiaryDistRowQtyInput;
+function onBeneficiaryDistRowNoteInput(itemId, val) {
+const sess = window._activeBeneficiaryDistSession;
+if (!sess) return;
+const row = sess.rows.find(r => r.itemId === itemId);
+if (row) row.notes = String(val || "").trim();
+}
+window.onBeneficiaryDistRowNoteInput = onBeneficiaryDistRowNoteInput;
+function addExtraCatalogItemToBeneficiaryDist() {
+const sess = window._activeBeneficiaryDistSession;
+if (!sess) return;
+const selEl = document.getElementById("ben-dist-extra-item-select");
+const qtyEl = document.getElementById("ben-dist-extra-item-qty");
+const itemId = selEl?.value || "";
+const qty = Math.max(1, parseInt(qtyEl?.value, 10) || 1);
+if (!itemId) {
+showToast("يرجى اختيار المادة المراد إضافتها من القائمة", "warning");
+return;
+}
+const existing = sess.rows.find(r => r.itemId === itemId);
+if (existing) {
+existing.selected = true;
+existing.qty = (existing.qty || 0) + qty;
+existing.isRedDormant = false;
+} else {
+const rawIt = (state.data.items || []).find(i => i && i.id === itemId);
+if (!rawIt) return;
+const it = parseAndEnrichStructuredItem(rawIt);
+sess.rows.push({
+itemId: it.id,
+item: it,
+name: it.name,
+shortRef: it.shortRef || it.name,
+category: it.category,
+categoryRank: getCategoryDistributionRank(it.category),
+colorRank: getColorSortRank(it),
+deviceModel: it.deviceModel || "",
+currentStock: Math.max(0, sanitize(it.stock)),
+q2024: 0,
+q2025: 0,
+q2026: 0,
+lastIsoDate: "إضافة جديدة",
+monthsSinceLast: 0,
+isRedDormant: false,
+statusBadgeHtml: `<span class="badge badge-primary" style="font-size:0.7rem;">➕ مضافة يدوياً</span>`,
+proposedAnnual: qty,
+proposedSemiAnnual: qty,
+proposedQuarterly: qty,
+proposedMonthly: qty,
+selected: true,
+qty: qty,
+notes: ""
+});
+sess.rows.sort((a, b) => {
+if (a.isRedDormant !== b.isRedDormant) return a.isRedDormant ? 1 : -1;
+if (a.categoryRank !== b.categoryRank) return a.categoryRank - b.categoryRank;
+return 0;
+});
+}
+renderBeneficiarySmartDistModalContent();
+showToast("✓ تمت إضافة المادة إلى جدول التوزيع في صنفها الموافق", "success");
+}
+window.addExtraCatalogItemToBeneficiaryDist = addExtraCatalogItemToBeneficiaryDist;
+function updateBeneficiaryDistLiveCountersOnly() {
+const sess = window._activeBeneficiaryDistSession;
+if (!sess) return;
+const selectedRows = sess.rows.filter(r => r.selected && r.qty > 0);
+const totalUnits = selectedRows.reduce((s, r) => s + (parseInt(r.qty, 10) || 0), 0);
+const catsCount = new Set(selectedRows.map(r => r.category)).size;
+const pagesCount = Math.max(1, Math.ceil(selectedRows.length / 16));
+const summaryBadge = document.getElementById("ben-dist-live-summary-pill");
+if (summaryBadge) {
+summaryBadge.innerHTML = `المواد المحددة للتوزيع: <strong>${selectedRows.length} مادة</strong> (ضمن ${catsCount} أصناف) | إجمالي القطع: <strong>${totalUnits} قطعة</strong> | صفحات الإشهاد (A4): <strong>${pagesCount === 1 ? 'صفحة واحدة (1/1)' : `${pagesCount} صفحات (${pagesCount} A4)`}</strong>`;
+}
+}
+function renderBeneficiarySmartDistModalContent() {
+const sess = window._activeBeneficiaryDistSession;
+const bodyEl = document.getElementById("ben-dist-modal-body");
+const footerEl = document.getElementById("ben-dist-modal-footer");
+const titleEl = document.getElementById("ben-dist-modal-title");
+if (!sess || !bodyEl || !footerEl) return;
+const pMeta = getPeriodModeMeta(sess.periodMode);
+if (sess.step === "preview_cert" && sess.draftVoucher) {
+if (titleEl) {
+titleEl.innerHTML = `👁️ معاينة وصياغة الإشهاد الرسمي المقترح — ${escapeHtml(sess.recipient)} (${escapeHtml(sess.destination)})`;
+}
+const certPagesHtml = generateVoucherA4Html(sess.draftVoucher);
+const pagesCount = Math.max(1, Math.ceil((sess.draftVoucher.items || []).length / 16));
+const totalUnits = (sess.draftVoucher.items || []).reduce((s, i) => s + sanitize(i.qty), 0);
+bodyEl.innerHTML = `
+<div style="background: rgba(16, 185, 129, 0.1); border: 1.5px solid rgba(16, 185, 129, 0.4); border-radius: 10px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+<div style="font-size: 0.82rem; color: var(--text-main);">
+<strong>جاهز للاعتماد والطباعة:</strong> يتضمن هذا الإشهاد <strong>(${sess.draftVoucher.items.length} مادة / ${totalUnits} قطعة)</strong> مرتبة حسب الأصناف على <strong>${pagesCount === 1 ? 'صفحة A4 واحدة مضبوطة' : `${pagesCount} صفحات A4 رسمية متتابعة`}</strong>.
+</div>
+<button type="button" class="btn btn-outline btn-sm" onclick="backToBeneficiaryDistConfigureStep()" style="font-weight: 800; font-size: 0.78rem;">
+🔙 الرجوع لتعديل المواد والكميات
+</button>
+</div>
+<div style="background: #cbd5e1; padding: 16px; border-radius: 12px; overflow-x: auto; display: flex; flex-direction: column; gap: 18px; align-items: center;">
+${certPagesHtml}
+</div>
+`;
+footerEl.innerHTML = `
+<button type="button" class="btn btn-secondary" onclick="backToBeneficiaryDistConfigureStep()">
+🔙 تعديل القائمة أو الكميات
+</button>
+<div style="display: flex; gap: 8px; flex-wrap: wrap;">
+<button type="button" class="btn btn-outline" onclick="commitBeneficiarySmartDistribution(false)" style="border-color: #38bdf8; color: #38bdf8; font-weight: 800;">
+💾 تسجيل الإشهاد في الأرشيف فقط (بدون طباعة)
+</button>
+<button type="button" class="btn btn-primary" onclick="commitBeneficiarySmartDistribution(true)" style="background: #10b981; border-color: #059669; font-weight: 900; padding: 8px 18px; display: inline-flex; align-items: center; gap: 6px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+<span>✅ اعتماد وتسجيل العملية في الأرشيف + طباعة الإشهاد (A4)</span>
+</button>
+</div>
+`;
+return;
+}
+if (titleEl) {
+titleEl.innerHTML = `📦 التوزيع الذكي الموجه للمستفيد: <span style="color:#38bdf8;">${escapeHtml(sess.recipient)}</span> — <span style="font-size:0.92rem;color:var(--text-secondary);">${escapeHtml(sess.destination)}</span>`;
+}
+const activeRows = sess.rows.filter(r => !r.isRedDormant);
+const dormantRows = sess.rows.filter(r => r.isRedDormant);
+const categoryGroups = new Map();
+activeRows.forEach(r => {
+if (!categoryGroups.has(r.category)) categoryGroups.set(r.category, []);
+categoryGroups.get(r.category).push(r);
+});
+let categoryBlocksHtml = "";
+let globalItemCounter = 0;
+categoryGroups.forEach((rowsInCat, catName) => {
+const allCheckedInCat = rowsInCat.every(r => r.selected);
+const selectedInCat = rowsInCat.filter(r => r.selected).length;
+const sumUnitsInCat = rowsInCat.filter(r => r.selected).reduce((s, r) => s + (parseInt(r.qty, 10) || 0), 0);
+const rowsTrHtml = rowsInCat.map(r => {
+globalItemCounter++;
+const propForPeriod = r[pMeta.propKey] || 0;
+const stClass = r.currentStock >= r.qty && r.qty > 0 ? "badge-success" : (r.currentStock > 0 ? "badge-warning" : "badge-subtle");
+return `
+<tr style="${r.selected ? 'background: rgba(16, 185, 129, 0.04);' : 'opacity: 0.55;'}">
+<td style="text-align: center; width: 42px;">
+<input type="checkbox" ${r.selected ? 'checked' : ''} onchange="toggleBeneficiaryDistRow('${escapeHtml(r.itemId)}', this.checked)" style="width: 17px; height: 17px; accent-color: #10b981; cursor: pointer;" />
+</td>
+<td style="text-align: center; width: 38px; font-weight: 800;" class="tabular-nums">${globalItemCounter}</td>
+<td>
+<div>${formatItemDisplayHtml(r.item)}</div>
+<div style="font-size: 0.71rem; color: var(--text-muted); margin-top: 2px;">
+استهلاك 2026: <strong>${r.q2026}</strong> | 2025: <strong>${r.q2025}</strong> | 2024: <strong>${r.q2024}</strong> | آخر سحب: ${escapeHtml(r.lastIsoDate)}
+</div>
+</td>
+<td style="text-align: center; width: 115px;" class="tabular-nums">
+<span class="badge badge-subtle" style="font-size: 0.75rem; font-weight: 800; color: #38bdf8;">المقترح: ${propForPeriod}</span>
+<div style="font-size: 0.66rem; color: var(--text-muted); margin-top: 2px;">سنوي: ${r.proposedAnnual}</div>
+</td>
+<td style="text-align: center; width: 85px;" class="tabular-nums">
+<span class="badge ${stClass}" style="font-size: 0.73rem;">${r.currentStock}</span>
+</td>
+<td style="text-align: center; width: 165px;">
+<div style="display: inline-flex; align-items: center; gap: 4px; direction: ltr;">
+<button type="button" class="btn btn-outline btn-sm" onclick="adjustBeneficiaryDistRowQty('${escapeHtml(r.itemId)}', -1)" style="width: 30px; height: 30px; padding: 0; font-weight: 900; font-size: 1rem;">−</button>
+<input type="number" class="form-control tabular-nums text-center" value="${r.qty}" min="0" max="99999" oninput="onBeneficiaryDistRowQtyInput('${escapeHtml(r.itemId)}', this.value)" style="width: 68px; height: 30px; padding: 2px 4px; font-weight: 900; font-size: 0.92rem; text-align: center;" />
+<button type="button" class="btn btn-outline btn-sm" onclick="adjustBeneficiaryDistRowQty('${escapeHtml(r.itemId)}', 1)" style="width: 30px; height: 30px; padding: 0; font-weight: 900; font-size: 1rem; color: #10b981; border-color: rgba(16,185,129,0.4);">+</button>
+</div>
+</td>
+<td style="width: 150px;">
+<input type="text" class="form-control" value="${escapeHtml(r.notes)}" placeholder="ملاحظة اختيارية..." oninput="onBeneficiaryDistRowNoteInput('${escapeHtml(r.itemId)}', this.value)" style="height: 30px; font-size: 0.76rem; padding: 2px 8px;" />
+</td>
+</tr>
+`;
+}).join("");
+categoryBlocksHtml += `
+<div style="border: 1.5px solid var(--border-subtle); border-radius: 12px; overflow: hidden; margin-bottom: 10px;">
+<div style="background: rgba(56, 189, 248, 0.1); padding: 8px 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle);">
+<label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 900; font-size: 0.88rem; color: #38bdf8; margin: 0;">
+<input type="checkbox" ${allCheckedInCat ? 'checked' : ''} onchange="toggleBeneficiaryDistCategoryAll('${escapeHtml(catName)}', this.checked)" style="width: 17px; height: 17px; accent-color: #38bdf8;" />
+<span>📂 صنف: ${escapeHtml(catName)}</span>
+</label>
+<span class="badge badge-subtle tabular-nums" style="font-size: 0.74rem; font-weight: 800;">
+محدد: ${selectedInCat} من ${rowsInCat.length} مواد (مجموع الصنف: ${sumUnitsInCat} قطعة)
+</span>
+</div>
+<div class="table-scroll-wrapper" style="margin: 0;">
+<table class="data-table" style="margin: 0;">
+<thead>
+<tr>
+<th style="width: 42px; text-align: center;">توزيع</th>
+<th style="width: 38px; text-align: center;">#</th>
+<th>المادة والمواصفات</th>
+<th style="width: 115px; text-align: center;">الحصة المقترحة</th>
+<th style="width: 85px; text-align: center;">بالمخزن</th>
+<th style="width: 165px; text-align: center;">الكمية المعتمدة (− / +)</th>
+<th style="width: 150px;">ملاحظات</th>
+</tr>
+</thead>
+<tbody>${rowsTrHtml}</tbody>
+</table>
+</div>
+</div>
+`;
+});
+let dormantBlockHtml = "";
+if (dormantRows.length > 0) {
+const dormantTrs = dormantRows.map((r, dIdx) => `
+<tr style="background: rgba(239, 68, 68, 0.05);">
+<td style="text-align: center; width: 42px;">
+<input type="checkbox" ${r.selected ? 'checked' : ''} onchange="toggleBeneficiaryDistRow('${escapeHtml(r.itemId)}', this.checked)" style="width: 17px; height: 17px; accent-color: #ef4444; cursor: pointer;" />
+</td>
+<td style="text-align: center; width: 38px;" class="tabular-nums">${dIdx + 1}</td>
+<td>
+<div>${formatItemDisplayHtml(r.item)}</div>
+<div style="font-size: 0.7rem; color: #ef4444;">
+🔴 لم يطلبها منذ ${r.monthsSinceLast} شهراً (آخر سحب: ${escapeHtml(r.lastIsoDate)} | 2024: ${r.q2024} | 2025: ${r.q2025} | 2026: 0)
+</div>
+</td>
+<td style="text-align: center; width: 115px;"><span class="badge badge-subtle">${escapeHtml(r.category)}</span></td>
+<td style="text-align: center; width: 165px;">
+<div style="display: inline-flex; align-items: center; gap: 4px; direction: ltr;">
+<button type="button" class="btn btn-outline btn-sm" onclick="adjustBeneficiaryDistRowQty('${escapeHtml(r.itemId)}', -1)" style="width: 28px; height: 28px; padding: 0;">−</button>
+<input type="number" class="form-control tabular-nums text-center" value="${r.qty}" min="0" max="99999" oninput="onBeneficiaryDistRowQtyInput('${escapeHtml(r.itemId)}', this.value)" style="width: 64px; height: 28px; padding: 2px; font-weight: 800; text-align: center;" />
+<button type="button" class="btn btn-outline btn-sm" onclick="adjustBeneficiaryDistRowQty('${escapeHtml(r.itemId)}', 1)" style="width: 28px; height: 28px; padding: 0;">+</button>
+</div>
+</td>
+</tr>
+`).join("");
+dormantBlockHtml = `
+<details style="border: 1.5px solid rgba(239, 68, 68, 0.4); border-radius: 12px; padding: 10px 14px; background: rgba(239, 68, 68, 0.04);">
+<summary style="cursor: pointer; font-weight: 800; font-size: 0.84rem; color: #ef4444;">
+🔴 مواد قديمة توقف المستفيد عن طلبها منذ أكثر من سنة (${dormantRows.length} مادة — غير محددة افتراضياً، اضغط لعرضها إن أردت تفعيل إحداها)
+</summary>
+<div class="table-scroll-wrapper" style="margin-top: 10px;">
+<table class="data-table" style="margin: 0;">
+<tbody>${dormantTrs}</tbody>
+</table>
+</div>
+</details>
+`;
+}
+const allCatalogItems = (state.data.items || []).filter(i => i && !i.isDeleted).map(i => parseAndEnrichStructuredItem(i));
+bodyEl.innerHTML = `
+<div style="background: var(--bg-muted); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px;">
+<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+<div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+<span style="font-size: 0.78rem; font-weight: 800; color: var(--text-secondary);">نوع الحصة المطبقة:</span>
+<button type="button" class="btn ${sess.periodMode === 'annual' ? 'btn-primary' : 'btn-outline'} btn-sm" onclick="switchBeneficiaryDistPeriodMode('annual')" style="font-size: 0.75rem; font-weight: 800;">سنوي (12 شهراً)</button>
+<button type="button" class="btn ${sess.periodMode === 'semi_annual' ? 'btn-primary' : 'btn-outline'} btn-sm" onclick="switchBeneficiaryDistPeriodMode('semi_annual')" style="font-size: 0.75rem; font-weight: 800;">نصف سنوي (6 أشهر)</button>
+<button type="button" class="btn ${sess.periodMode === 'quarterly' ? 'btn-primary' : 'btn-outline'} btn-sm" onclick="switchBeneficiaryDistPeriodMode('quarterly')" style="font-size: 0.75rem; font-weight: 800;">ربع سنوي (3 أشهر)</button>
+<button type="button" class="btn ${sess.periodMode === 'monthly' ? 'btn-primary' : 'btn-outline'} btn-sm" onclick="switchBeneficiaryDistPeriodMode('monthly')" style="font-size: 0.75rem; font-weight: 800;">شهري (شهر واحد)</button>
+</div>
+<div id="ben-dist-live-summary-pill" style="font-size: 0.78rem; color: #10b981; background: rgba(16, 185, 129, 0.1); padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(16, 185, 129, 0.35);">
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+<div>
+<label class="form-label" style="font-size: 0.74rem; margin-bottom: 2px;">تاريخ التسليم بالإشهاد:</label>
+<input type="date" id="ben-dist-input-date" class="form-control" value="${escapeHtml(sess.isoDate)}" onchange="if(window._activeBeneficiaryDistSession) window._activeBeneficiaryDistSession.isoDate=this.value;" style="height: 34px; font-size: 0.82rem;" />
+</div>
+<div>
+<label class="form-label" style="font-size: 0.74rem; margin-bottom: 2px;">المستلم في الإشهاد:</label>
+<input type="text" id="ben-dist-input-recipient" class="form-control" value="${escapeHtml(sess.recipient)}" oninput="if(window._activeBeneficiaryDistSession) window._activeBeneficiaryDistSession.recipient=this.value;" style="height: 34px; font-size: 0.82rem; font-weight: 700;" />
+</div>
+<div>
+<label class="form-label" style="font-size: 0.74rem; margin-bottom: 2px;">الجهة المستفيدة:</label>
+<input type="text" id="ben-dist-input-destination" class="form-control" value="${escapeHtml(sess.destination)}" oninput="if(window._activeBeneficiaryDistSession) window._activeBeneficiaryDistSession.destination=this.value;" style="height: 34px; font-size: 0.82rem;" />
+</div>
+<div>
+<label class="form-label" style="font-size: 0.74rem; margin-bottom: 2px;">بيان / سبب التسليم:</label>
+<input type="text" id="ben-dist-input-reason" class="form-control" value="${escapeHtml(sess.reason)}" oninput="if(window._activeBeneficiaryDistSession) window._activeBeneficiaryDistSession.reason=this.value;" style="height: 34px; font-size: 0.82rem;" />
+</div>
+</div>
+</div>
+<div>
+${categoryBlocksHtml || `<div style="padding:18px;text-align:center;color:var(--text-muted);">لا توجد مواد نشطة محددة</div>`}
+${dormantBlockHtml}
+</div>
+<div style="background: var(--bg-muted); border: 1px dashed var(--border-subtle); border-radius: 10px; padding: 10px 14px; display: flex; align-items: flex-end; gap: 8px; flex-wrap: wrap;">
+<div style="flex: 1 1 280px;">
+<label class="form-label" style="font-size: 0.74rem; margin-bottom: 3px;">➕ إضافة مادة أخرى من المخزون إلى هذا الإشهاد (تُدرج تلقائياً في صنفها):</label>
+<select id="ben-dist-extra-item-select" class="form-control" style="height: 34px; font-size: 0.8rem;">
+<option value="">-- اختر مادة من المخزون لإضافتها --</option>
+${allCatalogItems.map(it => `<option value="${escapeHtml(it.id)}">[${escapeHtml(it.category)}] ${escapeHtml(formatItemDisplayText(it))} (الرصيد: ${sanitize(it.stock)})</option>`).join("")}
+</select>
+</div>
+<div style="width: 90px;">
+<label class="form-label" style="font-size: 0.74rem; margin-bottom: 3px;">الكمية:</label>
+<input type="number" id="ben-dist-extra-item-qty" class="form-control tabular-nums text-center" value="1" min="1" style="height: 34px; font-size: 0.82rem; font-weight: 800;" />
+</div>
+<button type="button" class="btn btn-outline btn-sm" onclick="addExtraCatalogItemToBeneficiaryDist()" style="height: 34px; font-weight: 800;">+ إدراج المادة</button>
+</div>
+`;
+footerEl.innerHTML = `
+<button type="button" class="btn btn-secondary" onclick="closeBeneficiarySmartDistributionModal()">إلغاء</button>
+<div style="display: flex; gap: 8px; flex-wrap: wrap;">
+<button type="button" class="btn btn-primary" onclick="proceedToBeneficiaryCertPreview()" style="background: #0284c7; border-color: #0369a1; font-weight: 900; padding: 8px 20px; font-size: 0.88rem; display: inline-flex; align-items: center; gap: 8px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+<span>👁️ صياغة ومعاينة الإشهاد المقترح (A4)</span>
+</button>
+</div>
+`;
+updateBeneficiaryDistLiveCountersOnly();
+}
+window.renderBeneficiarySmartDistModalContent = renderBeneficiarySmartDistModalContent;
+function proceedToBeneficiaryCertPreview() {
+const sess = window._activeBeneficiaryDistSession;
+if (!sess) return;
+const dateInp = document.getElementById("ben-dist-input-date");
+const recipInp = document.getElementById("ben-dist-input-recipient");
+const destInp = document.getElementById("ben-dist-input-destination");
+const reasonInp = document.getElementById("ben-dist-input-reason");
+if (dateInp && dateInp.value) sess.isoDate = dateInp.value;
+if (recipInp && recipInp.value.trim()) sess.recipient = recipInp.value.trim();
+if (destInp && destInp.value.trim()) sess.destination = destInp.value.trim();
+if (reasonInp && reasonInp.value.trim()) sess.reason = reasonInp.value.trim();
+const selectedRows = sess.rows
+.filter(r => r.selected && (parseInt(r.qty, 10) || 0) > 0)
+.sort((a, b) => {
+if (a.categoryRank !== b.categoryRank) return a.categoryRank - b.categoryRank;
+if (a.category !== b.category) return a.category.localeCompare(b.category, "ar");
+if (a.deviceModel !== b.deviceModel) return String(a.deviceModel).localeCompare(String(b.deviceModel));
+if (a.colorRank !== b.colorRank) return a.colorRank - b.colorRank;
+return 0;
+});
+if (selectedRows.length === 0) {
+showToast("يرجى اختيار مادة واحدة على الأقل بكمية أكبر من صفر لصياغة الإشهاد!", "warning");
+return;
+}
+const draftId = "CERT-" + Math.floor(100000 + Math.random() * 900000);
+const draftVoucher = {
+id: draftId,
+operationId: draftId,
+isoDate: sess.isoDate,
+date: sess.isoDate,
+destination: sess.destination,
+recipient: sess.recipient,
+reason: sess.reason || "بناءً على طلب",
+channel: "كتاب",
+status: "استجابة كلية",
+items: selectedRows.map(r => {
+const enriched = parseAndEnrichStructuredItem(r.item || { id: r.itemId, name: r.name, category: r.category });
+return {
+id: r.itemId,
+name: r.name,
+category: r.category,
+shortRef: enriched.shortRef,
+deviceType: enriched.deviceType,
+deviceModel: enriched.deviceModel,
+deviceFull: enriched.deviceFull,
+colorTag: enriched.colorTag,
+specDetail: enriched.specDetail,
+qty: Math.max(1, parseInt(r.qty, 10) || 1),
+notes: r.notes || ""
+};
+})
+};
+if (typeof generateCertSecretCode === "function") {
+draftVoucher.secretCode = generateCertSecretCode(draftVoucher);
+}
+sess.draftVoucher = draftVoucher;
+sess.step = "preview_cert";
+renderBeneficiarySmartDistModalContent();
+}
+window.proceedToBeneficiaryCertPreview = proceedToBeneficiaryCertPreview;
+function backToBeneficiaryDistConfigureStep() {
+const sess = window._activeBeneficiaryDistSession;
+if (!sess) return;
+sess.step = "configure";
+renderBeneficiarySmartDistModalContent();
+}
+window.backToBeneficiaryDistConfigureStep = backToBeneficiaryDistConfigureStep;
+function commitBeneficiarySmartDistribution(andPrint = true) {
+const sess = window._activeBeneficiaryDistSession;
+if (!sess || !sess.draftVoucher) return;
+if (!acquireActionIdempotencyLock("commitBeneficiarySmartDist_" + sess.draftVoucher.id, 800)) return;
+const v = JSON.parse(JSON.stringify(sess.draftVoucher));
+const nowMs = Date.now();
+v._updatedAt = nowMs;
+(v.items || []).forEach(vIt => {
+const stockItem = (state.data.items || []).find(i => i && (i.id === vIt.id || i.name === vIt.name));
+const reqQty = Math.max(1, sanitize(vIt.qty));
+if (stockItem) {
+const curStock = Math.max(0, sanitize(stockItem.stock));
+const actualDed = Math.min(curStock, reqQty);
+vIt.actualDeducted = actualDed;
+stockItem.stock = Math.max(0, curStock - reqQty);
+stockItem._stockUpdatedAt = nowMs;
+} else {
+vIt.actualDeducted = 0;
+}
+});
+if (!Array.isArray(state.data.transactions)) state.data.transactions = [];
+state.data.transactions.unshift(v);
+sortTransactionsByDeliveryDateDesc(state.data.transactions);
+recordTransactionInLocalJournal(v);
+window._isSessionAuthenticated = true;
+persistAll(true);
+closeBeneficiarySmartDistributionModal();
+if (typeof renderHistoryTable === "function") renderHistoryTable();
+if (typeof renderRecentTransactions === "function") renderRecentTransactions();
+if (typeof renderInventoryTable === "function") renderInventoryTable();
+if (typeof renderAiEntitiesPatterns === "function") renderAiEntitiesPatterns();
+if (typeof refreshAllBadges === "function") refreshAllBadges();
+showToast(`✅ تم تسجيل الإشهاد (${v.id}) للمستفيد "${v.recipient}" في الأرشيف ومزامنته سحابياً بنجاح!`, "success");
+if (andPrint) {
+printSingleVoucherA4(v.id);
+}
+}
+window.commitBeneficiarySmartDistribution = commitBeneficiarySmartDistribution;
+generateVoucherA4Html = function(voucher) {
+const cfg = getCertConfig();
+const activeCols = getActiveCertColumnsForVoucher(voucher, cfg);
+const headerSrc = escapeHtml(getBrandingAssetSrc("header") || "./en_tete.png");
+const footerSrc = escapeHtml(getBrandingAssetSrc("footer") || "./en_pied.png");
+const secretCode = escapeHtml(generateCertSecretCode(voucher));
+const introHtml = buildOfficialIntroLine(voucher);
+const allItems = Array.isArray(voucher?.items) ? voucher.items : [];
+const totalItemsCount = allItems.length;
+const MAX_ITEMS_PER_PAGE = 16;
+const isCompactSinglePage = totalItemsCount > 10 && totalItemsCount <= MAX_ITEMS_PER_PAGE;
+const pagesChunks = [];
+if (totalItemsCount === 0) {
+pagesChunks.push([]);
+} else {
+for (let i = 0; i < totalItemsCount; i += MAX_ITEMS_PER_PAGE) {
+pagesChunks.push(allItems.slice(i, i + MAX_ITEMS_PER_PAGE));
+}
+}
+const totalPages = pagesChunks.length;
+const theadCellsHtml = activeCols.map(col => `
+<th style="width: ${col.widthPct}%; text-align: center; padding: ${isCompactSinglePage ? '3px 5px' : '4px 6px'}; font-size: ${isCompactSinglePage ? '8pt' : '8.5pt'};">${escapeHtml(col.title)}</th>
+`).join("");
+const signatureBlockHtml = cfg.showSecondSignature
+? `
+<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-top: ${isCompactSinglePage ? '8px' : '16px'}; padding: 0 8%; font-weight: 800; font-size: ${isCompactSinglePage ? '9.5pt' : '10.5pt'}; color: #000;">
+<div style="text-align: center;">
+<div>${escapeHtml(cfg.secondSignatureText)}</div>
+${cfg.secondSignatureSubName ? `<div style="font-size: 8.5pt; font-weight: 600; margin-top: 2px;">${escapeHtml(cfg.secondSignatureSubName)}</div>` : ""}
+</div>
+<div style="text-align: center;">
+<div>${escapeHtml(cfg.signatureText)}</div>
+${cfg.signatureSubName ? `<div style="font-size: 8.5pt; font-weight: 600; margin-top: 2px;">${escapeHtml(cfg.signatureSubName)}</div>` : ""}
+</div>
+</div>
+`
+: `
+<div class="cert-signature-block" style="margin-top: ${isCompactSinglePage ? '6px' : '10px'}; margin-bottom: ${isCompactSinglePage ? '6px' : '12px'}; font-size: ${isCompactSinglePage ? '9.2pt' : '9.6pt'};">
+<div>${escapeHtml(cfg.signatureText)}</div>
+${cfg.signatureSubName ? `<div style="font-size: 8.5pt; font-weight: 600; margin-top: 2px;">${escapeHtml(cfg.signatureSubName)}</div>` : ""}
+</div>
+`;
+return pagesChunks.map((chunkItems, pageIdx) => {
+const isFirstPage = pageIdx === 0;
+const isLastPage = pageIdx === totalPages - 1;
+const baseIndexOffset = pageIdx * MAX_ITEMS_PER_PAGE;
+const cellPad = isCompactSinglePage ? "2.5px 5px" : "4px 6px";
+const cellFont = isCompactSinglePage ? "7.9pt" : "8.4pt";
+const itemsRows = chunkItems.map((item, localIdx) => {
+const globalIdx = baseIndexOffset + localIdx;
+const tdsHtml = activeCols.map(col => {
+const cellVal = getCertCellContentForColumn(col.key, col, item, globalIdx, false);
+if (col.key === "index") {
+return `<td style="width: ${col.widthPct}%; text-align: center; font-weight: 700; font-size: ${cellFont}; padding: ${cellPad};" class="tabular-nums">${cellVal}</td>`;
+}
+if (col.key === "item") {
+return `<td style="width: ${col.widthPct}%; text-align: right; font-size: ${cellFont}; line-height: 1.28; padding: ${cellPad};">${cellVal}</td>`;
+}
+if (col.key === "qty") {
+return `<td style="width: ${col.widthPct}%; text-align: center; font-weight: 800; font-size: ${isCompactSinglePage ? '8.3pt' : '8.8pt'}; padding: ${cellPad};" class="tabular-nums">${cellVal}</td>`;
+}
+return `<td style="width: ${col.widthPct}%; text-align: center; font-size: ${cellFont}; line-height: 1.25; padding: ${cellPad};">${cellVal}</td>`;
+}).join("");
+return `<tr>${tdsHtml}</tr>`;
+}).join("");
+const pageIndicatorBadge = totalPages > 1
+? `<div style="font-size: 8pt; font-weight: 700; color: #334155; text-align: left; margin-bottom: 2px;">الصفحة ${pageIdx + 1} من ${totalPages}</div>`
+: "";
+const introSectionHtml = isFirstPage
+? `<p class="cert-intro-paragraph" style="font-size: ${isCompactSinglePage ? '8.7pt' : '9.2pt'}; margin-bottom: ${isCompactSinglePage ? '4px' : '6px'};">${introHtml}</p>`
+: `<p class="cert-intro-paragraph" style="font-size: 8.6pt; margin-bottom: 5px; background: #f8fafc; padding: 4px 10px; border: 1px dashed #94a3b8; border-radius: 6px;">
+<strong>تابع إشهاد التسليم (${escapeHtml(voucher.id || "")})</strong> — المستفيد: <strong>${escapeHtml(voucher.recipient || "")}</strong> (${escapeHtml(voucher.destination || "")}) — التاريخ: <strong>${escapeHtml(formatOfficialCertDate(voucher))}</strong>
+</p>`;
+const continuationFooterNote = !isLastPage
+? `<div style="text-align: left; font-size: 8.5pt; font-weight: 800; color: #0f172a; margin-top: 6px; padding-left: 4%;">... يتبع في الصفحة الموالية (${pageIdx + 2} / ${totalPages}) ⬅️</div>`
+: signatureBlockHtml;
+const pageBreakStyle = !isLastPage ? "page-break-after: always; break-after: page;" : "";
+return `
+<div class="official-cert-page" data-voucher-id="${escapeHtml(voucher.id || "")}" data-secret-code="${secretCode}" style="${pageBreakStyle}">
+<div class="cert-top-section">
+<div class="cert-header-wrap">
+<img src="${headerSrc}"
+onerror="if(this.src!==window.FALLBACK_EN_TETE_B64)this.src=window.FALLBACK_EN_TETE_B64;"
+style="width: 100%; max-height: ${isCompactSinglePage ? '95px' : '110px'}; object-fit: contain;"
+alt="En-tête" />
+</div>
+${pageIndicatorBadge}
+<div class="cert-title-container" style="margin-bottom: ${isCompactSinglePage ? '4px' : '6px'};">
+<div class="cert-title-box" style="font-size: ${isCompactSinglePage ? '11.8pt' : '12.8pt'};">${escapeHtml(cfg.titleText)}${totalPages > 1 && !isFirstPage ? ` (تابع ${pageIdx + 1}/${totalPages})` : ""}</div>
+</div>
+${introSectionHtml}
+<table class="cert-official-table" style="margin-bottom: ${isCompactSinglePage ? '4px' : '8px'};">
+<thead>
+<tr>
+${theadCellsHtml}
+</tr>
+</thead>
+<tbody>
+${itemsRows}
+</tbody>
+</table>
+${continuationFooterNote}
+</div>
+<div class="cert-bottom-section">
+<div class="cert-secret-code" style="font-size: 8px; opacity: 0.4;">${secretCode}${totalPages > 1 ? ` [P.${pageIdx + 1}/${totalPages}]` : ""}</div>
+<div class="cert-footer-wrap">
+<img src="${footerSrc}"
+onerror="if(this.src!==window.FALLBACK_EN_PIED_B64)this.src=window.FALLBACK_EN_PIED_B64;"
+style="width: 100%; max-height: ${isCompactSinglePage ? '60px' : '70px'}; object-fit: contain;"
+alt="Pied de page" />
+</div>
+</div>
+</div>
+`;
+}).join("");
+};
+window.generateVoucherA4Html = generateVoucherA4Html;
+function multipleJpegDataUrlsToPdfBlob(jpegDataUrls, pageWidthPt = 595.28, pageHeightPt = 841.89, pixelW = 1240, pixelH = 1754) {
+const urls = Array.isArray(jpegDataUrls) && jpegDataUrls.length > 0 ? jpegDataUrls : [];
+if (urls.length === 1 && typeof jpegDataUrlToPdfBlob === "function") {
+return jpegDataUrlToPdfBlob(urls[0], pageWidthPt, pageHeightPt, pixelW, pixelH);
+}
+const encoder = new TextEncoder();
+const chunks = [];
+const offsets = [];
+let currentOffset = 0;
+function pushStr(str) {
+const bytes = encoder.encode(str);
+chunks.push(bytes);
+currentOffset += bytes.length;
+}
+function pushBytes(bytes) {
+chunks.push(bytes);
+currentOffset += bytes.length;
+}
+function startObj(id) {
+offsets[id] = currentOffset;
+pushStr(`${id} 0 obj\n`);
+}
+function endObj() {
+pushStr(`\nendobj\n`);
+}
+pushStr(`%PDF-1.4\n%\xFF\xFF\xFF\xFF\n`);
+startObj(1);
+pushStr(`<< /Type /Catalog /Pages 2 0 R >>`);
+endObj();
+const numPages = urls.length;
+const pageObjIds = [];
+for (let p = 0; p < numPages; p++) {
+pageObjIds.push(3 + p * 3);
+}
+startObj(2);
+pushStr(`<< /Type /Pages /Kids [${pageObjIds.map(id => `${id} 0 R`).join(" ")}] /Count ${numPages} >>`);
+endObj();
+for (let p = 0; p < numPages; p++) {
+const pageObjId = 3 + p * 3;
+const imgObjId = pageObjId + 1;
+const contentObjId = pageObjId + 2;
+const base64Data = (urls[p] || "").split(",")[1] || "";
+const binStr = atob(base64Data);
+const imgBytes = new Uint8Array(binStr.length);
+for (let i = 0; i < binStr.length; i++) {
+imgBytes[i] = binStr.charCodeAt(i);
+}
+const contentStream = `q\n${pageWidthPt.toFixed(2)} 0 0 ${pageHeightPt.toFixed(2)} 0 0 cm\n/Im${p} Do\nQ\n`;
+const contentBytes = encoder.encode(contentStream);
+startObj(pageObjId);
+pushStr(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageWidthPt.toFixed(2)} ${pageHeightPt.toFixed(2)}] /Resources << /XObject << /Im${p} ${imgObjId} 0 R >> >> /Contents ${contentObjId} 0 R >>`);
+endObj();
+startObj(imgObjId);
+pushStr(`<< /Type /XObject /Subtype /Image /Width ${pixelW} /Height ${pixelH} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${imgBytes.length} >>\nstream\n`);
+pushBytes(imgBytes);
+pushStr(`\nendstream`);
+endObj();
+startObj(contentObjId);
+pushStr(`<< /Length ${contentBytes.length} >>\nstream\n`);
+pushBytes(contentBytes);
+pushStr(`\nendstream`);
+endObj();
+}
+const totalObjs = 3 + numPages * 3;
+const xrefOffset = currentOffset;
+pushStr(`xref\n0 ${totalObjs}\n0000000000 65535 f \n`);
+for (let i = 1; i < totalObjs; i++) {
+const off = String(offsets[i] || 0).padStart(10, "0");
+pushStr(`${off} 00000 n \n`);
+}
+pushStr(`trailer\n<< /Size ${totalObjs} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`);
+return new Blob(chunks, { type: "application/pdf" });
+}
+window.multipleJpegDataUrlsToPdfBlob = multipleJpegDataUrlsToPdfBlob;
+const _v85GenerateCertificatePdfBlob = generateCertificatePdfBlob;
+generateCertificatePdfBlob = async function(voucher) {
+const allItems = Array.isArray(voucher?.items) ? voucher.items : [];
+if (allItems.length <= 16) {
+return await _v85GenerateCertificatePdfBlob(voucher);
+}
+const MAX_ITEMS_PER_PAGE = 16;
+const cfg = getCertConfig();
+const activeCols = getActiveCertColumnsForVoucher(voucher, cfg);
+const W = 1240;
+const H = 1754;
+const padX = 48;
+const contentW = W - padX * 2;
+const headerPrimary = getBrandingAssetSrc("header") || "./en_tete.png";
+const footerPrimary = getBrandingAssetSrc("footer") || "./en_pied.png";
+const [headerImg, footerImg] = await Promise.all([
+loadCertImageWithFallbackAsync(headerPrimary, window.FALLBACK_EN_TETE_B64),
+loadCertImageWithFallbackAsync(footerPrimary, window.FALLBACK_EN_PIED_B64)
+]);
+const pagesChunks = [];
+for (let i = 0; i < allItems.length; i += MAX_ITEMS_PER_PAGE) {
+pagesChunks.push(allItems.slice(i, i + MAX_ITEMS_PER_PAGE));
+}
+const totalPages = pagesChunks.length;
+const jpegUrls = [];
+for (let pageIdx = 0; pageIdx < totalPages; pageIdx++) {
+const chunkItems = pagesChunks[pageIdx];
+const isFirstPage = pageIdx === 0;
+const isLastPage = pageIdx === totalPages - 1;
+const baseIndexOffset = pageIdx * MAX_ITEMS_PER_PAGE;
+const canvas = document.createElement("canvas");
+canvas.width = W;
+canvas.height = H;
+const ctx = canvas.getContext("2d");
+ctx.fillStyle = "#ffffff";
+ctx.fillRect(0, 0, W, H);
+ctx.direction = "rtl";
+let y = 22;
+if (headerImg && headerImg.width > 0) {
+const maxH = 175;
+const ratio = Math.min(contentW / headerImg.width, maxH / headerImg.height);
+const dw = headerImg.width * ratio;
+const dh = headerImg.height * ratio;
+ctx.drawImage(headerImg, (W - dw) / 2, y, dw, dh);
+y += dh + 8;
+} else {
+ctx.fillStyle = "#000000";
+ctx.font = "800 24px Tajawal, Arial, sans-serif";
+ctx.textAlign = "center";
+ctx.fillText("المملكة المغربية — وزارة العدل — المديرية الإقليمية للعدل بسطات", W / 2, y + 36);
+y += 58;
+}
+ctx.save();
+ctx.fillStyle = "#334155";
+ctx.font = "700 16px Tajawal, Arial, sans-serif";
+ctx.textAlign = "left";
+ctx.fillText(`الصفحة ${pageIdx + 1} من ${totalPages}`, padX, y + 18);
+ctx.restore();
+const pageTitle = isFirstPage ? cfg.titleText : `${cfg.titleText} (تابع ${pageIdx + 1}/${totalPages})`;
+ctx.save();
+ctx.font = "800 27px Tajawal, Arial, sans-serif";
+const titleTextWidth = Math.max(220, Math.ceil(ctx.measureText(pageTitle).width) + 64);
+const pillW = Math.min(contentW - 40, titleTextWidth);
+const pillH = 44;
+const pillX = (W - pillW) / 2;
+const pillY = y + 2;
+const pillR = pillH / 2;
+ctx.beginPath();
+ctx.moveTo(pillX + pillR, pillY);
+ctx.lineTo(pillX + pillW - pillR, pillY);
+ctx.arc(pillX + pillW - pillR, pillY + pillR, pillR, -Math.PI / 2, Math.PI / 2);
+ctx.lineTo(pillX + pillR, pillY + pillH);
+ctx.arc(pillX + pillR, pillY + pillR, pillR, Math.PI / 2, -Math.PI / 2);
+ctx.closePath();
+ctx.fillStyle = "#ffffff";
+ctx.fill();
+ctx.lineWidth = 2.4;
+ctx.strokeStyle = "#000000";
+ctx.stroke();
+ctx.fillStyle = "#000000";
+ctx.textAlign = "center";
+ctx.textBaseline = "middle";
+ctx.fillText(pageTitle, W / 2, pillY + pillH / 2 + 2);
+ctx.restore();
+y = pillY + pillH + 16;
+const introPlain = isFirstPage
+? buildOfficialIntroPlainText(voucher)
+: `تابع إشهاد التسليم (${voucher.id || ""}) — المستفيد: ${voucher.recipient || ""} (${voucher.destination || ""}) — التاريخ: ${formatOfficialCertDate(voucher)}`;
+ctx.save();
+ctx.fillStyle = "#000000";
+ctx.font = "700 19.5px Tajawal, Arial, sans-serif";
+ctx.textAlign = "right";
+ctx.textBaseline = "top";
+const introLines = wrapCanvasTextLines(ctx, introPlain, contentW);
+introLines.forEach(line => {
+ctx.fillText(line, W - padX, y);
+y += 28;
+});
+ctx.restore();
+y += 8;
+let usedW = 0;
+const colWidths = activeCols.map((col, i) => {
+if (i === activeCols.length - 1) return Math.max(40, contentW - usedW);
+const w = Math.round(contentW * (col.widthPct / 100));
+usedW += w;
+return w;
+});
+const thH = 40;
+ctx.save();
+let colRightX = W - padX;
+activeCols.forEach((col, cIdx) => {
+const cw = colWidths[cIdx];
+const cellLeftX = colRightX - cw;
+ctx.fillStyle = "#efefef";
+ctx.fillRect(cellLeftX, y, cw, thH);
+ctx.lineWidth = 1.6;
+ctx.strokeStyle = "#000000";
+ctx.strokeRect(cellLeftX, y, cw, thH);
+ctx.fillStyle = "#000000";
+ctx.font = "800 18.5px Tajawal, Arial, sans-serif";
+ctx.textAlign = "center";
+ctx.textBaseline = "middle";
+ctx.fillText(col.title, cellLeftX + cw / 2, y + thH / 2 + 1);
+colRightX -= cw;
+});
+ctx.restore();
+y += thH;
+chunkItems.forEach((item, localIdx) => {
+const globalIdx = baseIndexOffset + localIdx;
+const wrappedCells = activeCols.map((col, cIdx) => {
+const textVal = getCertCellContentForColumn(col.key, col, item, globalIdx, true);
+ctx.font = col.key === "qty" ? "800 18.5px Tajawal, Arial, sans-serif" : (col.key === "item" ? "700 17px Tajawal, Arial, sans-serif" : "600 16.5px Tajawal, Arial, sans-serif");
+const lines = wrapCanvasTextLines(ctx, textVal, Math.max(30, colWidths[cIdx] - 16));
+return { col, lines };
+});
+const maxLines = wrappedCells.reduce((m, wc) => Math.max(m, wc.lines.length), 1);
+const lineHeight = 23;
+const rowH = Math.max(35, maxLines * lineHeight + 10);
+let rRightX = W - padX;
+wrappedCells.forEach((wc, cIdx) => {
+const cw = colWidths[cIdx];
+const cellLeftX = rRightX - cw;
+ctx.fillStyle = "#ffffff";
+ctx.fillRect(cellLeftX, y, cw, rowH);
+ctx.lineWidth = 1.4;
+ctx.strokeStyle = "#000000";
+ctx.strokeRect(cellLeftX, y, cw, rowH);
+ctx.fillStyle = "#000000";
+if (wc.col.key === "item") {
+ctx.font = "700 17px Tajawal, Arial, sans-serif";
+ctx.textAlign = "right";
+ctx.textBaseline = "top";
+const startY = y + (rowH - wc.lines.length * lineHeight) / 2;
+wc.lines.forEach((ln, lIdx) => {
+ctx.fillText(ln, rRightX - 10, startY + lIdx * lineHeight);
+});
+} else {
+ctx.font = wc.col.key === "qty" ? "800 18.5px Tajawal, Arial, sans-serif" : "700 17px Tajawal, Arial, sans-serif";
+ctx.textAlign = "center";
+ctx.textBaseline = "top";
+const startY = y + (rowH - wc.lines.length * lineHeight) / 2;
+wc.lines.forEach((ln, lIdx) => {
+ctx.fillText(ln, cellLeftX + cw / 2, startY + lIdx * lineHeight);
+});
+}
+rRightX -= cw;
+});
+y += rowH;
+});
+y += 18;
+if (!isLastPage) {
+ctx.save();
+ctx.fillStyle = "#0f172a";
+ctx.font = "800 18px Tajawal, Arial, sans-serif";
+ctx.textAlign = "left";
+ctx.fillText(`... يتبع في الصفحة الموالية (${pageIdx + 2} / ${totalPages})`, padX + 20, y);
+ctx.restore();
+} else {
+ctx.save();
+ctx.fillStyle = "#000000";
+ctx.font = "800 21px Tajawal, Arial, sans-serif";
+ctx.textAlign = "center";
+ctx.textBaseline = "top";
+ctx.fillText(cfg.signatureText, padX + Math.round(contentW * 0.16), y);
+if (cfg.signatureSubName) {
+ctx.font = "600 16.5px Tajawal, Arial, sans-serif";
+ctx.fillText(cfg.signatureSubName, padX + Math.round(contentW * 0.16), y + 28);
+}
+if (cfg.showSecondSignature) {
+ctx.font = "800 21px Tajawal, Arial, sans-serif";
+ctx.fillText(cfg.secondSignatureText, W - padX - Math.round(contentW * 0.16), y);
+if (cfg.secondSignatureSubName) {
+ctx.font = "600 16.5px Tajawal, Arial, sans-serif";
+ctx.fillText(cfg.secondSignatureSubName, W - padX - Math.round(contentW * 0.16), y + 28);
+}
+}
+ctx.restore();
+}
+let footerDrawH = 0;
+let footerDrawW = 0;
+if (footerImg && footerImg.width > 0) {
+const maxFH = 115;
+const fRatio = Math.min(contentW / footerImg.width, maxFH / footerImg.height);
+footerDrawW = footerImg.width * fRatio;
+footerDrawH = footerImg.height * fRatio;
+} else {
+footerDrawH = 38;
+}
+const bottomY = H - footerDrawH - 20;
+const sCode = voucher?.secretCode || (typeof generateCertSecretCode === "function" ? generateCertSecretCode(voucher) : "");
+ctx.save();
+ctx.direction = "ltr";
+ctx.fillStyle = "rgba(0, 0, 0, 0.42)";
+ctx.font = "13.5px monospace";
+ctx.textAlign = "left";
+ctx.textBaseline = "bottom";
+ctx.fillText(`${sCode} [P.${pageIdx + 1}/${totalPages}]`, padX, bottomY - 4);
+ctx.restore();
+if (footerImg && footerImg.width > 0) {
+ctx.drawImage(footerImg, (W - footerDrawW) / 2, bottomY, footerDrawW, footerDrawH);
+} else {
+ctx.fillStyle = "#000000";
+ctx.font = "700 17px Tajawal, Arial, sans-serif";
+ctx.textAlign = "center";
+ctx.fillText("المديرية الإقليمية للعدل بسطات — مصلحة التجهيز وتدبير المخزون", W / 2, H - 28);
+}
+jpegUrls.push(canvas.toDataURL("image/jpeg", 0.94));
+}
+return multipleJpegDataUrlsToPdfBlob(jpegUrls, 595.28, 841.89, W, H);
+};
+window.generateCertificatePdfBlob = generateCertificatePdfBlob;
+window.addEventListener("DOMContentLoaded", () => {
+enhanceAiSubTabsWithBeneficiaryDistribution();
+});
 freeUpLocalStorageQuota(false);
 window.addEventListener("DOMContentLoaded", () => {
 injectGlobalSettingsSaveBarUI();
