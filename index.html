@@ -26900,7 +26900,7 @@ state.issuanceMultiSelectedIds.add(itemId);
 state.issuanceMultiSelectedIds.delete(itemId);
 }
 renderIssuanceItemMultiSelectDropdown();
-syncIssuanceMultiSelectTriggerUI();
+if (typeof window.syncIssuanceMultiSelectTriggerUI === 'function') window.syncIssuanceMultiSelectTriggerUI();
 }
 window.onIssuanceMultiSelectCheckboxChange = onIssuanceMultiSelectCheckboxChange;
 function onIssuanceMultiSelectRowClick(event, itemId) {
@@ -26913,11 +26913,11 @@ state.issuanceMultiSelectedIds.delete(itemId);
 state.issuanceMultiSelectedIds.add(itemId);
 }
 renderIssuanceItemMultiSelectDropdown();
-syncIssuanceMultiSelectTriggerUI();
+if (typeof window.syncIssuanceMultiSelectTriggerUI === 'function') window.syncIssuanceMultiSelectTriggerUI();
 } else {
 state.issuanceMultiSelectedIds.clear();
 state.issuanceMultiSelectedIds.add(itemId);
-syncIssuanceMultiSelectTriggerUI();
+if (typeof window.syncIssuanceMultiSelectTriggerUI === 'function') window.syncIssuanceMultiSelectTriggerUI();
 const dd = document.getElementById("cart-item-multiselect-dropdown");
 if (dd) dd.style.display = "none";
 }
@@ -26933,7 +26933,7 @@ filtered.forEach(it => state.issuanceMultiSelectedIds.add(it.id));
 filtered.forEach(it => state.issuanceMultiSelectedIds.delete(it.id));
 }
 renderIssuanceItemMultiSelectDropdown();
-syncIssuanceMultiSelectTriggerUI();
+if (typeof window.syncIssuanceMultiSelectTriggerUI === 'function') window.syncIssuanceMultiSelectTriggerUI();
 }
 window.toggleSelectAllIssuanceDropdownItems = toggleSelectAllIssuanceDropdownItems;
 function onIssuanceQuickSearchInput(rawQuery, showDropdown = true) {
@@ -27016,7 +27016,7 @@ onCategoryFilterChanged(true);
 if (!state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds = new Set();
 state.issuanceMultiSelectedIds.clear();
 state.issuanceMultiSelectedIds.add(it.id);
-syncIssuanceMultiSelectTriggerUI();
+if (typeof window.syncIssuanceMultiSelectTriggerUI === 'function') window.syncIssuanceMultiSelectTriggerUI();
 const searchDd = document.getElementById("cart-instant-search-dropdown");
 if (searchDd) searchDd.style.display = "none";
 }
@@ -27044,7 +27044,7 @@ state.issuanceMultiSelectedIds.delete(itemId);
 }
 const searchInput = document.getElementById("cart-quick-ref-search");
 onIssuanceQuickSearchInput(searchInput?.value || "", true);
-syncIssuanceMultiSelectTriggerUI();
+if (typeof window.syncIssuanceMultiSelectTriggerUI === 'function') window.syncIssuanceMultiSelectTriggerUI();
 }
 window.toggleItemFromQuickSearchCheckbox = toggleItemFromQuickSearchCheckbox;
 function selectAllQuickSearchResults(event) {
@@ -27075,7 +27075,7 @@ if (devSelect && allSameDev && first.deviceFull) {
 devSelect.value = first.deviceFull;
 }
 onCategoryFilterChanged(true);
-syncIssuanceMultiSelectTriggerUI();
+if (typeof window.syncIssuanceMultiSelectTriggerUI === 'function') window.syncIssuanceMultiSelectTriggerUI();
 const searchDd = document.getElementById("cart-instant-search-dropdown");
 if (searchDd) searchDd.style.display = "none";
 showToast(`✓ تم تحديد ${matches.length} مواد مطابقة للبحث وتعبئة بياناتها تلقائياً`, "info");
@@ -27160,7 +27160,7 @@ onCategoryFilterChanged(true);
 if (!state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds = new Set();
 state.issuanceMultiSelectedIds.clear();
 matchingItems.forEach(m => state.issuanceMultiSelectedIds.add(m.id));
-syncIssuanceMultiSelectTriggerUI();
+if (typeof window.syncIssuanceMultiSelectTriggerUI === 'function') window.syncIssuanceMultiSelectTriggerUI();
 const dd = document.getElementById("cart-item-multiselect-dropdown");
 if (matchingItems.length > 1 && dd) {
 renderIssuanceItemMultiSelectDropdown();
@@ -27171,7 +27171,7 @@ dd.style.display = "none";
 } else {
 if (state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds.clear();
 onCategoryFilterChanged(true);
-syncIssuanceMultiSelectTriggerUI();
+if (typeof window.syncIssuanceMultiSelectTriggerUI === 'function') window.syncIssuanceMultiSelectTriggerUI();
 }
 }
 window.onIssuanceDeviceFilterChanged = onIssuanceDeviceFilterChanged;
@@ -27208,7 +27208,7 @@ if (!state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds = new Set();
 state.issuanceMultiSelectedIds.add(filtered[0].id);
 }
 renderIssuanceItemMultiSelectDropdown();
-syncIssuanceMultiSelectTriggerUI();
+if (typeof window.syncIssuanceMultiSelectTriggerUI === 'function') window.syncIssuanceMultiSelectTriggerUI();
 };
 window.onCategoryFilterChanged = onCategoryFilterChanged;
 addItemToCart = function() {
@@ -27265,7 +27265,7 @@ if (notesInput) notesInput.value = "";
 if (qtyInput) qtyInput.value = 1;
 if (state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds.clear();
 clearIssuanceQuickSearch();
-syncIssuanceMultiSelectTriggerUI();
+if (typeof window.syncIssuanceMultiSelectTriggerUI === 'function') window.syncIssuanceMultiSelectTriggerUI();
 const dd = document.getElementById("cart-item-multiselect-dropdown");
 if (dd) dd.style.display = "none";
 renderCartTable();
@@ -40468,11 +40468,11 @@ function thefreed(notesCol, baseCols) {
 const origNotes = baseCols.find(c => c.key === "notes");
 return origNotes ? Math.max(0, origNotes.widthPct - 12) : 8;
 }
-function paginateCertItemsWithCategoryHeaders(orderedItems, maxSinglePageUnits = 19.5) {
+function paginateCertItemsWithCategoryHeaders(orderedItems, maxSinglePageUnits = 16.5) {
 if (!Array.isArray(orderedItems) || orderedItems.length === 0) {
 return [[]];
 }
-const LAST_PAGE_MAX_UNITS = maxSinglePageUnits; // 19.5 وحدة بصرية (لترك 20% للتوقيع في الصفحة الأخيرة)
+const LAST_PAGE_MAX_UNITS = maxSinglePageUnits; // 16.5 وحدة بصرية (لترك 30% في الأسفل لمنطقة التوقيع والختم والفوتر في الصفحة الأخيرة)
 const NON_LAST_PAGE_MAX_UNITS = 27.5;           // 27.5 وحدة بصرية (استغلال 95% من الصفحات غير الأخيرة وترك 5% فقط قبل التذييل)
 const uniqueCatsCount = new Set(orderedItems.map(i => i.category || "عام")).size;
 const totalVisualUnits = orderedItems.length + (uniqueCatsCount * 0.52);
@@ -40575,7 +40575,7 @@ const secretCode = escapeHtml(generateCertSecretCode(voucher));
 const introHtml = buildOfficialIntroLine(voucher);
 const mergeColorSets = Boolean(voucher?._mergeEqualColorSets || window._certMergeEqualColorSets);
 const orderedItems = prepareOrderedAndGroupedVoucherItems(voucher?.items || [], mergeColorSets);
-const pagesEntries = paginateCertItemsWithCategoryHeaders(orderedItems, 19.5);
+const pagesEntries = paginateCertItemsWithCategoryHeaders(orderedItems, 16.5);
 const totalPages = pagesEntries.length;
 return pagesEntries.map((pageRows, pageIdx) => {
 const isFirstPage = pageIdx === 0;
@@ -40654,7 +40654,7 @@ const introSectionHtml = isFirstPage
 </p>`;
 const signatureBlockHtml = cfg.showSecondSignature
 ? `
-<div class="cert-signature-zone-lastpage" style="display: flex; justify-content: space-between; align-items: flex-start; margin-top: 10px; min-height: 48mm; padding: 4px 8% 0 8%; font-weight: 800; font-size: 10pt; color: #000; box-sizing: border-box;">
+<div class="cert-signature-zone-lastpage" style="display: flex; justify-content: space-between; align-items: flex-start; margin-top: 50px !important; margin-bottom: 12px !important; min-height: 56mm; padding: 4px 8% 0 8%; font-weight: 800; font-size: 10pt; color: #000; box-sizing: border-box; page-break-inside: avoid; break-inside: avoid;">
 <div style="text-align: center;">
 <div>${escapeHtml(cfg.secondSignatureText)}</div>
 ${cfg.secondSignatureSubName ? `<div style="font-size: 8.5pt; font-weight: 600; margin-top: 2px;">${escapeHtml(cfg.secondSignatureSubName)}</div>` : ""}
@@ -40666,18 +40666,18 @@ ${cfg.signatureSubName ? `<div style="font-size: 8.5pt; font-weight: 600; margin
 </div>
 `
 : `
-<div class="cert-signature-block cert-signature-zone-lastpage" style="margin-top: 10px; margin-bottom: 4px; font-size: 9.8pt; min-height: 48mm; padding-top: 4px; box-sizing: border-box;">
+<div class="cert-signature-block cert-signature-zone-lastpage" style="margin-top: 50px !important; margin-bottom: 12px !important; font-size: 9.8pt; min-height: 56mm; padding-top: 4px; box-sizing: border-box; page-break-inside: avoid; break-inside: avoid;">
 <div>${escapeHtml(cfg.signatureText)}</div>
 ${cfg.signatureSubName ? `<div style="font-size: 8.5pt; font-weight: 600; margin-top: 2px;">${escapeHtml(cfg.signatureSubName)}</div>` : ""}
 </div>
 `;
 const bottomZoneAfterTableHtml = !isLastPage
-? `<div class="cert-nonlast-footer-gap" style="text-align: left; font-size: 8.2pt; font-weight: 800; color: #0f172a; margin-top: 4px; margin-bottom: 8mm; padding-left: 3%;">... يتبع في الصفحة الموالية (${pageIdx + 2} / ${totalPages}) ⬅️</div>`
+? `<div class="cert-nonlast-footer-gap" style="text-align: left; font-size: 8.2pt; font-weight: 800; color: #0f172a; margin-top: 6px; margin-bottom: 8mm; padding-left: 3%;">... يتبع في الصفحة الموالية (${pageIdx + 2} / ${totalPages}) ⬅️</div>`
 : signatureBlockHtml;
 const pageBreakStyle = !isLastPage ? "page-break-after: always; break-after: page;" : "";
 return `
-<div class="official-cert-page" data-voucher-id="${escapeHtml(voucher.id || "")}" data-secret-code="${secretCode}" style="padding: 3mm 7mm; min-height: 274mm; ${pageBreakStyle}">
-<div class="cert-top-section" style="flex: 1 1 auto; display: flex; flex-direction: column;">
+<div class="official-cert-page" data-voucher-id="${escapeHtml(voucher.id || "")}" data-secret-code="${secretCode}" style="padding: 3mm 7mm; min-height: 274mm; display: flex; flex-direction: column; justify-content: space-between; ${pageBreakStyle}">
+<div class="cert-top-section" style="width: 100%;">
 <div class="cert-header-wrap">
 <img src="${headerSrc}"
 onerror="if(this.src!==window.FALLBACK_EN_TETE_B64)this.src=window.FALLBACK_EN_TETE_B64;"
@@ -40689,7 +40689,7 @@ ${pageIndicatorBadge}
 <div class="cert-title-box" style="font-size: 12pt; padding: 1.5px 34px;">${escapeHtml(cfg.titleText)}${totalPages > 1 && !isFirstPage ? ` (تابع ${pageIdx + 1}/${totalPages})` : ""}</div>
 </div>
 ${introSectionHtml}
-<table class="cert-official-table" style="margin-bottom: 4px;">
+<table class="cert-official-table" style="margin-bottom: 0;">
 <thead>
 <tr>
 ${theadCellsHtml}
@@ -40699,11 +40699,11 @@ ${theadCellsHtml}
 ${tbodyRowsHtml}
 </tbody>
 </table>
-<div style="margin-top: auto;">
+<div class="cert-after-table-zone" style="margin-top: 0;">
 ${bottomZoneAfterTableHtml}
 </div>
 </div>
-<div class="cert-bottom-section" style="margin-top: 0;">
+<div class="cert-bottom-section" style="margin-top: auto; padding-top: 6px;">
 <div class="cert-secret-code" style="font-size: 8px; opacity: 0.4;">${secretCode}${totalPages > 1 ? ` [P.${pageIdx + 1}/${totalPages}]` : ""}</div>
 <div class="cert-footer-wrap">
 <img src="${footerSrc}"
@@ -40732,7 +40732,7 @@ loadCertImageWithFallbackAsync(footerPrimary, window.FALLBACK_EN_PIED_B64)
 ]);
 const mergeColorSets = Boolean(voucher?._mergeEqualColorSets || window._certMergeEqualColorSets);
 const orderedItems = prepareOrderedAndGroupedVoucherItems(voucher?.items || [], mergeColorSets);
-const pagesEntries = paginateCertItemsWithCategoryHeaders(orderedItems, 19.5);
+const pagesEntries = paginateCertItemsWithCategoryHeaders(orderedItems, 16.5);
 const totalPages = pagesEntries.length;
 const jpegUrls = [];
 for (let pageIdx = 0; pageIdx < totalPages; pageIdx++) {
@@ -40813,7 +40813,7 @@ y += 27;
 ctx.restore();
 y += 6;
 const footerReservedH = 115; // ارتفاع التذييل والرمز السري
-const bottomGapReservedH = isLastPage ? 330 : 85; // 330px (~19-20% من الصفحة للتوقيع) مقابل 85px (~5% فقط في الصفحات غير الأخيرة)
+const bottomGapReservedH = isLastPage ? Math.round(H * 0.30) : 85; // 30% (~526px) في الصفحة الأخيرة مقابل 5% (~85px) في الصفحات غير الأخيرة
 const availableTableH = Math.max(400, (H - footerReservedH - bottomGapReservedH) - y);
 let usedW = 0;
 const colWidths = activeCols.map((col, i) => {
@@ -40921,7 +40921,7 @@ ctx.textAlign = "left";
 ctx.fillText(`... يتبع في الصفحة الموالية (${pageIdx + 2} / ${totalPages}) ⬅️`, padX + 20, y + 26);
 ctx.restore();
 } else {
-const sigY = Math.min(H - footerReservedH - 220, y + 24);
+const sigY = Math.min(H - footerReservedH - 260, y + 50);
 ctx.save();
 ctx.fillStyle = "#000000";
 ctx.font = "800 20px Tajawal, Arial, sans-serif";
@@ -41985,6 +41985,457 @@ parent.insertBefore(editBtn, printBtn);
 });
 };
 window.renderLastCommittedBatchCertificates = renderLastCommittedBatchCertificates;
+function getFilteredIssuanceItemsList() {
+const selCat = document.getElementById("cart-cat-filter")?.value || "";
+const selDev = document.getElementById("cart-device-filter")?.value || "";
+return (state.data.items || [])
+.filter(rawIt => rawIt && !rawIt.isDeleted)
+.map(rawIt => parseAndEnrichStructuredItem(rawIt))
+.filter(it => {
+if (selCat && it.category !== selCat) return false;
+if (selDev && it.deviceFull !== selDev) return false;
+return true;
+});
+}
+window.getFilteredIssuanceItemsList = getFilteredIssuanceItemsList;
+const _v91OrigOnCategoryFilterChanged = onCategoryFilterChanged;
+onCategoryFilterChanged = function(preserveMultiSelection = true) {
+if (!preserveMultiSelection && state.issuanceMultiSelectedIds) {
+state.issuanceMultiSelectedIds.clear();
+}
+const hadSelectionsBefore = state.issuanceMultiSelectedIds ? state.issuanceMultiSelectedIds.size : 0;
+if (typeof _v91OrigOnCategoryFilterChanged === "function") {
+_v91OrigOnCategoryFilterChanged(preserveMultiSelection);
+}
+if (hadSelectionsBefore === 0 && state.issuanceMultiSelectedIds && state.issuanceMultiSelectedIds.size > 0) {
+state.issuanceMultiSelectedIds.clear();
+}
+renderIssuanceItemMultiSelectDropdown();
+if (typeof window.syncIssuanceMultiSelectTriggerUI === "function") {
+window.syncIssuanceMultiSelectTriggerUI();
+}
+};
+window.onCategoryFilterChanged = onCategoryFilterChanged;
+onIssuanceMultiSelectRowClick = function(event, itemId) {
+if (event) event.stopPropagation();
+if (!state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds = new Set();
+if (state.issuanceMultiSelectedIds.has(itemId)) {
+state.issuanceMultiSelectedIds.delete(itemId);
+} else {
+state.issuanceMultiSelectedIds.add(itemId);
+}
+renderIssuanceItemMultiSelectDropdown();
+if (typeof window.syncIssuanceMultiSelectTriggerUI === "function") {
+window.syncIssuanceMultiSelectTriggerUI();
+}
+};
+window.onIssuanceMultiSelectRowClick = onIssuanceMultiSelectRowClick;
+function quickAddSingleIssuanceItemToCart(event, itemId) {
+if (event) event.stopPropagation();
+const rawItem = (state.data.items || []).find(i => i && i.id === itemId);
+if (!rawItem) return;
+const item = parseAndEnrichStructuredItem(rawItem);
+const qtyInput = document.getElementById("cart-item-qty");
+const notesInput = document.getElementById("cart-item-notes");
+const qCheck = validateAndSanitizeQty(qtyInput ? qtyInput.value : 1, V8_MAX_SAFE_QTY);
+const qty = qCheck.valid ? qCheck.value : 1;
+const cleanNotes = sanitizeAutoForcedNoteString((notesInput?.value || "").replace(/\s+/g, " ").trim().slice(0, 300));
+const existingInCart = state.cart.find(c => c.id === item.id);
+if (existingInCart) {
+existingInCart.qty = Math.min(V8_MAX_SAFE_QTY, sanitize(existingInCart.qty) + qty);
+if (cleanNotes) {
+existingInCart.notes = existingInCart.notes ? `${existingInCart.notes} / ${cleanNotes}` : cleanNotes;
+}
+} else {
+state.cart.push({
+id: item.id,
+name: item.name,
+category: item.category,
+shortRef: item.shortRef,
+deviceType: item.deviceType,
+deviceModel: item.deviceModel,
+deviceFull: item.deviceFull,
+colorTag: item.colorTag,
+specDetail: item.specDetail,
+qty: qty,
+notes: cleanNotes
+});
+}
+if (state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds.delete(itemId);
+renderIssuanceItemMultiSelectDropdown();
+if (typeof window.syncIssuanceMultiSelectTriggerUI === 'function') window.syncIssuanceMultiSelectTriggerUI();
+renderCartTable();
+showToast(`✓ تمت إضافة "${item.shortRef || item.name}" (${qty}) إلى السلة — يمكنك تعديل الكمية والملاحظة في جدول السلة أدناه`, "success");
+}
+window.quickAddSingleIssuanceItemToCart = quickAddSingleIssuanceItemToCart;
+renderIssuanceItemMultiSelectDropdown = function() {
+const dd = document.getElementById("cart-item-multiselect-dropdown");
+if (!dd) return;
+const filtered = getFilteredIssuanceItemsList();
+if (!state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds = new Set();
+if (filtered.length === 0) {
+dd.innerHTML = `<div style="padding:16px;text-align:center;color:var(--text-muted);font-size:0.84rem;">لا توجد مواد مطابقة للتصفية الحالية</div>`;
+return;
+}
+const totalSelectedCount = state.issuanceMultiSelectedIds.size;
+const checkedInFilteredCount = filtered.filter(it => state.issuanceMultiSelectedIds.has(it.id)).length;
+dd.innerHTML = `
+<div class="issuance-dd-header" style="position:sticky;top:0;z-index:5;background:var(--bg-surface);border-bottom:1.5px solid var(--border-subtle);padding:8px 12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+<span style="color:var(--text-secondary);font-size:0.8rem;font-weight:700;">
+المواد المتاحة (${filtered.length} مادة) — حدد مادة أو عدة مواد ثم اضغط "إضافة للسلة":
+</span>
+<div style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;">
+${totalSelectedCount > 0 ? `
+<button type="button" class="btn btn-primary btn-sm" onclick="event.stopPropagation(); addItemToCart();" style="padding:3px 10px;font-size:0.76rem;font-weight:800;background:#10b981;border-color:#059669;color:#fff;">
+➕ إضافة المحدد للسلة (${totalSelectedCount})
+</button>
+` : ""}
+<button type="button" class="btn btn-outline btn-sm" onclick="toggleSelectAllIssuanceDropdownItems(true, event)" style="padding:2px 8px;font-size:0.74rem;color:#38bdf8;border-color:rgba(56,189,248,0.45);font-weight:800;">
+✓ تحديد الكل (${filtered.length})
+</button>
+${(checkedInFilteredCount > 0 || totalSelectedCount > 0) ? `
+<button type="button" class="btn btn-outline btn-sm" onclick="state.issuanceMultiSelectedIds.clear(); renderIssuanceItemMultiSelectDropdown(); if (typeof window.syncIssuanceMultiSelectTriggerUI === 'function') window.syncIssuanceMultiSelectTriggerUI(); event.stopPropagation();" style="padding:2px 8px;font-size:0.74rem;color:#ef4444;border-color:rgba(239,68,68,0.4);">
+إلغاء التحديد
+</button>
+` : ""}
+<button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('cart-item-multiselect-dropdown').style.display='none'; event.stopPropagation();" style="padding:2px 8px;font-size:0.74rem;">
+✕ إغلاق
+</button>
+</div>
+</div>
+<div>
+${filtered.map(it => {
+const isChecked = state.issuanceMultiSelectedIds.has(it.id);
+const inCartItem = (state.cart || []).find(c => c && c.id === it.id);
+const st = sanitize(it.stock);
+const safeId = escapeHtml(it.id);
+return `
+<div class="issuance-dd-row ${isChecked ? 'is-checked' : ''}" onclick="onIssuanceMultiSelectRowClick(event, '${safeId}')">
+<div style="display:inline-flex;align-items:center;gap:10px;min-width:0;flex:1;">
+<input type="checkbox" value="${safeId}" ${isChecked ? 'checked' : ''}
+onchange="onIssuanceMultiSelectCheckboxChange(event, '${safeId}', this.checked)"
+onclick="event.stopPropagation();"
+style="width:18px;height:18px;accent-color:#38bdf8;cursor:pointer;flex-shrink:0;" />
+<div style="min-width:0;">
+${formatItemDisplayHtml(it)}
+${inCartItem ? `<span class="badge" style="margin-right:6px;background:rgba(16,185,129,0.15);color:#10b981;font-size:0.68rem;font-weight:800;">في السلة: ${inCartItem.qty}</span>` : ""}
+</div>
+</div>
+<div style="display:inline-flex;align-items:center;gap:6px;flex-shrink:0;">
+<span class="badge badge-subtle" style="font-size:0.7rem;">${escapeHtml(it.category)}</span>
+<span class="badge ${st > 0 ? 'badge-success' : 'badge-warning'} tabular-nums" style="font-size:0.74rem;">المتوفر: ${st}</span>
+<button type="button" class="btn btn-outline btn-sm"
+onclick="quickAddSingleIssuanceItemToCart(event, '${safeId}')"
+title="إضافة فورية لهذه المادة إلى السلة"
+style="padding:2px 8px;font-size:0.72rem;font-weight:800;color:#10b981;border-color:rgba(16,185,129,0.45);">
++ سلة
+</button>
+</div>
+</div>
+`;
+}).join("")}
+</div>
+`;
+};
+window.renderIssuanceItemMultiSelectDropdown = renderIssuanceItemMultiSelectDropdown;
+addItemToCart = function() {
+const itemSelect = document.getElementById("cart-item-select");
+const qtyInput = document.getElementById("cart-item-qty");
+const notesInput = document.getElementById("cart-item-notes");
+const selectedIds = (state.issuanceMultiSelectedIds && state.issuanceMultiSelectedIds.size > 0)
+? Array.from(state.issuanceMultiSelectedIds)
+: (itemSelect && itemSelect.value ? [itemSelect.value] : []);
+if (selectedIds.length === 0) {
+showToast("يرجى اختيار مادة أو عدة مواد من المخزون أولاً", "warning");
+return;
+}
+const qCheck = validateAndSanitizeQty(qtyInput ? qtyInput.value : 1, V8_MAX_SAFE_QTY);
+if (!qCheck.valid) {
+if (qCheck.reason === "exceeds_max") {
+showToast(`الكمية المدخلة تتجاوز الحد الأقصى المسموح به للعملية الواحدة (${V8_MAX_SAFE_QTY} قطعة)!`, "error");
+} else {
+showToast("الكمية المطلوبة يجب أن تكون رقماً صحيحاً أكبر من صفر", "warning");
+}
+return;
+}
+const qty = qCheck.value;
+const cleanNotes = sanitizeAutoForcedNoteString((notesInput?.value || "").replace(/\s+/g, " ").trim().slice(0, 300));
+if (cleanNotes && typeof registerQuickNoteUsage === "function") {
+registerQuickNoteUsage(cleanNotes);
+}
+let addedCount = 0;
+let lastAddedName = "";
+const lowStockWarnings = [];
+selectedIds.forEach(id => {
+const rawItem = (state.data.items || []).find(i => i && i.id === id);
+if (!rawItem) return;
+const item = parseAndEnrichStructuredItem(rawItem);
+lastAddedName = item.shortRef || item.name;
+const existingInCart = state.cart.find(c => c.id === item.id);
+const alreadyInCart = existingInCart ? sanitize(existingInCart.qty) : 0;
+const newTotalQty = Math.min(V8_MAX_SAFE_QTY, alreadyInCart + qty);
+const currentStock = sanitize(item.stock);
+if (newTotalQty > currentStock) {
+lowStockWarnings.push(`${lastAddedName} (المتوفر: ${currentStock})`);
+}
+if (existingInCart) {
+existingInCart.qty = newTotalQty;
+if (cleanNotes) {
+existingInCart.notes = existingInCart.notes ? `${existingInCart.notes} / ${cleanNotes}` : cleanNotes;
+}
+} else {
+state.cart.push({
+id: item.id,
+name: item.name,
+category: item.category,
+shortRef: item.shortRef,
+deviceType: item.deviceType,
+deviceModel: item.deviceModel,
+deviceFull: item.deviceFull,
+colorTag: item.colorTag,
+specDetail: item.specDetail,
+qty: qty,
+notes: cleanNotes
+});
+}
+addedCount++;
+});
+if (notesInput) notesInput.value = "";
+if (qtyInput) qtyInput.value = 1;
+if (state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds.clear();
+if (itemSelect) itemSelect.value = "";
+if (typeof clearIssuanceQuickSearch === "function") clearIssuanceQuickSearch();
+if (typeof window.syncIssuanceMultiSelectTriggerUI === 'function') window.syncIssuanceMultiSelectTriggerUI();
+renderIssuanceItemMultiSelectDropdown();
+const dd = document.getElementById("cart-item-multiselect-dropdown");
+if (dd) dd.style.display = "none";
+renderCartTable();
+if (lowStockWarnings.length > 0) {
+showToast(`تنبيه: الكمية تتجاوز الرصيد الحالي لـ [${lowStockWarnings.join(" ، ")}]، وتمت الإضافة للسلة للمتابعة`, "warning");
+}
+if (addedCount === 1) {
+showCenterToast(`✓ تمت إضافة ${qty} قطعة من "${lastAddedName}" إلى السلة بنجاح`);
+} else if (addedCount > 1) {
+showCenterToast(`✓ تمت إضافة (${addedCount}) مواد محددة (${qty} قطعة لكل مادة) إلى السلة بنجاح — يمكنك تعديل كمية وملاحظة كل مادة بالجدول أدناه`);
+}
+};
+window.addItemToCart = addItemToCart;
+onDestinationChanged = function() {
+const destSelect = document.getElementById("voucher-dest-select");
+const recipSelect = document.getElementById("voucher-recipient-select");
+const customWrap = document.getElementById("custom-recipient-wrap");
+if (!destSelect || !recipSelect) return;
+const selDest = destSelect.value;
+recipSelect.innerHTML = "";
+if (selDest) {
+const persons = (typeof getRecipientsForDestination === "function")
+? getRecipientsForDestination(selDest)
+: (state.data.destinations[selDest] || []);
+recipSelect.innerHTML = '<option value="">-- اختر المستلم التابع لهذه الجهة --</option>';
+persons.forEach(p => {
+const opt = document.createElement("option");
+opt.value = p;
+opt.textContent = p;
+recipSelect.appendChild(opt);
+});
+const customOpt = document.createElement("option");
+customOpt.value = "__custom__";
+customOpt.textContent = "+ كتابة اسم مستلم آخر...";
+recipSelect.appendChild(customOpt);
+} else {
+recipSelect.innerHTML = '<option value="">-- اختر الجهة أولاً لعرض المستلمين التابعين لها --</option>';
+}
+if (customWrap) customWrap.style.display = "none";
+};
+window.onDestinationChanged = onDestinationChanged;
+openPendingOrdersModal = function() {
+const pendingOrders = (state.data.orders || []).filter(o => o && !o.isDeleted && (!o.status || o.status === "pending"));
+const listEl = document.getElementById("pending-orders-modal-list");
+if (listEl) {
+if (pendingOrders.length === 0) {
+listEl.innerHTML = `
+<div style="text-align: center; padding: 28px; color: var(--text-muted);">
+<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 10px; opacity: 0.5;"><path d="M13.73 21a2 2 0 0 1-3.46 0"></path><path d="M18.63 13A17.89 17.89 0 0 1 18 8"></path><path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"></path><path d="M18 8a6 6 0 0 0-9.33-5"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+<div style="font-weight: 700;">لا توجد أي طلبيات معلقة حالياً في النظام</div>
+</div>
+`;
+} else {
+listEl.innerHTML = pendingOrders.map(o => {
+const beneficiaryName = (o.requester || o.recipient || "غير محدد").trim();
+const itemsSummary = (o.items || []).map(i => `${i.name || i.item} (${i.qty})`).join("، ");
+return `
+<div class="pending-order-item" onclick="convertPendingOrderToIssuance('${escapeHtml(o.id)}')" style="cursor: pointer; padding: 12px 14px; border-radius: 10px; background: var(--bg-muted); border: 1.5px solid var(--border-subtle); transition: all 0.2s ease;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+<strong style="color: var(--text-main); font-size: 0.94rem;">${escapeHtml(o.destination || "جهة غير محددة")}</strong>
+<span class="badge badge-warning tabular-nums" style="font-size: 0.72rem;">#${escapeHtml(o.orderNumber || o.id)}</span>
+</div>
+<div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 6px;">
+المستفيد / صاحب الطلب: <strong style="color: var(--text-main);">${escapeHtml(beneficiaryName)}</strong> | تاريخ الطلب: <span class="tabular-nums">${escapeHtml(o.date || "")}</span>
+</div>
+<div style="font-size: 0.76rem; color: var(--color-phase-2); font-weight: 700;">
+المواد المطلوبة (${(o.items || []).length}): ${escapeHtml(itemsSummary || "—")}
+</div>
+<div style="margin-top: 8px; font-size: 0.74rem; color: #10b981; font-weight: 800; display: flex; align-items: center; gap: 4px;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/></svg>
+انقر لتحويل الطلبية كاملة (الجهة + المستفيد + المواد) إلى إشهاد تسليم بتاريخ اليوم
+</div>
+</div>
+`;
+}).join("");
+}
+}
+const modal = document.getElementById("pending-orders-modal");
+if (modal) modal.style.display = "flex";
+};
+window.openPendingOrdersModal = openPendingOrdersModal;
+function unifiedConvertOrderToIssuance(orderId) {
+const order = (state.data.orders || []).find(o => o && o.id === orderId);
+if (!order) {
+showToast("لم يتم العثور على الطلبية المطلوبة", "error");
+return;
+}
+if (order.status === "converted") {
+showToast("تم تحويل هذه الطلبية سابقاً إلى إشهاد تسليم ولا يمكن تحويلها مرتين!", "warning");
+return;
+}
+if (!Array.isArray(order.items) || order.items.length === 0) {
+showToast("هذه الطلبية لا تحتوي على مواد صالحة للتحويل", "error");
+return;
+}
+if (typeof closePendingOrdersModal === "function") {
+closePendingOrdersModal();
+}
+switchTab("issuance-view");
+const todayIso = new Date().toISOString().split("T")[0];
+const dateInput = document.getElementById("voucher-date-input");
+if (dateInput) {
+dateInput.value = todayIso;
+}
+const destSelect = document.getElementById("voucher-dest-select");
+const canonicalDest = (typeof resolveCanonicalDestination === "function" && order.destination)
+? resolveCanonicalDestination(order.destination)
+: (order.destination || "");
+if (destSelect && canonicalDest) {
+let destOptExists = false;
+for (let i = 0; i < destSelect.options.length; i++) {
+if (destSelect.options[i].value === canonicalDest) {
+destOptExists = true;
+break;
+}
+}
+if (!destOptExists) {
+const newDestOpt = document.createElement("option");
+newDestOpt.value = canonicalDest;
+newDestOpt.textContent = canonicalDest;
+destSelect.appendChild(newDestOpt);
+}
+destSelect.value = canonicalDest;
+onDestinationChanged();
+}
+const recipSelect = document.getElementById("voucher-recipient-select");
+const customWrap = document.getElementById("custom-recipient-wrap");
+const customInput = document.getElementById("custom-recipient-input");
+const targetBeneficiary = String(order.requester || order.recipient || "").trim();
+if (recipSelect && targetBeneficiary) {
+let matchedValue = "";
+const normTarget = normalizeArabicKey(targetBeneficiary);
+for (let i = 0; i < recipSelect.options.length; i++) {
+const optVal = recipSelect.options[i].value;
+if (!optVal || optVal === "__custom__") continue;
+if (optVal === targetBeneficiary || normalizeArabicKey(optVal) === normTarget) {
+matchedValue = optVal;
+break;
+}
+}
+if (!matchedValue) {
+const newRecipOpt = document.createElement("option");
+newRecipOpt.value = targetBeneficiary;
+newRecipOpt.textContent = targetBeneficiary;
+const customOptEl = Array.from(recipSelect.options).find(o => o.value === "__custom__");
+if (customOptEl) {
+recipSelect.insertBefore(newRecipOpt, customOptEl);
+} else {
+recipSelect.appendChild(newRecipOpt);
+}
+matchedValue = targetBeneficiary;
+}
+recipSelect.value = matchedValue;
+if (customWrap) customWrap.style.display = "none";
+if (customInput) customInput.value = "";
+}
+const reasonSelect = document.getElementById("voucher-reason-select");
+const channelSelect = document.getElementById("voucher-channel-select");
+const orderRefInput = document.getElementById("voucher-order-ref");
+if (reasonSelect) reasonSelect.value = order.reason || "بناءً على طلب";
+if (channelSelect && order.channel) channelSelect.value = order.channel;
+if (orderRefInput) orderRefInput.value = order.orderRef || order.notes || `طلبية رقم ${order.id}`;
+state.cart = [];
+order.items.forEach(it => {
+const dbItem = (state.data.items || []).find(i => i && (i.id === it.id || i.name === (it.name || it.item)));
+const enriched = dbItem ? parseAndEnrichStructuredItem(dbItem) : parseAndEnrichStructuredItem({
+id: it.id || ("item-" + Date.now()),
+name: it.name || it.item || "",
+category: it.category || "عام"
+});
+const reqQty = Math.max(1, parseInt(it.qty, 10) || 1);
+const cleanNote = sanitizeAutoForcedNoteString(it.notes || "");
+state.cart.push({
+id: enriched.id,
+name: enriched.name,
+category: enriched.category,
+shortRef: enriched.shortRef,
+deviceType: enriched.deviceType,
+deviceModel: enriched.deviceModel,
+deviceFull: enriched.deviceFull,
+colorTag: enriched.colorTag,
+specDetail: enriched.specDetail,
+qty: reqQty,
+notes: cleanNote
+});
+});
+state.pendingConvertedOrderId = order.id;
+state.pendingConvertedOrderIds = [order.id];
+renderCartTable();
+if (typeof saveIssuanceSessionDraft === "function") {
+saveIssuanceSessionDraft();
+}
+showCenterToast(`✓ تم استيراد الطلبية (${order.id}) كاملة — الجهة: "${canonicalDest}" | المستفيد: "${targetBeneficiary}" | بتاريخ تسليم اليوم (${todayIso})`);
+}
+convertOrderToIssuance = unifiedConvertOrderToIssuance;
+convertPendingOrderToIssuance = unifiedConvertOrderToIssuance;
+window.convertOrderToIssuance = unifiedConvertOrderToIssuance;
+window.convertPendingOrderToIssuance = unifiedConvertOrderToIssuance;
+renderOrderItemsPreview = function() {
+ensureGlobalQuickNotesDatalist();
+const tbody = document.getElementById("order-items-preview-body");
+if (!tbody) return;
+if (!state.orderFormItems || state.orderFormItems.length === 0) {
+tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 14px; color: var(--text-muted);">لم تتم إضافة مواد للطلبية بعد.</td></tr>';
+return;
+}
+tbody.innerHTML = state.orderFormItems.map((it, idx) => `
+<tr>
+<td style="text-align: center; font-weight: 700;" class="tabular-nums">${idx + 1}</td>
+<td style="font-weight: 700;">${formatItemDisplayHtml(it)}</td>
+<td><span class="badge badge-subtle">${escapeHtml(it.category)}</span></td>
+<td style="text-align: center; width: 130px;">
+<div style="display:inline-flex;align-items:center;gap:4px;">
+<button type="button" class="btn btn-outline btn-sm" onclick="if(state.orderFormItems[${idx}]){state.orderFormItems[${idx}].qty=Math.max(1,(parseInt(state.orderFormItems[${idx}].qty,10)||1)-1);renderOrderItemsPreview();}" style="padding:2px 7px;font-weight:900;">-</button>
+<input type="number" class="form-control tabular-nums" min="1" max="50000" value="${Math.max(1, sanitize(it.qty))}"
+onchange="if(state.orderFormItems[${idx}]){state.orderFormItems[${idx}].qty=Math.max(1,parseInt(this.value,10)||1);renderOrderItemsPreview();}"
+style="width:58px;height:28px;text-align:center;font-weight:800;padding:2px 4px;" />
+<button type="button" class="btn btn-outline btn-sm" onclick="if(state.orderFormItems[${idx}]){state.orderFormItems[${idx}].qty=(parseInt(state.orderFormItems[${idx}].qty,10)||1)+1;renderOrderItemsPreview();}" style="padding:2px 7px;font-weight:900;">+</button>
+</div>
+</td>
+<td style="text-align: center;">
+<button type="button" class="btn-icon danger" onclick="removeOrderCartItem(${idx})" title="إزالة">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+</button>
+</td>
+</tr>
+`).join("");
+};
+window.renderOrderItemsPreview = renderOrderItemsPreview;
 window.addEventListener("DOMContentLoaded", () => {
 ensureGlobalQuickNotesDatalist();
 upgradeEditVoucherModalDOMForNotes();
