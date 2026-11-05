@@ -5923,42 +5923,42 @@ transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease !
 transform: translateY(-50%) rotate(14deg) scale(1.30) !important;
 opacity: 0.32 !important;
 }
-/* شبكة عرض المؤشرات: لوحة القيادة (2×3 هاتف، 3×2 تابلت، 6×1 حاسوب) والتحليل الذكي (2×2 هاتف وتابلت، 4×1 حاسوب) */
+/* شبكة عرض المؤشرات: لوحة القيادة (2×3 هاتف، 3×2 تابلت، 6×1 حاسوب) والتحليل الذكي (1 هاتف، 2×2 تابلت وحاسوب) */
 @media (max-width: 640px) {
-#dashboard-view .metrics-grid {
-display: grid !important;
-grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-gap: 10px !important;
-}
-#ai-insights-view .ai-kpi-grid {
-display: grid !important;
-grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-gap: 10px !important;
-}
+  #dashboard-view .metrics-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+  #ai-insights-view .ai-kpi-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
 }
 @media (min-width: 641px) and (max-width: 1024px) {
-#dashboard-view .metrics-grid {
-display: grid !important;
-grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-gap: 12px !important;
-}
-#ai-insights-view .ai-kpi-grid {
-display: grid !important;
-grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-gap: 12px !important;
-}
+  #dashboard-view .metrics-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+  }
+  #ai-insights-view .ai-kpi-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+  }
 }
 @media (min-width: 1025px) {
-#dashboard-view .metrics-grid {
-display: grid !important;
-grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
-gap: 12px !important;
-}
-#ai-insights-view .ai-kpi-grid {
-display: grid !important;
-grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-gap: 12px !important;
-}
+  #dashboard-view .metrics-grid {
+    display: grid !important;
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+  }
+  #ai-insights-view .ai-kpi-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+  }
 }
 /* 5. الإصلاح الجذري لتفاعل المبيانات الدائرية الأربعة (Donut Charts Hitbox & Scale Fix) وإلغاء التوهج */
 .donut-chart-wrapper {
@@ -6188,55 +6188,143 @@ margin: 8px auto 0 auto !important;
 grid-column: 2 / 3 !important;
 }
 }
-/* توحيد ارتفاع وعرض حاويات المؤشرات بالكامل في لوحة القيادة والتحليل الذكي */
-#dashboard-view .metrics-grid,
+/* ضبط حاويات المؤشرات في لوحة القيادة وبطاقات التحليل الذكي الـ 4 */
+#dashboard-view .metrics-grid {
+  align-items: stretch !important;
+  grid-auto-rows: 1fr !important;
+}
+#dashboard-view .metric-card {
+  height: 146px !important;
+  min-height: 146px !important;
+  max-height: 146px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+}
+#dashboard-view .metric-card .card-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 6px !important;
+  min-height: 24px !important;
+  flex-shrink: 0 !important;
+}
+#dashboard-view .metric-card .card-title {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  font-size: 0.84rem !important;
+  font-weight: 800 !important;
+  line-height: 1.3 !important;
+}
+#dashboard-view .metric-card .card-footer {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  margin-top: auto !important;
+  flex-shrink: 0 !important;
+}
+#dashboard-view .metric-card .card-footer span {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* بطاقات التحليل الذكي الـ 4 (الإشكال الأول): أبعاد متوازنة، حشوة ملائمة، خطوط مرنة دون قطع أو نقاط حذف) */
 #ai-insights-view .ai-kpi-grid {
-align-items: stretch !important;
-grid-auto-rows: 1fr !important;
+  align-items: stretch !important;
+  margin-bottom: 14px !important;
 }
-#dashboard-view .metric-card,
 #ai-insights-view .ai-glass-kpi-card {
-height: 146px !important;
-min-height: 146px !important;
-max-height: 146px !important;
-width: 100% !important;
-box-sizing: border-box !important;
-display: flex !important;
-flex-direction: column !important;
-justify-content: space-between !important;
+  height: auto !important;
+  min-height: 104px !important;
+  max-height: none !important;
+  width: 100% !important;
+  padding: 12px 14px 10px 14px !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  position: relative !important;
 }
-#dashboard-view .metric-card .card-header,
 #ai-insights-view .ai-glass-kpi-card .ai-kpi-header {
-display: flex !important;
-align-items: center !important;
-justify-content: space-between !important;
-gap: 6px !important;
-min-height: 24px !important;
-flex-shrink: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  min-height: 24px !important;
+  flex-shrink: 0 !important;
+  margin-bottom: 4px !important;
 }
-#dashboard-view .metric-card .card-title,
 #ai-insights-view .ai-glass-kpi-card .ai-kpi-title,
 #ai-insights-view .ai-glass-kpi-card .ai-kpi-title span {
-white-space: nowrap !important;
-overflow: hidden !important;
-text-overflow: ellipsis !important;
-font-size: 0.84rem !important;
-font-weight: 800 !important;
-line-height: 1.3 !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  font-size: 0.86rem !important;
+  font-weight: 800 !important;
+  line-height: 1.35 !important;
 }
-#dashboard-view .metric-card .card-footer,
+#ai-insights-view .ai-glass-kpi-card .ai-kpi-value {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  word-break: break-word !important;
+  font-size: 1.32rem !important;
+  font-weight: 900 !important;
+  line-height: 1.25 !important;
+  margin: 4px 0 !important;
+}
 #ai-insights-view .ai-glass-kpi-card .ai-kpi-footer-strip {
-white-space: nowrap !important;
-overflow: hidden !important;
-text-overflow: ellipsis !important;
-margin-top: auto !important;
-flex-shrink: 0 !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  font-size: 0.76rem !important;
+  line-height: 1.35 !important;
+  margin-top: auto !important;
 }
-#dashboard-view .metric-card .card-footer span,
 #ai-insights-view .ai-glass-kpi-card .ai-kpi-footer-strip span {
-white-space: nowrap !important;
-overflow: hidden !important;
-text-overflow: ellipsis !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  word-break: break-word !important;
+}
+
+/* المحاذاة العمودية العامة للنصوص والأرقام والأيقونات (الإشكال الرابع) */
+button,
+.btn,
+.badge,
+.pill,
+.stock-badge,
+.tab-pill,
+.page-btn,
+.btn-icon,
+.square-action-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+  line-height: 1 !important;
+}
+button > svg,
+.btn > svg,
+.badge > svg,
+.pill > svg,
+.stock-badge > svg,
+.tab-pill > svg,
+.page-btn > svg,
+.btn-icon > svg {
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+input.form-control,
+select.form-control {
+  vertical-align: middle;
 }
 /* أكورديون الأصناف القابل للتوسيع مع التمرير الأفقي السلس لأسماء المواد الطويلة في عملية التوزيع */
 .bulk-cat-accordion-wrap {
@@ -7971,9 +8059,9 @@ VIEW: الرؤى والتحليل الذكي للمخزون (ai-insights-view)
 <div class="ai-kpi-title">
 <span>الجهة الأكثر استهلاكاً</span>
 </div>
-<div class="badge" id="ai-kpi-top-dest-pct" style="background: rgba(255,255,255,0.22); color: #fff; font-size: 0.7rem; padding: 2px 7px; white-space: nowrap;">—</div>
+<div class="badge" id="ai-kpi-top-dest-pct" style="background: rgba(255,255,255,0.22); color: #fff; font-size: 0.7rem; padding: 2px 7px;">—</div>
 </div>
-<div class="ai-kpi-value" id="ai-kpi-top-dest-name" style="font-size: 1.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">—</div>
+<div class="ai-kpi-value" id="ai-kpi-top-dest-name" style="font-size: 1.12rem;">—</div>
 <div class="ai-kpi-footer-strip">
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
 <span id="ai-kpi-top-dest-sub">0 قطعة مسحوبة</span>
@@ -7985,11 +8073,11 @@ VIEW: الرؤى والتحليل الذكي للمخزون (ai-insights-view)
 <div class="ai-kpi-title">
 <span>المادة الأكثر طلباً</span>
 </div>
-<div class="badge" id="ai-kpi-top-item-badge" style="background: rgba(255,255,255,0.22); color: #fff; font-size: 0.7rem; padding: 2px 7px; white-space: nowrap;">الأكثر طلباً</div>
+<div class="badge" id="ai-kpi-top-item-badge" style="background: rgba(255,255,255,0.22); color: #fff; font-size: 0.7rem; padding: 2px 7px;">الأكثر طلباً</div>
 </div>
-<div class="ai-kpi-value" id="ai-kpi-top-item-name" style="font-size: 1.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">—</div>
+<div class="ai-kpi-value" id="ai-kpi-top-item-name" style="font-size: 1.12rem;">—</div>
 <div class="ai-kpi-footer-strip">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polygon></svg>
 <span id="ai-kpi-top-item-sub">0 قطعة موزعة</span>
 </div>
 </div>
@@ -9017,11 +9105,17 @@ VIEW 7: مركز التنبيهات (notifications-view) - المحور 5
 <div class="card-subtitle">رصد آلي للمواد التي بلغت الحد الحرج والعمليات الصادرة والحذف المؤقت والنسخ الاحتياطية السحابية</div>
 </div>
 <div class="header-actions">
-<button type="button" class="btn btn-outline btn-sm" onclick="markAllNotificationsRead()">
-تعليم كمقروء
+<button type="button" class="btn btn-outline btn-sm" onclick="markAllNotificationsRead()" style="display:inline-flex; align-items:center; gap:5px;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+<span>تعليم كمقروء</span>
 </button>
-<button type="button" class="btn btn-secondary btn-sm" onclick="scanLowStockNotifications(true)">
-فحص الحرجة
+<button type="button" class="btn btn-danger btn-sm" onclick="clearAllNotificationsPermanently()" style="display:inline-flex; align-items:center; gap:5px;" title="محو كافة التنبيهات">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+<span>محو الكل</span>
+</button>
+<button type="button" class="btn btn-secondary btn-sm" onclick="scanLowStockNotifications(true)" style="display:inline-flex; align-items:center; gap:5px;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+<span>فحص الحرجة</span>
 </button>
 </div>
 </div>
@@ -16238,10 +16332,35 @@ const critThresh = safeNum(state.profile?.invThresholds?.critical, 10, false);
 const activeItems = (state.data.items || []).filter(it => it && !it.isDeleted);
 const lowItems = activeItems.filter(it => getItemAvailabilityLevel(it) === 'critical');
 state.data.notifications = state.data.notifications.filter(n => n.category !== 'low_stock_auto');
+function getDismissedNotificationIds() {
+try {
+const raw = localStorage.getItem("E_STOCK_DISMISSED_NOTIFS_V1");
+if (!raw) return [];
+const arr = JSON.parse(raw);
+return Array.isArray(arr) ? arr : [];
+} catch (e) {
+return [];
+}
+}
+window.getDismissedNotificationIds = getDismissedNotificationIds;
+function recordDismissedNotification(id) {
+if (!id) return;
+try {
+const dismissed = getDismissedNotificationIds();
+if (!dismissed.includes(id)) {
+dismissed.push(id);
+localStorage.setItem("E_STOCK_DISMISSED_NOTIFS_V1", JSON.stringify(dismissed));
+}
+} catch (e) {}
+}
+window.recordDismissedNotification = recordDismissedNotification;
 if (lowItems.length > 0) {
+const dismissed = getDismissedNotificationIds();
+const lowStockSig = 'NOTIF-LOWSTOCK-' + lowItems.length + '-' + lowItems.slice(0, 3).map(i => i.id).join('_');
+if (showFeedback || !dismissed.includes(lowStockSig)) {
 const namesPreview = lowItems.slice(0, 3).map(i => i.name).join(' ، ');
 state.data.notifications.unshift({
-id: 'NOTIF-LOWSTOCK-AUTO',
+id: lowStockSig,
 title: `⚠️ تنبيه الرصيد الحرج: ${lowItems.length} مادة في مستوى التوفر (حرج)`,
 message: `المواد المعنية: ${namesPreview}${lowItems.length > 3 ? ` و${lowItems.length - 3} مواد أخرى` : ''}. يرجى مراجعة الجرد الدوري للتزويد.`,
 level: 'danger',
@@ -16250,6 +16369,7 @@ createdAt: new Date().toLocaleString('ar-MA'),
 isoDate: new Date().toISOString(),
 read: false
 });
+}
 }
 refreshAllBadges();
 if (state.currentTab === 'notifications-view') {
@@ -16292,8 +16412,8 @@ ${!n.read ? '<span class="badge badge-danger" style="font-size: 0.68rem;">جدي
 </div>
 <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
 ${!n.read ? `<button type="button" class="btn btn-outline btn-sm" onclick="markNotificationRead('${escapeHtml(n.id)}')" style="padding: 3px 8px; font-size: 0.74rem;">مقروء</button>` : ''}
-<button type="button" class="btn-icon danger" onclick="deleteNotificationItem('${escapeHtml(n.id)}')" title="حذف التنبيه">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+<button type="button" class="btn-icon danger square-action-btn" onclick="deleteNotificationItem('${escapeHtml(n.id)}')" title="مسح وحذف التنبيه" style="width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;padding:0;border-radius:var(--radius-sm);">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
 </button>
 </div>
 </div>
@@ -16318,11 +16438,42 @@ showToast('تم تعليم كافة التنبيهات كمقروءة ✓', 'inf
 }
 function deleteNotificationItem(id) {
 ensureTrashAndNotificationsArrays();
-state.data.notifications = state.data.notifications.filter(n => n.id !== id);
+recordDismissedNotification(id);
+state.data.notifications = (state.data.notifications || []).filter(n => n.id !== id);
 persistAll();
 refreshAllBadges();
 renderNotificationsView();
+showToast('✓ تم مسح التنبيه بنجاح', 'info');
 }
+window.deleteNotificationItem = deleteNotificationItem;
+function clearAllNotificationsPermanently() {
+ensureTrashAndNotificationsArrays();
+if (!state.data.notifications || state.data.notifications.length === 0) {
+showToast('لا توجد تنبيهات لمسحها', 'info');
+return;
+}
+openAppConfirmModal(
+'محو كافة التنبيهات',
+`هل أنت متأكد من مسح وحذف جميع التنبيهات الحالية (${state.data.notifications.length} تنبيه)؟ لن تعود للظهور مجدداً إلا عند حدوث حركة جديدة في المخزون.`,
+() => {
+try {
+const dismissed = getDismissedNotificationIds();
+(state.data.notifications || []).forEach(n => {
+if (n && n.id && !dismissed.includes(n.id)) dismissed.push(n.id);
+});
+localStorage.setItem("E_STOCK_DISMISSED_NOTIFS_V1", JSON.stringify(dismissed));
+} catch (e) {}
+state.data.notifications = [];
+persistAll();
+refreshAllBadges();
+renderNotificationsView();
+showToast('✓ تم محو كافة التنبيهات بنجاح', 'success');
+},
+'محو الكل',
+true
+);
+}
+window.clearAllNotificationsPermanently = clearAllNotificationsPermanently;
 function moveRecordToSoftTrash(recordType, recordObj, summaryTitle) {
 ensureTrashAndNotificationsArrays();
 const cloned = JSON.parse(JSON.stringify(recordObj));
@@ -16439,9 +16590,15 @@ const entry = state.data.trash.find(t => t.trashId === trashId);
 if (!entry) return;
 openAppConfirmModal(
 'حذف نهائي من قاعدة البيانات',
-`تحذير: هل أنت متأكد من الحذف النهائي للسجل "${entry.title}"؟
-لن يكون بالإمكان استرجاعه بعد هذه العملية.`,
+`تحذير: هل أنت متأكد من الحذف النهائي للسجل "${entry.title}"؟\nلن يكون بالإمكان استرجاعه بعد هذه العملية.`,
 () => {
+const origId = entry.originalId || entry.payload?.id || entry.payload?.operationId || entry.trashId;
+if (origId && typeof registerPermanentDeletionTombstone === "function") {
+registerPermanentDeletionTombstone(entry.type || "voucher", origId);
+}
+if (!Array.isArray(state.data.purgedIds)) state.data.purgedIds = [];
+if (entry.trashId && !state.data.purgedIds.includes(entry.trashId)) state.data.purgedIds.push(entry.trashId);
+if (origId && !state.data.purgedIds.includes(origId)) state.data.purgedIds.push(origId);
 state.data.trash = state.data.trash.filter(t => t.trashId !== trashId);
 persistAll();
 refreshAllBadges();
@@ -16462,6 +16619,16 @@ openAppConfirmModal(
 'تفريغ مركز الحذف المؤقت نهائياً',
 `هل أنت متأكد من الحذف النهائي لجميع السجلات الموجودة في سلة المحذوفات (${state.data.trash.length} سجل)؟`,
 () => {
+if (!Array.isArray(state.data.purgedIds)) state.data.purgedIds = [];
+state.data.trash.forEach(entry => {
+if (!entry) return;
+const origId = entry.originalId || entry.payload?.id || entry.payload?.operationId || entry.trashId;
+if (origId && typeof registerPermanentDeletionTombstone === "function") {
+registerPermanentDeletionTombstone(entry.type || "voucher", origId);
+}
+if (entry.trashId && !state.data.purgedIds.includes(entry.trashId)) state.data.purgedIds.push(entry.trashId);
+if (origId && !state.data.purgedIds.includes(origId)) state.data.purgedIds.push(origId);
+});
 state.data.trash = [];
 persistAll();
 refreshAllBadges();
@@ -17708,7 +17875,8 @@ ${connectedRowsHtml}
 `;
 }
 }
-const allNotifs = state.data.notifications || [];
+const dismissedNotifs = typeof getDismissedNotificationIds === "function" ? getDismissedNotificationIds() : [];
+const allNotifs = (state.data.notifications || []).filter(n => n && !dismissedNotifs.includes(n.id));
 const visibleList = allNotifs.filter(isNotificationVisibleForCurrentUser);
 if (visibleList.length === 0) {
 container.innerHTML = `
@@ -17733,8 +17901,8 @@ ${!n.read ? '<span class="badge badge-danger" style="font-size: 0.68rem;">جدي
 </div>
 <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
 ${!n.read ? `<button type="button" class="btn btn-outline btn-sm" onclick="markNotificationRead('${escapeHtml(n.id)}')" style="padding: 3px 8px; font-size: 0.74rem;">مقروء</button>` : ''}
-<button type="button" class="btn-icon danger" onclick="deleteNotificationItem('${escapeHtml(n.id)}')" title="حذف التنبيه">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+<button type="button" class="btn-icon danger square-action-btn" onclick="deleteNotificationItem('${escapeHtml(n.id)}')" title="مسح وحذف التنبيه" style="width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;padding:0;border-radius:var(--radius-sm);">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
 </button>
 </div>
 </div>
@@ -37489,41 +37657,70 @@ const localTs = Date.parse(localData._localUpdatedAt || "") || 0;
 const cloudTs = Date.parse(cloudData._localUpdatedAt || "") || 0;
 const basePrimary = localTs >= cloudTs ? localData : cloudData;
 const baseSecondary = localTs >= cloudTs ? cloudData : localData;
-const trashedIds = new Set();
+
+// جمع كافة المعرفات المحذوفة نهائياً لمنع أي استرجاع خبيث (Purged Tombstones)
+const purgedIds = new Set([
+  ...(localData.purgedIds || []),
+  ...(cloudData.purgedIds || []),
+  ...(localData._deletedTxIds || []),
+  ...(cloudData._deletedTxIds || []),
+  ...(localData._deletedOrderIds || []),
+  ...(cloudData._deletedOrderIds || []),
+  ...(localData._deletedItemIds || []),
+  ...(cloudData._deletedItemIds || [])
+].map(x => String(x).trim()).filter(Boolean));
+
+// تصفية مركز الحذف المؤقت (Trash) حتى لا تعود العناصر المحذوفة نهائياً
+const trashMap = new Map();
 [...(localData.trash || []), ...(cloudData.trash || [])].forEach(tr => {
-const pid = tr?.payload?.id || tr?.originalId;
-if (pid) trashedIds.add(String(pid).trim());
+  if (!tr) return;
+  const tid = String(tr.trashId || "").trim();
+  const pid = String(tr.payload?.id || tr.originalId || "").trim();
+  if ((tid && purgedIds.has(tid)) || (pid && purgedIds.has(pid))) {
+    return; // محذوف نهائياً، لا يتم دمجه في السلة
+  }
+  if (tid && !trashMap.has(tid)) {
+    trashMap.set(tid, tr);
+  }
 });
+merged.trash = Array.from(trashMap.values());
+
+const trashedIds = new Set();
+merged.trash.forEach(tr => {
+  const pid = tr?.payload?.id || tr?.originalId;
+  if (pid) trashedIds.add(String(pid).trim());
+});
+
 const txById = new Map();
 (basePrimary.transactions || []).forEach(tx => {
-if (!tx || tx.isDeleted) return;
-const id = String(tx.id || tx.operationId || "").trim();
-if (id && !trashedIds.has(id)) txById.set(id, tx);
+  if (!tx || tx.isDeleted) return;
+  const id = String(tx.id || tx.operationId || "").trim();
+  if (id && !trashedIds.has(id) && !purgedIds.has(id)) txById.set(id, tx);
 });
 let rescuedLocalTxsCount = 0;
 (baseSecondary.transactions || []).forEach(tx => {
-if (!tx || tx.isDeleted) return;
-const id = String(tx.id || tx.operationId || "").trim();
-if (id && !trashedIds.has(id) && !txById.has(id)) {
-txById.set(id, tx);
-rescuedLocalTxsCount++;
-}
+  if (!tx || tx.isDeleted) return;
+  const id = String(tx.id || tx.operationId || "").trim();
+  if (id && !trashedIds.has(id) && !purgedIds.has(id) && !txById.has(id)) {
+    txById.set(id, tx);
+    rescuedLocalTxsCount++;
+  }
 });
 const mergedTxs = Array.from(txById.values());
 sortTransactionsByDeliveryDateDesc(mergedTxs);
 merged.transactions = mergedTxs;
 const ordById = new Map();
 (basePrimary.orders || []).forEach(o => {
-if (!o || o.isDeleted) return;
-const id = String(o.id || "").trim();
-if (id && !trashedIds.has(id)) ordById.set(id, o);
+  if (!o || o.isDeleted) return;
+  const id = String(o.id || "").trim();
+  if (id && !trashedIds.has(id) && !purgedIds.has(id)) ordById.set(id, o);
 });
 (baseSecondary.orders || []).forEach(o => {
-if (!o || o.isDeleted) return;
-const id = String(o.id || "").trim();
-if (id && !trashedIds.has(id) && !ordById.has(id)) {
-ordById.set(id, o);
-}
+  if (!o || o.isDeleted) return;
+  const id = String(o.id || "").trim();
+  if (id && !trashedIds.has(id) && !purgedIds.has(id) && !ordById.has(id)) {
+    ordById.set(id, o);
+  }
 });
 merged.orders = Array.from(ordById.values());
 const batchById = new Map();
@@ -37554,6 +37751,7 @@ merged._deletedItemIds = Array.from(new Set([
 ...(cloudData._deletedItemIds || [])
 ]));
 merged._deletedRecipients = Object.assign({}, cloudData._deletedRecipients || {}, localData._deletedRecipients || {});
+merged.purgedIds = Array.from(purgedIds);
 merged._rescuedCount = rescuedLocalTxsCount;
 merged._localUpdatedAt = new Date(Math.max(localTs, cloudTs, Date.now())).toISOString();
 return merged;
@@ -37887,10 +38085,13 @@ openAppConfirmModal(
 "حذف نهائي من قاعدة البيانات وجميع الأجهزة",
 `تحذير: هل أنت متأكد من الحذف النهائي للسجل "${entry.title}"؟\nسيتم حذفه نهائياً من هذا الجهاز ومن السحابة ولن يعود أبداً بعد تحديث الصفحة.`,
 () => {
-const origId = entry.originalId || entry.payload?.id || entry.payload?.operationId;
+const origId = entry.originalId || entry.payload?.id || entry.payload?.operationId || entry.trashId;
 if (origId) {
 registerPermanentDeletionTombstone(entry.type || "voucher", origId);
 }
+if (!Array.isArray(state.data.purgedIds)) state.data.purgedIds = [];
+if (entry.trashId && !state.data.purgedIds.includes(entry.trashId)) state.data.purgedIds.push(entry.trashId);
+if (origId && !state.data.purgedIds.includes(origId)) state.data.purgedIds.push(origId);
 state.data.trash = (state.data.trash || []).filter(t => t && t.trashId !== trashId);
 window._isSessionAuthenticated = true;
 persistAll(true);
@@ -37913,12 +38114,15 @@ openAppConfirmModal(
 "تفريغ مركز الحذف المؤقت نهائياً",
 `هل أنت متأكد من الحذف النهائي لجميع السجلات الموجودة في سلة المحذوفات (${state.data.trash.length} سجل)؟\nسيتم تثبيت حذفها نهائياً في السحابة وفي جميع الأجهزة بحيث لا تعود أبداً.`,
 () => {
+if (!Array.isArray(state.data.purgedIds)) state.data.purgedIds = [];
 (state.data.trash || []).forEach(entry => {
 if (!entry) return;
-const origId = entry.originalId || entry.payload?.id || entry.payload?.operationId;
+const origId = entry.originalId || entry.payload?.id || entry.payload?.operationId || entry.trashId;
 if (origId) {
 registerPermanentDeletionTombstone(entry.type || "voucher", origId);
 }
+if (entry.trashId && !state.data.purgedIds.includes(entry.trashId)) state.data.purgedIds.push(entry.trashId);
+if (origId && !state.data.purgedIds.includes(origId)) state.data.purgedIds.push(origId);
 });
 state.data.trash = [];
 window._isSessionAuthenticated = true;
@@ -39018,16 +39222,20 @@ wrap.id = "header-cloud-actions-wrap";
 wrap.style.cssText = "display: flex; flex-direction: column; gap: 6px; margin: 8px 0; padding: 8px 0; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); width: 100%;";
 wrap.innerHTML = `
 <button type="button" onclick="pullLatestFromCloudNow()" style="width: 100%; padding: 7px 10px; font-size: 0.76rem; font-weight: 800; border-radius: 8px; display: flex; align-items: center; justify-content: flex-start; gap: 8px; border: 1px solid rgba(16,185,129,0.45); color: #10b981; background: rgba(16,185,129,0.1); cursor: pointer;">
-<span>⬇️</span><span>سحب آخر التحديثات من السحابة</span>
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+<span>سحب آخر التحديثات من السحابة</span>
 </button>
 <button type="button" onclick="pushCurrentDeviceToCloudNow()" style="width: 100%; padding: 7px 10px; font-size: 0.76rem; font-weight: 800; border-radius: 8px; display: flex; align-items: center; justify-content: flex-start; gap: 8px; border: 1px solid rgba(56,189,248,0.45); color: #38bdf8; background: rgba(56,189,248,0.08); cursor: pointer;">
-<span>⬆️</span><span>رفع بيانات هذا الجهاز للسحابة</span>
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+<span>رفع بيانات هذا الجهاز للسحابة</span>
 </button>
 <button type="button" id="header-instant-cloud-sync-btn" onclick="forceCloudSyncNow()" style="width: 100%; padding: 7px 10px; font-size: 0.75rem; font-weight: 800; border-radius: 8px; display: flex; align-items: center; justify-content: flex-start; gap: 8px; border: 1px solid var(--border-subtle); color: var(--text-main); background: var(--bg-muted); cursor: pointer;">
-<span id="header-sync-spin-icon" style="display:inline-block;">🔄</span><span id="header-sync-btn-label">مزامنة ودمج الأجهزة</span>
+<span id="header-sync-spin-icon" style="display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg></span>
+<span id="header-sync-btn-label">مزامنة ودمج الأجهزة</span>
 </button>
 <button type="button" onclick="clearLocalCacheAndPullFromCloud()" style="width: 100%; padding: 6px 10px; font-size: 0.73rem; font-weight: 700; border-radius: 8px; display: flex; align-items: center; justify-content: flex-start; gap: 8px; border: 1px dashed rgba(245,158,11,0.45); color: #f59e0b; background: rgba(245,158,11,0.06); cursor: pointer;">
-<span>🧹</span><span>تفريغ الكاش وإعادة الجلب من السحابة</span>
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="m2 22 5-5M8 16l4-4M14 10l6-6a2.83 2.83 0 0 1 4 4l-6 6M10 14l4 4"/></svg>
+<span>تفريغ الكاش وإعادة الجلب من السحابة</span>
 </button>
 `;
 badge.insertAdjacentElement("afterend", wrap);
@@ -41687,9 +41895,15 @@ style="height: 32px; font-size: 0.8rem; padding: 4px 8px; flex: 1;"
 oninput="syncEditVoucherItemNoteLive(${idx}, this.value)" />
 <button type="button"
 class="btn-icon danger"
-style="width: 28px; height: 28px; flex-shrink: 0;"
+style="width: 28px; height: 28px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; padding: 0; border-radius: var(--radius-sm);"
 onclick="clearEditVoucherItemNote(${idx})"
-title="مسح وحذف هذه الملاحظة">&times;</button>
+title="مسح ملاحظة هذه المادة"
+aria-label="مسح ملاحظة هذه المادة">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+<line x1="18" y1="6" x2="6" y2="18"></line>
+<line x1="6" y1="6" x2="18" y2="18"></line>
+</svg>
+</button>
 </div>
 </td>
 <td style="text-align: center;">
@@ -41735,7 +41949,12 @@ const it = state.editingVoucherState.items[idx];
 if (!it) return;
 it.notes = "";
 const inp = document.querySelector(`#edit-voucher-items-body input.edit-voucher-note-input[data-edit-note-idx="${idx}"]`);
-if (inp) inp.value = "";
+if (inp) {
+inp.value = "";
+inp.focus();
+inp.dispatchEvent(new Event("input", { bubbles: true }));
+inp.dispatchEvent(new Event("change", { bubbles: true }));
+}
 }
 window.clearEditVoucherItemNote = clearEditVoucherItemNote;
 function clearAllEditVoucherItemsNotes() {
@@ -43913,12 +44132,16 @@ window.attachHorizontalMouseScrollToTables = attachHorizontalMouseScrollToTables
 function simplifyAndOrganizeAiInsightsPageDOM() {
 const aiView = document.getElementById("ai-insights-view");
 if (!aiView) return;
-const topCards = aiView.querySelectorAll(":scope > .card, :scope > .ai-kpi-grid");
-topCards.forEach(el => {
-if (el.classList.contains("ai-kpi-grid") || el.querySelector("#ai-filter-timeframe")) {
-el.style.display = "none";
-}
-});
+  const topCards = aiView.querySelectorAll(":scope > .card");
+  topCards.forEach(el => {
+    if (el.querySelector("#ai-filter-timeframe")) {
+      el.style.display = "none";
+    }
+  });
+  const kpiGrid = aiView.querySelector(".ai-kpi-grid");
+  if (kpiGrid) {
+    kpiGrid.style.display = "grid";
+  }
 const navBar = aiView.querySelector(".tab-pills-nav");
 if (!navBar) return;
 ensureGlobalSituationSectionDOM();
