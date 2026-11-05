@@ -6634,7 +6634,61 @@ display: inline-block !important;
 #settings-pane-items table.data-table td,
 #inventory-view table.data-table th,
 #inventory-view table.data-table td {
-white-space: nowrap !important;
+  white-space: nowrap !important;
+}
+
+/* ==========================================================================
+   Standardized Linear UI, Button Uniformity (36-38px) & Mobile Responsiveness
+   ========================================================================== */
+.ai-subtab-btn {
+  height: 38px !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  padding: 0 14px !important;
+  transition: all 0.2s ease !important;
+}
+
+.global-situation-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 12px;
+}
+
+@media (max-width: 768px) {
+  .global-situation-toolbar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+  .global-situation-toolbar > div {
+    width: 100% !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .global-situation-toolbar select,
+  .global-situation-toolbar input {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+  .ai-subtab-btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+  #cart-instant-search-dropdown {
+    width: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    max-width: 100vw !important;
+  }
 }
 </style>
 </head>
@@ -35785,10 +35839,10 @@ ${escapeHtml(st.detailedMessageAr)}
 </div>
 <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
 <button type="button" class="btn btn-sm btn-primary" onclick="openNewAuditModal()" style="font-size: 0.75rem; font-weight: 800; padding: 5px 12px;">
-📋 ${st.hasAudit ? "تسجيل جرد تحييني جديد" : "إجراء الجرد الميداني الآن"}
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg> ${st.hasAudit ? "تسجيل جرد تحييني جديد" : "إجراء الجرد الميداني الآن"}
 </button>
 <button type="button" class="btn btn-sm btn-outline" onclick="switchTab('inventory-view')" style="font-size: 0.75rem; padding: 5px 10px;">
-📦 عرض المخزون والجرد
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg> عرض المخزون والجرد
 </button>
 </div>
 </div>
@@ -35858,7 +35912,7 @@ explainerBar.innerHTML = `
 ${buildAuditStatusBannerHtml(analytics.auditStatus)}
 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding-top:4px;">
 <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-<strong style="color:#38bdf8;">🛡️ نسبة الأمان الاحتياطية (تظهر بجانب الرقم المنطقي الثابت):</strong>
+<strong style="color:#38bdf8;">نسبة الأمان الاحتياطية (تظهر بجانب الرقم المنطقي الثابت):</strong>
 <select id="ai-deal-safety-margin" class="form-control" style="width:auto;min-width:250px;height:34px;font-size:0.8rem;font-weight:800;">
 <option value="0" ${curMargin === 0 ? "selected" : ""}>0% (الرقم المنطقي الثابت فقط بدون زيادة)</option>
 <option value="10" ${curMargin === 10 ? "selected" : ""}>+10% (إضافة نسبة أمان 10% بجانب الرقم الثابت)</option>
@@ -35935,7 +35989,7 @@ const chgSign = r.changePct > 0 ? "+" : "";
 const chgCol = r.changePct > 0 ? "#38bdf8" : (r.changePct < 0 ? "#f59e0b" : "#10b981");
 const trajText = `24:${r.q2024} | 25:${r.q2025} | 26:${r.q2026}`;
 const cadBadge = r.cadence2026 && r.cadence2026.opsCount > 0
-? `<div style="font-size:0.66rem;color:#0284c7;font-weight:700;margin-top:2px;">⏱️ ${escapeHtml(r.cadence2026.cadenceBadgeText)}</div>`
+? `<div style="font-size:0.66rem;color:#0284c7;font-weight:700;margin-top:2px;">${escapeHtml(r.cadence2026.cadenceBadgeText)}</div>`
 : "";
 const extraUnits = Math.max(0, r.netPurchaseWithMargin - r.netPurchaseBase);
 const marginCellHtml = curMargin > 0 && r.netPurchaseBase > 0
@@ -35956,7 +36010,7 @@ ${cadBadge}
 <td style="text-align: center;" class="tabular-nums">
 <span style="color:${chgCol};font-weight:800;" dir="ltr">${chgSign}${r.changePct}%</span>
 <div style="font-size:0.68rem;color:var(--text-muted);cursor:pointer;text-decoration:underline;" onclick="openItemDistributionAnalysisModal('${escapeHtml(r.id)}')" title="انقر لعرض تواريخ وتفاصيل التوزيعات المتتالية لهذه المادة">
-📅 ${escapeHtml(r.lastDeliveryShort)}
+${escapeHtml(r.lastDeliveryShort)}
 </div>
 </td>
 <td style="text-align: center;" class="tabular-nums">
@@ -35976,7 +36030,7 @@ ${marginCellHtml}
 ${escapeHtml(r.procurementDecision)}
 </span>
 <button type="button" class="btn btn-outline btn-sm" onclick="openItemDistributionAnalysisModal('${escapeHtml(r.id)}')" style="font-size:0.68rem;padding:2px 8px;">
-📊 سجل وتواريخ التوزيع (${r.txCount})
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> سجل وتواريخ التوزيع (${r.txCount})
 </button>
 </div>
 </td>
@@ -39153,7 +39207,7 @@ parentCard.style.border = "1.5px solid rgba(56, 189, 248, 0.4)";
 const titleEl = parentCard.querySelector(".card-title");
 const subEl = parentCard.querySelector(".card-subtitle");
 if (titleEl) {
-titleEl.innerHTML = `👤 منظومة تحليل استهلاك المستفيدين والتوزيع الذكي المباشر (سنوي / نصف سنوي / شهري)`;
+titleEl.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> منظومة تحليل استهلاك المستفيدين والتوزيع الذكي المباشر (سنوي / نصف سنوي / شهري)`;
 }
 if (subEl) {
 subEl.textContent = "اختر أي مستفيد لعرض جميع المواد التي يستهلكها فعلياً مرتبة من الأكثر استهلاكاً إلى الأقل، مع كشف المواد المتوقفة بالأحمر، وإصدار إشهاد توزيع ذكي مرتب حسب الأصناف بضغطة واحدة";
@@ -39184,7 +39238,7 @@ return `
 <button type="button"
 onclick="selectAiBeneficiaryForAnalysis('${escapeHtml(b.key)}')"
 style="padding: 5px 11px; border-radius: 999px; font-size: 0.74rem; font-weight: ${isSel ? '800' : '600'}; cursor: pointer; transition: all 0.15s ease; border: 1.5px solid ${isSel ? '#38bdf8' : 'var(--border-subtle)'}; background: ${isSel ? 'rgba(56, 189, 248, 0.16)' : 'var(--bg-card)'}; color: ${isSel ? '#38bdf8' : 'var(--text-secondary)'}; display: inline-flex; align-items: center; gap: 5px;">
-<span>👤 ${escapeHtml(b.displayLabel)}</span>
+<span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> ${escapeHtml(b.displayLabel)}</span>
 <span class="badge badge-subtle tabular-nums" style="font-size: 0.68rem;">${b.units2026 > 0 ? `${b.units2026} بـ 26` : `${b.totalUnits} إجمالي`}</span>
 </button>
 `;
@@ -39279,7 +39333,7 @@ ${escapeHtml(b.displayLabel)} (${b.opsCount} عملية — 2026: ${b.units2026}
 </div>
 </div>
 <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border-subtle); display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-<span style="font-size: 0.74rem; font-weight: 800; color: var(--text-muted);">⚡ وصول سريع للمستفيدين:</span>
+<span style="font-size: 0.74rem; font-weight: 800; color: var(--text-muted); display: inline-flex; align-items: center; gap: 4px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> وصول سريع للمستفيدين:</span>
 ${quickBenPillsHtml}
 </div>
 </div>
@@ -39299,13 +39353,13 @@ ${quickBenPillsHtml}
 </div>
 </div>
 <div style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end;">
-<div style="font-size: 0.75rem; font-weight: 800; color: #38bdf8;">🚀 إصدار توزيع ذكي وإشهاد رسمي لهذا المستفيد (مرتب حسب الأصناف):</div>
+<div style="font-size: 0.75rem; font-weight: 800; color: #38bdf8;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> إصدار توزيع ذكي وإشهاد رسمي لهذا المستفيد (مرتب حسب الأصناف):</div>
 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
 <button type="button" class="btn btn-primary btn-sm" onclick="openBeneficiarySmartDistributionModal('${escapeHtml(profile.beneficiary.key)}', 'annual')" style="background: #10b981; border-color: #059669; font-weight: 800; padding: 7px 14px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 6px;">
-<span>📦 توزيع سنوي (${profile.totalProposedAnnualUnits} قطعة)</span>
+<span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg> توزيع سنوي (${profile.totalProposedAnnualUnits} قطعة)</span>
 </button>
 <button type="button" class="btn btn-primary btn-sm" onclick="openBeneficiarySmartDistributionModal('${escapeHtml(profile.beneficiary.key)}', 'semi_annual')" style="background: #0284c7; border-color: #0369a1; font-weight: 800; padding: 7px 14px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 6px;">
-<span>📦 توزيع نصف سنوي (${profile.totalProposedSemiAnnualUnits} قطعة)</span>
+<span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg> توزيع نصف سنوي (${profile.totalProposedSemiAnnualUnits} قطعة)</span>
 </button>
 <button type="button" class="btn btn-outline btn-sm" onclick="openBeneficiarySmartDistributionModal('${escapeHtml(profile.beneficiary.key)}', 'quarterly')" style="border-color: rgba(56,189,248,0.5); color: #38bdf8; font-weight: 800; padding: 7px 12px; font-size: 0.78rem;">
 <span>توزيع ربع سنوي (${profile.totalProposedQuarterlyUnits} قطعة)</span>
@@ -39341,7 +39395,7 @@ ${quickBenPillsHtml}
 </div>
 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
 <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 0.76rem;">
-<span style="font-weight: 800; color: var(--text-main);">📋 المواد التي سبق للمستفيد استهلاكها (${displayedItems.length} مادة — مرتبة من الأكثر استهلاكاً إلى الأقل):</span>
+<span style="font-weight: 800; color: var(--text-main);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg> المواد التي سبق للمستفيد استهلاكها (${displayedItems.length} مادة — مرتبة من الأكثر استهلاكاً إلى الأقل):</span>
 <span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:9px;height:9px;border-radius:50%;background:#10b981;display:inline-block;"></span> نشط حديثاً (2026)</span>
 <span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:9px;height:9px;border-radius:50%;background:#f59e0b;display:inline-block;"></span> منذ > 6 أشهر</span>
 <span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:9px;height:9px;border-radius:50%;background:#ef4444;display:inline-block;"></span> متوقف منذ > سنة / سنتين (في الأسفل)</span>
@@ -39672,7 +39726,7 @@ if (!sess || !bodyEl || !footerEl) return;
 const pMeta = getPeriodModeMeta(sess.periodMode);
 if (sess.step === "preview_cert" && sess.draftVoucher) {
 if (titleEl) {
-titleEl.innerHTML = `👁️ معاينة وصياغة الإشهاد الرسمي المقترح — ${escapeHtml(sess.recipient)} (${escapeHtml(sess.destination)})`;
+titleEl.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> معاينة وصياغة الإشهاد الرسمي المقترح — ${escapeHtml(sess.recipient)} (${escapeHtml(sess.destination)})`;
 }
 const certPagesHtml = generateVoucherA4Html(sess.draftVoucher);
 const pagesCount = typeof paginateCertItemsWithCategoryHeaders === "function" ? paginateCertItemsWithCategoryHeaders(sess.draftVoucher.items || [], 19.5).length : Math.max(1, Math.ceil((sess.draftVoucher.items || []).length / 22));
@@ -39683,7 +39737,7 @@ bodyEl.innerHTML = `
 <strong>جاهز للاعتماد والطباعة:</strong> يتضمن هذا الإشهاد <strong>(${sess.draftVoucher.items.length} مادة / ${totalUnits} قطعة)</strong> مرتبة حسب الأصناف على <strong>${pagesCount === 1 ? 'صفحة A4 واحدة مضبوطة' : `${pagesCount} صفحات A4 رسمية متتابعة`}</strong>.
 </div>
 <button type="button" class="btn btn-outline btn-sm" onclick="backToBeneficiaryDistConfigureStep()" style="font-weight: 800; font-size: 0.78rem;">
-🔙 الرجوع لتعديل المواد والكميات
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> الرجوع لتعديل المواد والكميات
 </button>
 </div>
 <div style="background: #cbd5e1; padding: 16px; border-radius: 12px; overflow-x: auto; display: flex; flex-direction: column; gap: 18px; align-items: center;">
@@ -39692,11 +39746,11 @@ ${certPagesHtml}
 `;
 footerEl.innerHTML = `
 <button type="button" class="btn btn-secondary" onclick="backToBeneficiaryDistConfigureStep()">
-🔙 تعديل القائمة أو الكميات
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> تعديل القائمة أو الكميات
 </button>
 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
 <button type="button" class="btn btn-outline" onclick="commitBeneficiarySmartDistribution(false)" style="border-color: #38bdf8; color: #38bdf8; font-weight: 800;">
-💾 تسجيل الإشهاد في الأرشيف فقط (بدون طباعة)
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg> تسجيل الإشهاد في الأرشيف فقط (بدون طباعة)
 </button>
 <button type="button" class="btn btn-primary" onclick="commitBeneficiarySmartDistribution(true)" style="background: #10b981; border-color: #059669; font-weight: 900; padding: 8px 18px; display: inline-flex; align-items: center; gap: 6px;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
@@ -39882,7 +39936,7 @@ footerEl.innerHTML = `
 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
 <button type="button" class="btn btn-primary" onclick="proceedToBeneficiaryCertPreview()" style="background: #0284c7; border-color: #0369a1; font-weight: 900; padding: 8px 20px; font-size: 0.88rem; display: inline-flex; align-items: center; gap: 8px;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-<span>👁️ صياغة ومعاينة الإشهاد المقترح (A4)</span>
+<span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> صياغة ومعاينة الإشهاد المقترح (A4)</span>
 </button>
 </div>
 `;
@@ -43016,7 +43070,7 @@ const retBtn = document.createElement("button");
 retBtn.type = "button";
 retBtn.className = "btn btn-primary btn-return-global-dist";
 retBtn.style.cssText = "background:#0284c7;border-color:#0369a1;font-weight:800;";
-retBtn.innerHTML = "🔙 حفظ والعودة للوضعية العامة";
+retBtn.innerHTML = "<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> حفظ والعودة للوضعية العامة";
 retBtn.onclick = saveSingleBenChangesBackToGlobalModal;
 footerEl.insertBefore(retBtn, footerEl.firstChild);
 }
@@ -43358,8 +43412,8 @@ ${b.totalUnits} قطعة
 <button type="button" class="btn btn-outline btn-sm" onclick="openSingleBeneficiaryFromGlobalModal('${escapeHtml(b.key)}')" style="font-size:0.74rem;font-weight:800;padding:3px 9px;">
 تخصيص
 </button>
-<button type="button" class="btn btn-outline btn-sm" onclick="printSingleActiveBeneficiaryFromGlobal('${escapeHtml(b.key)}')" style="font-size:0.74rem;padding:3px 8px;" title="طباعة إشهاد هذا المستفيد">
-🖨️
+<button type="button" class="btn btn-outline btn-sm" onclick="printSingleActiveBeneficiaryFromGlobal('${escapeHtml(b.key)}')" style="height:30px;border-radius:6px;font-size:0.74rem;padding:0 8px;display:inline-flex;align-items:center;justify-content:center;" title="طباعة إشهاد هذا المستفيد">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
 </button>
 </div>
 </td>
@@ -43389,31 +43443,31 @@ sec.innerHTML = `
 <div class="card">
 <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--border-subtle);margin-bottom:12px;">
 <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-<div style="display:inline-flex;background:var(--bg-muted);padding:3px;border-radius:8px;border:1px solid var(--border-subtle);">
-<button type="button" class="btn btn-sm ${subView === 'beneficiaries' ? 'btn-primary' : ''}" onclick="window._globalActiveDistState.subView='beneficiaries'; renderGlobalSituationSectionInPage();" style="font-size:0.78rem;padding:4px 10px;border:none;font-weight:800;${subView !== 'beneficiaries' ? 'background:transparent;color:var(--text-secondary);' : ''}">
-👥 المستفيدون النشطون (${plan.selectedBeneficiariesCount})
+<div style="display:inline-flex;background:var(--bg-muted);padding:3px;border-radius:8px;border:1px solid var(--border-subtle);height:36px;align-items:center;">
+<button type="button" class="btn btn-sm ${subView === 'beneficiaries' ? 'btn-primary' : ''}" onclick="window._globalActiveDistState.subView='beneficiaries'; renderGlobalSituationSectionInPage();" style="height:30px;font-size:0.78rem;padding:0 12px;border-radius:6px;border:none;font-weight:700;display:inline-flex;align-items:center;gap:6px;${subView !== 'beneficiaries' ? 'background:transparent;color:var(--text-secondary);' : ''}">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> المستفيدون النشطون (${plan.selectedBeneficiariesCount})
 </button>
-<button type="button" class="btn btn-sm ${subView === 'materials' ? 'btn-primary' : ''}" onclick="window._globalActiveDistState.subView='materials'; renderGlobalSituationSectionInPage();" style="font-size:0.78rem;padding:4px 10px;border:none;font-weight:800;${subView !== 'materials' ? 'background:transparent;color:var(--text-secondary);' : ''}">
-📦 المواد المهمة والمخزون (${plan.totalDistinctActiveItemsCount})
+<button type="button" class="btn btn-sm ${subView === 'materials' ? 'btn-primary' : ''}" onclick="window._globalActiveDistState.subView='materials'; renderGlobalSituationSectionInPage();" style="height:30px;font-size:0.78rem;padding:0 12px;border-radius:6px;border:none;font-weight:700;display:inline-flex;align-items:center;gap:6px;${subView !== 'materials' ? 'background:transparent;color:var(--text-secondary);' : ''}">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg> المواد المهمة والمخزون (${plan.totalDistinctActiveItemsCount})
 </button>
 </div>
-<div style="display:inline-flex;background:var(--bg-muted);padding:3px;border-radius:8px;border:1px solid var(--border-subtle);">
-<button type="button" class="btn btn-sm ${gst.periodMode === 'annual' ? 'btn-primary' : ''}" onclick="window._globalActiveDistState.periodMode='annual'; renderGlobalSituationSectionInPage();" style="font-size:0.76rem;padding:4px 9px;border:none;${gst.periodMode !== 'annual' ? 'background:transparent;color:var(--text-secondary);' : ''}">سنوي (${plan.periodMode === 'annual' ? plan.totalGlobalUnits : ''})</button>
-<button type="button" class="btn btn-sm ${gst.periodMode === 'semi_annual' ? 'btn-primary' : ''}" onclick="window._globalActiveDistState.periodMode='semi_annual'; renderGlobalSituationSectionInPage();" style="font-size:0.76rem;padding:4px 9px;border:none;${gst.periodMode !== 'semi_annual' ? 'background:transparent;color:var(--text-secondary);' : ''}">نصف سنوي</button>
-<button type="button" class="btn btn-sm ${gst.periodMode === 'monthly' ? 'btn-primary' : ''}" onclick="window._globalActiveDistState.periodMode='monthly'; renderGlobalSituationSectionInPage();" style="font-size:0.76rem;padding:4px 9px;border:none;${gst.periodMode !== 'monthly' ? 'background:transparent;color:var(--text-secondary);' : ''}">شهري</button>
+<div style="display:inline-flex;background:var(--bg-muted);padding:3px;border-radius:8px;border:1px solid var(--border-subtle);height:36px;align-items:center;">
+<button type="button" class="btn btn-sm ${gst.periodMode === 'annual' ? 'btn-primary' : ''}" onclick="window._globalActiveDistState.periodMode='annual'; renderGlobalSituationSectionInPage();" style="height:30px;font-size:0.76rem;padding:0 10px;border-radius:6px;border:none;${gst.periodMode !== 'annual' ? 'background:transparent;color:var(--text-secondary);' : ''}">سنوي (${plan.periodMode === 'annual' ? plan.totalGlobalUnits : ''})</button>
+<button type="button" class="btn btn-sm ${gst.periodMode === 'semi_annual' ? 'btn-primary' : ''}" onclick="window._globalActiveDistState.periodMode='semi_annual'; renderGlobalSituationSectionInPage();" style="height:30px;font-size:0.76rem;padding:0 10px;border-radius:6px;border:none;${gst.periodMode !== 'semi_annual' ? 'background:transparent;color:var(--text-secondary);' : ''}">نصف سنوي</button>
+<button type="button" class="btn btn-sm ${gst.periodMode === 'monthly' ? 'btn-primary' : ''}" onclick="window._globalActiveDistState.periodMode='monthly'; renderGlobalSituationSectionInPage();" style="height:30px;font-size:0.76rem;padding:0 10px;border-radius:6px;border:none;${gst.periodMode !== 'monthly' ? 'background:transparent;color:var(--text-secondary);' : ''}">شهري</button>
 </div>
-<select class="form-control" style="height:32px;font-size:0.76rem;width:185px;" onchange="window._globalActiveDistState.workplaceFilter=this.value; renderGlobalSituationSectionInPage();">
+<select class="form-control" style="height:36px;border-radius:8px;font-size:0.78rem;width:190px;" onchange="window._globalActiveDistState.workplaceFilter=this.value; renderGlobalSituationSectionInPage();">
 <option value="all" ${gst.workplaceFilter === 'all' ? 'selected' : ''}>جميع الجهات (${workplaces.length})</option>
 ${workplaces.map(w => `<option value="${escapeHtml(w)}" ${gst.workplaceFilter === w ? 'selected' : ''}>${escapeHtml(w)}</option>`).join("")}
 </select>
-<input type="text" class="form-control" placeholder="بحث سريع..." value="${escapeHtml(gst.searchQuery)}" oninput="window._globalActiveDistState.searchQuery=this.value; renderGlobalSituationSectionInPage();" style="height:32px;font-size:0.76rem;width:155px;" />
+<input type="text" class="form-control" placeholder="بحث سريع..." value="${escapeHtml(gst.searchQuery)}" oninput="window._globalActiveDistState.searchQuery=this.value; renderGlobalSituationSectionInPage();" style="height:36px;border-radius:8px;font-size:0.78rem;width:160px;" />
 </div>
-<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-<button type="button" class="btn btn-outline btn-sm" onclick="printGlobalActiveSituationStudyReportA4()" style="font-weight:800;font-size:0.78rem;padding:5px 11px;">
-🖨️ طباعة الوضعية (A4)
+<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+<button type="button" class="btn btn-outline btn-sm" onclick="printGlobalActiveSituationStudyReportA4()" style="height:36px;border-radius:8px;font-weight:700;font-size:0.78rem;padding:0 12px;display:inline-flex;align-items:center;gap:6px;">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg> طباعة الوضعية (A4)
 </button>
-<button type="button" class="btn btn-primary btn-sm" onclick="printAllGlobalActiveCertificates()" style="font-weight:800;font-size:0.78rem;padding:5px 12px;">
-🖨️ طباعة الإشهادات (${plan.selectedBeneficiariesCount})
+<button type="button" class="btn btn-primary btn-sm" onclick="printAllGlobalActiveCertificates()" style="height:36px;border-radius:8px;font-weight:700;font-size:0.78rem;padding:0 14px;display:inline-flex;align-items:center;gap:6px;">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg> طباعة الإشهادات (${plan.selectedBeneficiariesCount})
 </button>
 </div>
 </div>
@@ -43505,7 +43559,7 @@ modal.innerHTML = `
 <div style="background:var(--bg-card);border:1.5px solid var(--border-subtle);border-radius:14px;width:100%;max-width:780px;max-height:86vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,0.5);">
 <div style="padding:12px 16px;background:var(--bg-muted);border-bottom:1px solid var(--border-subtle);display:flex;justify-content:space-between;align-items:center;">
 <div>
-<h4 style="margin:0;font-size:0.98rem;font-weight:900;color:var(--text-main);">🔍 تفصيل المستفيدين من المادة: <span style="color:#38bdf8;" dir="ltr">${escapeHtml(item.shortRef || item.name)}</span></h4>
+<h4 style="margin:0;font-size:0.98rem;font-weight:900;color:var(--text-main);display:flex;align-items:center;gap:6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> <span>تفصيل المستفيدين من المادة: <span style="color:#38bdf8;" dir="ltr">${escapeHtml(item.shortRef || item.name)}</span></span></h4>
 <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">
 الرصيد الحالي بالمخزن: <strong>${sanitize(item.stock)}</strong> | سحب 2024: <strong>${tot24}</strong> | 2025: <strong>${tot25}</strong> | 2026: <strong style="color:#10b981;">${tot26}</strong>
 </div>
@@ -43569,22 +43623,22 @@ const inStockCount = analytics.rows.filter(r => r.stock > 0).length;
 explainerBar.innerHTML = `
 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
 <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
-<button type="button" class="btn btn-sm ${mode === "continuing" ? "btn-primary" : "btn-outline"}" onclick="setAiForecastFilterMode('continuing')" style="font-size:0.75rem;padding:4px 10px;font-weight:800;">
-✅ نشطة بـ 2026 (${continuing2026Count})
+<button type="button" class="btn btn-sm ${mode === "continuing" ? "btn-primary" : "btn-outline"}" onclick="setAiForecastFilterMode('continuing')" style="font-size:0.75rem;padding:4px 10px;font-weight:800;display:inline-flex;align-items:center;gap:4px;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><polyline points="20 6 9 17 4 12"></polyline></svg> نشطة بـ 2026 (${continuing2026Count})
 </button>
 <button type="button" class="btn btn-sm ${mode === "all" ? "btn-primary" : "btn-outline"}" onclick="setAiForecastFilterMode('all')" style="font-size:0.75rem;padding:4px 10px;">
 الكل (${analytics.totalItemsCount})
 </button>
-<button type="button" class="btn btn-sm ${mode === "stopped2026" ? "btn-primary" : "btn-outline"}" onclick="setAiForecastFilterMode('stopped2026')" style="font-size:0.75rem;padding:4px 10px;">
-⚠️ توقفت بـ 2026 (${analytics.stopped2026Count})
+<button type="button" class="btn btn-sm ${mode === "stopped2026" ? "btn-primary" : "btn-outline"}" onclick="setAiForecastFilterMode('stopped2026')" style="font-size:0.75rem;padding:4px 10px;display:inline-flex;align-items:center;gap:4px;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> توقفت بـ 2026 (${analytics.stopped2026Count})
 </button>
-<button type="button" class="btn btn-sm ${mode === "unused" ? "btn-primary" : "btn-outline"}" onclick="setAiForecastFilterMode('unused')" style="font-size:0.75rem;padding:4px 10px;">
-🛑 حصة 0 (${analytics.unusedItemsCount})
+<button type="button" class="btn btn-sm ${mode === "unused" ? "btn-primary" : "btn-outline"}" onclick="setAiForecastFilterMode('unused')" style="font-size:0.75rem;padding:4px 10px;display:inline-flex;align-items:center;gap:4px;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg> حصة 0 (${analytics.unusedItemsCount})
 </button>
-<button type="button" class="btn btn-sm ${mode === "instock" ? "btn-primary" : "btn-outline"}" onclick="setAiForecastFilterMode('instock')" style="font-size:0.75rem;padding:4px 10px;">
-📦 متوفرة (${inStockCount})
+<button type="button" class="btn btn-sm ${mode === "instock" ? "btn-primary" : "btn-outline"}" onclick="setAiForecastFilterMode('instock')" style="font-size:0.75rem;padding:4px 10px;display:inline-flex;align-items:center;gap:4px;">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg> متوفرة (${inStockCount})
 </button>
-<select id="ai-deal-safety-margin" class="form-control" style="width:auto;height:30px;font-size:0.75rem;font-weight:800;padding:2px 8px;">
+<select id="ai-deal-safety-margin" class="form-control" style="width:auto;height:32px;font-size:0.75rem;font-weight:800;padding:2px 8px;border-radius:6px;">
 <option value="0" ${curMargin === 0 ? "selected" : ""}>نسبة الأمان: 0% (صافي)</option>
 <option value="10" ${curMargin === 10 ? "selected" : ""}>نسبة الأمان: +10%</option>
 <option value="20" ${curMargin === 20 ? "selected" : ""}>نسبة الأمان: +20%</option>
@@ -43592,8 +43646,8 @@ explainerBar.innerHTML = `
 </select>
 </div>
 <div style="display:flex;gap:6px;">
-<button type="button" class="btn btn-outline btn-sm" onclick="exportAiReportCSV()" style="font-size:0.75rem;padding:4px 10px;">📥 CSV</button>
-<button type="button" class="btn btn-primary btn-sm" onclick="printAiAnalysisReport()" style="font-size:0.75rem;padding:4px 12px;font-weight:800;">🖨️ طباعة جدول الصفقة (A4)</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="exportAiReportCSV()" style="font-size:0.75rem;padding:4px 10px;display:inline-flex;align-items:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> CSV</button>
+<button type="button" class="btn btn-primary btn-sm" onclick="printAiAnalysisReport()" style="font-size:0.75rem;padding:4px 12px;font-weight:800;display:inline-flex;align-items:center;gap:4px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg> طباعة جدول الصفقة (A4)</button>
 </div>
 </div>
 `;
@@ -43621,7 +43675,7 @@ const consBtn = document.createElement("button");
 consBtn.type = "button";
 consBtn.className = "btn btn-outline btn-sm v10-btn-item-consumers";
 consBtn.style.cssText = "font-size:0.68rem;padding:2px 7px;color:#38bdf8;border-color:rgba(56,189,248,0.4);";
-consBtn.textContent = "👥 المستفيدون";
+consBtn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> المستفيدون`; consBtn.style.display = "inline-flex"; consBtn.style.alignItems = "center"; consBtn.style.gap = "4px";
 consBtn.onclick = () => openV10ItemConsumersDrillModal(itemId);
 wrap.appendChild(consBtn);
 }
@@ -43646,18 +43700,21 @@ const globalBtn = document.createElement("button");
 globalBtn.type = "button";
 globalBtn.className = "btn btn-outline btn-sm ai-subtab-btn";
 globalBtn.id = "ai-subtab-btn-global_situation";
+globalBtn.style.cssText = "height:38px;border-radius:8px;font-weight:700;display:inline-flex;align-items:center;gap:6px;padding:0 14px;";
 globalBtn.onclick = () => switchAiSubTab("global_situation");
-globalBtn.innerHTML = `<span>🌐 1. الوضعية العامة للتوزيع الشامل</span>`;
+globalBtn.innerHTML = `<span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg> 1. الوضعية العامة للتوزيع الشامل</span>`;
 navBar.insertBefore(globalBtn, navBar.firstChild);
 }
 const btnEntities = document.getElementById("ai-subtab-btn-entities");
 if (btnEntities) {
-btnEntities.innerHTML = `<span>👤 2. تحليل وتوزيع مستفيد</span>`;
+btnEntities.style.cssText = "height:38px;border-radius:8px;font-weight:700;display:inline-flex;align-items:center;gap:6px;padding:0 14px;";
+btnEntities.innerHTML = `<span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> 2. تحليل وتوزيع مستفيد</span>`;
 navBar.insertBefore(btnEntities, document.getElementById("ai-subtab-btn-global_situation").nextSibling);
 }
 const btnForecast = document.getElementById("ai-subtab-btn-forecast");
 if (btnForecast) {
-btnForecast.innerHTML = `<span>📊 3. قرار الصفقة السنوية والنفاد</span>`;
+btnForecast.style.cssText = "height:38px;border-radius:8px;font-weight:700;display:inline-flex;align-items:center;gap:6px;padding:0 14px;";
+btnForecast.innerHTML = `<span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> 3. قرار الصفقة السنوية والنفاد</span>`;
 navBar.insertBefore(btnForecast, btnEntities.nextSibling);
 }
 ["planning", "simulation", "recommendations"].forEach(id => {
@@ -44012,302 +44069,389 @@ window.populateBulkCategorySelect = populateBulkCategorySelect;
 let _v101BeneficiaryHistoryCacheSig = "";
 let _v101BeneficiaryHistoryMap = new Map();
 let _v101GlobalTopItemsList = [];
+const _V101_LINEAR_STAR_SVG = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1.5px;display:inline-block;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>';
+const _V101_LINEAR_PLUS_SVG = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1.5px;display:inline-block;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>';
+const _V101_LINEAR_CHECK_SVG = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1.5px;display:inline-block;"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+const _V101_LINEAR_CLOSE_SVG = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1.5px;display:inline-block;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+
 function ensureV101BeneficiaryQuickHistoryIndex() {
-ensureDisabledItemsRegistryInitialized();
-const txs = (state && state.data && Array.isArray(state.data.transactions)) ? state.data.transactions : [];
-const items = (state && state.data && Array.isArray(state.data.items)) ? state.data.items : [];
-const disabledCount = (state?.data?.analyticsScope?.excludedItemIds || []).length;
-const sig = `${txs.length}_${items.length}_${disabledCount}_${state?.data?._localUpdatedAt || ""}`;
-if (sig === _v101BeneficiaryHistoryCacheSig && _v101BeneficiaryHistoryMap.size > 0) {
-return { byBen: _v101BeneficiaryHistoryMap, globalTop: _v101GlobalTopItemsList };
+  ensureDisabledItemsRegistryInitialized();
+  const txs = (state && state.data && Array.isArray(state.data.transactions)) ? state.data.transactions : [];
+  const items = (state && state.data && Array.isArray(state.data.items)) ? state.data.items : [];
+  const disabledCount = (state?.data?.analyticsScope?.excludedItemIds || []).length;
+  const sig = `${txs.length}_${items.length}_${disabledCount}_${state?.data?._localUpdatedAt || ""}`;
+  if (sig === _v101BeneficiaryHistoryCacheSig && _v101BeneficiaryHistoryMap.size > 0) {
+    return { byBen: _v101BeneficiaryHistoryMap, globalTop: _v101GlobalTopItemsList };
+  }
+  _v101BeneficiaryHistoryCacheSig = sig;
+  _v101BeneficiaryHistoryMap = new Map();
+  const globalTotals = new Map();
+  const enabledItemsById = new Map();
+  const enabledItemsByName = new Map();
+  items.forEach(rawIt => {
+    if (!rawIt || rawIt.isDeleted || isItemDisabledOrObsolete(rawIt)) return;
+    const enriched = parseAndEnrichStructuredItem(rawIt);
+    enabledItemsById.set(enriched.id, enriched);
+    enabledItemsByName.set(enriched.name, enriched);
+  });
+  txs.forEach(tx => {
+    if (!tx || tx.isDeleted) return;
+    const recip = String(tx.recipient || "").trim();
+    const dest = String(tx.destination || "").trim();
+    const iso = extractTxCalendarISODate(tx);
+    const isYear2026 = iso.startsWith("2026");
+    const isYear2025 = iso.startsWith("2025");
+    const isYear2024 = iso.startsWith("2024");
+    const keysToRecord = [];
+    if (recip && dest) keysToRecord.push(`${recip}___${dest}`);
+    if (recip) keysToRecord.push(`RECIP_ONLY___${recip}`);
+    if (dest) keysToRecord.push(`DEST_ONLY___${dest}`);
+    (tx.items || []).forEach(li => {
+      if (!li) return;
+      let lid = li.id;
+      if (lid === "b0938886") lid = "ecbf1f3c";
+      if (lid === "dcf4c5ee") lid = "dcb4c5ee";
+      let itemObj = enabledItemsById.get(lid) || enabledItemsByName.get(li.name);
+      if (!itemObj) return;
+      const q = Math.max(0, sanitize(li.qty));
+      if (q <= 0) return;
+      if (!globalTotals.has(itemObj.id)) {
+        globalTotals.set(itemObj.id, {
+          item: itemObj,
+          totalQty: 0,
+          opsCount: 0,
+          qty2026: 0,
+          ops2026: 0,
+          qty2025: 0,
+          qty2024: 0,
+          lastIso: "",
+          lastQty: 0
+        });
+      }
+      const gRec = globalTotals.get(itemObj.id);
+      gRec.totalQty += q;
+      gRec.opsCount += 1;
+      if (isYear2026) {
+        gRec.qty2026 += q;
+        gRec.ops2026 += 1;
+      } else if (isYear2025) {
+        gRec.qty2025 += q;
+      } else if (isYear2024) {
+        gRec.qty2024 += q;
+      }
+      if (iso >= gRec.lastIso) {
+        gRec.lastIso = iso;
+        gRec.lastQty = q;
+      }
+      keysToRecord.forEach(k => {
+        if (!_v101BeneficiaryHistoryMap.has(k)) {
+          _v101BeneficiaryHistoryMap.set(k, new Map());
+        }
+        const bMap = _v101BeneficiaryHistoryMap.get(k);
+        if (!bMap.has(itemObj.id)) {
+          bMap.set(itemObj.id, {
+            item: itemObj,
+            totalQty: 0,
+            opsCount: 0,
+            qty2026: 0,
+            ops2026: 0,
+            qty2025: 0,
+            qty2024: 0,
+            lastIso: "",
+            lastQty: 0
+          });
+        }
+        const bRec = bMap.get(itemObj.id);
+        bRec.totalQty += q;
+        bRec.opsCount += 1;
+        if (isYear2026) {
+          bRec.qty2026 += q;
+          bRec.ops2026 += 1;
+        } else if (isYear2025) {
+          bRec.qty2025 += q;
+        } else if (isYear2024) {
+          bRec.qty2024 += q;
+        }
+        if (iso >= bRec.lastIso) {
+          bRec.lastIso = iso;
+          bRec.lastQty = q;
+        }
+      });
+    });
+  });
+  _v101GlobalTopItemsList = Array.from(globalTotals.values())
+    .sort((a, b) => {
+      const a26 = (a.qty2026 > 0) ? 1 : 0;
+      const b26 = (b.qty2026 > 0) ? 1 : 0;
+      if (b26 !== a26) return b26 - a26;
+      if (a.qty2026 > 0) {
+        return (b.qty2026 - a.qty2026) || (b.ops2026 - a.ops2026) || (b.totalQty - a.totalQty);
+      }
+      return (b.totalQty - a.totalQty) || (b.opsCount - a.opsCount);
+    })
+    .slice(0, 8);
+  return { byBen: _v101BeneficiaryHistoryMap, globalTop: _v101GlobalTopItemsList };
 }
-_v101BeneficiaryHistoryCacheSig = sig;
-_v101BeneficiaryHistoryMap = new Map();
-const globalTotals = new Map();
-const enabledItemsById = new Map();
-const enabledItemsByName = new Map();
-items.forEach(rawIt => {
-if (!rawIt || rawIt.isDeleted || isItemDisabledOrObsolete(rawIt)) return;
-const enriched = parseAndEnrichStructuredItem(rawIt);
-enabledItemsById.set(enriched.id, enriched);
-enabledItemsByName.set(enriched.name, enriched);
-});
-txs.forEach(tx => {
-if (!tx || tx.isDeleted) return;
-const recip = String(tx.recipient || "").trim();
-const dest = String(tx.destination || "").trim();
-const iso = extractTxCalendarISODate(tx);
-const keysToRecord = [];
-if (recip && dest) keysToRecord.push(`${recip}___${dest}`);
-if (recip) keysToRecord.push(`RECIP_ONLY___${recip}`);
-if (dest) keysToRecord.push(`DEST_ONLY___${dest}`);
-(tx.items || []).forEach(li => {
-if (!li) return;
-let lid = li.id;
-if (lid === "b0938886") lid = "ecbf1f3c";
-if (lid === "dcf4c5ee") lid = "dcb4c5ee";
-let itemObj = enabledItemsById.get(lid) || enabledItemsByName.get(li.name);
-if (!itemObj) return; // مستبعد إذا كانت المادة غير مفعلة (مثل Clé USB 16/32 Go)
-const q = Math.max(0, sanitize(li.qty));
-if (q <= 0) return;
-if (!globalTotals.has(itemObj.id)) {
-globalTotals.set(itemObj.id, { item: itemObj, totalQty: 0, opsCount: 0, lastIso: "", lastQty: 0 });
-}
-const gRec = globalTotals.get(itemObj.id);
-gRec.totalQty += q;
-gRec.opsCount += 1;
-if (iso >= gRec.lastIso) {
-gRec.lastIso = iso;
-gRec.lastQty = q;
-}
-keysToRecord.forEach(k => {
-if (!_v101BeneficiaryHistoryMap.has(k)) {
-_v101BeneficiaryHistoryMap.set(k, new Map());
-}
-const bMap = _v101BeneficiaryHistoryMap.get(k);
-if (!bMap.has(itemObj.id)) {
-bMap.set(itemObj.id, {
-item: itemObj,
-totalQty: 0,
-opsCount: 0,
-lastIso: "",
-lastQty: 0
-});
-}
-const bRec = bMap.get(itemObj.id);
-bRec.totalQty += q;
-bRec.opsCount += 1;
-if (iso >= bRec.lastIso) {
-bRec.lastIso = iso;
-bRec.lastQty = q;
-}
-});
-});
-});
-_v101GlobalTopItemsList = Array.from(globalTotals.values())
-.sort((a, b) => b.totalQty - a.totalQty || b.opsCount - a.opsCount)
-.slice(0, 8);
-return { byBen: _v101BeneficiaryHistoryMap, globalTop: _v101GlobalTopItemsList };
-}
+
 function getSelectedIssuanceBeneficiaryContext() {
-const dest = (document.getElementById("voucher-dest-select")?.value || "").trim();
-const recipSel = (document.getElementById("voucher-recipient-select")?.value || "").trim();
-const customRecip = (document.getElementById("custom-recipient-input")?.value || "").trim();
-const recip = recipSel === "__custom__" ? customRecip : recipSel;
-const { byBen, globalTop } = ensureV101BeneficiaryQuickHistoryIndex();
-let benMap = null;
-let contextLabel = "";
-if (recip && dest && byBen.has(`${recip}___${dest}`)) {
-benMap = byBen.get(`${recip}___${dest}`);
-contextLabel = `${recip} (${dest})`;
-} else if (recip && byBen.has(`RECIP_ONLY___${recip}`)) {
-benMap = byBen.get(`RECIP_ONLY___${recip}`);
-contextLabel = recip;
-} else if (dest && byBen.has(`DEST_ONLY___${dest}`)) {
-benMap = byBen.get(`DEST_ONLY___${dest}`);
-contextLabel = dest;
-}
-if (benMap && benMap.size > 0) {
-const allBenItems = Array.from(benMap.values());
-allBenItems.sort((a, b) => b.totalQty - a.totalQty || b.opsCount - a.opsCount || b.lastIso.localeCompare(a.lastIso));
-return {
-hasSpecificBeneficiary: true,
-label: contextLabel,
-itemsStatsList: allBenItems,
-statsById: benMap
-};
-}
-return {
-hasSpecificBeneficiary: false,
-label: "الأكثر تداولاً في النظام",
-itemsStatsList: globalTop,
-statsById: new Map(globalTop.map(x => [x.item.id, x]))
-};
+  const dest = (document.getElementById("voucher-dest-select")?.value || "").trim();
+  const recipSel = (document.getElementById("voucher-recipient-select")?.value || "").trim();
+  const customRecip = (document.getElementById("custom-recipient-input")?.value || "").trim();
+  const recip = recipSel === "__custom__" ? customRecip : recipSel;
+  const { byBen, globalTop } = ensureV101BeneficiaryQuickHistoryIndex();
+  let benMap = null;
+  let contextLabel = "";
+  if (recip && dest && byBen.has(`${recip}___${dest}`)) {
+    benMap = byBen.get(`${recip}___${dest}`);
+    contextLabel = `${recip} (${dest})`;
+  } else if (recip && byBen.has(`RECIP_ONLY___${recip}`)) {
+    benMap = byBen.get(`RECIP_ONLY___${recip}`);
+    contextLabel = recip;
+  } else if (dest && byBen.has(`DEST_ONLY___${dest}`)) {
+    benMap = byBen.get(`DEST_ONLY___${dest}`);
+    contextLabel = dest;
+  }
+  if (benMap && benMap.size > 0) {
+    const allBenItems = Array.from(benMap.values());
+    // CRITICAL SORT: Prioritize 2026 active deliveries first
+    allBenItems.sort((a, b) => {
+      const a26 = (a.qty2026 > 0) ? 1 : 0;
+      const b26 = (b.qty2026 > 0) ? 1 : 0;
+      if (b26 !== a26) return b26 - a26;
+      if (a.qty2026 > 0) {
+        return (b.qty2026 - a.qty2026) || (b.ops2026 - a.ops2026) || b.lastIso.localeCompare(a.lastIso);
+      }
+      return b.lastIso.localeCompare(a.lastIso) || (b.totalQty - a.totalQty);
+    });
+    const active2026Count = allBenItems.filter(x => x.qty2026 > 0).length;
+    return {
+      hasSpecificBeneficiary: true,
+      label: contextLabel,
+      itemsStatsList: allBenItems,
+      active2026Count: active2026Count,
+      statsById: benMap
+    };
+  }
+  const active2026Global = globalTop.filter(x => x.qty2026 > 0).length;
+  return {
+    hasSpecificBeneficiary: false,
+    label: "الأكثر تداولاً في النظام",
+    itemsStatsList: globalTop,
+    active2026Count: active2026Global,
+    statsById: new Map(globalTop.map(x => [x.item.id, x]))
+  };
 }
 window.getSelectedIssuanceBeneficiaryContext = getSelectedIssuanceBeneficiaryContext;
+
 const _v100OnRecipientChanged = onRecipientChanged;
 onRecipientChanged = function() {
-if (typeof _v100OnRecipientChanged === "function") _v100OnRecipientChanged();
-updateIssuanceQuickSearchRecipientHintBadge();
+  if (typeof _v100OnRecipientChanged === "function") _v100OnRecipientChanged();
+  updateIssuanceQuickSearchRecipientHintBadge();
 };
 window.onRecipientChanged = onRecipientChanged;
+
 const _v100OnDestinationChanged = onDestinationChanged;
 onDestinationChanged = function() {
-if (typeof _v100OnDestinationChanged === "function") _v100OnDestinationChanged();
-updateIssuanceQuickSearchRecipientHintBadge();
+  if (typeof _v100OnDestinationChanged === "function") _v100OnDestinationChanged();
+  updateIssuanceQuickSearchRecipientHintBadge();
 };
 window.onDestinationChanged = onDestinationChanged;
+
 function updateIssuanceQuickSearchRecipientHintBadge() {
-const searchBadge = document.getElementById("cart-instant-search-badge");
-const searchInput = document.getElementById("cart-quick-ref-search");
-if (!searchBadge) return;
-const ctx = getSelectedIssuanceBeneficiaryContext();
-if (ctx.hasSpecificBeneficiary && (!searchInput || !searchInput.value.trim())) {
-searchBadge.style.display = "inline-flex";
-searchBadge.textContent = `⭐ ${ctx.itemsStatsList.length} مواد يسحبها المستلم (اضغط للعرض)`;
-} else if (!searchInput || !searchInput.value.trim()) {
-searchBadge.style.display = "none";
-}
+  const searchBadge = document.getElementById("cart-instant-search-badge");
+  const searchInput = document.getElementById("cart-quick-ref-search");
+  if (!searchBadge) return;
+  const ctx = getSelectedIssuanceBeneficiaryContext();
+  if (ctx.hasSpecificBeneficiary && (!searchInput || !searchInput.value.trim())) {
+    searchBadge.style.display = "inline-flex";
+    searchBadge.style.alignItems = "center";
+    searchBadge.style.gap = "4px";
+    if (ctx.active2026Count > 0) {
+      searchBadge.innerHTML = `${_V101_LINEAR_STAR_SVG} <span>${ctx.active2026Count} مواد يسحبها بـ 2026 (اضغط للعرض)</span>`;
+    } else {
+      searchBadge.innerHTML = `${_V101_LINEAR_STAR_SVG} <span>${ctx.itemsStatsList.length} مواد سابقة للمستلم (اضغط للعرض)</span>`;
+    }
+  } else if (!searchInput || !searchInput.value.trim()) {
+    searchBadge.style.display = "none";
+  }
 }
 window.updateIssuanceQuickSearchRecipientHintBadge = updateIssuanceQuickSearchRecipientHintBadge;
+
 onIssuanceQuickSearchInput = function(rawQuery, showDropdown = true) {
-ensureDisabledItemsRegistryInitialized();
-const q = String(rawQuery || "").trim().toLowerCase();
-const clearBtn = document.getElementById("btn-clear-issuance-search");
-const searchDd = document.getElementById("cart-instant-search-dropdown");
-const searchBadge = document.getElementById("cart-instant-search-badge");
-if (!state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds = new Set();
-const benCtx = getSelectedIssuanceBeneficiaryContext();
-if (clearBtn) clearBtn.style.display = q ? "block" : "none";
-if (!q) {
-updateIssuanceQuickSearchRecipientHintBadge();
-if (!searchDd || !showDropdown) return;
-const topSuggestions = benCtx.itemsStatsList.slice(0, 8);
-if (topSuggestions.length === 0) {
-searchDd.style.display = "none";
-return;
-}
-const totalSelectedCount = state.issuanceMultiSelectedIds.size;
-const headerTitle = benCtx.hasSpecificBeneficiary
-? `⭐ المواد الأكثر طلباً وآخر ما يتسلمه: «${escapeHtml(benCtx.label)}» (${topSuggestions.length} مواد مقترحة)`
-: `⭐ أبرز المواد الأكثر سحباً وتداولاً (حدد المستلم أعلاه لعرض مواده الخاصة فوراً)`;
-searchDd.innerHTML = `
-<div class="issuance-dd-header" style="position:sticky;top:0;z-index:5;background:var(--bg-surface);border-bottom:1.5px solid var(--border-subtle);padding:8px 12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-<span style="color:#38bdf8;font-weight:800;font-size:0.8rem;">${headerTitle}</span>
-<div style="display:inline-flex;align-items:center;gap:6px;">
-${totalSelectedCount > 0 ? `
-<button type="button" class="btn btn-primary btn-sm" onclick="event.stopPropagation(); addItemToCart();" style="padding:3px 10px;font-size:0.75rem;font-weight:800;background:#10b981;border-color:#059669;color:#fff;">
-➕ إضافة المحدد للسلة (${totalSelectedCount})
-</button>
-` : ""}
-<button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('cart-instant-search-dropdown').style.display='none'; event.stopPropagation();" style="padding:2px 8px;font-size:0.73rem;">
-✕ إغلاق
-</button>
-</div>
-</div>
-<div>
-${topSuggestions.map((entry, idx) => {
-const it = entry.item;
-const liveRaw = (state.data.items || []).find(x => x && x.id === it.id);
-const st = liveRaw ? sanitize(liveRaw.stock) : sanitize(it.stock);
-const isChecked = state.issuanceMultiSelectedIds.has(it.id);
-const inCartItem = (state.cart || []).find(c => c && c.id === it.id);
-const safeId = escapeHtml(it.id);
-return `
-<div class="issuance-dd-row ${isChecked ? 'is-checked' : ''}" onclick="toggleItemFromQuickSearchCheckbox('${safeId}', ${!isChecked}, event)">
-<div style="display:inline-flex;align-items:center;gap:10px;min-width:0;flex:1;">
-<input type="checkbox" value="${safeId}" ${isChecked ? 'checked' : ''}
-onchange="toggleItemFromQuickSearchCheckbox('${safeId}', this.checked, event)"
-onclick="event.stopPropagation();"
-style="width:18px;height:18px;accent-color:#38bdf8;cursor:pointer;flex-shrink:0;" />
-<div style="min-width:0;">
-<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-<span class="badge badge-primary tabular-nums" style="font-size:0.68rem;padding:1px 6px;">#${idx + 1} الأكثر سحباً</span>
-${formatItemDisplayHtml(it)}
-${inCartItem ? `<span class="badge" style="background:rgba(16,185,129,0.16);color:#10b981;font-size:0.68rem;font-weight:800;">بالسلة: ${inCartItem.qty}</span>` : ""}
-</div>
-<div style="font-size:0.71rem;color:var(--text-muted);margin-top:2px;">
-إجمالي ما تسلمه: <strong style="color:#38bdf8;">${entry.totalQty} قطعة</strong> (${entry.opsCount} عمليات) | آخر تسليم: <strong dir="ltr">${escapeHtml(entry.lastIso)}</strong> (الكمية: ${entry.lastQty})
-</div>
-</div>
-</div>
-<div style="display:inline-flex;align-items:center;gap:6px;flex-shrink:0;">
-<span class="badge badge-subtle" style="font-size:0.7rem;">${escapeHtml(it.category)}</span>
-<span class="badge ${st > 0 ? 'badge-success' : 'badge-warning'} tabular-nums" style="font-size:0.73rem;">المتوفر: ${st}</span>
-<button type="button" class="btn btn-outline btn-sm"
-onclick="quickAddSingleIssuanceItemToCart(event, '${safeId}'); onIssuanceQuickSearchInput(document.getElementById('cart-quick-ref-search')?.value || '', true);"
-style="padding:2px 8px;font-size:0.72rem;font-weight:800;color:#10b981;border-color:rgba(16,185,129,0.45);">
-+ سلة
-</button>
-</div>
-</div>
-`;
-}).join("")}
-</div>
-`;
-searchDd.style.display = "block";
-return;
-}
-const matches = (state.data.items || [])
-.filter(rawIt => rawIt && !rawIt.isDeleted && !isItemDisabledOrObsolete(rawIt))
-.map(rawIt => parseAndEnrichStructuredItem(rawIt))
-.filter(it => {
-const hay = `${it.shortRef} ${it.deviceModel} ${it.deviceFull} ${it.colorTag} ${it.specDetail} ${it.category} ${it.name}`.toLowerCase();
-return hay.includes(q);
-})
-.sort((a, b) => {
-const stA = benCtx.statsById.get(a.id)?.totalQty || 0;
-const stB = benCtx.statsById.get(b.id)?.totalQty || 0;
-if (stB !== stA) return stB - stA;
-return 0;
-});
-if (searchBadge) {
-searchBadge.style.display = "inline-flex";
-searchBadge.textContent = `${matches.length} نتيجة مطابقة`;
-}
-if (!searchDd || !showDropdown) return;
-if (matches.length === 0) {
-searchDd.innerHTML = `<div style="padding:14px;text-align:center;color:var(--text-muted);font-size:0.84rem;">لا توجد مادة مفعلة مطابقة لـ "${escapeHtml(rawQuery)}"</div>`;
-searchDd.style.display = "block";
-return;
-}
-const totalSelectedCount = state.issuanceMultiSelectedIds.size;
-searchDd.innerHTML = `
-<div class="issuance-dd-header" style="position:sticky;top:0;z-index:5;background:var(--bg-surface);border-bottom:1.5px solid var(--border-subtle);padding:8px 12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-<span style="color:#38bdf8;font-weight:800;font-size:0.8rem;">نتائج البحث الفوري (${matches.length} مادة) — حدد مادة أو عدة مواد:</span>
-<div style="display:inline-flex;align-items:center;gap:6px;">
-${totalSelectedCount > 0 ? `
-<button type="button" class="btn btn-primary btn-sm" onclick="event.stopPropagation(); addItemToCart();" style="padding:3px 10px;font-size:0.75rem;font-weight:800;background:#10b981;border-color:#059669;color:#fff;">
-➕ إضافة المحدد للسلة (${totalSelectedCount})
-</button>
-` : ""}
-${matches.length > 1 ? `
-<button type="button" class="btn btn-outline btn-sm" onclick="selectAllQuickSearchResults(event)" style="padding:2px 9px;font-size:0.73rem;color:#38bdf8;border-color:#38bdf8;font-weight:800;">
-✓ تحديد الكل (${matches.length})
-</button>
-` : ""}
-<button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('cart-instant-search-dropdown').style.display='none'; event.stopPropagation();" style="padding:2px 8px;font-size:0.73rem;">
-✕ إغلاق
-</button>
-</div>
-</div>
-<div>
-${matches.map(it => {
-const isChecked = state.issuanceMultiSelectedIds.has(it.id);
-const inCartItem = (state.cart || []).find(c => c && c.id === it.id);
-const benStat = benCtx.hasSpecificBeneficiary ? benCtx.statsById.get(it.id) : null;
-const st = sanitize(it.stock);
-const safeId = escapeHtml(it.id);
-return `
-<div class="issuance-dd-row ${isChecked ? 'is-checked' : ''}" onclick="toggleItemFromQuickSearchCheckbox('${safeId}', ${!isChecked}, event)">
-<div style="display:inline-flex;align-items:center;gap:10px;min-width:0;flex:1;">
-<input type="checkbox" value="${safeId}" ${isChecked ? 'checked' : ''}
-onchange="toggleItemFromQuickSearchCheckbox('${safeId}', this.checked, event)"
-onclick="event.stopPropagation();"
-style="width:18px;height:18px;accent-color:#38bdf8;cursor:pointer;flex-shrink:0;" />
-<div style="min-width:0;">
-<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-${formatItemDisplayHtml(it)}
-${benStat ? `<span class="badge badge-primary" style="font-size:0.68rem;">⭐ سحب منها ${benStat.totalQty}</span>` : ""}
-${inCartItem ? `<span class="badge" style="background:rgba(16,185,129,0.16);color:#10b981;font-size:0.68rem;font-weight:800;">بالسلة: ${inCartItem.qty}</span>` : ""}
-</div>
-</div>
-</div>
-<div style="display:inline-flex;align-items:center;gap:6px;flex-shrink:0;">
-<span class="badge badge-subtle" style="font-size:0.7rem;">${escapeHtml(it.category)}</span>
-<span class="badge ${st > 0 ? 'badge-success' : 'badge-warning'} tabular-nums" style="font-size:0.74rem;">المتوفر: ${st}</span>
-<button type="button" class="btn btn-outline btn-sm"
-onclick="quickAddSingleIssuanceItemToCart(event, '${safeId}'); onIssuanceQuickSearchInput(document.getElementById('cart-quick-ref-search')?.value || '', true);"
-style="padding:2px 8px;font-size:0.72rem;font-weight:800;color:#10b981;border-color:rgba(16,185,129,0.45);">
-+ سلة
-</button>
-</div>
-</div>
-`;
-}).join("")}
-</div>
-`;
-searchDd.style.display = "block";
+  ensureDisabledItemsRegistryInitialized();
+  const q = String(rawQuery || "").trim().toLowerCase();
+  const clearBtn = document.getElementById("btn-clear-issuance-search");
+  const searchDd = document.getElementById("cart-instant-search-dropdown");
+  const searchBadge = document.getElementById("cart-instant-search-badge");
+  if (!state.issuanceMultiSelectedIds) state.issuanceMultiSelectedIds = new Set();
+  const benCtx = getSelectedIssuanceBeneficiaryContext();
+  if (clearBtn) clearBtn.style.display = q ? "block" : "none";
+  if (!q) {
+    updateIssuanceQuickSearchRecipientHintBadge();
+    if (!searchDd || !showDropdown) return;
+    const topSuggestions = benCtx.itemsStatsList.slice(0, 8);
+    if (topSuggestions.length === 0) {
+      searchDd.style.display = "none";
+      return;
+    }
+    const totalSelectedCount = state.issuanceMultiSelectedIds.size;
+    const headerTitle = benCtx.hasSpecificBeneficiary
+      ? `<span style="display:inline-flex;align-items:center;gap:5px;">${_V101_LINEAR_STAR_SVG} <span>المواد الأكثر طلباً في 2026: «${escapeHtml(benCtx.label)}» (${benCtx.active2026Count > 0 ? `${benCtx.active2026Count} مادة نشطة حالياً` : `${topSuggestions.length} مواد سابقة`})</span></span>`
+      : `<span style="display:inline-flex;align-items:center;gap:5px;">${_V101_LINEAR_STAR_SVG} <span>أبرز المواد الأكثر سحباً في 2026 (حدد المستلم أعلاه لعرض مواده فوراً)</span></span>`;
+    searchDd.innerHTML = `
+      <div class="issuance-dd-header" style="position:sticky;top:0;z-index:5;background:var(--bg-surface);border-bottom:1.5px solid var(--border-subtle);padding:8px 12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+        <span style="color:#38bdf8;font-weight:800;font-size:0.8rem;">${headerTitle}</span>
+        <div style="display:inline-flex;align-items:center;gap:6px;">
+          ${totalSelectedCount > 0 ? `
+            <button type="button" class="btn btn-primary btn-sm" onclick="event.stopPropagation(); addItemToCart();" style="padding:3px 10px;font-size:0.75rem;font-weight:800;background:#10b981;border-color:#059669;color:#fff;display:inline-flex;align-items:center;gap:4px;">
+              ${_V101_LINEAR_PLUS_SVG} إضافة المحدد للسلة (${totalSelectedCount})
+            </button>
+          ` : ""}
+          <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('cart-instant-search-dropdown').style.display='none'; event.stopPropagation();" style="padding:2px 8px;font-size:0.73rem;display:inline-flex;align-items:center;gap:3px;">
+            ${_V101_LINEAR_CLOSE_SVG} إغلاق
+          </button>
+        </div>
+      </div>
+      <div>
+        ${topSuggestions.map((entry, idx) => {
+          const it = entry.item;
+          const liveRaw = (state.data.items || []).find(x => x && x.id === it.id);
+          const st = liveRaw ? sanitize(liveRaw.stock) : sanitize(it.stock);
+          const isChecked = state.issuanceMultiSelectedIds.has(it.id);
+          const inCartItem = (state.cart || []).find(c => c && c.id === it.id);
+          const safeId = escapeHtml(it.id);
+          const is2026Active = entry.qty2026 > 0;
+          const rankBadge = is2026Active
+            ? `<span class="badge badge-primary tabular-nums" style="font-size:0.68rem;padding:2px 7px;background:rgba(56,189,248,0.15);color:#38bdf8;border:1px solid rgba(56,189,248,0.3);display:inline-flex;align-items:center;gap:3px;">${_V101_LINEAR_STAR_SVG} نشط 2026: ${entry.qty2026} قطعة (${entry.ops2026} طلبات)</span>`
+            : `<span class="badge" style="font-size:0.68rem;padding:2px 7px;background:rgba(148,163,184,0.12);color:#94a3b8;border:1px solid rgba(148,163,184,0.25);">سحب سابق (لم يُطلب في 2026)</span>`;
+          const detailsHtml = is2026Active
+            ? `طلب 2026: <strong style="color:#38bdf8;">${entry.qty2026} قطعة</strong> | إجمالي السحب (2024-2026): <strong>${entry.totalQty} قطعة</strong> | آخر تسليم: <strong dir="ltr">${escapeHtml(entry.lastIso)}</strong> (الكمية: ${entry.lastQty})`
+            : `آخر تسليم مسجل: <strong dir="ltr">${escapeHtml(entry.lastIso)}</strong> | إجمالي تراكمي سابق: ${entry.totalQty} قطعة (${entry.opsCount} عمليات)`;
+          return `
+            <div class="issuance-dd-row ${isChecked ? 'is-checked' : ''}" onclick="toggleItemFromQuickSearchCheckbox('${safeId}', ${!isChecked}, event)">
+              <div style="display:inline-flex;align-items:center;gap:10px;min-width:0;flex:1;">
+                <input type="checkbox" value="${safeId}" ${isChecked ? 'checked' : ''}
+                  onchange="toggleItemFromQuickSearchCheckbox('${safeId}', this.checked, event)"
+                  onclick="event.stopPropagation();"
+                  style="width:18px;height:18px;accent-color:#38bdf8;cursor:pointer;flex-shrink:0;" />
+                <div style="min-width:0;">
+                  <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                    ${rankBadge}
+                    ${formatItemDisplayHtml(it)}
+                    ${inCartItem ? `<span class="badge" style="background:rgba(16,185,129,0.16);color:#10b981;font-size:0.68rem;font-weight:800;">بالسلة: ${inCartItem.qty}</span>` : ""}
+                  </div>
+                  <div style="font-size:0.71rem;color:var(--text-muted);margin-top:2px;">
+                    ${detailsHtml}
+                  </div>
+                </div>
+              </div>
+              <div style="display:inline-flex;align-items:center;gap:6px;flex-shrink:0;">
+                <span class="badge badge-subtle" style="font-size:0.7rem;">${escapeHtml(it.category)}</span>
+                <span class="badge ${st > 0 ? 'badge-success' : 'badge-warning'} tabular-nums" style="font-size:0.73rem;">المتوفر: ${st}</span>
+                <button type="button" class="btn btn-outline btn-sm"
+                  onclick="quickAddSingleIssuanceItemToCart(event, '${safeId}'); onIssuanceQuickSearchInput(document.getElementById('cart-quick-ref-search')?.value || '', true);"
+                  style="padding:2px 8px;font-size:0.72rem;font-weight:800;color:#10b981;border-color:rgba(16,185,129,0.45);display:inline-flex;align-items:center;gap:3px;">
+                  ${_V101_LINEAR_PLUS_SVG} سلة
+                </button>
+              </div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    `;
+    searchDd.style.display = "block";
+    return;
+  }
+  const matches = (state.data.items || [])
+    .filter(rawIt => rawIt && !rawIt.isDeleted && !isItemDisabledOrObsolete(rawIt))
+    .map(rawIt => parseAndEnrichStructuredItem(rawIt))
+    .filter(it => {
+      const hay = `${it.shortRef} ${it.deviceModel} ${it.deviceFull} ${it.colorTag} ${it.specDetail} ${it.category} ${it.name}`.toLowerCase();
+      return hay.includes(q);
+    })
+    .sort((a, b) => {
+      const stA = benCtx.statsById.get(a.id);
+      const stB = benCtx.statsById.get(b.id);
+      const q26A = stA?.qty2026 || 0;
+      const q26B = stB?.qty2026 || 0;
+      if (q26B !== q26A) return q26B - q26A;
+      const totA = stA?.totalQty || 0;
+      const totB = stB?.totalQty || 0;
+      if (totB !== totA) return totB - totA;
+      return 0;
+    });
+  if (searchBadge) {
+    searchBadge.style.display = "inline-flex";
+    searchBadge.textContent = `${matches.length} نتيجة مطابقة`;
+  }
+  if (!searchDd || !showDropdown) return;
+  if (matches.length === 0) {
+    searchDd.innerHTML = `<div style="padding:14px;text-align:center;color:var(--text-muted);font-size:0.84rem;">لا توجد مادة مفعلة مطابقة لـ "${escapeHtml(rawQuery)}"</div>`;
+    searchDd.style.display = "block";
+    return;
+  }
+  const totalSelectedCount = state.issuanceMultiSelectedIds.size;
+  searchDd.innerHTML = `
+    <div class="issuance-dd-header" style="position:sticky;top:0;z-index:5;background:var(--bg-surface);border-bottom:1.5px solid var(--border-subtle);padding:8px 12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+      <span style="color:#38bdf8;font-weight:800;font-size:0.8rem;">نتائج البحث الفوري (${matches.length} مادة) — حدد مادة أو عدة مواد:</span>
+      <div style="display:inline-flex;align-items:center;gap:6px;">
+        ${totalSelectedCount > 0 ? `
+          <button type="button" class="btn btn-primary btn-sm" onclick="event.stopPropagation(); addItemToCart();" style="padding:3px 10px;font-size:0.75rem;font-weight:800;background:#10b981;border-color:#059669;color:#fff;display:inline-flex;align-items:center;gap:4px;">
+            ${_V101_LINEAR_PLUS_SVG} إضافة المحدد للسلة (${totalSelectedCount})
+          </button>
+        ` : ""}
+        ${matches.length > 1 ? `
+          <button type="button" class="btn btn-outline btn-sm" onclick="selectAllQuickSearchResults(event)" style="padding:2px 9px;font-size:0.73rem;color:#38bdf8;border-color:#38bdf8;font-weight:800;display:inline-flex;align-items:center;gap:3px;">
+            ${_V101_LINEAR_CHECK_SVG} تحديد الكل (${matches.length})
+          </button>
+        ` : ""}
+        <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('cart-instant-search-dropdown').style.display='none'; event.stopPropagation();" style="padding:2px 8px;font-size:0.73rem;display:inline-flex;align-items:center;gap:3px;">
+          ${_V101_LINEAR_CLOSE_SVG} إغلاق
+        </button>
+      </div>
+    </div>
+    <div>
+      ${matches.map(it => {
+        const isChecked = state.issuanceMultiSelectedIds.has(it.id);
+        const inCartItem = (state.cart || []).find(c => c && c.id === it.id);
+        const benStat = benCtx.hasSpecificBeneficiary ? benCtx.statsById.get(it.id) : null;
+        const st = sanitize(it.stock);
+        const safeId = escapeHtml(it.id);
+        const benBadge = benStat
+          ? (benStat.qty2026 > 0
+              ? `<span class="badge badge-primary" style="font-size:0.68rem;display:inline-flex;align-items:center;gap:3px;">${_V101_LINEAR_STAR_SVG} سحب 2026: ${benStat.qty2026}</span>`
+              : `<span class="badge" style="font-size:0.68rem;background:rgba(148,163,184,0.15);color:#94a3b8;">سابق: ${benStat.totalQty}</span>`)
+          : "";
+        return `
+          <div class="issuance-dd-row ${isChecked ? 'is-checked' : ''}" onclick="toggleItemFromQuickSearchCheckbox('${safeId}', ${!isChecked}, event)">
+            <div style="display:inline-flex;align-items:center;gap:10px;min-width:0;flex:1;">
+              <input type="checkbox" value="${safeId}" ${isChecked ? 'checked' : ''}
+                onchange="toggleItemFromQuickSearchCheckbox('${safeId}', this.checked, event)"
+                onclick="event.stopPropagation();"
+                style="width:18px;height:18px;accent-color:#38bdf8;cursor:pointer;flex-shrink:0;" />
+              <div style="min-width:0;">
+                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                  ${formatItemDisplayHtml(it)}
+                  ${benBadge}
+                  ${inCartItem ? `<span class="badge" style="background:rgba(16,185,129,0.16);color:#10b981;font-size:0.68rem;font-weight:800;">بالسلة: ${inCartItem.qty}</span>` : ""}
+                </div>
+              </div>
+            </div>
+            <div style="display:inline-flex;align-items:center;gap:6px;flex-shrink:0;">
+              <span class="badge badge-subtle" style="font-size:0.7rem;">${escapeHtml(it.category)}</span>
+              <span class="badge ${st > 0 ? 'badge-success' : 'badge-warning'} tabular-nums" style="font-size:0.74rem;">المتوفر: ${st}</span>
+              <button type="button" class="btn btn-outline btn-sm"
+                onclick="quickAddSingleIssuanceItemToCart(event, '${safeId}'); onIssuanceQuickSearchInput(document.getElementById('cart-quick-ref-search')?.value || '', true);"
+                style="padding:2px 8px;font-size:0.72rem;font-weight:800;color:#10b981;border-color:rgba(16,185,129,0.45);display:inline-flex;align-items:center;gap:3px;">
+                ${_V101_LINEAR_PLUS_SVG} سلة
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("")}
+    </div>
+  `;
+  searchDd.style.display = "block";
 };
 window.onIssuanceQuickSearchInput = onIssuanceQuickSearchInput;
 window.addEventListener("DOMContentLoaded", () => {
