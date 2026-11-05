@@ -1225,7 +1225,34 @@ align-items: start;
 @media (max-width: 900px) {
 .settings-layout-vertical {
 grid-template-columns: 1fr;
-gap: 16px;
+gap: 12px;
+}
+.settings-nav-vertical {
+display: flex !important;
+flex-direction: row !important;
+overflow-x: auto !important;
+gap: 8px !important;
+padding: 4px 2px 10px 2px !important;
+-webkit-overflow-scrolling: touch !important;
+white-space: nowrap !important;
+border-bottom: 1px solid var(--border-subtle);
+margin-bottom: 6px;
+}
+.settings-nav-card {
+flex: 0 0 auto !important;
+width: auto !important;
+padding: 8px 12px !important;
+white-space: nowrap !important;
+}
+.settings-nav-desc {
+display: none !important;
+}
+.settings-nav-title {
+font-size: 0.82rem !important;
+}
+.settings-nav-icon {
+width: 26px !important;
+height: 26px !important;
 }
 }
 .settings-nav-vertical {
@@ -6463,13 +6490,28 @@ width: 100% !important;
 padding-bottom: 6px !important;
 }
 #settings-pane-cats table.data-table {
-min-width: 780px !important;
+min-width: 100% !important;
 width: 100% !important;
+}
+@media (min-width: 768px) {
+#settings-pane-cats table.data-table {
+min-width: 500px !important;
+}
 }
 #settings-pane-items table.data-table,
 #inventory-view table.data-table {
-min-width: 820px !important;
+min-width: 780px !important;
 width: 100% !important;
+}
+.table-scroll-wrapper,
+.table-responsive,
+.bulk-matrix-wrap {
+cursor: default;
+}
+.table-scroll-wrapper.is-dragging-table,
+.table-responsive.is-dragging-table {
+cursor: grabbing !important;
+user-select: none !important;
 }
 /* إظهار شريط التمرير الأفقي بوضوح وأناقة على الحاسوب مع إبقاء اللمس السلس على الهاتف */
 @media (min-width: 769px) {
@@ -6642,14 +6684,28 @@ display: inline-block !important;
    ========================================================================== */
 .ai-subtab-btn {
   height: 38px !important;
+  min-height: 38px !important;
+  max-height: 38px !important;
   border-radius: 8px !important;
   font-weight: 700 !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
   gap: 6px !important;
-  padding: 0 14px !important;
+  padding: 0 12px !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  font-size: 0.8rem !important;
   transition: all 0.2s ease !important;
+}
+
+.ai-subtab-btn span {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 170px !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
 }
 
 .global-situation-toolbar {
@@ -6680,8 +6736,12 @@ display: inline-block !important;
     min-width: 100% !important;
   }
   .ai-subtab-btn {
-    width: 100% !important;
+    width: auto !important;
+    max-width: 220px !important;
     justify-content: center !important;
+  }
+  .ai-subtab-btn span {
+    max-width: 130px !important;
   }
   #cart-instant-search-dropdown {
     width: 100% !important;
@@ -10189,6 +10249,9 @@ if (!allowNegative && n < 0) return fallback;
 return n;
 }
 function formatItemDisplayHtml(rawName) {
+if (rawName && typeof rawName === 'object') {
+rawName = rawName.cleanName || rawName.name || rawName.designation || '';
+}
 const cleanRaw = safeText(rawName, 'مادة غير مسماة');
 const useShortcuts = state && state.profile ? (state.profile.useItemShortcuts !== false) : true;
 if (!useShortcuts) return escapeHtml(cleanRaw);
@@ -33035,7 +33098,7 @@ bar.innerHTML = `
 </span>
 <button type="button" class="btn btn-primary btn-sm" onclick="saveAndCommitAllSettingsManual()" style="font-weight: 800; padding: 8px 16px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 3px 10px rgba(37, 99, 235, 0.25);">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-<span>حفظ واعتماد جميع الإعدادات والتغييرات</span>
+<span>حفظ واعتماد</span>
 </button>
 `;
 settingsCardHeader.appendChild(bar);
@@ -33051,7 +33114,7 @@ footerBar.innerHTML = `
 </div>
 <button type="button" class="btn btn-primary btn-sm" onclick="saveAndCommitAllSettingsManual()" style="font-weight: 800; padding: 8px 18px; display: inline-flex; align-items: center; gap: 6px;">
 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><polyline points="20 6 9 17 4 12"/></svg>
-<span>تأكيد وحفظ جميع الإعدادات الحالية</span>
+<span>حفظ واعتماد</span>
 </button>
 `;
 contentArea.appendChild(footerBar);
@@ -35964,6 +36027,23 @@ if (typeof calculateAndRenderSimulatedQuota === "function") calculateAndRenderSi
 if (typeof renderAiForecastTable === "function") renderAiForecastTable();
 });
 }
+window._aiForecastCategoryState = window._aiForecastCategoryState || {};
+
+window.toggleAiForecastCategory = function(cat) {
+window._aiForecastCategoryState = window._aiForecastCategoryState || {};
+window._aiForecastCategoryState[cat] = !(window._aiForecastCategoryState[cat] !== false);
+renderAiForecastTable();
+};
+
+window.toggleAllAiForecastCategories = function(expandAll) {
+window._aiForecastCategoryState = window._aiForecastCategoryState || {};
+const cats = window._aiForecastCurrentCategories || [];
+cats.forEach(c => {
+window._aiForecastCategoryState[c] = !!expandAll;
+});
+renderAiForecastTable();
+};
+
 renderAiForecastTable = function() {
 const tbody = document.getElementById("ai-forecast-tbody");
 if (!tbody) return;
@@ -35997,34 +36077,42 @@ const explainerBar = document.getElementById("ai-forecast-explainer-bar");
 if (explainerBar) {
 explainerBar.innerHTML = `
 ${buildAuditStatusBannerHtml(analytics.auditStatus)}
-<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding-top:4px;">
-<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-<strong style="color:#38bdf8;">نسبة الأمان الاحتياطية (تظهر بجانب الرقم المنطقي الثابت):</strong>
-<select id="ai-deal-safety-margin" class="form-control" style="width:auto;min-width:250px;height:34px;font-size:0.8rem;font-weight:800;">
-<option value="0" ${curMargin === 0 ? "selected" : ""}>0% (الرقم المنطقي الثابت فقط بدون زيادة)</option>
-<option value="10" ${curMargin === 10 ? "selected" : ""}>+10% (إضافة نسبة أمان 10% بجانب الرقم الثابت)</option>
-<option value="20" ${curMargin === 20 ? "selected" : ""}>+20% (إضافة نسبة أمان 20% بجانب الرقم الثابت)</option>
-<option value="30" ${curMargin === 30 ? "selected" : ""}>+30% (إضافة نسبة أمان 30% بجانب الرقم الثابت)</option>
-</select>
-<span class="badge badge-subtle tabular-nums" style="font-size:0.75rem;">
-إجمالي الرقم الثابت: <strong>${analytics.totalNetPurchaseBase}</strong> | مع أمان +${curMargin}%: <strong style="color:#10b981;">${analytics.totalNetPurchaseWithMargin}</strong>
-</span>
-</div>
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-top:4px;">
 <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
-<button type="button" class="btn btn-sm ${mode === "all" ? "btn-primary" : "btn-outline"}" onclick="setAiForecastFilterMode('all')">
+<button type="button" class="btn btn-sm ${mode === "continuing" ? "btn-primary" : "btn-outline"}" onclick="setAiForecastFilterMode('continuing')" style="font-size:0.75rem;padding:4px 10px;font-weight:800;display:inline-flex;align-items:center;gap:4px;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><polyline points="20 6 9 17 4 12"></polyline></svg> نشطة بـ 2026 (${continuing2026Count})
+</button>
+<button type="button" class="btn btn-sm ${mode === "all" ? "btn-primary" : "btn-outline"}" onclick="setAiForecastFilterMode('all')" style="font-size:0.75rem;padding:4px 10px;">
 كافة المواد (${analytics.totalItemsCount})
 </button>
-<button type="button" class="btn btn-sm ${mode === "continuing" ? "btn-primary" : "btn-outline"}" onclick="setAiForecastFilterMode('continuing')">
-✅ مستمرة بـ 2026 (${continuing2026Count})
+<button type="button" class="btn btn-sm ${mode === "stopped2026" ? "btn-primary" : "btn-outline"}" onclick="setAiForecastFilterMode('stopped2026')" style="font-size:0.75rem;padding:4px 10px;display:inline-flex;align-items:center;gap:4px;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> توقفت بـ 2026 (${analytics.stopped2026Count})
 </button>
-<button type="button" class="btn btn-sm ${mode === "stopped2026" ? "btn-primary" : "btn-outline"}" onclick="setAiForecastFilterMode('stopped2026')">
-⚠️ توقفت بـ 2026 (${analytics.stopped2026Count})
+<button type="button" class="btn btn-sm ${mode === "unused" ? "btn-primary" : "btn-outline"}" onclick="setAiForecastFilterMode('unused')" style="font-size:0.75rem;padding:4px 10px;display:inline-flex;align-items:center;gap:4px;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg> حصة 0 (${analytics.unusedItemsCount})
 </button>
-<button type="button" class="btn btn-sm ${mode === "unused" ? "btn-primary" : "btn-outline"}" onclick="setAiForecastFilterMode('unused')">
-🛑 الحصة 0 (${analytics.unusedItemsCount})
+<button type="button" class="btn btn-sm ${mode === "instock" ? "btn-primary" : "btn-outline"}" onclick="setAiForecastFilterMode('instock')" style="font-size:0.75rem;padding:4px 10px;display:inline-flex;align-items:center;gap:4px;">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg> متوفرة (${inStockCount})
 </button>
-<button type="button" class="btn btn-sm ${mode === "instock" ? "btn-primary" : "btn-outline"}" onclick="setAiForecastFilterMode('instock')">
-📦 متوفرة بالجرد (${inStockCount})
+<select id="ai-deal-safety-margin" class="form-control" style="width:auto;height:32px;font-size:0.75rem;font-weight:800;padding:2px 8px;border-radius:6px;">
+<option value="0" ${curMargin === 0 ? "selected" : ""}>نسبة الأمان: 0% (صافي)</option>
+<option value="10" ${curMargin === 10 ? "selected" : ""}>نسبة الأمان: +10%</option>
+<option value="20" ${curMargin === 20 ? "selected" : ""}>نسبة الأمان: +20%</option>
+<option value="30" ${curMargin === 30 ? "selected" : ""}>نسبة الأمان: +30%</option>
+</select>
+</div>
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+<button type="button" class="btn btn-outline btn-sm" onclick="toggleAllAiForecastCategories(true)" style="font-size:0.73rem;padding:3px 8px;font-weight:700;display:inline-flex;align-items:center;gap:4px;" title="توسيع كافة الأصناف في الجدول">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 13 12 18 17 13"></polyline><polyline points="7 6 12 11 17 6"></polyline></svg> توسيع كافة الأصناف
+</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="toggleAllAiForecastCategories(false)" style="font-size:0.73rem;padding:3px 8px;font-weight:700;display:inline-flex;align-items:center;gap:4px;" title="طي كافة الأصناف في الجدول">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 11 12 6 7 11"></polyline><polyline points="17 18 12 13 7 18"></polyline></svg> طي كافة الأصناف
+</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="exportAiReportCSV()" style="font-size:0.75rem;padding:4px 10px;display:inline-flex;align-items:center;gap:4px;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> CSV
+</button>
+<button type="button" class="btn btn-primary btn-sm" onclick="printAiAnalysisReport()" style="font-size:0.75rem;padding:4px 12px;font-weight:800;display:inline-flex;align-items:center;gap:4px;">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg> طباعة جدول الصفقة
 </button>
 </div>
 </div>
@@ -36045,14 +36133,13 @@ renderAiForecastTable();
 const theadTr = tbody.closest("table")?.querySelector("thead tr");
 if (theadTr) {
 theadTr.innerHTML = `
-<th style="width: 36px; text-align: center;">#</th>
-<th>المادة والمواصفات</th>
-<th style="text-align: center;">المسار (24–26) وإيقاع 2026</th>
-<th style="text-align: center;">اتجاه الاستهلاك وآخر توزيع</th>
-<th style="text-align: center;">رصيد الجرد وكفايته</th>
-<th style="text-align: center;">الرقم المنطقي الثابت (صافي)</th>
-<th style="text-align: center;">بعد نسبة الأمان (+${curMargin}%)</th>
-<th style="text-align: center;">التوصية وسجل التوزيعات</th>
+<th style="width: 38px; text-align: center;">#</th>
+<th style="min-width: 220px;">المادة والمراجع والجهاز</th>
+<th style="text-align: center; width: 140px;">المسار (24–26)</th>
+<th style="text-align: center; width: 110px;">رصيد المخزن</th>
+<th style="text-align: center; width: 105px;">الرقم الثابت</th>
+<th style="text-align: center; width: 120px;">مع الأمان (+${curMargin}%)</th>
+<th style="text-align: center; width: 190px;">القرار وسجل التوزيع</th>
 `;
 }
 let list = analytics.rows;
@@ -36068,10 +36155,51 @@ return hay.includes(search);
 });
 }
 if (list.length === 0) {
-tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 24px; color: var(--text-muted);">لا توجد مواد مطابقة</td></tr>`;
+tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">لا توجد مواد مطابقة</td></tr>`;
 return;
 }
-tbody.innerHTML = list.map((r, idx) => {
+
+const catGroups = {};
+list.forEach(r => {
+const c = (r.category || "أصناف عامة").trim();
+if (!catGroups[c]) catGroups[c] = [];
+catGroups[c].push(r);
+});
+window._aiForecastCurrentCategories = Object.keys(catGroups);
+
+let globalIdx = 0;
+let html = "";
+for (const cat of window._aiForecastCurrentCategories) {
+const catRows = catGroups[cat];
+const isOpen = (window._aiForecastCategoryState[cat] !== false);
+const catStock = catRows.reduce((sum, r) => sum + (r.stock || 0), 0);
+const catBase = catRows.reduce((sum, r) => sum + (r.netPurchaseBase || 0), 0);
+const catMargin = catRows.reduce((sum, r) => sum + (r.netPurchaseWithMargin || 0), 0);
+
+html += `
+<tr class="ai-forecast-category-header" onclick="toggleAiForecastCategory('${escapeHtml(cat)}')" style="cursor: pointer; background: var(--bg-surface); border-top: 2px solid var(--border-subtle); border-bottom: 1.5px solid var(--border-subtle); user-select: none;">
+<td colspan="7" style="padding: 10px 14px;">
+<div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+<div style="display: flex; align-items: center; gap: 8px;">
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 6px; background: var(--bg-muted); color: var(--text-main); transition: transform 0.2s ease; ${isOpen ? 'transform: rotate(0deg);' : 'transform: rotate(-90deg);'}">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+</span>
+<strong style="font-size: 0.95rem; color: var(--text-main);">${escapeHtml(cat)}</strong>
+<span class="badge badge-subtle tabular-nums" style="font-size: 0.72rem; font-weight: 700;">${catRows.length} مادة</span>
+</div>
+<div style="display: flex; align-items: center; gap: 14px; font-size: 0.76rem; color: var(--text-muted);" class="tabular-nums">
+<span>إجمالي المخزن: <strong style="color: var(--text-main);">${catStock}</strong></span>
+<span>الرقم الثابت: <strong style="color: #10b981;">${catBase}</strong></span>
+${curMargin > 0 ? `<span>مع الأمان: <strong style="color: #0284c7;">${catMargin}</strong></span>` : ''}
+</div>
+</div>
+</td>
+</tr>
+`;
+
+if (isOpen) {
+for (const r of catRows) {
+globalIdx++;
 const chgSign = r.changePct > 0 ? "+" : "";
 const chgCol = r.changePct > 0 ? "#38bdf8" : (r.changePct < 0 ? "#f59e0b" : "#10b981");
 const trajText = `24:${r.q2024} | 25:${r.q2025} | 26:${r.q2026}`;
@@ -36082,23 +36210,44 @@ const extraUnits = Math.max(0, r.netPurchaseWithMargin - r.netPurchaseBase);
 const marginCellHtml = curMargin > 0 && r.netPurchaseBase > 0
 ? `<strong style="font-size:0.94rem;color:#0284c7;">${r.netPurchaseWithMargin}</strong> <span style="font-size:0.7rem;color:#10b981;font-weight:700;" dir="ltr">(+${extraUnits})</span>`
 : `<span style="color:var(--text-muted);font-size:0.82rem;">${r.netPurchaseBase} (بدون زيادة)</span>`;
-return `
+
+let refBadgesHtml = '';
+const refRaw = (r.shortRef || '').trim();
+if (refRaw && refRaw !== (r.cleanName || r.name)) {
+const refs = refRaw.split(/[\/,]/).map(s => s.trim()).filter(Boolean);
+const badges = refs.map(rf => `
+<span class="badge badge-subtle tabular-nums" style="font-family: monospace; font-size: 0.71rem; font-weight: 700; color: #0284c7; background: rgba(2, 132, 199, 0.08); border: 1px solid rgba(2, 132, 199, 0.2); padding: 1px 6px; border-radius: 4px;">
+<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -1px; display: inline-block; margin-left: 2px;"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg> ${escapeHtml(rf)}
+</span>
+`).join(" ");
+refBadgesHtml = `<div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; align-items: center;">${badges}</div>`;
+}
+
+let deviceLineHtml = '';
+const devText = (r.deviceFull || r.specDetail || '').trim();
+if (devText) {
+deviceLineHtml = `
+<div style="font-size: 0.71rem; color: var(--text-muted); margin-top: 3px; display: flex; align-items: center; gap: 4px; line-height: 1.35;">
+<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="flex-shrink: 0;"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+<span>${escapeHtml(devText)}</span>
+</div>
+`;
+}
+
+html += `
 <tr>
-<td style="text-align: center; font-size: 0.75rem;" class="tabular-nums">${idx + 1}</td>
-<td>
-${formatItemDisplayHtml(r)}
-<div style="margin-top:2px;"><span class="badge badge-subtle" style="font-size:0.68rem;">${escapeHtml(r.category)}</span></div>
+<td style="text-align: center; font-size: 0.75rem;" class="tabular-nums">${globalIdx}</td>
+<td style="padding: 10px 12px; vertical-align: middle;">
+<div style="font-weight: 800; font-size: 0.85rem; color: var(--text-main); line-height: 1.45;">
+${formatItemDisplayHtml(r.cleanName || r.name)}
+</div>
+${refBadgesHtml}
+${deviceLineHtml}
 </td>
 <td style="text-align: center;" class="tabular-nums">
 <div style="font-weight:800;font-size:0.78rem;" dir="ltr">${trajText}</div>
 <div style="font-size:0.68rem;color:var(--text-muted);">المتوسط: ${r.avgAnnual}/سنة</div>
 ${cadBadge}
-</td>
-<td style="text-align: center;" class="tabular-nums">
-<span style="color:${chgCol};font-weight:800;" dir="ltr">${chgSign}${r.changePct}%</span>
-<div style="font-size:0.68rem;color:var(--text-muted);cursor:pointer;text-decoration:underline;" onclick="openItemDistributionAnalysisModal('${escapeHtml(r.id)}')" title="انقر لعرض تواريخ وتفاصيل التوزيعات المتتالية لهذه المادة">
-${escapeHtml(r.lastDeliveryShort)}
-</div>
 </td>
 <td style="text-align: center;" class="tabular-nums">
 <span class="badge ${r.stock > 0 ? "badge-success" : "badge-subtle"}" style="font-size:0.73rem;">الرصيد: ${r.stock}</span>
@@ -36111,19 +36260,31 @@ ${escapeHtml(r.lastDeliveryShort)}
 <td style="text-align: center;" class="tabular-nums">
 ${marginCellHtml}
 </td>
-<td style="text-align: center;">
+<td style="text-align: center; vertical-align: middle;">
 <div style="display:flex;flex-direction:column;gap:4px;align-items:center;">
 <span style="font-size:0.71rem;font-weight:700;color:${r.decisionColor};background:${r.decisionBg};padding:2px 7px;border-radius:6px;max-width:210px;line-height:1.35;">
 ${escapeHtml(r.procurementDecision)}
 </span>
-<button type="button" class="btn btn-outline btn-sm" onclick="openItemDistributionAnalysisModal('${escapeHtml(r.id)}')" style="font-size:0.68rem;padding:2px 8px;">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> سجل وتواريخ التوزيع (${r.txCount})
+<div style="display:inline-flex;gap:4px;flex-wrap:wrap;justify-content:center;">
+<button type="button" class="btn btn-outline btn-sm" onclick="openItemDistributionAnalysisModal('${escapeHtml(r.id)}')" style="font-size:0.68rem;padding:2px 7px;display:inline-flex;align-items:center;gap:4px;" title="عرض سجل وتواريخ التوزيع">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> السجل (${r.txCount})
 </button>
+<button type="button" class="btn btn-outline btn-sm v10-btn-item-consumers" onclick="openV10ItemConsumersDrillModal('${escapeHtml(r.id)}')" style="font-size:0.68rem;padding:2px 7px;color:#38bdf8;border-color:rgba(56,189,248,0.4);display:inline-flex;align-items:center;gap:4px;" title="المستفيدون الذين سحبوا هذه المادة">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> المستفيدون
+</button>
+</div>
 </div>
 </td>
 </tr>
 `;
-}).join("");
+}
+}
+}
+
+tbody.innerHTML = html;
+if (typeof attachHorizontalMouseScrollToTables === "function") {
+setTimeout(attachHorizontalMouseScrollToTables, 50);
+}
 };
 window.renderAiForecastTable = renderAiForecastTable;
 const _v81CalculateAndRenderForecast = calculateAndRenderForecast;
@@ -43483,34 +43644,34 @@ return `${b.recipient} ${b.destination} ${b.selectedRows.map(r => r.shortRef).jo
 });
 const bensRowsHtml = filteredBens.map((b, idx) => {
 const itemsPills = b.selectedRows.map(r => `
-<span style="display:inline-flex;align-items:center;gap:3px;background:var(--bg-muted);border:1px solid var(--border-subtle);border-radius:6px;padding:2px 7px;font-size:0.74rem;direction:ltr;">
-<strong>${escapeHtml(r.shortRef)}${r.item?.colorTag ? ' (' + escapeHtml(r.item.colorTag) + ')' : ''}</strong>
-<button type="button" onclick="adjustGlobalBenItemQty('${escapeHtml(b.key)}', '${escapeHtml(r.itemId)}', -1)" style="border:none;background:rgba(255,255,255,0.08);color:var(--text-main);border-radius:4px;width:18px;height:18px;cursor:pointer;font-weight:900;line-height:1;">−</button>
-<strong style="color:#10b981;font-size:0.82rem;min-width:16px;text-align:center;">${r.qty}</strong>
-<button type="button" onclick="adjustGlobalBenItemQty('${escapeHtml(b.key)}', '${escapeHtml(r.itemId)}', 1)" style="border:none;background:rgba(16,185,129,0.18);color:#10b981;border-radius:4px;width:18px;height:18px;cursor:pointer;font-weight:900;line-height:1;">+</button>
+<span style="display:inline-flex;align-items:center;gap:2px;background:var(--bg-muted);border:1px solid var(--border-subtle);border-radius:4px;padding:1px 5px;font-size:0.7rem;direction:ltr;">
+<strong style="font-size:0.7rem;">${escapeHtml(r.shortRef)}${r.item?.colorTag ? ' (' + escapeHtml(r.item.colorTag) + ')' : ''}</strong>
+<button type="button" onclick="adjustGlobalBenItemQty('${escapeHtml(b.key)}', '${escapeHtml(r.itemId)}', -1)" style="border:none;background:rgba(255,255,255,0.08);color:var(--text-main);border-radius:3px;width:16px;height:16px;cursor:pointer;font-weight:900;line-height:1;font-size:0.7rem;display:inline-flex;align-items:center;justify-content:center;">−</button>
+<strong style="color:#10b981;font-size:0.74rem;min-width:14px;text-align:center;">${r.qty}</strong>
+<button type="button" onclick="adjustGlobalBenItemQty('${escapeHtml(b.key)}', '${escapeHtml(r.itemId)}', 1)" style="border:none;background:rgba(16,185,129,0.18);color:#10b981;border-radius:3px;width:16px;height:16px;cursor:pointer;font-weight:900;line-height:1;font-size:0.7rem;display:inline-flex;align-items:center;justify-content:center;">+</button>
 </span>
 `).join(" ");
 return `
 <tr>
-<td style="text-align:center;width:38px;font-weight:800;" class="tabular-nums">${idx + 1}</td>
-<td style="width:230px;">
-<div style="font-weight:800;color:var(--text-main);font-size:0.86rem;">${escapeHtml(b.recipient)}</div>
-<div style="font-size:0.72rem;color:var(--text-muted);">${escapeHtml(b.destination)}</div>
+<td style="text-align:center;width:34px;font-weight:800;" class="tabular-nums">${idx + 1}</td>
+<td style="width:140px;min-width:120px;max-width:150px;">
+<div style="font-weight:800;color:var(--text-main);font-size:0.82rem;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escapeHtml(b.recipient)}">${escapeHtml(b.recipient)}</div>
+<div style="font-size:0.68rem;color:var(--text-muted);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escapeHtml(b.destination)}">${escapeHtml(b.destination)}</div>
 </td>
-<td>
-<div style="display:flex;flex-wrap:wrap;gap:4px;">${itemsPills}</div>
+<td style="min-width:150px;">
+<div style="display:flex;flex-wrap:wrap;gap:3px;">${itemsPills}</div>
 </td>
-<td style="text-align:center;width:95px;font-weight:900;color:#10b981;font-size:0.9rem;" class="tabular-nums">
-${b.totalUnits} قطعة
-<div style="font-size:0.68rem;color:var(--text-muted);font-weight:600;">${b.activeItemsCount} مواد</div>
+<td style="text-align:center;width:85px;font-weight:900;color:#10b981;font-size:0.86rem;" class="tabular-nums">
+${b.totalUnits} <span style="font-size:0.68rem;font-weight:600;">ق</span>
+<div style="font-size:0.66rem;color:var(--text-muted);font-weight:600;">${b.activeItemsCount} مواد</div>
 </td>
-<td style="text-align:center;width:140px;">
-<div style="display:inline-flex;gap:5px;">
-<button type="button" class="btn btn-outline btn-sm" onclick="openSingleBeneficiaryFromGlobalModal('${escapeHtml(b.key)}')" style="font-size:0.74rem;font-weight:800;padding:3px 9px;">
+<td style="text-align:center;width:115px;">
+<div style="display:inline-flex;gap:4px;">
+<button type="button" class="btn btn-outline btn-sm" onclick="openSingleBeneficiaryFromGlobalModal('${escapeHtml(b.key)}')" style="font-size:0.72rem;font-weight:800;padding:2px 7px;height:28px;">
 تخصيص
 </button>
-<button type="button" class="btn btn-outline btn-sm" onclick="printSingleActiveBeneficiaryFromGlobal('${escapeHtml(b.key)}')" style="height:30px;border-radius:6px;font-size:0.74rem;padding:0 8px;display:inline-flex;align-items:center;justify-content:center;" title="طباعة إشهاد هذا المستفيد">
-<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+<button type="button" class="btn btn-outline btn-sm" onclick="printSingleActiveBeneficiaryFromGlobal('${escapeHtml(b.key)}')" style="height:28px;border-radius:6px;font-size:0.72rem;padding:0 7px;display:inline-flex;align-items:center;justify-content:center;" title="طباعة إشهاد هذا المستفيد">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
 </button>
 </div>
 </td>
@@ -43518,15 +43679,15 @@ ${b.totalUnits} قطعة
 `;
 }).join("");
 activeTableHtml = `
-<div class="table-scroll-wrapper">
+<div class="table-scroll-wrapper" data-wheel-scroll="true">
 <table class="data-table">
 <thead>
 <tr>
-<th style="width:38px;text-align:center;">#</th>
-<th style="width:230px;">المستفيد النشط والجهة</th>
-<th>المواد المهمة والكميات (تعديل مباشر − / +)</th>
-<th style="width:95px;text-align:center;">المجموع</th>
-<th style="width:140px;text-align:center;">إجراء</th>
+<th style="width:34px;text-align:center;">#</th>
+<th style="width:140px;min-width:120px;max-width:150px;">المستفيد والجهة</th>
+<th style="min-width:150px;">المواد والكميات</th>
+<th style="width:85px;text-align:center;">المجموع</th>
+<th style="width:115px;text-align:center;">إجراء</th>
 </tr>
 </thead>
 <tbody>
@@ -43549,28 +43710,31 @@ sec.innerHTML = `
 </button>
 </div>
 <div style="display:inline-flex;background:var(--bg-muted);padding:3px;border-radius:8px;border:1px solid var(--border-subtle);height:36px;align-items:center;">
-<button type="button" class="btn btn-sm ${gst.periodMode === 'annual' ? 'btn-primary' : ''}" onclick="window._globalActiveDistState.periodMode='annual'; renderGlobalSituationSectionInPage();" style="height:30px;font-size:0.76rem;padding:0 10px;border-radius:6px;border:none;${gst.periodMode !== 'annual' ? 'background:transparent;color:var(--text-secondary);' : ''}">سنوي (${plan.periodMode === 'annual' ? plan.totalGlobalUnits : ''})</button>
+<button type="button" class="btn btn-sm ${gst.periodMode === 'annual' ? 'btn-primary' : ''}" onclick="window._globalActiveDistState.periodMode='annual'; renderGlobalSituationSectionInPage();" style="height:30px;font-size:0.76rem;padding:0 10px;border-radius:6px;border:none;${gst.periodMode !== 'annual' ? 'background:transparent;color:var(--text-secondary);' : ''}">سنوي</button>
 <button type="button" class="btn btn-sm ${gst.periodMode === 'semi_annual' ? 'btn-primary' : ''}" onclick="window._globalActiveDistState.periodMode='semi_annual'; renderGlobalSituationSectionInPage();" style="height:30px;font-size:0.76rem;padding:0 10px;border-radius:6px;border:none;${gst.periodMode !== 'semi_annual' ? 'background:transparent;color:var(--text-secondary);' : ''}">نصف سنوي</button>
 <button type="button" class="btn btn-sm ${gst.periodMode === 'monthly' ? 'btn-primary' : ''}" onclick="window._globalActiveDistState.periodMode='monthly'; renderGlobalSituationSectionInPage();" style="height:30px;font-size:0.76rem;padding:0 10px;border-radius:6px;border:none;${gst.periodMode !== 'monthly' ? 'background:transparent;color:var(--text-secondary);' : ''}">شهري</button>
 </div>
-<select class="form-control" style="height:36px;border-radius:8px;font-size:0.78rem;width:190px;" onchange="window._globalActiveDistState.workplaceFilter=this.value; renderGlobalSituationSectionInPage();">
+<select class="form-control" style="height:36px;border-radius:8px;font-size:0.78rem;width:170px;" onchange="window._globalActiveDistState.workplaceFilter=this.value; renderGlobalSituationSectionInPage();">
 <option value="all" ${gst.workplaceFilter === 'all' ? 'selected' : ''}>جميع الجهات (${workplaces.length})</option>
 ${workplaces.map(w => `<option value="${escapeHtml(w)}" ${gst.workplaceFilter === w ? 'selected' : ''}>${escapeHtml(w)}</option>`).join("")}
 </select>
-<input type="text" class="form-control" placeholder="بحث سريع..." value="${escapeHtml(gst.searchQuery)}" oninput="window._globalActiveDistState.searchQuery=this.value; renderGlobalSituationSectionInPage();" style="height:36px;border-radius:8px;font-size:0.78rem;width:160px;" />
+<input type="text" class="form-control" placeholder="بحث سريع..." value="${escapeHtml(gst.searchQuery)}" oninput="window._globalActiveDistState.searchQuery=this.value; renderGlobalSituationSectionInPage();" style="height:36px;border-radius:8px;font-size:0.78rem;width:150px;" />
 </div>
 <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
 <button type="button" class="btn btn-outline btn-sm" onclick="printGlobalActiveSituationStudyReportA4()" style="height:36px;border-radius:8px;font-weight:700;font-size:0.78rem;padding:0 12px;display:inline-flex;align-items:center;gap:6px;">
-<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg> طباعة الوضعية (A4)
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg> طباعة الوضعية
 </button>
 <button type="button" class="btn btn-primary btn-sm" onclick="printAllGlobalActiveCertificates()" style="height:36px;border-radius:8px;font-weight:700;font-size:0.78rem;padding:0 14px;display:inline-flex;align-items:center;gap:6px;">
-<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg> طباعة الإشهادات (${plan.selectedBeneficiariesCount})
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg> طباعة الإشهادات
 </button>
 </div>
 </div>
 ${activeTableHtml}
 </div>
 `;
+if (typeof attachHorizontalMouseScrollToTables === "function") {
+setTimeout(attachHorizontalMouseScrollToTables, 50);
+}
 }
 window.renderGlobalSituationSectionInPage = renderGlobalSituationSectionInPage;
 function openGlobalActiveDistributionModal(periodMode, initialTab) {
@@ -43704,82 +43868,48 @@ if (cardHeader) cardHeader.style.display = "none";
 }
 };
 window.renderAiEntitiesPatterns = renderAiEntitiesPatterns;
-const _v95OrigRenderAiForecastTable = renderAiForecastTable;
-renderAiForecastTable = function() {
-const curMargin = parseInt(document.getElementById("ai-deal-safety-margin")?.value ?? "0", 10) || 0;
-_v95OrigRenderAiForecastTable();
-const explainerBar = document.getElementById("ai-forecast-explainer-bar");
-if (explainerBar) {
-const mode = window._aiForecastFilterMode || "all";
-const filteredTxs = getFilteredAiTransactions();
-window._aiExplicitMarginPassed = true;
-const analytics = buildComprehensiveProcurementAnalytics(curMargin, filteredTxs);
-window._aiExplicitMarginPassed = false;
-const continuing2026Count = analytics.rows.filter(r => r.q2026 > 0).length;
-const inStockCount = analytics.rows.filter(r => r.stock > 0).length;
-explainerBar.innerHTML = `
-<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
-<button type="button" class="btn btn-sm ${mode === "continuing" ? "btn-primary" : "btn-outline"}" onclick="setAiForecastFilterMode('continuing')" style="font-size:0.75rem;padding:4px 10px;font-weight:800;display:inline-flex;align-items:center;gap:4px;">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><polyline points="20 6 9 17 4 12"></polyline></svg> نشطة بـ 2026 (${continuing2026Count})
-</button>
-<button type="button" class="btn btn-sm ${mode === "all" ? "btn-primary" : "btn-outline"}" onclick="setAiForecastFilterMode('all')" style="font-size:0.75rem;padding:4px 10px;">
-الكل (${analytics.totalItemsCount})
-</button>
-<button type="button" class="btn btn-sm ${mode === "stopped2026" ? "btn-primary" : "btn-outline"}" onclick="setAiForecastFilterMode('stopped2026')" style="font-size:0.75rem;padding:4px 10px;display:inline-flex;align-items:center;gap:4px;">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> توقفت بـ 2026 (${analytics.stopped2026Count})
-</button>
-<button type="button" class="btn btn-sm ${mode === "unused" ? "btn-primary" : "btn-outline"}" onclick="setAiForecastFilterMode('unused')" style="font-size:0.75rem;padding:4px 10px;display:inline-flex;align-items:center;gap:4px;">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg> حصة 0 (${analytics.unusedItemsCount})
-</button>
-<button type="button" class="btn btn-sm ${mode === "instock" ? "btn-primary" : "btn-outline"}" onclick="setAiForecastFilterMode('instock')" style="font-size:0.75rem;padding:4px 10px;display:inline-flex;align-items:center;gap:4px;">
-<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg> متوفرة (${inStockCount})
-</button>
-<select id="ai-deal-safety-margin" class="form-control" style="width:auto;height:32px;font-size:0.75rem;font-weight:800;padding:2px 8px;border-radius:6px;">
-<option value="0" ${curMargin === 0 ? "selected" : ""}>نسبة الأمان: 0% (صافي)</option>
-<option value="10" ${curMargin === 10 ? "selected" : ""}>نسبة الأمان: +10%</option>
-<option value="20" ${curMargin === 20 ? "selected" : ""}>نسبة الأمان: +20%</option>
-<option value="30" ${curMargin === 30 ? "selected" : ""}>نسبة الأمان: +30%</option>
-</select>
-</div>
-<div style="display:flex;gap:6px;">
-<button type="button" class="btn btn-outline btn-sm" onclick="exportAiReportCSV()" style="font-size:0.75rem;padding:4px 10px;display:inline-flex;align-items:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> CSV</button>
-<button type="button" class="btn btn-primary btn-sm" onclick="printAiAnalysisReport()" style="font-size:0.75rem;padding:4px 12px;font-weight:800;display:inline-flex;align-items:center;gap:4px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg> طباعة جدول الصفقة (A4)</button>
-</div>
-</div>
-`;
-const aiMarginSel = document.getElementById("ai-deal-safety-margin");
-if (aiMarginSel) {
-aiMarginSel.onchange = function() {
-state._userExplicitlyPickedSafetyMargin = true;
-renderAiForecastTable();
+function attachHorizontalMouseScrollToTables() {
+const wrappers = document.querySelectorAll('.table-scroll-wrapper, .table-responsive, .bulk-matrix-wrap, .global-situation-table-wrap');
+wrappers.forEach(wrapper => {
+if (wrapper._hWheelBound) return;
+wrapper._hWheelBound = true;
+wrapper.addEventListener('wheel', function(e) {
+if (e.shiftKey) return;
+if (wrapper.scrollWidth <= wrapper.clientWidth) return;
+if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+wrapper.scrollLeft += e.deltaY * 0.9;
+e.preventDefault();
+}
+}, { passive: false });
+
+let isDown = false;
+let startX = 0;
+let startScrollLeft = 0;
+wrapper.addEventListener('mousedown', function(e) {
+if (e.target.closest('button, input, select, textarea, a, [onclick], label')) return;
+isDown = true;
+wrapper.classList.add('is-dragging-table');
+startX = e.pageX - wrapper.offsetLeft;
+startScrollLeft = wrapper.scrollLeft;
+});
+const stopDrag = function() {
+if (isDown) {
+isDown = false;
+wrapper.classList.remove('is-dragging-table');
+}
 };
-}
-}
-const tbody = document.getElementById("ai-forecast-tbody");
-if (tbody) {
-tbody.querySelectorAll("button[onclick*='openItemDistributionAnalysisModal']").forEach(btn => {
-const parent = btn.parentElement;
-if (!parent || parent.querySelector(".v10-btn-item-consumers")) return;
-const m = (btn.getAttribute("onclick") || "").match(/'([^']+)'/);
-if (m && m[1]) {
-const itemId = m[1];
-const wrap = document.createElement("div");
-wrap.style.cssText = "display:inline-flex;gap:4px;flex-wrap:wrap;justify-content:center;";
-btn.parentNode.insertBefore(wrap, btn);
-wrap.appendChild(btn);
-const consBtn = document.createElement("button");
-consBtn.type = "button";
-consBtn.className = "btn btn-outline btn-sm v10-btn-item-consumers";
-consBtn.style.cssText = "font-size:0.68rem;padding:2px 7px;color:#38bdf8;border-color:rgba(56,189,248,0.4);";
-consBtn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> المستفيدون`; consBtn.style.display = "inline-flex"; consBtn.style.alignItems = "center"; consBtn.style.gap = "4px";
-consBtn.onclick = () => openV10ItemConsumersDrillModal(itemId);
-wrap.appendChild(consBtn);
-}
+window.addEventListener('mouseup', stopDrag);
+wrapper.addEventListener('mouseleave', stopDrag);
+wrapper.addEventListener('mousemove', function(e) {
+if (!isDown) return;
+e.preventDefault();
+const x = e.pageX - wrapper.offsetLeft;
+const walk = (x - startX) * 1.3;
+wrapper.scrollLeft = startScrollLeft - walk;
+});
 });
 }
-};
-window.renderAiForecastTable = renderAiForecastTable;
+window.attachHorizontalMouseScrollToTables = attachHorizontalMouseScrollToTables;
 function simplifyAndOrganizeAiInsightsPageDOM() {
 const aiView = document.getElementById("ai-insights-view");
 if (!aiView) return;
@@ -43792,47 +43922,84 @@ el.style.display = "none";
 const navBar = aiView.querySelector(".tab-pills-nav");
 if (!navBar) return;
 ensureGlobalSituationSectionDOM();
-if (!document.getElementById("ai-subtab-btn-global_situation")) {
-const globalBtn = document.createElement("button");
-globalBtn.type = "button";
-globalBtn.className = "btn btn-outline btn-sm ai-subtab-btn";
-globalBtn.id = "ai-subtab-btn-global_situation";
-globalBtn.style.cssText = "height:38px;border-radius:8px;font-weight:700;display:inline-flex;align-items:center;gap:6px;padding:0 14px;";
-globalBtn.onclick = () => switchAiSubTab("global_situation");
-globalBtn.innerHTML = `<span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg> 1. الوضعية العامة للتوزيع الشامل</span>`;
-navBar.insertBefore(globalBtn, navBar.firstChild);
+
+// التعريف الموحد لكافة الأزرار الستة بدون أي أرقام وبأيقونات خطية خالصة (المتطلبات 1، 2، 9، 13)
+const tabDefs = [
+{ id: "global_situation", name: "الوضعية العامة للتوزيع الشامل", icon: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>` },
+{ id: "entities", name: "تحليل وتوزيع المستفيد", icon: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>` },
+{ id: "forecast", name: "قرار الصفقة السنوية والنفاذ", icon: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>` },
+{ id: "planning", name: "التخطيط السنوي", icon: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>` },
+{ id: "simulation", name: "محاكاة الحصص", icon: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>` },
+{ id: "recommendations", name: "التوصيات الاستباقية", icon: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7z"></path></svg>` }
+];
+
+navBar.style.display = "flex";
+navBar.style.gap = "8px";
+navBar.style.padding = "8px";
+navBar.style.borderRadius = "var(--radius-md)";
+navBar.style.background = "var(--bg-card)";
+navBar.style.border = "1px solid var(--border-subtle)";
+navBar.style.overflowX = "auto";
+navBar.style.flexWrap = "nowrap";
+navBar.style.webkitOverflowScrolling = "touch";
+
+tabDefs.forEach(def => {
+let btn = document.getElementById(`ai-subtab-btn-${def.id}`);
+if (!btn) {
+btn = document.createElement("button");
+btn.type = "button";
+btn.id = `ai-subtab-btn-${def.id}`;
+navBar.appendChild(btn);
 }
-const btnEntities = document.getElementById("ai-subtab-btn-entities");
-if (btnEntities) {
-btnEntities.style.cssText = "height:38px;border-radius:8px;font-weight:700;display:inline-flex;align-items:center;gap:6px;padding:0 14px;";
-btnEntities.innerHTML = `<span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> 2. تحليل وتوزيع مستفيد</span>`;
-navBar.insertBefore(btnEntities, document.getElementById("ai-subtab-btn-global_situation").nextSibling);
-}
-const btnForecast = document.getElementById("ai-subtab-btn-forecast");
-if (btnForecast) {
-btnForecast.style.cssText = "height:38px;border-radius:8px;font-weight:700;display:inline-flex;align-items:center;gap:6px;padding:0 14px;";
-btnForecast.innerHTML = `<span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;display:inline-block;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> 3. قرار الصفقة السنوية والنفاد</span>`;
-navBar.insertBefore(btnForecast, btnEntities.nextSibling);
-}
-["planning", "simulation", "recommendations"].forEach(id => {
-const b = document.getElementById(`ai-subtab-btn-${id}`);
-if (b) b.style.display = "none";
+btn.onclick = () => switchAiSubTab(def.id);
+btn.style.display = "inline-flex";
+btn.style.alignItems = "center";
+btn.style.gap = "6px";
+btn.style.height = "38px";
+btn.style.borderRadius = "8px";
+btn.style.fontWeight = "700";
+btn.style.fontSize = "0.82rem";
+btn.style.padding = "0 14px";
+btn.style.whiteSpace = "nowrap";
+btn.style.flexShrink = "0";
+btn.innerHTML = `${def.icon}<span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:170px;display:inline-block;vertical-align:middle;">${def.name}</span>`;
+navBar.appendChild(btn);
 });
 }
 switchAiSubTab = function(tabName) {
 simplifyAndOrganizeAiInsightsPageDOM();
-const allowed = ["global_situation", "entities", "forecast"];
+const allowed = ["global_situation", "entities", "forecast", "planning", "simulation", "recommendations"];
 const targetTab = allowed.includes(tabName) ? tabName : "global_situation";
 _aiActiveSubTab = targetTab;
-["global_situation", "entities", "forecast", "simulation", "planning", "recommendations"].forEach(name => {
+allowed.forEach(name => {
 const btn = document.getElementById(`ai-subtab-btn-${name}`);
 const sec = document.getElementById(`ai-section-${name}`);
-if (btn && allowed.includes(name)) {
-btn.classList.toggle("active", name === targetTab);
-btn.className = (name === targetTab) ? "btn btn-primary btn-sm ai-subtab-btn active" : "btn btn-outline btn-sm ai-subtab-btn";
+const isActive = (name === targetTab);
+if (btn) {
+btn.classList.toggle("active", isActive);
+btn.className = isActive ? "btn btn-primary btn-sm ai-subtab-btn active" : "btn btn-outline btn-sm ai-subtab-btn";
+btn.style.display = "inline-flex";
+btn.style.alignItems = "center";
+btn.style.gap = "6px";
+btn.style.height = "38px";
+btn.style.borderRadius = "8px";
+btn.style.fontWeight = "700";
+btn.style.fontSize = "0.82rem";
+btn.style.padding = "0 14px";
+btn.style.whiteSpace = "nowrap";
+btn.style.flexShrink = "0";
+if (!isActive) {
+btn.style.background = "var(--bg-elevated, var(--bg-surface, #ffffff))";
+btn.style.borderColor = "var(--border-subtle)";
+btn.style.color = "var(--text-main)";
+} else {
+btn.style.background = "";
+btn.style.borderColor = "";
+btn.style.color = "";
+}
 }
 if (sec) {
-sec.style.display = (name === targetTab) ? "block" : "none";
+sec.style.display = isActive ? "block" : "none";
 }
 });
 if (targetTab === "global_situation") {
@@ -43841,11 +44008,23 @@ renderGlobalSituationSectionInPage();
 renderAiEntitiesPatterns();
 } else if (targetTab === "forecast") {
 renderAiForecastTable();
+} else if (targetTab === "planning") {
+if (typeof initAndRenderAnnualForecast === "function") initAndRenderAnnualForecast();
+} else if (targetTab === "simulation") {
+if (typeof initAndRenderSimulatedQuota === "function") initAndRenderSimulatedQuota();
+} else if (targetTab === "recommendations") {
+if (typeof renderAiRecommendations === "function") renderAiRecommendations();
+}
+if (typeof attachHorizontalMouseScrollToTables === "function") {
+setTimeout(attachHorizontalMouseScrollToTables, 60);
 }
 };
 window.switchAiSubTab = switchAiSubTab;
 window.addEventListener("DOMContentLoaded", () => {
 simplifyAndOrganizeAiInsightsPageDOM();
+if (typeof attachHorizontalMouseScrollToTables === "function") {
+attachHorizontalMouseScrollToTables();
+}
 const docModal = document.getElementById("doc-preview-modal");
 if (docModal) docModal.style.zIndex = "25000";
 });
