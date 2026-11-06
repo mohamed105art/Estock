@@ -3809,6 +3809,27 @@ background: #ef4444 !important;
 border: 2px solid var(--bg-card) !important;
 box-shadow: 0 0 7px rgba(239, 68, 68, 0.95) !important;
 }
+/* حالة المزامنة أو وجود تعديلات محلية قيد الرفع (.syncing / .pending): برتقالي/كهرماني */
+#header-user-avatar-btn.syncing,
+#header-user-avatar-btn.pending {
+border-radius: var(--radius-md) !important;
+border: 1.5px solid #f59e0b !important;
+color: #f59e0b !important;
+background: rgba(245, 158, 11, 0.14) !important;
+box-shadow: 0 0 8px rgba(245, 158, 11, 0.25) !important;
+}
+#header-user-avatar-btn.syncing svg,
+#header-user-avatar-btn.pending svg {
+color: #f59e0b !important;
+stroke: #f59e0b !important;
+}
+#header-user-avatar-btn.syncing .header-avatar-status-dot,
+#header-user-avatar-btn.pending .header-avatar-status-dot {
+display: block !important;
+background: #f59e0b !important;
+border: 2px solid var(--bg-card) !important;
+box-shadow: 0 0 7px rgba(245, 158, 11, 0.95) !important;
+}
 /* 6. الحاويات الخمس السفلية في لوحة القيادة (المخططات وآخر العمليات):
 رفع العنوان ليكون على مسافة 10px من الأعلى وبدء المخطط بمسافة 6-10px أسفل الأزرار */
 #dashboard-view .card:not(.kpi-card) {
@@ -3980,7 +4001,7 @@ transition: all 0.25s ease;
 }
 .bulk-live-bar.status-ready {
 border-color: #10b981;
-box-shadow: 0 8px 26px rgba(16, 185, 129, 0.18);
+box-shadow: 0 0 18px rgba(16, 185, 129, 0.30), 0 8px 26px rgba(16, 185, 129, 0.18);
 }
 .bulk-live-bar.status-pending {
 border-color: #f59e0b;
@@ -4207,9 +4228,11 @@ font-size: 0.76rem;
 font-weight: 800;
 }
 .bulk-item-rem-pill.rem-zero {
-background: #d1fae5;
-color: #065f46;
-border: 1px solid #10b981;
+background: rgba(16, 185, 129, 0.16) !important;
+color: #10b981 !important;
+border: 1.5px solid #10b981 !important;
+font-weight: 900 !important;
+box-shadow: 0 0 8px rgba(16, 185, 129, 0.28) !important;
 }
 .bulk-item-rem-pill.rem-pos {
 background: #fef3c7;
@@ -4705,7 +4728,7 @@ left: 14px;
 bottom: 24px;
 top: auto;
 right: auto;
-transform: rotate(-30deg);
+transform: none;
 width: 48px;
 height: 48px;
 opacity: 0.16;
@@ -5475,6 +5498,19 @@ box-shadow: 0 4px 15px rgba(106, 27, 154, 0.18);
 }
 #bulk-distribution-view .step-tab.tab-3.active .step-circle {
 background: #6A1B9A;
+color: #ffffff;
+}
+#bulk-distribution-view .step-tab.tab-4 .step-circle {
+background: rgba(16, 185, 129, 0.15);
+color: #10b981;
+}
+#bulk-distribution-view .step-tab.tab-4.active {
+border-color: #10b981;
+background: rgba(16, 185, 129, 0.08);
+box-shadow: 0 4px 15px rgba(16, 185, 129, 0.18);
+}
+#bulk-distribution-view .step-tab.tab-4.active .step-circle {
+background: #10b981;
 color: #ffffff;
 }
 #bulk-distribution-view .step-title {
@@ -7010,10 +7046,10 @@ display: inline-block !important;
 <div class="user-role" id="sidebar-user-role">المديرية الإقليمية للعدل بسطات</div>
 </div>
 </div>
-<div class="pwa-sidebar-sync-bar" id="pwa-sync-indicator" title="حالة الاتصال والمزامنة السحابية" style="background:transparent !important;border:none !important;box-shadow:none !important;padding:2px 8px 6px 8px !important;margin:0 !important;display:flex;align-items:center;justify-content:center;gap:6px;font-size:0.74rem;color:var(--text-muted);">
+<div class="pwa-sidebar-sync-bar" id="pwa-sync-indicator" title="حالة الاتصال والمزامنة السحابية" style="display:none !important;">
 <span class="pwa-sync-dot online" id="pwa-sync-dot"></span>
-<span id="pwa-sync-label" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">متصل ومزامن</span>
-<span id="pwa-sync-queue-badge" class="badge badge-subtle tabular-nums" style="font-size:0.66rem;padding:1px 5px;display:none;">0</span>
+<span id="pwa-sync-label">متصل ومزامن</span>
+<span id="pwa-sync-queue-badge" class="badge badge-subtle tabular-nums" style="display:none;">0</span>
 </div>
 <button type="button" class="btn-about-app" onclick="openAboutAppModal(); toggleSidebar(false);">
 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
@@ -9254,22 +9290,29 @@ VIEW 9: عملية التوزيع (Bulk Distribution Run)
 <div class="step-tab tab-1 active" id="bulk-tab-btn-1" onclick="setBulkStep(1)">
 <div class="step-circle">1</div>
 <div>
-<div class="step-title">سلة المواد</div>
-<div class="step-desc">تحديد المواد والكميات الإجمالية المسحوبة</div>
+<div class="step-title">اختيار المواد</div>
+<div class="step-desc">تحديد المواد والأصناف المراد توزيعها</div>
 </div>
 </div>
 <div class="step-tab tab-2" id="bulk-tab-btn-2" onclick="setBulkStep(2)">
 <div class="step-circle">2</div>
 <div>
-<div class="step-title">التوزيع</div>
-<div class="step-desc">مصفوفة توزيع الحصص على الجهات والوجهات المستفيدة</div>
+<div class="step-title">تحديد الكميات</div>
+<div class="step-desc">تحديد الكميات المخصصة ونسب السحب</div>
 </div>
 </div>
 <div class="step-tab tab-3" id="bulk-tab-btn-3" onclick="setBulkStep(3)">
 <div class="step-circle">3</div>
 <div>
-<div class="step-title">الإشهادات</div>
-<div class="step-desc">الإشهادات الرسمية المستقلة وسجل الدفعات</div>
+<div class="step-title">توزيع الحصص</div>
+<div class="step-desc">مصفوفة التوزيع على الجهات وقاعدة الباقي صفر</div>
+</div>
+</div>
+<div class="step-tab tab-4" id="bulk-tab-btn-4" onclick="setBulkStep(4)">
+<div class="step-circle">4</div>
+<div>
+<div class="step-title">الإشهادات والاعتماد</div>
+<div class="step-desc">معاينة الإشهادات، الترحيل للأرشيف، والطباعة</div>
 </div>
 </div>
 </div>
@@ -9278,15 +9321,15 @@ VIEW 9: عملية التوزيع (Bulk Distribution Run)
 <div class="section-header">
 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-phase-1);"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
 <div>
-<h3>تحديد سلة المواد الإجمالية المسحوبة</h3>
-<span class="section-desc">اختر الصنف لتصفية المواد المتاحة ديناميكياً، ثم حدد المادة والكمية الكلية المسحوبة</span>
+<h3>المحطة 1: اختيار المواد والأصناف المراد توزيعها</h3>
+<span class="section-desc">حدد الفئة والصنف، ثم اختر مادة أو عدة مواد عبر مربعات الاختيار دون الحاجة لكتابة أرقام هنا</span>
 </div>
 </div>
 <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 16px;">
 <div class="form-group" style="margin: 0;">
 <label class="form-label" style="font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:6px;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-phase-1);"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
-<span>أولاً: اختر الفئة (الصنف المعتمد)</span>
+<span>تصفية حسب الفئة (الصنف المعتمد):</span>
 </label>
 <select id="bulk-pool-cat-select" class="form-control" onchange="onBulkCategoryChange()">
 <option value="all">-- جميع الأصناف --</option>
@@ -9296,7 +9339,7 @@ VIEW 9: عملية التوزيع (Bulk Distribution Run)
 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:6px;">
 <label class="form-label" style="font-weight:800;margin:0;display:flex;align-items:center;gap:6px;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-phase-1);"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-<span>ثانياً: اختر مادة أو عدة مواد من الفئة (يدعم التحديد المتعدد)</span>
+<span>قائمة المواد المتاحة للاختيار السريع:</span>
 </label>
 <div style="display:flex;gap:6px;align-items:center;">
 <input type="text" id="bulk-multiselect-search" class="form-control" placeholder="بحث سريع في مواد الفئة..." oninput="filterBulkMultiSelectItems(this.value)" style="height:30px;width:180px;font-size:0.76rem;padding:2px 8px;">
@@ -9310,22 +9353,48 @@ VIEW 9: عملية التوزيع (Bulk Distribution Run)
 <option value="">-- أو اختر مادة مفردة مباشرة من القائمة --</option>
 </select>
 </div>
-<div class="form-group" style="margin: 0; background: var(--bg-muted); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px;">
+</div>
+<div style="display: flex; justify-content: flex-end; margin-top: 14px;">
+<button type="button" id="btn-bulk-step1-next" class="btn btn-primary" onclick="proceedToBulkStep2()" style="background-color: var(--color-phase-1); border: none; font-weight: 800; display: inline-flex; align-items: center; gap: 8px; padding: 10px 22px;">
+<span>المتابعة لتحديد الكميات</span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+</button>
+</div>
+</div>
+</div>
+<div id="bulk-step-2-panel" style="display:none;">
+<div class="glass-panel" style="margin-bottom: 16px;">
+<div class="section-header">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-phase-2);"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+<div style="flex:1;">
+<h3>المحطة 2: تحديد الكميات المخصصة ومقارنتها بالمخزن</h3>
+<span class="section-desc">حدد الكمية الكلية المسحوبة لكل مادة مختارة مع مقارنة فورية بالرصيد المتوفر بالمخزن وحاسبة النسب</span>
+</div>
+<button type="button" class="btn btn-outline btn-sm" onclick="clearBulkStep1BasketOnly()" title="تفريغ سلة المواد" style="color:#ef4444;border-color:rgba(239,68,68,0.35);display:inline-flex;align-items:center;gap:5px;font-weight:800;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+<span>تفريغ السلة</span>
+</button>
+</div>
+<div class="form-group" style="margin: 0 0 16px 0; background: var(--bg-muted); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px;">
 <label class="form-label" style="font-weight:800;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;">
 <span style="display:flex;align-items:center;gap:6px;">
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-phase-1);"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
-<span>ثالثاً: الكمية المراد توزيعها وحاسبة النسب المئوية من الكمية المدخلة</span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-phase-2);"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+<span>حاسبة نسب السحب السريعة من رصيد المخزن:</span>
 </span>
 <span id="bulk-selected-item-stock-hint" style="font-size:0.78rem;color:#10b981;font-weight:800;"></span>
 </label>
 <div id="bulk-staged-items-container" style="display:none;margin-bottom:10px;"></div>
 <div id="bulk-single-qty-wrap">
 <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px;">
-<input type="number" id="bulk-pool-qty-input" class="form-control tabular-nums" min="0" value="" placeholder="0 — أدخل الكمية المراد توزيعها أولاً..." oninput="onBulkBaseQtyManualInput(this)" style="flex:1;min-width:180px;font-weight:900;font-size:0.95rem;">
+<input type="number" id="bulk-pool-qty-input" class="form-control tabular-nums" min="0" value="" placeholder="0 — أدخل الكمية الإجمالية..." oninput="onBulkBaseQtyManualInput(this)" style="flex:1;min-width:180px;font-weight:900;font-size:0.95rem;">
 <span id="bulk-base-qty-reference-badge" class="badge badge-subtle tabular-nums" style="font-size:0.75rem;">الكمية الأساسية: 0</span>
+<button type="button" id="btn-bulk-add-to-pool" class="btn btn-primary btn-sm" onclick="addBulkItemToPool()" style="background-color: var(--color-phase-2); border: none; font-weight: 800; display: inline-flex; align-items: center; gap: 6px;">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="20 6 9 17 4 12"></polyline></svg>
+<span>تثبيت الكمية بالسلة</span>
+</button>
 </div>
 <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
-<span style="font-size:0.78rem;color:var(--text-muted);font-weight:700;">احتساب نسبة مئوية من الكمية المدخلة:</span>
+<span style="font-size:0.78rem;color:var(--text-muted);font-weight:700;">احتساب نسبة مئوية سريعة:</span>
 <button type="button" class="btn btn-outline btn-sm bulk-pct-btn" onclick="applyBulkQtyPercentage(25)" style="padding:3px 10px;font-size:0.78rem;font-weight:800;">25%</button>
 <button type="button" class="btn btn-outline btn-sm bulk-pct-btn" onclick="applyBulkQtyPercentage(50)" style="padding:3px 10px;font-size:0.78rem;font-weight:800;">50%</button>
 <button type="button" class="btn btn-outline btn-sm bulk-pct-btn" onclick="applyBulkQtyPercentage(70)" style="padding:3px 10px;font-size:0.78rem;font-weight:800;">70%</button>
@@ -9339,30 +9408,6 @@ VIEW 9: عملية التوزيع (Bulk Distribution Run)
 </div>
 </div>
 </div>
-</div>
-<div style="display: flex; gap: 10px; flex-wrap: wrap;">
-<button type="button" id="btn-bulk-add-to-pool" class="btn btn-primary" onclick="addBulkItemToPool()" style="background-color: var(--color-phase-1); border: none; font-weight: 800; display: inline-flex; align-items: center; gap: 8px;">
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path><line x1="12" y1="9" x2="12" y2="15"></line><line x1="9" y1="12" x2="15" y2="12"></line></svg>
-<span>إضافة للسلة</span>
-</button>
-<button type="button" class="btn btn-secondary" onclick="setBulkStep(2)" style="font-weight: 800; display: inline-flex; align-items: center; gap: 8px;">
-<span>مصفوفة التوزيع</span>
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-</button>
-</div>
-</div>
-<div class="glass-panel">
-<div class="section-header">
-<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-phase-1);"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
-<div style="flex:1;">
-<h3>سلة المواد الإجمالية (رصيد العملية المجمع)</h3>
-<span class="section-desc">المواد المحجوزة لهذه الدفعة والتي سيتم توزيعها بالتفصيل في الخطوة 2</span>
-</div>
-<button type="button" class="btn btn-outline btn-sm" onclick="clearBulkStep1BasketOnly()" title="تفريغ سلة المواد في هذه المرحلة فقط" style="color:#ef4444;border-color:rgba(239,68,68,0.35);display:inline-flex;align-items:center;gap:5px;font-weight:800;">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-<span>تفريغ السلة</span>
-</button>
-</div>
 <div class="table-scroll-wrapper bulk-horiz-scroll-box" style="overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%;">
 <table class="data-table" style="min-width: 780px; width: 100%;">
 <thead>
@@ -9370,7 +9415,7 @@ VIEW 9: عملية التوزيع (Bulk Distribution Run)
 <th style="width: 45px; text-align: center; white-space: nowrap;">#</th>
 <th style="min-width: 310px; text-align: right; white-space: nowrap;">بيان المادة الكامل</th>
 <th style="min-width: 120px; text-align: center; white-space: nowrap;">الصنف</th>
-<th style="width: 95px; text-align: center; white-space: nowrap;">المتوفر بالمخزن</th>
+<th style="width: 110px; text-align: center; white-space: nowrap;">المتوفر بالمخزن</th>
 <th style="width: 140px; text-align: center; white-space: nowrap;">الكمية المسحوبة</th>
 <th style="width: 95px; text-align: center; white-space: nowrap;">الموزع</th>
 <th style="width: 115px; text-align: center; white-space: nowrap;">الباقي للتوزيع</th>
@@ -9380,15 +9425,25 @@ VIEW 9: عملية التوزيع (Bulk Distribution Run)
 <tbody id="bulk-pool-basket-tbody">
 <tr>
 <td colspan="8" class="empty-state" style="text-align: center; padding: 24px; color: var(--text-muted);">
-السلة فارغة حالياً — اختر الصنف والمادة أعلاه وحدد الكمية ثم اضغط إضافة للسلة
+السلة فارغة حالياً — اختر المواد في المحطة 1 ثم تابع لتحديد كمياتها
 </td>
 </tr>
 </tbody>
 </table>
 </div>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px; flex-wrap: wrap; gap: 10px;">
+<button type="button" class="btn btn-outline" onclick="setBulkStep(1)" style="font-weight: 800; display: inline-flex; align-items: center; gap: 8px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+<span>تعديل اختيار المواد</span>
+</button>
+<button type="button" id="btn-bulk-step2-next" class="btn btn-primary" onclick="proceedToBulkStep3()" style="background-color: var(--color-phase-2); border: none; font-weight: 800; display: inline-flex; align-items: center; gap: 8px; padding: 10px 22px;">
+<span>المتابعة لمصفوفة التوزيع</span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+</button>
 </div>
 </div>
-<div id="bulk-step-2-panel" style="display:none;">
+</div>
+<div id="bulk-step-3-panel" style="display:none;">
 <div class="glass-panel" style="margin-bottom: 16px;">
 <div class="section-header" style="justify-content: space-between; flex-wrap: wrap;">
 <div style="display: flex; align-items: center; gap: 12px;">
@@ -9509,31 +9564,39 @@ VIEW 9: عملية التوزيع (Bulk Distribution Run)
 </table>
 </div>
 </div>
-<div style="margin-top: 16px; display: flex; justify-content: flex-end;">
-<button type="button" class="btn btn-primary" onclick="setBulkStep(3)" style="background-color: var(--color-phase-2); border: none; font-weight: 800; display: inline-flex; align-items: center; gap: 8px;">
-<span>متابعة للاعتماد</span>
+<div style="margin-top: 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+<button type="button" class="btn btn-outline" onclick="setBulkStep(2)" style="font-weight: 800; display: inline-flex; align-items: center; gap: 8px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+<span>تعديل الكميات المسحوبة</span>
+</button>
+<button type="button" id="btn-bulk-step3-next" class="btn btn-primary" onclick="proceedToBulkStep4()" style="background-color: var(--color-phase-3); border: none; font-weight: 800; display: inline-flex; align-items: center; gap: 8px; padding: 10px 22px;">
+<span>المتابعة للإشهادات والاعتماد</span>
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
 </button>
 </div>
 </div>
 </div>
-<div id="bulk-step-3-panel" style="display:none;">
+<div id="bulk-step-4-panel" style="display:none;">
 <div class="glass-panel" style="margin-bottom: 16px;">
 <div class="section-header">
 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-phase-3);"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
 <div>
-<h3>اعتماد الدفعة، الخصم الفوري، وتوليد الإشهادات الرسمية</h3>
-<span id="bulk-commit-helper-text" class="section-desc">يجب أن يكون "الباقي للتوزيع = 0" لتفعيل أزرار الاعتماد النهائي</span>
+<h3>المحطة 4: اعتماد الدفعة، الخصم الفوري، وتوليد الإشهادات الرسمية</h3>
+<span id="bulk-commit-helper-text" class="section-desc">معاينة الإشهادات المستقلة وترحيل الدفعة للأرشيف وتفريغ السلة تلقائياً</span>
 </div>
 </div>
-<div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;">
+<div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; align-items: center;">
+<button type="button" class="btn btn-outline" onclick="setBulkStep(3)" style="padding: 12px 18px; font-weight: 800; display: inline-flex; align-items: center; gap: 6px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+<span>تعديل مصفوفة التوزيع</span>
+</button>
 <button type="button" id="btn-preview-all-bulk" class="btn btn-secondary" style="padding: 12px 20px; font-weight: 800; font-size: 0.92rem; display: inline-flex; align-items: center; gap: 8px;" onclick="previewAllBulkCertificatesBeforeCommit()">
 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
 <span>معاينة الكل</span>
 </button>
 <button type="button" id="btn-commit-bulk-distribution" class="btn btn-primary" style="background-color: var(--color-phase-3); border: none; padding: 12px 22px; font-weight: 900; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 8px;" disabled onclick="commitBulkDistributionRun(false)">
 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-<span>اعتماد الكل</span>
+<span>اعتماد الكل وترحيل للأرشيف</span>
 </button>
 <button type="button" id="btn-commit-and-print-bulk" class="btn btn-success" style="padding: 12px 22px; font-weight: 900; font-size: 0.95rem; background: #059669; color: #fff; border: none; display: inline-flex; align-items: center; gap: 8px;" disabled onclick="commitBulkDistributionRun(true)">
 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
@@ -10164,10 +10227,10 @@ VIEW 9: عملية التوزيع (Bulk Distribution Run)
 </div>
 </div>
 <div id="auth-gate-overlay" class="no-print" role="dialog" aria-modal="true" aria-labelledby="auth-gate-title">
-<div class="auth-gate-card">
+<div class="auth-gate-card" style="position: relative;">
 <div style="text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px;">
-<div style="width: 64px; height: 64px; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.3); border: 1.5px solid rgba(212,175,55,0.45);">
-<img id="auth-gate-logo-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgMTIwIiB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9Im1pbkJnR3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMwYjBmMTkiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSI2MCUiIHN0b3AtY29sb3I9IiMxMTE4MjciLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMGYxNzJhIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJtaW5Cb3hUb3AiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZmRlNjhhIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2Y1OWUwYiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ibWluQm94TGVmdCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNmYmJmMjQiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZDk3NzA2Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJtaW5Cb3hSaWdodCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNkOTc3MDYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjYjQ1MzA5Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8IS0tINiu2YTZgdmK2Kkg2YXYsdio2LnYqSDYqNiy2YjYp9mK2Kcg2YbYp9i52YXYqSDZiNil2LfYp9ixINiw2YfYqNmKINiu2YHZitmBINmF2KrZhtin2LPZgiDZhdi5INmH2YjZitipINin2YTYqti32KjZitmCIC0tPgogIDxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiByeD0iMjgiIGZpbGw9InVybCgjbWluQmdHcmFkKSIvPgogIDxyZWN0IHg9IjYiIHk9IjYiIHdpZHRoPSIxMDgiIGhlaWdodD0iMTA4IiByeD0iMjMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0Q0QUYzNyIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuNDUiLz4KICA8IS0tINi12YbYr9mI2YIg2KjYttin2LnYqSDZhdiq2KzZh9mKINio2LPZiti3INmI2KPZhtmK2YIg2YrYqtmI2LPYtyDYp9mE2YTZiNi62YggKE1pbmltYWxpc3QgSXNvbWV0cmljIFBhY2thZ2UpIC0tPgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsIDIpIj4KICAgIDwhLS0g2KfZhNmI2KzZhyDYp9mE2LnZhNmI2Yog2YTZhNi12YbYr9mI2YIgLS0+CiAgICA8cG9seWdvbiBwb2ludHM9IjYwLDIyIDk2LDQwIDYwLDU4IDI0LDQwIiBmaWxsPSJ1cmwoI21pbkJveFRvcCkiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyLjIiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICAgIDwhLS0g2KfZhNmI2KzZhyDYp9mE2KPZitiz2LEg2YTZhNi12YbYr9mI2YIgLS0+CiAgICA8cG9seWdvbiBwb2ludHM9IjI0LDQwIDYwLDU4IDYwLDk2IDI0LDc4IiBmaWxsPSJ1cmwoI21pbkJveExlZnQpIiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iMi4yIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CiAgICA8IS0tINin2YTZiNis2Ycg2KfZhNij2YrZhdmGINmE2YTYtdmG2K/ZiNmCIC0tPgogICAgPHBvbHlnb24gcG9pbnRzPSI2MCw1OCA5Niw0MCA5Niw3OCA2MCw5NiIgZmlsbD0idXJsKCNtaW5Cb3hSaWdodCkiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyLjIiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICAgIDwhLS0g2LTYsdmK2Lcg2KfZhNil2LrZhNin2YIg2KfZhNij2YjYs9i3INin2YTYqNiz2YrYtyAoUGFja2FnZSBUYXBlKSAtLT4KICAgIDxwb2x5Z29uIHBvaW50cz0iNDksMjcuNSA3MSwzOC41IDcxLDUyLjUgNDksNDEuNSIgZmlsbD0iI2ZmZmZmZiIgb3BhY2l0eT0iMC45Ii8+CiAgICA8cG9seWdvbiBwb2ludHM9IjU1LDU1LjUgNjUsNTUuNSA2NSw3MCA1NSw3MCIgZmlsbD0iI2ZmZmZmZiIgb3BhY2l0eT0iMC44NSIvPgogICAgPCEtLSDYrti3INiq2YHYtdmK2YTZiiDYtdi62YrYsSDYo9mG2YrZgiDYudmE2Ykg2KfZhNi12YbYr9mI2YIgLS0+CiAgICA8bGluZSB4MT0iMzQiIHkxPSI2OCIgeDI9IjQ4IiB5Mj0iNzUiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyLjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iMC44Ii8+CiAgPC9nPgo8L3N2Zz4=" alt="لوغو المنظومة" style="width: 100%; height: 100%; object-fit: contain;" />
+<div style="width: 58px; height: 58px; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 14px rgba(0,0,0,0.25); border: 1.5px solid var(--border-subtle); display: flex; align-items: center; justify-content: center; background: var(--bg-surface);">
+<img id="auth-gate-logo-img" src="" alt="لوغو المنظومة" style="width: 100%; height: 100%; object-fit: contain; padding: 4px;" onerror="if(window.FALLBACK_APP_LOGO_B64 && this.src!==window.FALLBACK_APP_LOGO_B64){this.src=window.FALLBACK_APP_LOGO_B64;}" />
 </div>
 <h2 id="auth-gate-title" style="font-size: 1.18rem; font-weight: 900; margin: 4px 0 0 0; color: var(--text-main);">
 المنظومة المركزية لتدبير المخزون وإصدار الإشهادات
@@ -10185,16 +10248,6 @@ VIEW 9: عملية التوزيع (Bulk Distribution Run)
 </svg>
 <span>تسجيل الدخول مباشرة بواسطة حساب Gmail / Google</span>
 </button>
-<div style="display: flex; gap: 8px;">
-<button type="button" class="btn btn-outline" id="btn-quick-admin-login" onclick="quickLoginAsPrincipalAdmin()" style="flex: 1; height: 44px; border-radius: 12px; border: 1.5px solid #38bdf8; background: rgba(56,189,248,0.1); color: #38bdf8; font-weight: 800; font-size: 0.86rem; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: all 0.2s ease;">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-<span>دخول مباشر كمدير النظام</span>
-</button>
-<button type="button" class="btn btn-outline" id="btn-secret-pin-trigger" onclick="toggleAdminSecretPinPanel()" style="height: 44px; padding: 0 14px; border-radius: 12px; border: 1.5px solid #d4af37; background: rgba(212,175,55,0.1); color: #fde68a; font-weight: 800; font-size: 0.86rem; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: all 0.2s ease;" title="الدخول الخاص برقم الأمان السري">
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-<span>دخول خاص (PIN)</span>
-</button>
-</div>
 <div style="display: flex; align-items: center; gap: 10px; color: var(--text-muted); font-size: 0.76rem;">
 <div style="flex: 1; height: 1px; background: var(--border-subtle);"></div>
 <span>أو الدخول بالبريد الإلكتروني (Gmail) وكلمة المرور</span>
@@ -10241,12 +10294,11 @@ VIEW 9: عملية التوزيع (Bulk Distribution Run)
 </div>
 <div style="font-size: 0.72rem; color: #94a3b8; margin-top: 4px;">* اضغط دخول مباشرة لاعتماد الكود الافتراضي 105 وفتح صلاحيات المدير فوراً.</div>
 </div>
-<div style="position: relative; font-size: 0.73rem; color: var(--text-muted); text-align: center; line-height: 1.5; border-top: 1px solid var(--border-subtle); padding-top: 10px; padding-left: 24px;">
+<div style="position: relative; font-size: 0.73rem; color: var(--text-muted); text-align: center; line-height: 1.5; border-top: 1px solid var(--border-subtle); padding-top: 10px; padding-left: 28px;">
 كل مستخدم يرتبط بحسابه المستقل في قاعدة البيانات السحابية. الدخول متاح عبر الجيميل للحسابات المفعلة والمعتمدة من طرف الإدارة.
-<button type="button" id="btn-secret-admin-pin-toggle" onclick="toggleAdminSecretPinPanel()" title="الدخول الخاص برقم الأمان (PIN) للأدمن" aria-label="دخول خاص"
-style="position: absolute; bottom: 0; left: 0; padding: 3px 8px; border: 1px solid var(--border-subtle); background: rgba(255, 255, 255, 0.06); color: #fde68a; opacity: 0.9; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; transition: all 0.2s ease;">
-<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-<span>دخول خاص (PIN)</span>
+<button type="button" id="btn-secret-admin-pin-toggle" onclick="toggleAdminSecretPinPanel()" title="الدخول الخاص برقم الأمان (PIN) للأدمن" aria-label="دخول خاص للأدمن"
+style="position: absolute; bottom: 8px; left: 4px; padding: 4px; border: 1px solid rgba(255, 255, 255, 0.12); background: transparent; color: var(--text-muted); opacity: 0.35; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.2s ease;" onmouseover="this.style.opacity='0.9'; this.style.color='#fde68a';" onmouseout="this.style.opacity='0.35'; this.style.color='var(--text-muted)';">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
 </button>
 </div>
 </div>
@@ -15082,6 +15134,8 @@ const sbLogoEl = document.getElementById('sidebar-app-logo-img');
 if (sbLogoEl) sbLogoEl.src = activeAppLogoSrc;
 const aboutLogoEl = document.getElementById('about-modal-app-logo-img');
 if (aboutLogoEl) aboutLogoEl.src = activeAppLogoSrc;
+const authLogoEl = document.getElementById('auth-gate-logo-img');
+if (authLogoEl) authLogoEl.src = activeAppLogoSrc;
 const faviconEl = document.getElementById('app-favicon-link');
 if (faviconEl) faviconEl.href = activeAppLogoSrc;
 }
@@ -17228,10 +17282,14 @@ const txt = document.getElementById('cloud-sync-text');
 const dot = document.getElementById('cloud-sync-dot');
 const avatarBtn = document.getElementById('header-user-avatar-btn');
 if (avatarBtn) {
-avatarBtn.classList.toggle('online', Boolean(isOnlineCloud));
-avatarBtn.classList.toggle('offline', !isOnlineCloud);
+avatarBtn.classList.remove('online', 'offline', 'syncing', 'pending');
+if (isOnlineCloud) {
+avatarBtn.classList.add('online');
+} else {
+avatarBtn.classList.add('offline');
+}
 avatarBtn.title = isOnlineCloud
-? (tooltipDetail || 'متصل بقاعدة البيانات — اضغط لفتح قائمة الحساب')
+? (tooltipDetail || 'متصل ومزامن بقاعدة البيانات — اضغط لفتح قائمة الحساب')
 : (tooltipDetail || 'غير متصل بقاعدة البيانات — اضغط لفتح قائمة الحساب');
 }
 if (!badge || !txt) return;
@@ -18143,24 +18201,86 @@ notesEl._hasDraftListener = true;
 }
 function setBulkStep(stepNum) {
 bulkDistState.step = stepNum;
-[1, 2, 3].forEach(n => {
+[1, 2, 3, 4].forEach(n => {
 const panel = document.getElementById(`bulk-step-${n}-panel`);
 const btn = document.getElementById(`bulk-tab-btn-${n}`);
 if (panel) panel.style.display = (n === stepNum) ? 'block' : 'none';
 if (btn) btn.classList.toggle('active', n === stepNum);
 });
 if (stepNum === 2) {
+renderBulkPoolBasket();
+} else if (stepNum === 3) {
 if (typeof populateBulkMultiselectDest === "function") populateBulkMultiselectDest();
 if (typeof renderDestRecipientsChecklist === "function") renderDestRecipientsChecklist();
 if (typeof renderBulkBeneficiaryBubbleCards === "function") renderBulkBeneficiaryBubbleCards();
 syncBulkDestinationRows();
 renderBulkAllocationMatrix();
-} else if (stepNum === 3) {
+} else if (stepNum === 4) {
 renderBulkBatchesHistory();
 }
 updateBulkLiveMonitor();
 saveBulkDistributionDraft();
 }
+window.setBulkStep = setBulkStep;
+
+function proceedToBulkStep2() {
+if (!bulkDistState.stagedItems) bulkDistState.stagedItems = {};
+if (!Array.isArray(bulkDistState.pool)) bulkDistState.pool = [];
+const stagedIds = Object.keys(bulkDistState.stagedItems);
+stagedIds.forEach(id => {
+let existing = bulkDistState.pool.find(p => p.itemId === id);
+const st = bulkDistState.stagedItems[id];
+if (!existing) {
+const it = (state.data.items || []).find(i => i.id === id);
+const q = (st && st.finalQty > 0) ? st.finalQty : (it && sanitize(it.stock) > 0 ? sanitize(it.stock) : 1);
+bulkDistState.pool.push({ itemId: id, qty: q, reserveLeft: 0, notes: "" });
+}
+});
+if (bulkDistState.pool.length === 0) {
+showToast("يرجى اختيار مادة واحدة على الأقل من القائمة لمتابعة التوزيع", "warning");
+return;
+}
+setBulkStep(2);
+}
+window.proceedToBulkStep2 = proceedToBulkStep2;
+
+function proceedToBulkStep3() {
+if (!Array.isArray(bulkDistState.pool) || bulkDistState.pool.length === 0) {
+showToast("سلة المواد فارغة — اختر المواد أولاً", "warning");
+return;
+}
+const zeroItem = bulkDistState.pool.find(p => (parseInt(p.qty, 10) || 0) <= 0);
+if (zeroItem) {
+const it = (state.data.items || []).find(i => i.id === zeroItem.itemId);
+showToast(`يرجى تحديد كمية أكبر من صفر للمادة "${it ? it.name : zeroItem.itemId}"`, "warning");
+return;
+}
+setBulkStep(3);
+}
+window.proceedToBulkStep3 = proceedToBulkStep3;
+
+function proceedToBulkStep4() {
+if (!Array.isArray(bulkDistState.pool) || bulkDistState.pool.length === 0) {
+showToast("سلة المواد فارغة!", "warning");
+return;
+}
+for (const p of bulkDistState.pool) {
+const alloc = getBulkItemAllocatedSum(p.itemId);
+const rem = (parseInt(p.qty, 10) || 0) - alloc;
+if (rem !== 0) {
+const it = (state.data.items || []).find(i => i.id === p.itemId);
+showToast(`قاعدة الباقي صفر: المادة "${it ? it.name : p.itemId}" متبقي منها ${rem} قطعة`, "warning");
+return;
+}
+}
+const activeRows = (bulkDistState.rows || []).filter(r => r.enabled && bulkDistState.pool.some(p => (parseInt(r.allocations[p.itemId], 10) || 0) > 0));
+if (activeRows.length === 0) {
+showToast("يرجى تخصيص كميات لمستفيد واحد على الأقل قبل المتابعة للاعتماد", "warning");
+return;
+}
+setBulkStep(4);
+}
+window.proceedToBulkStep4 = proceedToBulkStep4;
 function populateBulkCategorySelect() {
 const sel = document.getElementById('bulk-pool-cat-select');
 if (!sel) return;
@@ -18622,7 +18742,7 @@ const maxStock = sanitize(item.stock);
 const allocated = getBulkItemAllocatedSum(p.itemId);
 const rem = p.qty - allocated;
 const remClass = rem === 0 ? 'rem-zero' : (rem > 0 ? 'rem-pos' : 'rem-neg');
-const remText = rem === 0 ? '0 (مكتمل ✓)' : (rem > 0 ? `${rem} متبقي` : `${Math.abs(rem)} تجاوز!`);
+const remText = rem === 0 ? '✅ الباقي: 0' : (rem > 0 ? `${rem} متبقي` : `${Math.abs(rem)} تجاوز!`);
 return `
 <tr>
 <td style="text-align:center;font-weight:800;" class="tabular-nums">${idx + 1}</td>
@@ -18778,7 +18898,7 @@ ${poolItems.map(p => {
 const alloc = getBulkItemAllocatedSum(p.itemId);
 const rem = p.qty - alloc;
 const cls = rem === 0 ? 'rem-zero' : (rem > 0 ? 'rem-pos' : 'rem-neg');
-const label = rem === 0 ? 'الباقي: 0 ✓' : (rem > 0 ? `الباقي: ${rem}` : `تجاوز بـ ${Math.abs(rem)}!`);
+const label = rem === 0 ? '✅ الباقي: 0' : (rem > 0 ? `الباقي: ${rem}` : `تجاوز بـ ${Math.abs(rem)}!`);
 return `
 <td id="bulk-col-foot-${p.itemId}">
 <div style="font-size:0.8rem;" class="tabular-nums">الموزع: <strong>${alloc}</strong> / ${p.qty}</div>
@@ -18880,7 +19000,7 @@ if (poolEntry) {
 const alloc = getBulkItemAllocatedSum(itemId);
 const rem = poolEntry.qty - alloc;
 const cls = rem === 0 ? 'rem-zero' : (rem > 0 ? 'rem-pos' : 'rem-neg');
-const label = rem === 0 ? 'الباقي: 0 ✓' : (rem > 0 ? `الباقي: ${rem}` : `تجاوز بـ ${Math.abs(rem)}!`);
+const label = rem === 0 ? '✅ الباقي: 0' : (rem > 0 ? `الباقي: ${rem}` : `تجاوز بـ ${Math.abs(rem)}!`);
 const footCell = document.getElementById(`bulk-col-foot-${itemId}`);
 if (footCell) {
 footCell.innerHTML = `
@@ -19033,7 +19153,7 @@ totalAlloc += alloc;
 if (rem !== 0) allZero = false;
 if (rem < 0) anyNegative = true;
 const cls = rem === 0 ? 'rem-zero' : (rem > 0 ? 'rem-pos' : 'rem-neg');
-const statusTxt = rem === 0 ? 'الباقي: 0 ✓' : (rem > 0 ? `الباقي: ${rem}` : `تجاوز: ${Math.abs(rem)}!`);
+const statusTxt = rem === 0 ? '✅ الباقي: 0' : (rem > 0 ? `الباقي: ${rem}` : `تجاوز: ${Math.abs(rem)}!`);
 if (it) {
 stripHtml.push(`
 <span class="bulk-item-rem-pill ${cls} tabular-nums">
@@ -19047,8 +19167,17 @@ if (countEl) countEl.textContent = itemsCount;
 if (poolEl) poolEl.textContent = totalPool;
 if (allocEl) allocEl.textContent = totalAlloc;
 if (remEl) {
+if (itemsCount > 0 && allZero) {
+remEl.textContent = '✅ الباقي: 0';
+remEl.style.color = '#10b981';
+remEl.style.fontWeight = '900';
+remEl.style.textShadow = '0 0 10px rgba(16, 185, 129, 0.4)';
+} else {
 remEl.textContent = totalRem;
-remEl.style.color = allZero ? '#059669' : (anyNegative ? '#dc2626' : '#d97706');
+remEl.style.color = anyNegative ? '#dc2626' : '#d97706';
+remEl.style.fontWeight = '800';
+remEl.style.textShadow = 'none';
+}
 }
 if (stripEl) stripEl.innerHTML = stripHtml.join('');
 const pct = totalPool > 0 ? Math.min(100, Math.round((totalAlloc / totalPool) * 100)) : 0;
@@ -22219,7 +22348,7 @@ if (poolEntry) {
 const alloc = getBulkItemAllocatedSum(itemId);
 const rem = poolEntry.qty - alloc;
 const cls = rem === 0 ? 'rem-zero' : (rem > 0 ? 'rem-pos' : 'rem-neg');
-const label = rem === 0 ? 'الباقي: 0 ✓' : (rem > 0 ? `الباقي: ${rem}` : `تجاوز بـ ${Math.abs(rem)}!`);
+const label = rem === 0 ? '✅ الباقي: 0' : (rem > 0 ? `الباقي: ${rem}` : `تجاوز بـ ${Math.abs(rem)}!`);
 const headAlloc = document.getElementById(`col-alloc-head-${itemId}`);
 const headRem = document.getElementById(`col-rem-head-${itemId}`);
 if (headAlloc) headAlloc.textContent = alloc;
@@ -23516,9 +23645,10 @@ const modal = document.getElementById('bulk-full-reset-modal');
 const summaryEl = document.getElementById('bulk-reset-modal-summary');
 if (!modal) return;
 const stepNames = {
-1: 'المرحلة 1: سلة المواد والتحضير',
-2: 'المرحلة 2: مصفوفة التوزيع على الجهات والمستفيدين',
-3: 'المرحلة 3: الإشهادات الرسمية وسجل الدفعات'
+1: 'المحطة 1: اختيار المواد والأصناف',
+2: 'المحطة 2: تحديد الكميات المخصصة',
+3: 'المحطة 3: مصفوفة توزيع الحصص الذكي',
+4: 'المحطة 4: الإشهادات الرسمية وسجل الدفعات'
 };
 const curStepName = stepNames[bulkDistState.step || 1] || stepNames[1];
 const poolCount = (bulkDistState.pool || []).length;
@@ -25718,7 +25848,7 @@ const maxStock = sanitize(item.stock);
 const allocated = getBulkItemAllocatedSum(p.itemId);
 const rem = p.qty - allocated;
 const remClass = rem === 0 ? 'rem-zero' : (rem > 0 ? 'rem-pos' : 'rem-neg');
-const remText = rem === 0 ? '0 (مكتمل ✓)' : (rem > 0 ? `${rem} متبقي` : `${Math.abs(rem)} تجاوز!`);
+const remText = rem === 0 ? '✅ الباقي: 0' : (rem > 0 ? `${rem} متبقي` : `${Math.abs(rem)} تجاوز!`);
 return `
 <tr>
 <td style="text-align:center;font-weight:800;white-space:nowrap;" class="tabular-nums">${idx + 1}</td>
@@ -28588,13 +28718,13 @@ let statusBadge = "";
 if (it.q2026 > 0) {
 statusBadge = `<span class="badge badge-primary tabular-nums" style="font-size:0.69rem;">الحصة: ${it.proposedQuota} | المعدل: ${it.avgAnnual}</span>`;
 } else if (it.stateCode === "stopped_in_2026") {
-statusBadge = `<span class="badge badge-warning tabular-nums" style="font-size:0.68rem;">⚠️ توقف 2026 (احتياط: ${it.proposedQuota})</span>`;
+statusBadge = `<span class="badge badge-warning tabular-nums" style="font-size:0.68rem;">توقف 2026 (احتياط: ${it.proposedQuota})</span>`;
 } else if (it.stateCode === "discontinued_2years") {
-statusBadge = `<span class="badge badge-subtle tabular-nums" style="font-size:0.68rem;color:#ef4444;">🛑 متوقف لسنتين (الحصة: 0)</span>`;
+statusBadge = `<span class="badge badge-subtle tabular-nums" style="font-size:0.68rem;color:#ef4444;">متوقف لسنتين (الحصة: 0)</span>`;
 } else {
 statusBadge = `<span class="badge badge-subtle tabular-nums" style="font-size:0.68rem;">0 استهلاك</span>`;
 }
-const topTag = (idx === 0 && !hasQuery) ? `<span class="badge badge-success" style="font-size:0.64rem;margin-right:4px;">الأعلى حصة واستهلاكاً ★</span>` : "";
+const topTag = (idx === 0 && !hasQuery) ? `<span class="badge badge-success" style="font-size:0.64rem;margin-right:4px;">الأعلى حصة واستهلاكاً</span>` : "";
 const trajHint = `2024: ${it.q2024} | 2025: ${it.q2025} | 2026: ${it.q2026}`;
 return `
 <div class="combobox-suggestion-item ${isSel ? "active" : ""}" onclick="${onClickFnName}('${escapeHtml(it.id)}')">
@@ -33076,7 +33206,7 @@ const dispName = escapeHtml(formatItemDisplayText(it));
 const catEsc = escapeHtml(it.category || "عام");
 const periodQty = periodTotals[it.id] || 0;
 const topBadge = (idx === 0 && !q && periodQty > 0)
-? `<span class="badge badge-success" style="font-size:0.64rem;margin-right:4px;">الأكثر سحباً في السنة الحالية ★</span>`
+? `<span class="badge badge-success" style="font-size:0.64rem;margin-right:4px;">الأكثر سحباً في السنة الحالية</span>`
 : "";
 return `
 <div class="combobox-option ${isSel ? "active" : ""}" onclick="selectItemConsumptionOption('${escapeHtml(it.id)}')" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; cursor: pointer; border-bottom: 1px solid var(--border-subtle); font-size: 0.81rem;">
@@ -35082,7 +35212,7 @@ reliabilityLabel: "لم يُجرَ جرد بعد",
 reliabilityColor: "#f59e0b",
 bannerBg: "rgba(245, 158, 11, 0.10)",
 bannerBorder: "rgba(245, 158, 11, 0.45)",
-shortBadgeText: "⚠️ لم يتم إجراء جرد ميداني بعد (المخزون = 0)",
+shortBadgeText: "لم يتم إجراء جرد ميداني بعد (المخزون = 0)",
 detailedMessageAr: "تنبيه الجرد: لم تقم بإجراء أي جرد ميداني للمستودع حتى الآن (الأرصدة الحالية = 0). التوصيات أدناه تبين «الحاجة الاستهلاكية الصافية» فقط. بعد إتمام توزيعاتك الحالية، قم بتسجيل الجرد الميداني لما تبقى ليعتمد عليه النظام والعمليات بعده تلقائياً."
 };
 }
@@ -35098,7 +35228,7 @@ reliabilityLabel: "أرصدة مدخلة يدوياً",
 reliabilityColor: "#38bdf8",
 bannerBg: "rgba(56, 189, 248, 0.09)",
 bannerBorder: "rgba(56, 189, 248, 0.38)",
-shortBadgeText: `📦 أرصدة مخزنية متوفرة (${itemsWithStockCount} مادة — ${totalStockUnits} وحدة) بدون محضر جرد رسمي`,
+shortBadgeText: `أرصدة مخزنية متوفرة (${itemsWithStockCount} مادة — ${totalStockUnits} وحدة) بدون محضر جرد رسمي`,
 detailedMessageAr: `يوجد رصيد مسجل بالمخزون (${totalStockUnits} وحدة في ${itemsWithStockCount} مادة) يتم أخذه بعين الاعتبار في حساب الكفاية، غير أنه لم يُحفظ بعد «محضر جرد ميداني مؤرخ». يُنصح بتسجيل دورة جرد لتوثيق تاريخ المرجع.`
 };
 }
@@ -36194,6 +36324,7 @@ return `
 <div class="v82-audit-status-banner no-print" style="margin: 8px 0 12px 0; padding: 10px 14px; border-radius: 10px; background: ${st.bannerBg}; border: 1.5px solid ${st.bannerBorder}; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
 <div style="display: flex; flex-direction: column; gap: 3px; flex: 1 1 360px;">
 <div style="font-size: 0.84rem; font-weight: 800; color: ${st.reliabilityColor}; display: flex; align-items: center; gap: 6px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
 <span>${st.shortBadgeText}</span>
 </div>
 <div style="font-size: 0.76rem; color: var(--text-secondary); line-height: 1.55;">
@@ -36286,10 +36417,25 @@ headerEl.parentNode.insertBefore(explainer, headerEl.nextSibling);
 }
 const inStockCount = analytics.rows.filter(r => r.stock > 0).length;
 const continuing2026Count = analytics.rows.filter(r => r.q2026 > 0).length;
+const deadStockCount = analytics.rows.filter(r => r.baseLogicalQuota === 0 && r.stock > 0).length;
+const obsoleteCount = analytics.rows.filter(r => r.baseLogicalQuota === 0 && r.stock === 0).length;
 const explainerBar = document.getElementById("ai-forecast-explainer-bar");
 if (explainerBar) {
+const deadStockAlertHtml = (mode === "unused" && deadStockCount > 0) ? `
+<div class="dead-stock-alert-box" style="margin: 8px 0; padding: 10px 14px; border-radius: 8px; background: rgba(239, 68, 68, 0.12); border: 1.5px solid #ef4444; color: #ef4444; font-size: 0.8rem; font-weight: 800; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+  <div style="display:flex;align-items:center;gap:8px;">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+    <span>⚠️ تنبيه تدبيري استعجالي: توجد (${deadStockCount}) مواد ذات رصيد راكد بالمخزن دون استهلاك — أولوية للتصريف والتوزيع</span>
+  </div>
+  <div style="font-size:0.75rem;color:var(--text-main);font-weight:700;">
+    مواد ملغاة تماماً (الرصيد: 0): <strong style="color:#64748b;">${obsoleteCount} مادة</strong>
+  </div>
+</div>
+` : '';
+
 explainerBar.innerHTML = `
 ${buildAuditStatusBannerHtml(analytics.auditStatus)}
+${deadStockAlertHtml}
 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-top:4px;">
 <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
 <button type="button" class="btn btn-sm ${mode === "continuing" ? "btn-primary" : "btn-outline"}" onclick="setAiForecastFilterMode('continuing')" style="font-size:0.75rem;padding:4px 10px;font-weight:800;display:inline-flex;align-items:center;gap:4px;">
@@ -36359,7 +36505,16 @@ let list = analytics.rows;
 if (mode === "active") list = list.filter(r => r.baseLogicalQuota > 0);
 else if (mode === "continuing") list = list.filter(r => r.q2026 > 0);
 else if (mode === "stopped2026") list = list.filter(r => r.stateCode === "stopped_in_2026");
-else if (mode === "unused") list = list.filter(r => r.baseLogicalQuota === 0);
+else if (mode === "unused") {
+  list = list.filter(r => r.baseLogicalQuota === 0);
+  list.sort((a, b) => {
+    const aDead = (a.stock > 0) ? 1 : 0;
+    const bDead = (b.stock > 0) ? 1 : 0;
+    if (bDead !== aDead) return bDead - aDead;
+    if (a.stock > 0) return (b.stock - a.stock);
+    return (b.avgAnnual - a.avgAnnual);
+  });
+}
 else if (mode === "instock") list = list.filter(r => r.stock > 0);
 if (search) {
 list = list.filter(r => {
@@ -36479,10 +36634,22 @@ ${marginCellHtml}
 </td>
 <td style="text-align: center; vertical-align: middle; padding: 10px 8px;">
 <div style="display:flex;flex-direction:column;gap:5px;align-items:center;">
+${r.baseLogicalQuota === 0 ? (r.stock > 0 ? `
+<button type="button" class="btn btn-sm" onclick="openDecisionAnalysisDetailsModal('${escapeHtml(r.id)}')" style="font-size:0.72rem;font-weight:900;color:#ef4444;background:rgba(239,68,68,0.14);border:1.5px solid #ef4444;padding:3px 9px;border-radius:6px;line-height:1.3;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;cursor:pointer;box-shadow:0 0 8px rgba(239,68,68,0.22);" title="مخزون راكد بالمخزن — أولوية قصوى للتصريف لتفادي التلف">
+<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+<span>مخزون راكد (${r.stock} قطعة) — أولوية للتصريف</span>
+</button>
+` : `
+<button type="button" class="btn btn-sm" onclick="openDecisionAnalysisDetailsModal('${escapeHtml(r.id)}')" style="font-size:0.72rem;font-weight:700;color:#64748b;background:rgba(100,116,139,0.10);border:1px solid rgba(100,116,139,0.3);padding:3px 9px;border-radius:6px;line-height:1.3;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;cursor:pointer;" title="مادة متوقفة والرصيد 0 — ملغاة من الصفقة">
+<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+<span>مادة ملغاة (الرصيد: 0) — توفير ميزانية</span>
+</button>
+`) : `
 <button type="button" class="btn btn-sm" onclick="openDecisionAnalysisDetailsModal('${escapeHtml(r.id)}')" style="font-size:0.72rem;font-weight:800;color:${r.decisionColor};background:${r.decisionBg};border:1px solid ${r.decisionColor}45;padding:3px 9px;border-radius:6px;line-height:1.3;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.06);" title="اضغط لعرض التشخيص والقرار المفصل">
 <span>${escapeHtml(r.shortBadgeText || r.procurementDecision)}</span>
 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="9 18 15 12 9 6"></polyline></svg>
 </button>
+`}
 <div style="display:inline-flex;gap:4px;flex-wrap:wrap;justify-content:center;">
 <button type="button" class="btn btn-outline btn-sm" onclick="openItemDistributionAnalysisModal('${escapeHtml(r.id)}')" style="font-size:0.68rem;padding:2px 7px;display:inline-flex;align-items:center;gap:4px;" title="عرض سجل وتواريخ التوزيع">
 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> السجل (${r.txCount})
@@ -38846,7 +39013,26 @@ const txt = document.getElementById("cloud-sync-text");
 const dot = document.getElementById("cloud-sync-dot");
 const spinIcon = document.getElementById("header-sync-spin-icon");
 const syncBtnLbl = document.getElementById("header-sync-btn-label");
+const avatarBtn = document.getElementById("header-user-avatar-btn");
 const nowTime = new Date().toLocaleTimeString("ar-MA", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+
+if (avatarBtn) {
+avatarBtn.classList.remove("online", "offline", "syncing", "pending");
+if (syncState === "syncing") {
+avatarBtn.classList.add("syncing");
+avatarBtn.title = customMessage || "جاري رفع ومزامنة التعديلات مع السحابة...";
+} else if (syncState === "synced") {
+avatarBtn.classList.add("online");
+avatarBtn.title = customMessage || `متصل ومزامن بين جميع الأجهزة (${nowTime})`;
+} else if (syncState === "pending") {
+avatarBtn.classList.add("pending");
+avatarBtn.title = customMessage || "توجد تعديلات محلية بانتظار الرفع للسحابة";
+} else {
+avatarBtn.classList.add("offline");
+avatarBtn.title = customMessage || "غير متصل بالسحابة حالياً";
+}
+}
+
 if (syncState === "syncing") {
 if (badge) {
 badge.classList.remove("offline");
@@ -42680,8 +42866,11 @@ return previewVouchers;
 const _v92SetBulkStep = setBulkStep;
 setBulkStep = function(stepNum) {
 _v92SetBulkStep(stepNum);
+if (stepNum === 2) {
 renderBulkPoolBasket();
-if (stepNum === 3) {
+} else if (stepNum === 3) {
+renderBulkAllocationMatrix();
+} else if (stepNum === 4) {
 const previewVouchers = buildCurrentStage3PreviewVouchers();
 if (previewVouchers.length > 0) {
 renderLastCommittedBatchCertificates({
@@ -44869,7 +45058,7 @@ function getSelectedIssuanceBeneficiaryContext() {
   let contextLabel = "";
   if (recip && dest && byBen.has(`${recip}___${dest}`)) {
     benMap = byBen.get(`${recip}___${dest}`);
-    contextLabel = `${recip} (${dest})`;
+    contextLabel = recip;
   } else if (recip && byBen.has(`RECIP_ONLY___${recip}`)) {
     benMap = byBen.get(`RECIP_ONLY___${recip}`);
     contextLabel = recip;
